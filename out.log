@@ -1,0 +1,79 @@
+INFO  [app.config] Configuration loaded. APP_ENV=development, LOG_LEVEL=DEBUG
+INFO  [app.config] DATABASE_URL: ***[REDACTED]***
+INFO  [app.config] JWT_SECRET: ***[REDACTED]***
+INFO  [app.config] JWT_ALGORITHM: HS256
+INFO  [app.config] LLM_ENDPOINT: https://host.docker.internal:11434/api/generate
+INFO  [app.config] LLM_API_KEY: ***[REDACTED]***
+INFO  [app.main] Application startup success
+DEBUG [passlib.utils.compat] loaded lazy attr 'SafeConfigParser': <class 'configparser.ConfigParser'>
+DEBUG [passlib.utils.compat] loaded lazy attr 'NativeStringIO': <class '_io.StringIO'>
+DEBUG [passlib.utils.compat] loaded lazy attr 'BytesIO': <class '_io.BytesIO'>
+DEBUG [passlib.registry] registered 'bcrypt' handler: <class 'passlib.handlers.bcrypt.bcrypt'>
+DEBUG [asyncio] Using selector: EpollSelector
+DEBUG [passlib.handlers.bcrypt] detected 'bcrypt' backend, version '3.2.2'
+DEBUG [passlib.handlers.bcrypt] 'bcrypt' backend lacks $2$ support, enabling workaround
+INFO  [httpx] HTTP Request: POST http://testserver/auth/register "HTTP/1.1 201 Created"
+DEBUG [asyncio] Using selector: EpollSelector
+DEBUG [python_multipart.multipart] Calling on_field_start with no data
+DEBUG [python_multipart.multipart] Calling on_field_name with data[0:8]
+DEBUG [python_multipart.multipart] Calling on_field_data with data[9:38]
+DEBUG [python_multipart.multipart] Calling on_field_end with no data
+DEBUG [python_multipart.multipart] Calling on_field_start with no data
+DEBUG [python_multipart.multipart] Calling on_field_name with data[39:47]
+DEBUG [python_multipart.multipart] Calling on_field_data with data[48:63]
+DEBUG [python_multipart.multipart] Calling on_field_end with no data
+DEBUG [python_multipart.multipart] Calling on_end with no data
+INFO  [httpx] HTTP Request: POST http://testserver/auth/login "HTTP/1.1 200 OK"
+DEBUG [asyncio] Using selector: EpollSelector
+DEBUG [python_multipart.multipart] Calling on_part_begin with no data
+DEBUG [python_multipart.multipart] Calling on_header_field with data[36:55]
+DEBUG [python_multipart.multipart] Calling on_header_value with data[57:101]
+DEBUG [python_multipart.multipart] Calling on_header_end with no data
+DEBUG [python_multipart.multipart] Calling on_header_field with data[103:115]
+DEBUG [python_multipart.multipart] Calling on_header_value with data[117:132]
+DEBUG [python_multipart.multipart] Calling on_header_end with no data
+DEBUG [python_multipart.multipart] Calling on_headers_finished with no data
+DEBUG [python_multipart.multipart] Calling on_part_data with data[136:600]
+DEBUG [python_multipart.multipart] Calling on_part_end with no data
+DEBUG [python_multipart.multipart] Calling on_end with no data
+INFO  [app.api.applications] Application upload received (application_id: 870f5622-3a93-464c-8c29-c235e573d200, file size: 464 bytes)
+INFO  [app.api.applications] Pipeline execution started (application_id: 870f5622-3a93-464c-8c29-c235e573d200)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 1, agent_name: Layout Extraction Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 1, confidence_score: 0.95)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 2, agent_name: Section Boundary Detector Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 2, confidence_score: 0.9)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 3, agent_name: Personal Information Extractor Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 3, confidence_score: 0.85)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 4, agent_name: Academic Records Extractor Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 4, confidence_score: 0.85)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 5, agent_name: Standardized Tests Extractor Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 5, confidence_score: 0.85)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 6, agent_name: Essays Extractor Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 6, confidence_score: 0.9)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 7, agent_name: Activities Extractor Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 7, confidence_score: 0.9)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 8, agent_name: Cross-Section Entity Detector Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 8, confidence_score: 0.95)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 9, agent_name: Timeline Builder Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 9, confidence_score: 0.95)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 10, agent_name: Integrity Analyzer Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 10, confidence_score: 0.95)
+DEBUG [app.agents.orchestrator] Agent invocation (agent_id: 11, agent_name: Canonical Structure Assembler Python Agent)
+DEBUG [app.agents.orchestrator] Agent completion (agent_id: 11, confidence_score: 0.905)
+INFO  [app.api.applications] Canonical assembly completed (canonical_version: 1.0, application_id: 870f5622-3a93-464c-8c29-c235e573d200)
+INFO  [app.api.applications] LLM invocation started (application_id: 870f5622-3a93-464c-8c29-c235e573d200, model_name: llama3)
+INFO  [app.api.applications] LLM invocation completed (application_id: 870f5622-3a93-464c-8c29-c235e573d200)
+DEBUG [app.api.applications] Policy validation started (application_id: 870f5622-3a93-464c-8c29-c235e573d200)
+INFO  [app.api.applications] Policy validation result (application_id: 870f5622-3a93-464c-8c29-c235e573d200, policy_passed: True, violation_count: 0)
+INFO  [app.api.applications] Pipeline completion (application_id: 870f5622-3a93-464c-8c29-c235e573d200, final status: complete)
+INFO  [httpx] HTTP Request: POST http://testserver/applications/upload "HTTP/1.1 201 Created"
+=== Phase 7 Validation Script ===
+Testing Schema Integrity...
+✅ Schema Integrity: Passed
+Testing Auth Flow...
+✅ Auth Flow: Passed
+Testing Full Pipeline Execution...
+Testing Canonical & Policy Guard Integrity...
+✅ Pipeline, LLM, Canonical & Policy Integrity: Passed
+
+ALL AUTOMATED CHECKS COMPLETED SUCCESSFULLY!

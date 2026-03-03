@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+alembic
+psycopg2-binary
+pydantic
+python-jose
+passlib[bcrypt]
+bcrypt==3.2.2
+pdfminer.six
+python-multipart
+httpx
+python-dotenv
+pytest
