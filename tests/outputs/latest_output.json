@@ -24,7 +24,7 @@
     },
     "profile_meta": {
       "source_document_page_count": 6,
-      "extraction_timestamp": "2026-03-10T20:45:44.290877Z",
+      "extraction_timestamp": "2026-03-10T21:35:18.212208Z",
       "layout_block_count": 446,
       "detected_section_labels": [
         "APPLICATION FORM 2024",
@@ -45,7 +45,7 @@
     },
     "academic_entries": [
       {
-        "entry_id": "f06c08b1-9ea1-4f02-a386-97540d320e83",
+        "entry_id": "34cd0dbf-bc7e-4681-b446-4077fc44b69a",
         "academic_level": "9TH",
         "school_name": "Delhi World Public School",
         "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
@@ -59,7 +59,7 @@
         "confidence_score": 0.85
       },
       {
-        "entry_id": "17411d7a-a68c-4ba3-9943-3bc528144c3c",
+        "entry_id": "cdaee0b5-dc1e-4242-90e5-170e383be6aa",
         "academic_level": "10TH",
         "school_name": "Delhi World Public School",
         "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
@@ -104,7 +104,7 @@
         "confidence_score": 0.85
       },
       {
-        "entry_id": "a19aa5c6-52ea-406a-8964-85039404756c",
+        "entry_id": "47d8c1a7-fc70-4916-bd7e-9c1ba63aa9b9",
         "academic_level": "11TH",
         "school_name": "SGGS Collegiate Public School",
         "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
@@ -149,7 +149,7 @@
         "confidence_score": 0.85
       },
       {
-        "entry_id": "3c097261-7980-48c3-bc93-58001dc1f043",
+        "entry_id": "43c89320-18cb-450b-adbd-6f9a1ed512aa",
         "academic_level": "12TH",
         "school_name": "SGGS Collegiate Public School",
         "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
@@ -194,10 +194,43 @@
         "confidence_score": 0.85
       }
     ],
-    "schooling_history": [],
+    "schooling_history": [
+      {
+        "entry_id": "4ccd1f14-60c4-4673-b05a-3dedfd7ec657",
+        "level": "9TH",
+        "school_name": "Delhi World Public School",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "4ea3ae73-c544-4279-bd98-291af4335975",
+        "level": "10TH",
+        "school_name": "Delhi World Public School",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "813bd5e0-e584-4181-96e1-e722d584669a",
+        "level": "11TH",
+        "school_name": "SGGS Collegiate Public School",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "435b354b-12f0-44bc-bcea-e01d015d6b58",
+        "level": "12TH",
+        "school_name": "SGGS Collegiate Public School",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "location": null,
+        "confidence_score": 0.85
+      }
+    ],
     "test_entries": [
       {
-        "entry_id": "63b931b8-c713-48e7-b4f4-9a9631834375",
+        "entry_id": "4c45a715-df52-45ce-932a-db3255af9198",
         "test_name": "Joint Entrance Examination (JEE) Main",
         "test_date": null,
         "total_score": null,
@@ -210,7 +243,7 @@
     ],
     "essay_entries": [
       {
-        "entry_id": "668ad1b8-9355-4e3c-9b3e-47bc9cfe75f1",
+        "entry_id": "9fa09957-f7b5-419a-b27a-4b661e17bd3b",
         "essay_identifier": "Tell a story from your life, describing an experience that either demonstrates your character or hel",
         "raw_text": "Answer any one of the questions from the dropdown.\nPlease use the box below to type in your answer.\nFew years back, a seemingly biased competition changed my outlook and helped me comprehend the nature of my results.My friend and I\nwere selected to represent our school in an inter-school STEM contest. Our goal was to use STEM skills to create solutions to real-world\nissues. We decided to work on a tra\ufb03c control system that could seamlessly generate challan and redirect tra\ufb03c on the \ufb02y to make way for\nany emergency service vehicle. It was a solid plan, and I think we did a great job realizing our project.The day of the event had \ufb01nally arrived,\nand we felt pretty good about our chances. There were many unique and creative ideas with a ton of thought and work put in, but there is\none project that I can still remember vividly. One team had made a line-follower robot that could be used to transport a few \ufb01les around the\nschool. It was clearly from some pre-made robotics kit. The judges soon came around to inspect our project. I think we did a decent job of\nconveying our idea. I was able to explain all of my points and answer their question su\ufb03ciently. The demo went without any hiccups. We\ndidn\\'t win 1st or 2nd place, which was understandable; they were clearly better than us, but 3rd place was given to the line-follower robot!I\nwas absolutely livid. I knew we weren\\'t the best, but this clearly seemed like the wrong decision. It felt like a blatant miscarriage of justice. I\nwas consumed by this feeling of being wronged, \ufb01xating on that moment and blaming the judges. Of course, this wasn\\'t a healthy line of\nthought, and it was only hurting me. There was no use in focusing on something I couldn\\'t change. The amount of work I put in is all that I\nhave control over; it is the only way I can change my performance. My e\ufb00ort is the only thing that determines my results.\u201cBetween stimulus\nand response, there is a space. In that space, is our power to choose our response. In our response lies our growth and our freedom.\u201d \u2015\nViktor E. Frankl And I choose to attribute my successes and failures to my e\ufb00orts.\n",
         "word_count": 387,
@@ -221,7 +254,7 @@
         "confidence_score": 0.9
       },
       {
-        "entry_id": "08be7d75-34eb-472c-8cbf-9beab9f1ab3d",
+        "entry_id": "1564b580-7ca2-4829-9b56-c0173884ef71",
         "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skill",
         "raw_text": "Understanding the technology that constantly surrounds us and the way each of its components interacts with each other as a part of a\nlarger system excites me the most. Learning about the inner mechanisms of this sphere has always fascinated me. Engineering is a lucrative\ncareer with impressive prospects and a diverse selection of \ufb01elds to work in. The rapid developments in this domain, which necessitate\ncontinuous learning, critical thinking, and problem solving, are ideal for fostering both professional and personal growth. The last two years I\nspent preparing for the competitive exams have inculcated a habit of hard work, discipline, and e\ufb00ectively utilizing my time. It has prepared\nme to face challenges, try out di\ufb00erent approaches, and learn from my failures. I am highly motivated, eager to learn, and willing to push my\nlimits. This mindset is my greatest strength, which hopefully is suitable for the program.\n",
         "word_count": 148,
@@ -232,7 +265,7 @@
         "confidence_score": 0.9
       },
       {
-        "entry_id": "a490e9bd-45d2-464d-8f8a-d1e8dc494e27",
+        "entry_id": "2d956fe7-1266-410e-b860-7ca40649b3eb",
         "essay_identifier": "Is there anything else which you would like to share with us\nwhich would help us understand you bett",
         "raw_text": "No\nExtra- Curricular Activities (Outside the Classroom)\nActivity\nHighest level of\nparticipation\nNumber of years of\nparticipation\nMusic\nIntra School\n2\nInter School Steam Fest\n2019\nIntra School\nPositions of\nresponsibility/\nachievement\nOur band performed at\nPunjab University and\nSatluj Public School\nMime - 1st Prize\nDerek O'Brien Quiz\nIntra School\nParticipation\n1.\n2.\n3.\nPlease Upload Your File.\nYes\nCo- Curricular Activities (Tinkering, Research and More)\nActivity\nHighest level of\nparticipation\nNumber of years of\nparticipation\n1.\n2.\nSilverzone International\nOlympiad Of English\nLanguage 2022\nState\nInter DWPS AI/Stem\nContest\nInter School\nPlease Upload Your File.\nYes",
         "word_count": 98,
@@ -245,7 +278,7 @@
     ],
     "activity_entries": [
       {
-        "entry_id": "195d0778-f0a1-45d7-9c55-8d31773eb0e9",
+        "entry_id": "8fb32f44-f87c-442f-93f6-b661cebab09e",
         "activity_type": "co_curricular",
         "category": null,
         "activity_name": "1. Cultural Prefect 2 Roles and responsibilities Organizing and preparing teams for various interhouse competition",
@@ -258,32 +291,32 @@
     ],
     "timeline_entries": [
       {
-        "entry_id": "f9146f25-9bf7-46f1-b29c-53e718208a2e",
+        "entry_id": "f5a2fc2d-4523-4f1c-aeea-3f5e22183ea8",
         "year": "2024",
         "event_label": "Academic Record: 12TH",
         "source_type": "academic",
-        "source_reference": "3c097261-7980-48c3-bc93-58001dc1f043"
+        "source_reference": "43c89320-18cb-450b-adbd-6f9a1ed512aa"
       },
       {
-        "entry_id": "950115d7-3354-4f1c-aa43-1ea769b82daa",
+        "entry_id": "52d02e68-7909-44ea-8f1c-76ee54115348",
         "year": "2023",
         "event_label": "Academic Record: 11TH",
         "source_type": "academic",
-        "source_reference": "a19aa5c6-52ea-406a-8964-85039404756c"
+        "source_reference": "47d8c1a7-fc70-4916-bd7e-9c1ba63aa9b9"
       },
       {
-        "entry_id": "7ffe1e7b-8e74-4754-ba4b-90a5b87be853",
+        "entry_id": "35aa0b6c-9d8e-426b-a623-f6ea659eebc3",
         "year": "2022",
         "event_label": "Academic Record: 10TH",
         "source_type": "academic",
-        "source_reference": "17411d7a-a68c-4ba3-9943-3bc528144c3c"
+        "source_reference": "cdaee0b5-dc1e-4242-90e5-170e383be6aa"
       },
       {
-        "entry_id": "ca797419-093e-4d77-8445-3ba407bea559",
+        "entry_id": "2abee44d-1c1a-41a2-bbaf-7a8146a2ced4",
         "year": "2021",
         "event_label": "Academic Record: 9TH",
         "source_type": "academic",
-        "source_reference": "f06c08b1-9ea1-4f02-a386-97540d320e83"
+        "source_reference": "34cd0dbf-bc7e-4681-b446-4077fc44b69a"
       }
     ],
     "cross_references": {
@@ -293,15 +326,15 @@
           "source_references": [
             {
               "source_type": "academic",
-              "entry_id": "17411d7a-a68c-4ba3-9943-3bc528144c3c"
+              "entry_id": "cdaee0b5-dc1e-4242-90e5-170e383be6aa"
             },
             {
               "source_type": "academic",
-              "entry_id": "a19aa5c6-52ea-406a-8964-85039404756c"
+              "entry_id": "47d8c1a7-fc70-4916-bd7e-9c1ba63aa9b9"
             },
             {
               "source_type": "academic",
-              "entry_id": "3c097261-7980-48c3-bc93-58001dc1f043"
+              "entry_id": "43c89320-18cb-450b-adbd-6f9a1ed512aa"
             }
           ]
         },
@@ -310,19 +343,19 @@
           "source_references": [
             {
               "source_type": "academic",
-              "entry_id": "17411d7a-a68c-4ba3-9943-3bc528144c3c"
+              "entry_id": "cdaee0b5-dc1e-4242-90e5-170e383be6aa"
             },
             {
               "source_type": "academic",
-              "entry_id": "a19aa5c6-52ea-406a-8964-85039404756c"
+              "entry_id": "47d8c1a7-fc70-4916-bd7e-9c1ba63aa9b9"
             },
             {
               "source_type": "academic",
-              "entry_id": "3c097261-7980-48c3-bc93-58001dc1f043"
+              "entry_id": "43c89320-18cb-450b-adbd-6f9a1ed512aa"
             },
             {
               "source_type": "essay",
-              "entry_id": "a490e9bd-45d2-464d-8f8a-d1e8dc494e27"
+              "entry_id": "2d956fe7-1266-410e-b860-7ca40649b3eb"
             }
           ]
         },
@@ -331,11 +364,11 @@
           "source_references": [
             {
               "source_type": "academic",
-              "entry_id": "a19aa5c6-52ea-406a-8964-85039404756c"
+              "entry_id": "47d8c1a7-fc70-4916-bd7e-9c1ba63aa9b9"
             },
             {
               "source_type": "academic",
-              "entry_id": "3c097261-7980-48c3-bc93-58001dc1f043"
+              "entry_id": "43c89320-18cb-450b-adbd-6f9a1ed512aa"
             }
           ]
         },
@@ -344,11 +377,11 @@
           "source_references": [
             {
               "source_type": "academic",
-              "entry_id": "a19aa5c6-52ea-406a-8964-85039404756c"
+              "entry_id": "47d8c1a7-fc70-4916-bd7e-9c1ba63aa9b9"
             },
             {
               "source_type": "academic",
-              "entry_id": "3c097261-7980-48c3-bc93-58001dc1f043"
+              "entry_id": "43c89320-18cb-450b-adbd-6f9a1ed512aa"
             }
           ]
         },
@@ -357,11 +390,11 @@
           "source_references": [
             {
               "source_type": "academic",
-              "entry_id": "a19aa5c6-52ea-406a-8964-85039404756c"
+              "entry_id": "47d8c1a7-fc70-4916-bd7e-9c1ba63aa9b9"
             },
             {
               "source_type": "academic",
-              "entry_id": "3c097261-7980-48c3-bc93-58001dc1f043"
+              "entry_id": "43c89320-18cb-450b-adbd-6f9a1ed512aa"
             }
           ]
         },
@@ -370,11 +403,11 @@
           "source_references": [
             {
               "source_type": "academic",
-              "entry_id": "a19aa5c6-52ea-406a-8964-85039404756c"
+              "entry_id": "47d8c1a7-fc70-4916-bd7e-9c1ba63aa9b9"
             },
             {
               "source_type": "academic",
-              "entry_id": "3c097261-7980-48c3-bc93-58001dc1f043"
+              "entry_id": "43c89320-18cb-450b-adbd-6f9a1ed512aa"
             }
           ]
         },
@@ -383,11 +416,11 @@
           "source_references": [
             {
               "source_type": "essay",
-              "entry_id": "668ad1b8-9355-4e3c-9b3e-47bc9cfe75f1"
+              "entry_id": "9fa09957-f7b5-419a-b27a-4b661e17bd3b"
             },
             {
               "source_type": "essay",
-              "entry_id": "a490e9bd-45d2-464d-8f8a-d1e8dc494e27"
+              "entry_id": "2d956fe7-1266-410e-b860-7ca40649b3eb"
             }
           ]
         }

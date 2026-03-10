@@ -201,6 +201,17 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
 
     final_entries = list(merged.values())
 
+    # Map academic entries to schooling history (Page 1 summary)
+    for ent in final_entries:
+        schooling_history.append({
+            "entry_id": uuid.uuid4(),
+            "level": ent["academic_level"],
+            "school_name": ent.get("school_name"),
+            "board_name": ent.get("board_name"),
+            "location": None,  # Optional: could parse from noise rows if available
+            "confidence_score": ent.get("confidence_score", 0.9)
+        })
+
     return {
         "academic_entries": final_entries,
         "schooling_history": schooling_history,
