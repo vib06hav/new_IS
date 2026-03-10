@@ -1,245 +1,234 @@
-# 📄 `architecture_lock.md`
+# `architecture_lock.md`
 
-**(LLM Compliance & Enforcement Document)**
-
----
-
-# Architecture Lock
-
-## Non-Negotiable Implementation Constraints
+**(Stage 1.5 — ROS v1 Integrated, Architectural Invariants Preserved)**
 
 ---
 
-## 1. Purpose of This Document
+# 1. Purpose
 
-This document defines strict architectural constraints that must not be violated.
+This document defines non-negotiable architectural invariants.
 
-Any LLM generating:
+These constraints exist to:
 
-* Code
-* Schema
-* Infrastructure layout
-* Folder structure
-* Service definitions
-* API design
+* Prevent scope drift
+* Prevent architectural creep
+* Prevent infra instability
+* Preserve deterministic-first discipline
+* Preserve single-LLM boundary
+* Preserve synchronous execution model
 
-must comply with all rules defined here.
+Stage 1.5 integrates ROS v1 as a presentation-layer contract.
 
-If a proposed implementation conflicts with this document, this document takes precedence.
-
----
-
-## 2. Logical Architecture Is Frozen
-
-The following architectural characteristics are permanently locked:
-
-1. Deterministic-first processing
-2. Single LLM synthesis boundary
-3. Canonical representation as sole LLM input
-4. Non-evaluative system design
-5. Collection-based internal representation
-6. Versioned canonical model
-7. Stage-based infrastructure evolution
-8. Logical pipeline invariance across stages
-
-No implementation may alter these properties.
+Stage 1.5 does not relax any architectural invariants defined in Stage 1.
 
 ---
 
-## 3. LLM Usage Restrictions
+# 2. Core Architectural Invariants
 
-The system must:
+## 2.1 Deterministic-First
 
-* Make exactly one LLM call per application.
-* Use LLM only for synthesis.
-* Provide only canonical structured data to the LLM.
+Agents 1–11 remain strictly deterministic.
+
+They must:
+
+* Perform structured extraction only
+* Avoid interpretation
+* Avoid ranking
+* Avoid scoring
+* Avoid normalization
+* Avoid inference
+* Avoid LLM invocation
+
+No part of deterministic extraction may depend on LLM output.
+
+This invariant remains absolute.
+
+---
+
+## 2.2 Single LLM Call
+
+Exactly one LLM call per application.
+
+This call:
+
+* Occurs after canonical assembly
+* Generates only thematic structure (ROS Page 4–5)
+* Does not rewrite canonical content
+* Does not trigger recursive calls
+* Is not retried
+* Has no fallback model
+
+No additional LLM calls are permitted for:
+
+* Refinement
+* Summarization
+* Correction
+* Validation
+* Highlight generation
+
+Single-call invariant remains absolute in Stage 1.5.
+
+---
+
+## 2.3 Canonical–Presentation Separation
+
+Canonical representation is internal structural truth.
+
+ROS v1 is a derived presentation artifact.
+
+Canonical must not:
+
+* Embed page grouping
+* Embed theme grouping
+* Embed question grouping
+* Be reshaped to satisfy UI layout
+
+ROS projection must not:
+
+* Mutate canonical
+* Collapse canonical collections
+* Rewrite canonical text
+* Introduce new canonical fields
+
+Separation of canonical and ROS layers is mandatory.
+
+---
+
+## 2.4 Synchronous Execution Model
+
+The system remains fully synchronous.
+
+No:
+
+* Background workers
+* Job queues
+* Redis
+* Celery
+* Task schedulers
+* Deferred execution models
+
+Stage 1.5 does not introduce async behavior.
+
+---
+
+## 2.5 Infrastructure Freeze
+
+Stage 1 infrastructure remains unchanged:
+
+* Docker topology unchanged
+* Services unchanged
+* No additional containers
+* No service separation
+* No microservices
+* No event-driven architecture
+
+Environment configuration remains unchanged.
+
+No new environment variables introduced for Stage 1.5.
+
+---
+
+## 2.6 Database Stability
+
+No schema migrations introduced.
+
+No new tables.
+
+No new columns.
+
+No new relational joins.
+
+`canonical_records` and `synthesis_records` remain JSONB-backed.
+
+ROS v1 replaces the internal structure of `synthesis_output` only.
+
+Schema remains stable.
+
+---
+
+## 2.7 No Evaluation Logic
+
+System must not:
+
+* Score applicants
+* Rank applicants
+* Predict outcomes
+* Assess strengths or weaknesses
+* Compare applicants
+* Normalize grades
+* Compute competitiveness metrics
+
+The LLM must not introduce evaluative language.
+
+This remains enforced through:
+
+* Prompt constraints
+* Policy guard validation
+
+---
+
+## 2.8 No Recursive Reasoning
 
 The system must not:
 
-* Use multiple LLM calls.
-* Use recursive reasoning.
-* Use self-reflection loops.
-* Use tool-calling chains.
-* Use dynamic reasoning graphs.
-* Use LangChain.
-* Use LangGraph.
-* Use AutoGen.
-* Use CrewAI.
-* Use Semantic Kernel.
-* Introduce additional agent frameworks.
+* Chain LLM outputs
+* Feed LLM outputs back into LLM
+* Perform iterative refinement
+* Store intermediate reasoning
 
-LLM orchestration frameworks are prohibited.
+All reasoning is bounded to a single LLM invocation.
 
 ---
 
-## 4. Deterministic Extraction Enforcement
+## 3. Stage 1.5 Additions (Logical Only)
 
-All structural processing must be deterministic.
+Stage 1.5 introduces:
 
-LLM must not:
+* Deterministic ROS projection layer (Pages 1–3)
+* Structured LLM thematic output (Pages 4–5)
+* Entity ID anchoring
+* Reference validation enforcement
 
-* Parse PDFs.
-* Detect sections.
-* Extract structured fields.
-* Infer missing data.
-* Normalize grades.
-* Compute academic trends.
-* Perform cross-application comparison.
+Stage 1.5 does not introduce:
 
-All extraction must be implemented in deterministic Python logic.
+* Async execution
+* Additional LLM calls
+* Infrastructure change
+* Database schema change
+* New services
 
----
-
-## 5. Canonical Model Constraints
-
-The canonical representation must:
-
-* Be collection-based.
-* Avoid rigid key paths such as:
-
-  * academics.class_12
-  * tests.sat
-* Avoid fixed academic-level keys.
-* Support extensibility.
-* Include canonical_version.
-* Separate identifiers (PII) from extracted data.
-
-The canonical model must not:
-
-* Hardcode academic year keys.
-* Hardcode test names.
-* Collapse collections into fixed structures.
-* Mix PII with extracted content.
-* Embed synthesis output inside extracted data.
+All additions are logical-layer only.
 
 ---
 
-## 6. Evaluation Prohibition
+# 4. Enforcement Rules
 
-The system must not implement:
+If any proposed change requires:
 
-* Applicant scoring.
-* Ranking logic.
-* Strength/weakness labeling.
-* Concern detection.
-* Grade normalization.
-* Predictive admissions modeling.
-* Comparative analysis.
-* Performance inference.
+* Additional LLM calls
+* Async execution
+* Schema migration
+* New tables
+* New services
+* Breaking canonical–presentation separation
 
-LLM output must remain neutral and traceable.
+Then that change belongs to a later stage.
 
----
-
-## 7. Service Boundary Restrictions
-
-Before Stage 4:
-
-* The system must not be split into multiple microservices.
-* All logical agents must remain internal modules.
-* No premature service separation is allowed.
-* No Kubernetes.
-* No service mesh.
-* No distributed architecture.
-
-After Stage 4:
-
-* Service separation must follow predefined boundaries.
-* Agents remain internal modules.
-* Agents are not individual microservices.
+It must not be introduced in Stage 1.5.
 
 ---
 
-## 8. Stage Discipline Enforcement
+# 5. Stage 1.5 Invariant Check
 
-Infrastructure evolves in stages.
-
-The system must not:
-
-* Introduce Redis before Stage 2.
-* Introduce object storage before Stage 3.
-* Introduce service separation before Stage 4.
-* Introduce security hardening beyond stage definition.
-* Introduce cloud infrastructure before Stage 6.
-
-Stage migration must not alter logical pipeline.
-
----
-
-## 9. Schema Governance Rules
-
-LLM-generated implementation must:
-
-* Define database tables explicitly.
-* Use JSON fields only where appropriate.
-* Maintain canonical_version tracking.
-* Avoid over-normalization of academic records.
-
-LLM must not:
-
-* Invent additional canonical layers.
-* Introduce dynamic schema inference.
-* Add unnecessary abstraction layers.
+| Invariant                         | Status |
+| --------------------------------- | ------ |
+| Deterministic-first preserved     | ✅      |
+| Single LLM call preserved         | ✅      |
+| Canonical separate from ROS       | ✅      |
+| No async introduced               | ✅      |
+| No infra change introduced        | ✅      |
+| No schema migration required      | ✅      |
+| No evaluation logic introduced    | ✅      |
+| No recursive reasoning introduced | ✅      |
 
 ---
-
-## 10. Prompt Discipline
-
-LLM implementation must:
-
-* Reference canonical categories, not rigid key paths.
-* Avoid hardcoded assumptions about academic structure.
-* Preserve extensibility.
-* Avoid hidden global state.
-* Avoid implicit inference logic.
-
----
-
-## 11. Security Baseline (Stage-Aware)
-
-Even in early stages:
-
-* JWT must be used for authentication.
-* Passwords must be hashed.
-* Role-based access control must exist.
-
-LLM must not:
-
-* Introduce third-party auth providers.
-* Introduce SaaS auth services.
-* Introduce unnecessary security frameworks.
-
-Security evolves by stage only.
-
----
-
-## 12. Architectural Change Protocol
-
-If an implementation requires violating any rule in this document:
-
-* The change must be explicitly flagged.
-* The architectural implication must be described.
-* Approval must be given before proceeding.
-
-Silent deviations are not permitted.
-
----
-
-## 13. Enforcement Statement
-
-This document supersedes:
-
-* Optimization suggestions
-* Framework recommendations
-* Alternative architecture proposals
-* LLM-generated “improvements”
-
-If conflict exists between convenience and this document, this document prevails.
-
----
-
-End of Document.
-
----
-
-

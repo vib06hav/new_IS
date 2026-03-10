@@ -1,0 +1,91 @@
+time="2026-03-04T22:44:37+05:30" level=warning msg="C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+app.config - INFO - Configuration loaded. APP_ENV=development, LOG_LEVEL=DEBUG
+app.config - INFO - DATABASE_URL: ***[REDACTED]***
+app.config - INFO - JWT_SECRET: ***[REDACTED]***
+app.config - INFO - JWT_ALGORITHM: HS256
+app.config - INFO - LLM_ENDPOINT: http://ollama:11434/api/generate
+app.config - INFO - LLM_API_KEY: ***[REDACTED]***
+__main__ - INFO - Replaying Application ID: c6b688cb-776c-4e0a-9fde-7221f2dfd1bd
+__main__ - INFO - ROS Projection successful.
+app.agents.synthesis_agent - DEBUG - Synthesis prompt length (chars): 13969
+app.agents.synthesis_agent - INFO - Executing Synthesis Agent (Agent 12) LLM generation.
+httpcore.connection - DEBUG - connect_tcp.started host='ollama' port=11434 local_address=None timeout=60.0 socket_options=None
+httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x72b37cb594d0>
+httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - send_request_headers.complete
+httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - send_request_body.complete
+httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Wed, 04 Mar 2026 17:15:12 GMT'), (b'Transfer-Encoding', b'chunked')])
+httpx - INFO - HTTP Request: POST http://ollama:11434/api/generate "HTTP/1.1 200 OK"
+httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - receive_response_body.complete
+httpcore.http11 - DEBUG - response_closed.started
+httpcore.http11 - DEBUG - response_closed.complete
+httpcore.connection - DEBUG - close.started
+httpcore.connection - DEBUG - close.complete
+app.agents.synthesis_agent - DEBUG - Raw LLM synthesis output: {
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "Academic Performance Patterns",
+      "description": "This theme explores the applicant's academic performance patterns across various subjects and levels.",
+      "referenced_entity_ids": [
+        "ACA-001",
+        "ACA-002",
+        "ACA-003"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "Education Level and Qualifications",
+      "description": "This theme examines the applicant's educational background, including their highest level of education achieved.",
+      "referenced_entity_ids": [
+        "ACA-004",
+        "ACA-005",
+        "ACA-006"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "title": "Test Scores and Performance Metrics",
+      "description": "This theme delves into the applicant's test scores, including their percentile rankings and total scores.",
+      "referenced_entity_ids": [
+        "TEST-001"
+      ]
+    }
+  ],
+  "question_groups": [
+    {
+      "theme_id": "THEME-001",
+      "group_title": "Academic Performance Patterns Group",
+      "questions": [
+        "What is the applicant's average score in mathematics across different levels?",
+        "How does the applicant's performance pattern change over time?",
+        "What are some notable areas of focus for the applicant?"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "group_title": "Education Level and Qualifications Group",
+      "questions": [
+        "What is the highest level of education achieved by the applicant?",
+        "How does the applicant's educational background impact their career goals?",
+        "Are there any notable gaps in the applicant's educational history?"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "group_title": "Test Scores and Performance Metrics Group",
+      "questions": [
+        "What is the applicant's percentile ranking in the JEE test?",
+        "How does the applicant's total score in the JEE test compare to others?",
+        "Are there any notable sectional scores for the applicant?"
+      ]
+    }
+  ]
+}
+app.policy.guard - DEBUG - Starting Agent 13 validation filter.
+app.policy.guard - DEBUG - Using entity_map with 32 total references.
+app.policy.guard - DEBUG - Validation succeeded.
+__main__ - INFO - Validation PASSED (Unexpected!)

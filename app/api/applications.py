@@ -18,8 +18,6 @@ from app.api.schemas import ApplicationResponse, SynthesisOutput
 from app.config import settings
 
 from app.agents.orchestrator import run_pipeline
-from app.llm.client import generate_interview_prep
-from app.policy.guard import validate_synthesis_output
 from app.canonical.version import CANONICAL_VERSION
 
 import logging
@@ -62,44 +60,37 @@ def upload_application(
     db.refresh(db_app)
     
     try:
-        # Phase 5: Pipeline Orchestration
-        canonical_data = run_pipeline(str(application_id), file_path)
+        # Phase 5-7: Pipeline Orchestration & Synthesis Integration
+        pipeline_results = run_pipeline(str(application_id), file_path)
         
-        # Determine aggregate confidence
-        confidence = 0.0
-        if "extraction_confidence" in canonical_data:
-            confidence = canonical_data["extraction_confidence"].get("aggregate_confidence", 0.0)
-            
+        canonical_data = pipeline_results["canonical_data"]
+        confidence = pipeline_results.get("confidence", 0.0)
+        validation_result = pipeline_results["validation_result"]
+        ros_document = pipeline_results["ros_v1"]
+        
         # Store canonical record
+        from app.utils.sanitizer import sanitize_for_json
         db_canonical = CanonicalRecord(
             application_id=application_id,
             canonical_version=CANONICAL_VERSION,
-            canonical_data=canonical_data
+            canonical_data=sanitize_for_json(canonical_data)
         )
         db.add(db_canonical)
-        logger.info(f"Canonical assembly completed (canonical_version: {CANONICAL_VERSION}, application_id: {application_id})")
+        logger.info(f"Canonical persistence completed (application_id: {application_id})")
         
-        # Phase 6: LLM Synthesis
-        logger.info(f"LLM invocation started (application_id: {application_id}, model_name: {settings.LLM_MODEL_NAME})")
-        synthesis_output_raw = generate_interview_prep(canonical_data)
-        logger.info(f"LLM invocation completed (application_id: {application_id})")
-        logger.debug(f"LLM Synthesis Raw Output Type: {type(synthesis_output_raw)}")
-        logger.debug(f"LLM Synthesis Raw Output Data: {synthesis_output_raw}")
-        
-        # Phase 7: Policy Guard
-        logger.debug(f"Policy validation started (application_id: {application_id})")
-        validation_result = validate_synthesis_output(synthesis_output_raw, sanitize=True)
-        final_synthesis = validation_result["sanitized_output"]
-        
-        violation_count = len(validation_result.get("violations_log", []))
-        logger.info(f"Policy validation result (application_id: {application_id}, policy_passed: {validation_result['passed']}, violation_count: {violation_count})")
-        
-        # Store synthesis record
+        if not validation_result.get("passed", False) or not ros_document:
+            logger.error(f"Pipeline validation failed (application_id: {application_id})")
+            db.rollback()
+            db_app.pipeline_status = "failed"
+            db.commit()
+            raise HTTPException(status_code=400, detail="Policy validation failed: Output rejected.")
+            
+        # Store synthesis record (ROS Document)
         db_synthesis = SynthesisRecord(
             application_id=application_id,
-            synthesis_output=final_synthesis,
-            policy_passed=validation_result["passed"],
-            policy_violations_log=validation_result.get("violations_log") if not validation_result["passed"] else None
+            synthesis_output=sanitize_for_json(ros_document),
+            policy_passed=True,
+            policy_violations_log=None
         )
         db.add(db_synthesis)
         

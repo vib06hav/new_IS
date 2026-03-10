@@ -1,0 +1,47 @@
+time="2026-03-04T22:39:41+05:30" level=warning msg="C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+app.config - INFO - Configuration loaded. APP_ENV=development, LOG_LEVEL=DEBUG
+app.config - INFO - DATABASE_URL: ***[REDACTED]***
+app.config - INFO - JWT_SECRET: ***[REDACTED]***
+app.config - INFO - JWT_ALGORITHM: HS256
+app.config - INFO - LLM_ENDPOINT: http://ollama:11434/api/generate
+app.config - INFO - LLM_API_KEY: ***[REDACTED]***
+__main__ - INFO - Replaying Application ID: c6b688cb-776c-4e0a-9fde-7221f2dfd1bd
+__main__ - INFO - ROS Projection successful.
+app.agents.synthesis_agent - DEBUG - Synthesis prompt length (chars): 14511
+app.agents.synthesis_agent - INFO - Executing Synthesis Agent (Agent 12) LLM generation.
+httpcore.connection - DEBUG - connect_tcp.started host='ollama' port=11434 local_address=None timeout=60.0 socket_options=None
+httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f5abc559510>
+httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - send_request_headers.complete
+httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - send_request_body.complete
+httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Wed, 04 Mar 2026 17:09:52 GMT'), (b'Transfer-Encoding', b'chunked')])
+httpx - INFO - HTTP Request: POST http://ollama:11434/api/generate "HTTP/1.1 200 OK"
+httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - receive_response_body.complete
+httpcore.http11 - DEBUG - response_closed.started
+httpcore.http11 - DEBUG - response_closed.complete
+httpcore.connection - DEBUG - close.started
+httpcore.connection - DEBUG - close.complete
+app.agents.synthesis_agent - DEBUG - Raw LLM synthesis output: {
+  "Canonical Data": {
+    "entry_id": "e9b9de91-2a29-4e87-8e06-b084fd05ad64",
+    "test_date": null,
+    "test_name": "Jee",
+    "percentile": null,
+    "total_score": null,
+    "result_status": "available",
+    "confidence_score": 0.85,
+    "sectional_scores": [
+      {
+        "label": "Applicant Name",
+        "raw_score": ""
+      }
+    ],
+    "entity_id": "TEST-001"
+  }
+}
+app.policy.guard - DEBUG - Starting Agent 13 validation filter.
+app.policy.guard - DEBUG - Using entity_map with 32 total references.
+__main__ - ERROR - Validation FAILED (Expected!)

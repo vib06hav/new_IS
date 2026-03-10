@@ -60,6 +60,7 @@ def assemble_canonical(
         "identifiers": identifiers,
         "profile_meta": profile_meta,
         "academic_entries": academic_data.get("academic_entries", []),
+        "schooling_history": academic_data.get("schooling_history", []),
         "test_entries": test_data.get("test_entries", []),
         "essay_entries": essay_data.get("essay_entries", []),
         "activity_entries": activity_data.get("activity_entries", []),

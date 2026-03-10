@@ -1,7 +1,10 @@
 import os
+import logging
 from typing import List, Dict, Any
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer
+
+logger = logging.getLogger(__name__)
 
 def extract_layout_blocks(pdf_path: str) -> Dict[str, Any]:
     """
@@ -33,6 +36,11 @@ def extract_layout_blocks(pdf_path: str) -> Dict[str, Any]:
     # Simple OCR anomaly check: if no text from layout but pages exist
     if page_count > 0 and len(blocks) == 0:
         confidence = 0.1 # Likely a scanned PDF without text layer
+        
+    raw_text = "\n".join([b["text"] for b in blocks])
+    logger.debug("RAW_PDF_TEXT_START")
+    logger.debug(raw_text)
+    logger.debug("RAW_PDF_TEXT_END")
         
     return {
         "blocks": blocks,

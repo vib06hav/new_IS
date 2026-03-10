@@ -11,7 +11,12 @@ from app.agents.cross_section_detector import detect_cross_sections
 from app.agents.timeline_builder import build_timeline
 from app.agents.integrity_analyzer import analyze_integrity
 from app.agents.assembler import assemble_canonical
-
+from app.projection.ros_projector import project_ros
+from app.agents.synthesis_agent import run_synthesis_agent
+from app.policy.guard import validate_synthesis_output
+from app.ros.assembler import assemble_ros_v1
+from app.canonical.version import CANONICAL_VERSION
+from datetime import datetime
 import logging
 logger = logging.getLogger(__name__)
 
@@ -29,10 +34,35 @@ def run_pipeline(application_id: str, pdf_path: str) -> Dict[str, Any]:
     if not layout_data.get("blocks") and layout_data.get("page_count", 0) == 0:
         raise ValueError(f"Critical Failure: Could not extract layout from {pdf_path}. {layout_data.get('error', '')}")
 
+    # Layout Normalization Pipeline Step
+    from app.utils.layout_normalizer import normalize_layout
+    layout_data["normalized_rows"] = normalize_layout(layout_data["blocks"])
+
     # Agent 2: Section Boundary Detection
     logger.debug("Agent invocation (agent_id: 2, agent_name: Section Boundary Detector Python Agent)")
     section_data = detect_sections(layout_data["blocks"])
     logger.debug(f"Agent completion (agent_id: 2, confidence_score: {section_data.get('confidence_score', 'N/A')})")
+
+    academic_blocks = []
+    test_blocks = []
+    essay_blocks = []
+    activity_blocks = []
+
+    for section in section_data.get("sections", []):
+        label = section.get("label", "").lower()
+        if "class" in label or "academic" in label or "education" in label or "degree" in label or "school" in label:
+            academic_blocks.extend(section.get("blocks", []))
+        if "test" in label or "jee" in label or "sat" in label or "act" in label or "examination" in label:
+            test_blocks.extend(section.get("blocks", []))
+        if "essay" in label:
+            essay_blocks.extend(section.get("blocks", []))
+        if "activit" in label or "leadership" in label or "role" in label or "co-curricular" in label or "extra-curricular" in label:
+            activity_blocks.extend(section.get("blocks", []))
+
+    academic_rows = normalize_layout(academic_blocks) if academic_blocks else layout_data["normalized_rows"]
+    test_rows = normalize_layout(test_blocks) if test_blocks else layout_data["normalized_rows"]
+    activity_rows = normalize_layout(activity_blocks) if activity_blocks else layout_data["normalized_rows"]
+    essay_blocks_to_pass = essay_blocks if essay_blocks else layout_data["blocks"]
 
     # Agent 3: Personal Information
     logger.debug("Agent invocation (agent_id: 3, agent_name: Personal Information Extractor Python Agent)")
@@ -41,22 +71,24 @@ def run_pipeline(application_id: str, pdf_path: str) -> Dict[str, Any]:
 
     # Agent 4: Academic Records
     logger.debug("Agent invocation (agent_id: 4, agent_name: Academic Records Extractor Python Agent)")
+    # Pass ALL blocks — the section detector misses some board/year/score blocks
+    # for 9th/10th/11th. The academic extractor's state machine ignores irrelevant rows.
     academic_data = extract_academic_records(layout_data["blocks"])
     logger.debug(f"Agent completion (agent_id: 4, confidence_score: {academic_data.get('confidence_score', 'N/A')})")
 
     # Agent 5: Standardized Tests
     logger.debug("Agent invocation (agent_id: 5, agent_name: Standardized Tests Extractor Python Agent)")
-    test_data = extract_test_records(layout_data["blocks"])
+    test_data = extract_test_records(test_rows)
     logger.debug(f"Agent completion (agent_id: 5, confidence_score: {test_data.get('confidence_score', 'N/A')})")
 
     # Agent 6: Essays
     logger.debug("Agent invocation (agent_id: 6, agent_name: Essays Extractor Python Agent)")
-    essay_data = extract_essays(layout_data["blocks"])
+    essay_data = extract_essays(essay_blocks_to_pass)
     logger.debug(f"Agent completion (agent_id: 6, confidence_score: {essay_data.get('confidence_score', 'N/A')})")
 
     # Agent 7: Activities
     logger.debug("Agent invocation (agent_id: 7, agent_name: Activities Extractor Python Agent)")
-    activity_data = extract_activities(layout_data["blocks"])
+    activity_data = extract_activities(activity_rows)
     logger.debug(f"Agent completion (agent_id: 7, confidence_score: {activity_data.get('confidence_score', 'N/A')})")
 
     # Agent 8: Cross-Section Entity Detection
@@ -106,4 +138,52 @@ def run_pipeline(application_id: str, pdf_path: str) -> Dict[str, Any]:
     agg_conf = canonical_data.get("extraction_confidence", {}).get("aggregate_confidence", "N/A")
     logger.debug(f"Agent completion (agent_id: 11, confidence_score: {agg_conf})")
 
-    return canonical_data
+    # Agent 0 / ROS Integration: Stage 1.5 Flow
+    logger.info(f"Stage 1.5 - Commencing ROS Projection (application_id: {application_id})")
+    
+    # Deterministic Projection (Pages 1-3)
+    page_1, page_2, page_3, annotated_canonical, entity_map = project_ros(canonical_data)
+    
+    try:
+        # Synthesis Integration (Agent 12)
+        synthesis_output_raw = run_synthesis_agent(annotated_canonical)
+        
+        # Validation Filter (Agent 13)
+        validation_result = validate_synthesis_output(synthesis_output_raw, entity_map, sanitize=True)
+        
+        # Determine success state
+        passed = validation_result.get("passed", False)
+        
+        if not passed:
+            logger.error(f"Agent 13 validation failed for {application_id}. Application marked failed. No second LLM call permitted.")
+            ros_document = None
+        else:
+            # ROS Assembly
+            validated_pages = validation_result.get("sanitized_output", synthesis_output_raw)
+            
+            report_meta = {
+                "application_number": application_id,
+                "generated_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "canonical_version": CANONICAL_VERSION,
+                "report_version": "ROS_v1"
+            }
+            
+            ros_document = assemble_ros_v1(
+                page_1=page_1,
+                page_2=page_2,
+                page_3=page_3,
+                llm_output=validated_pages,
+                report_metadata=report_meta
+            )
+            logger.info(f"ROS v1 Assembly complete (application_id: {application_id})")
+    except Exception as e:
+        logger.error(f"LLM Synthesis failed with exception: {str(e)}")
+        ros_document = None
+        validation_result = {"passed": False, "error": str(e)}
+
+    return {
+        "canonical_data": canonical_data,
+        "ros_v1": ros_document,
+        "validation_result": validation_result,
+        "confidence": agg_conf
+    }

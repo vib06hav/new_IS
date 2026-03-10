@@ -51,7 +51,7 @@ def generate_interview_prep(canonical_data: Dict[str, Any]) -> Dict[str, Any]:
             settings.LLM_ENDPOINT,
             json=payload,
             headers={"Content-Type": "application/json"},
-            timeout=60.0
+            timeout=180.0
         )
         response.raise_for_status()
         result_json = response.json()
@@ -68,6 +68,43 @@ def generate_interview_prep(canonical_data: Dict[str, Any]) -> Dict[str, Any]:
         
     except httpx._exceptions.HTTPError as e:
         # Single Call Rule - no retries. Just bubble up or return empty structure.
+        logger.error(f"LLM timeout or failure: {str(e)}")
+        raise RuntimeError(f"LLM Synthesis Failed: {str(e)}")
+    except json.JSONDecodeError:
+        logger.error("LLM timeout or failure (JSON Decode Error).")
+        raise RuntimeError("LLM returned malformed JSON.")
+
+def generate_synthesis(prompt: str) -> Dict[str, Any]:
+    """
+    Synchronous LLM call over HTTP.
+    Strictly accepts a fully baked prompt, returns JSON dict.
+    No retries, no orchestration frameworks.
+    """
+    payload = {
+        "model": settings.LLM_MODEL_NAME,
+        "prompt": prompt,
+        "stream": False,
+        "format": "json",
+        "options": {
+            "temperature": 0.0
+        }
+    }
+
+    try:
+        response = httpx.post(
+            settings.LLM_ENDPOINT,
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=180.0
+        )
+        response.raise_for_status()
+        result_json = response.json()
+        
+        content_str = result_json.get("response", "{}")
+        content = json.loads(content_str)
+        return content
+        
+    except httpx._exceptions.HTTPError as e:
         logger.error(f"LLM timeout or failure: {str(e)}")
         raise RuntimeError(f"LLM Synthesis Failed: {str(e)}")
     except json.JSONDecodeError:

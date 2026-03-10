@@ -1,13 +1,35 @@
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
+from uuid import UUID
 
 from app.canonical.version import CANONICAL_VERSION
+
+# --- Family Background ---
+class FamilyMember(BaseModel):
+    name: Optional[str] = None
+    education: Optional[str] = None
+    occupation: Optional[str] = None
+    organization: Optional[str] = None
+
+class FamilyBackground(BaseModel):
+    father: FamilyMember
+    mother: FamilyMember
+
+# --- Schooling History ---
+class SchoolingHistoryEntry(BaseModel):
+    entry_id: UUID
+    level: str
+    school_name: Optional[str] = None
+    board_name: Optional[str] = None
+    location: Optional[str] = None
+    confidence_score: float
 
 # --- Identifiers ---
 class Identifiers(BaseModel):
     application_id: str
     full_name: Optional[str] = None
     date_of_birth: Optional[str] = None
+    family_background: Optional[FamilyBackground] = None
     declared_preferences: Dict[str, Any] = Field(default_factory=dict)
     demographic_flags: Dict[str, Any] = Field(default_factory=dict)
 
@@ -28,6 +50,7 @@ class SubjectEntry(BaseModel):
 class AcademicEntry(BaseModel):
     entry_id: str
     academic_level: str
+    school_name: Optional[str] = None
     board_name: Optional[str] = None
     academic_year: Optional[str] = None
     marking_scheme_raw: Optional[str] = None
@@ -69,6 +92,7 @@ class EssayEntry(BaseModel):
 # --- Activity Entries ---
 class ActivityEntry(BaseModel):
     entry_id: str
+    activity_type: str
     category: Optional[str] = None
     activity_name: Optional[str] = None
     level: Optional[str] = None
@@ -124,6 +148,7 @@ class CanonicalData(BaseModel):
     identifiers: Identifiers
     profile_meta: ProfileMeta
     academic_entries: List[AcademicEntry] = Field(default_factory=list)
+    schooling_history: List[SchoolingHistoryEntry] = Field(default_factory=list)
     test_entries: List[TestEntry] = Field(default_factory=list)
     essay_entries: List[EssayEntry] = Field(default_factory=list)
     activity_entries: List[ActivityEntry] = Field(default_factory=list)

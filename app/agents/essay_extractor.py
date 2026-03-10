@@ -3,51 +3,50 @@ import uuid
 
 def extract_essays(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Extract essays as a collection. Word count, character count.
+    Extract essays as a collection from a set of layout blocks using heuristic chunking.
     """
     entries = []
     confidence = 0.90
     
-    current_entry = None
+    current_identifier = "Essay"
+    current_text = ""
     
     for block in section_blocks:
-        text = block.get("text", "")
-        lines = text.split('\n')
+        text = block.get("text", "").strip()
+        if not text or text.lower() == "essays": continue
         
-        # New essay heuristic: Prompt:, Q1:, Essay 1:, etc.
-        for line in lines:
-            if "prompt:" in line.lower() or "question:" in line.lower() or "essay 1:" in line.lower() or "essay 2:" in line.lower():
-                if current_entry:
-                    # Finalize current
-                    text_content = current_entry["raw_text"]
-                    words = text_content.split()
-                    current_entry["word_count"] = len(words)
-                    current_entry["character_count"] = len(text_content)
-                    entries.append(current_entry)
-                
-                current_entry = {
+        # If block looks like a question or instruction
+        if text.endswith("?") or 10 < len(text.split()) < 40 or "prompt:" in text.lower():
+            if current_text and len(current_text.split()) > 30:
+                entries.append({
                     "entry_id": str(uuid.uuid4()),
-                    "essay_identifier": line[:100], # First 100 chars as identifier
-                    "raw_text": "",
-                    "word_count": 0,
-                    "character_count": 0,
+                    "essay_identifier": current_identifier[:100],
+                    "raw_text": current_text,
+                    "word_count": len(current_text.split()),
+                    "character_count": len(current_text),
                     "placeholder_flag": False,
                     "duplication_ratio": 0.0,
-                    "short_response_flag": False,
+                    "short_response_flag": len(current_text.split()) < 50,
                     "confidence_score": confidence
-                }
-            elif current_entry:
-                current_entry["raw_text"] += line + "\n"
-                
-    if current_entry:
-        text_content = current_entry["raw_text"]
-        words = text_content.split()
-        current_entry["word_count"] = len(words)
-        current_entry["character_count"] = len(text_content)
-        current_entry["short_response_flag"] = len(words) < 50
-        current_entry["placeholder_flag"] = "todo" in text_content.lower() or len(text_content) < 10
-        entries.append(current_entry)
-        
+                })
+                current_text = ""
+            current_identifier = text
+        else:
+            current_text += text + "\n"
+            
+    if current_text and len(current_text.split()) > 20:
+        entries.append({
+            "entry_id": str(uuid.uuid4()),
+            "essay_identifier": current_identifier[:100],
+            "raw_text": current_text.strip(),
+            "word_count": len(current_text.split()),
+            "character_count": len(current_text),
+            "placeholder_flag": False,
+            "duplication_ratio": 0.0,
+            "short_response_flag": len(current_text.split()) < 50,
+            "confidence_score": confidence
+        })
+
     return {
         "essay_entries": entries,
         "confidence_score": confidence

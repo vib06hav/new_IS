@@ -3,14 +3,25 @@ from typing import List, Dict, Any
 
 # Predefined known section headers for fuzzy matching
 KNOWN_SECTIONS = [
+    "Personal Details",
     "Personal Information",
     "Academics",
     "Academic Records",
+    "Class 9th / Equivalent",
+    "Class 10th / Equivalent",
+    "Class 11th / Equivalent",
+    "Class 12th Details",
+    "Standardized Test Scores",
     "Standardized Tests",
+    "Additional Test Scores",
     "Essays",
+    "Extra- Curricular Activities (Outside the Classroom)",
     "Extracurricular Activities",
+    "Co- Curricular Activities (Tinkering, Research and More)",
+    "Leadership Role at School",
     "Activities",
     "Awards",
+    "Declaration"
 ]
 
 def detect_sections(blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -36,7 +47,7 @@ def detect_sections(blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
         if len(first_line) < 50:
             if any(first_line.lower() == known.lower() for known in KNOWN_SECTIONS):
                 is_header = True
-            elif first_line.isupper() and len(first_line.split()) < 5:
+            elif first_line.isupper() and 2 < len(first_line.split()) < 6 and first_line not in ["YES", "NO", "NA"]:
                 # Potential unknown section
                 is_header = True
         

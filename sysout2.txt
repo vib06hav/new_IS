@@ -1,0 +1,159 @@
+time="2026-03-04T22:40:51+05:30" level=warning msg="C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+app.config - INFO - Configuration loaded. APP_ENV=development, LOG_LEVEL=DEBUG
+app.config - INFO - DATABASE_URL: ***[REDACTED]***
+app.config - INFO - JWT_SECRET: ***[REDACTED]***
+app.config - INFO - JWT_ALGORITHM: HS256
+app.config - INFO - LLM_ENDPOINT: http://ollama:11434/api/generate
+app.config - INFO - LLM_API_KEY: ***[REDACTED]***
+__main__ - INFO - Replaying Application ID: c6b688cb-776c-4e0a-9fde-7221f2dfd1bd
+__main__ - INFO - ROS Projection successful.
+app.agents.synthesis_agent - DEBUG - Synthesis prompt length (chars): 13607
+app.agents.synthesis_agent - INFO - Executing Synthesis Agent (Agent 12) LLM generation.
+httpcore.connection - DEBUG - connect_tcp.started host='ollama' port=11434 local_address=None timeout=60.0 socket_options=None
+httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x77a9ecd59090>
+httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - send_request_headers.complete
+httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - send_request_body.complete
+httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Wed, 04 Mar 2026 17:11:48 GMT'), (b'Transfer-Encoding', b'chunked')])
+httpx - INFO - HTTP Request: POST http://ollama:11434/api/generate "HTTP/1.1 200 OK"
+httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+httpcore.http11 - DEBUG - receive_response_body.complete
+httpcore.http11 - DEBUG - response_closed.started
+httpcore.http11 - DEBUG - response_closed.complete
+httpcore.connection - DEBUG - close.started
+httpcore.connection - DEBUG - close.complete
+app.agents.synthesis_agent - DEBUG - Raw LLM synthesis output: {
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "Academic Background",
+      "description": "The applicant's academic history and achievements.",
+      "referenced_entity_ids": [
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004",
+        "ACA-005",
+        "ACA-006",
+        "ACA-007",
+        "ACA-008",
+        "ACA-009",
+        "ACA-010",
+        "ACA-011",
+        "ACA-012",
+        "ACA-013",
+        "ACA-014",
+        "ACA-015",
+        "ACA-016",
+        "ACA-017",
+        "ACA-018",
+        "ACA-019",
+        "ACA-020",
+        "ACA-021",
+        "ACA-022",
+        "ACA-023",
+        "ACA-024",
+        "ACA-025",
+        "ACA-026",
+        "ACA-027",
+        "ACA-028",
+        "ACA-029",
+        "ACA-030",
+        "ACA-031"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "Schooling History",
+      "description": "The applicant's educational journey and experiences.",
+      "referenced_entity_ids": [
+        ""
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "title": "Test Entries",
+      "description": "The applicant's performance in various tests and assessments.",
+      "referenced_entity_ids": [
+        "TEST-001"
+      ]
+    },
+    {
+      "theme_id": "THEME-004",
+      "title": "Essay Entries",
+      "description": "The applicant's writing skills and perspectives.",
+      "referenced_entity_ids": []
+    },
+    {
+      "theme_id": "THEME-005",
+      "title": "Activity Entries",
+      "description": "The applicant's extracurricular activities and interests.",
+      "referenced_entity_ids": []
+    },
+    {
+      "theme_id": "THEME-006",
+      "title": "Family Background",
+      "description": "The applicant's family dynamics and upbringing.",
+      "referenced_entity_ids": []
+    }
+  ],
+  "question_groups": [
+    {
+      "theme_id": "THEME-001",
+      "group_title": "Academic Achievements",
+      "questions": [
+        "What are the applicant's academic achievements?",
+        "How do these achievements reflect their academic background?"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "group_title": "Schooling Experiences",
+      "questions": [
+        "What were the applicant's favorite subjects in school?",
+        "How did they handle challenges and difficulties during their schooling years?"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "group_title": "Test Performance",
+      "questions": [
+        "What are the applicant's strengths and weaknesses in various tests?",
+        "How do these test results reflect their academic abilities?"
+      ]
+    },
+    {
+      "theme_id": "THEME-004",
+      "group_title": "Writing Skills",
+      "questions": [
+        "What are the applicant's writing styles and perspectives?",
+        "How do they approach essay writing tasks?"
+      ]
+    },
+    {
+      "theme_id": "THEME-005",
+      "group_title": "Extracurricular Activities",
+      "questions": [
+        "What extracurricular activities has the applicant been involved in?",
+        "How have these activities shaped their interests and passions?"
+      ]
+    },
+    {
+      "theme_id": "THEME-006",
+      "group_title": "Family Dynamics",
+      "questions": [
+        "What is the applicant's family structure like?",
+        "How do they perceive their family dynamics and upbringing?"
+      ]
+    }
+  ]
+}
+app.policy.guard - DEBUG - Starting Agent 13 validation filter.
+app.policy.guard - DEBUG - Using entity_map with 32 total references.
+app.policy.guard - DEBUG - Validation failed with 3 violations.
+app.policy.guard - DEBUG - Violation Trigger: {'violation_id': '1d079fc7-d32e-4d55-9367-200a70c60520', 'field': 'themes[1].referenced_entity_ids', 'type': 'invented_entity_id', 'context': 'Invented entity ID: '}
+app.policy.guard - DEBUG - Violation Trigger: {'violation_id': '9b4706a7-d9e4-49ca-acb9-52531a19ab57', 'phrase_matched': 'strength', 'context': "What are the applicant's strengths and weaknesses in various tests?", 'field': 'question_groups[2].questions[0]', 'type': 'prohibited_language'}
+app.policy.guard - DEBUG - Violation Trigger: {'violation_id': '1b4acbf8-c495-4e57-8e11-50fdbdc6b9dd', 'phrase_matched': 'weakness', 'context': "What are the applicant's strengths and weaknesses in various tests?", 'field': 'question_groups[2].questions[0]', 'type': 'prohibited_language'}
+__main__ - ERROR - Validation FAILED (Expected!)

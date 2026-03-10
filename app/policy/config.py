@@ -11,6 +11,18 @@ class PolicyConfig:
     
     # Categories of prohibited language constraints per the contract
     EVALUATIVE_PHRASES = [
+        "strength",
+        "weakness",
+        "outstanding",
+        "deficiency",
+        "below average",
+        "underperformance",
+        "high potential",
+        "top candidate",
+        "risk factor",
+        "admit",
+        "reject",
+        "likelihood",
         "strong academic record",
         "weak extracurricular profile",
         "top-performing student",
@@ -25,7 +37,6 @@ class PolicyConfig:
         "poor fit",
         "impressive",
         "lacking",
-        "below average",
         "above average"
     ]
     

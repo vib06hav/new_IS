@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 def run_integration_test():
     # Setup test DB
-    engine = create_engine('postgresql://postgres:newpassword@localhost/interview_standardiser', connect_args={'options': '-c timezone=utc'})
+    engine = create_engine('postgresql://postgres:postgres_password@db/ag_db', connect_args={'options': '-c timezone=utc'})
     Base.metadata.create_all(bind=engine)
     Session = sessionmaker(bind=engine)
     db = Session()
@@ -28,7 +28,7 @@ def run_integration_test():
     
     # Use TestClient to login
     client = TestClient(app, raise_server_exceptions=True)
-    resp = client.post('/auth/login', json={'email': email, 'password': 'password123'})
+    resp = client.post('/auth/login', data={'username': email, 'password': 'password123'})
     token = resp.json()['access_token']
     
     # Create a dummy PDF
@@ -48,13 +48,16 @@ def run_integration_test():
         }
         
         with patch('app.agents.orchestrator.extract_layout_blocks', return_value=mock_blocks):
-            # Also mock HTTPX so we don't actually hit an LLM endpoint during local test
+            # Mock the LLM to avoid real AI generation time
             mock_llm_response = {
-                "snapshot": "Integration snapshot test.",
-                "discussion_focus_areas": [],
-                "suggested_questions": []
+                "themes": [
+                    {"theme_id": "THEME-001", "title": "Mock", "description": "Mock", "referenced_entity_ids": []}
+                ],
+                "question_groups": [
+                    {"theme_id": "THEME-001", "group_title": "Mock Group", "questions": ["Mock question?"]}
+                ]
             }
-            with patch('app.api.applications.generate_interview_prep', return_value=mock_llm_response):
+            with patch('app.agents.synthesis_agent.generate_synthesis', return_value=mock_llm_response):
                 with open(pdf_path, 'rb') as f:
                     upload_resp = client.post('/applications/upload', files={'file': ('test.pdf', f, 'application/pdf')}, headers={'Authorization': f'Bearer {token}'})
             
