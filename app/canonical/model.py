@@ -8,8 +8,9 @@ from app.canonical.version import CANONICAL_VERSION
 class FamilyMember(BaseModel):
     name: Optional[str] = None
     education: Optional[str] = None
-    occupation: Optional[str] = None
+    field_of_employment: Optional[str] = None
     organization: Optional[str] = None
+    designation: Optional[str] = None
 
 class FamilyBackground(BaseModel):
     father: FamilyMember

@@ -10,9 +10,11 @@ def normalize_layout(blocks: List[Dict[str, Any]]) -> List[List[str]]:
     if not blocks:
         return []
 
-    # Group by page
+    # Group by page, skipping blocks without bbox
     pages_blocks = {}
     for b in blocks:
+        if "bbox" not in b:
+            continue
         pages_blocks.setdefault(b["page"], []).append(b)
 
     all_rows = []

@@ -1,0 +1,108 @@
+{
+  "personal_details": {
+    "name": "Aarav Jain",
+    "mobile_number": "9829047153",
+    "email": "aarav.jain18@gmail.com",
+    "date_of_birth": "2007-06-14",
+    "age_as_on_31_july_2025": 18,
+    "blood_group": "B+",
+    "gender": "Male",
+    "nationality": "Indian",
+    "category": "General",
+    "punjab_domicile": "No",
+    "proof_of_identity": "Aadhaar Card",
+    "abc_nad_id": "ABC572194836",
+    "pan_card": "AJNPJ4296R",
+    "aadhaar_card": "6283 4107 9921"
+  },
+  "parent_details": {
+    "father": {
+      "name": "Sandeep Jain",
+      "date_of_birth": "1974-03-11",
+      "mobile_number": "9829011142",
+      "email": "sandeep@jaintexexports.com",
+      "field_of_employment": "Textile Export Business",
+      "nationality": "Indian",
+      "highest_degree": "B.Com",
+      "educational_institute_last_attended": "University of Rajasthan",
+      "organization": "Jain Tex Exports",
+      "designation": "Founder and Managing Director"
+    },
+    "mother": {
+      "name": "Pooja Jain",
+      "date_of_birth": "1978-09-07",
+      "mobile_number": "9829065178",
+      "email": "pooja.jain.design@gmail.com",
+      "field_of_employment": "Interior Design",
+      "nationality": "Indian",
+      "highest_degree": "Bachelor of Interior Design",
+      "educational_institute_last_attended": "Pearl Academy Jaipur",
+      "organization": "Studio P Interiors",
+      "designation": "Principal Designer"
+    }
+  },
+  "siblings": {
+    "has_sibling": true,
+    "details": [
+      {
+        "first_name": "Rohan",
+        "last_name": "Jain",
+        "age": 21,
+        "high_school": "Jayshree Periwal International School",
+        "undergraduate_institute": "Narsee Monjee Institute of Management Studies",
+        "postgraduate_institute": null,
+        "current_employer": null
+      }
+    ]
+  },
+  "address_details": {
+    "permanent_same_as_communication": true,
+    "communication_address": {
+      "address": "C-214 Vaishali Nagar",
+      "town_city": "Jaipur",
+      "district": "Jaipur",
+      "state": "Rajasthan",
+      "country": "India",
+      "pin_code": "302021"
+    }
+  },
+  "education": {
+    "class_9": {
+      "country": "India",
+      "state": "Rajasthan",
+      "district": "Jaipur",
+      "city": "Jaipur",
+      "school_name": "Jayshree Periwal International School",
+      "board": "CBSE",
+      "year_of_passing": 2022
+    },
+    "class_10": {
+      "country": "India",
+      "state": "Rajasthan",
+      "district": "Jaipur",
+      "city": "Jaipur",
+      "school_name": "Jayshree Periwal International School",
+      "board": "CBSE",
+      "year_of_passing": 2023
+    },
+    "class_11": {
+      "country": "India",
+      "state": "Rajasthan",
+      "district": "Jaipur",
+      "city": "Jaipur",
+      "school_name": "Jayshree Periwal International School",
+      "board": "CBSE",
+      "year_of_passing": 2024
+    },
+    "class_12": {
+      "country": "India",
+      "state": "Rajasthan",
+      "district": "Jaipur",
+      "city": "Jaipur",
+      "school_name": "Jayshree Periwal International School",
+      "board": "CBSE",
+      "year_of_passing": 2025,
+      "status": "Appearing"
+    }
+  }
+}

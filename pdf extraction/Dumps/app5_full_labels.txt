@@ -1,0 +1,368 @@
+
+--- Page 0 ---
+Y= 152.4 X=  34.5 Personal Details
+Y= 174.2 X=  33.4 Name
+Y= 195.0 X=  33.4 Mobile No.
+Y= 215.7 X=  33.4 Email Address
+Y= 236.5 X=  33.4 Date of Birth
+Y= 257.2 X=  33.4 Age as on 31st July 2025
+Y= 278.0 X=  33.4 Blood Group
+Y= 298.7 X=  33.4 Gender
+Y= 319.4 X=  33.4 Nationality
+Y= 340.2 X=  33.4 Category
+Y= 385.1 X=  33.4 Do you hold a Punjab Domicile status?
+Y= 405.9 X=  33.4 Proof of Identity
+Y= 426.6 X=  33.4 Upload your punjab domicile certiﬁcate
+Y= 447.4 X=  33.4 ABC/NAD ID Number
+Y= 468.1 X=  33.4 Upload your PAN Card
+Y= 488.9 X=  33.4 Upload your Aadhaar Card
+Y= 509.6 X=  33.4 Upload your Voter ID Card
+Y= 530.3 X=  33.4 Upload your Driving License
+Y= 551.1 X=  33.4 Proof of Identity
+Y= 637.0 X=  34.5 Languages Known
+Y= 658.9 X= 141.0 Language Name
+Y= 658.9 X= 248.6 Speak
+Y= 658.9 X= 356.2 Read
+Y= 658.9 X= 463.8 Write
+Y= 679.6 X=  33.4 1.
+Y= 679.6 X= 141.0 English
+Y= 679.6 X= 248.6 Yes
+Y= 679.6 X= 356.2 Yes
+Y= 679.6 X= 463.8 Yes
+Y= 705.8 X=  34.5 Parent Details
+Y= 733.1 X=  34.5 Please provide the details for at least one of the following. : ​
+Y= 733.1 X= 289.2 ​
+Y= 760.7 X=  33.4 Father Details
+Y= 781.5 X=  33.4 Name
+Y= 802.2 X=  33.4 Date of Birth
+Y= 823.0 X=  33.4 Mobile Number
+
+--- Page 1 ---
+Y=  35.6 X=  33.4 Email Address
+Y=  56.3 X=  33.4 Field of Employment
+Y=  77.0 X=  33.4 Nationality
+Y=  97.8 X=  33.4 Highest Degree Attained
+Y= 118.5 X=  33.4 Educational Institute (Last Attended)
+Y= 139.3 X=  33.4 Organization
+Y= 160.0 X=  33.4 Designation
+Y= 186.6 X=  33.4 Mother Details
+Y= 207.3 X=  33.4 Name
+Y= 228.0 X=  33.4 Date of Birth
+Y= 248.8 X=  33.4 Mobile Number
+Y= 269.5 X=  33.4 Email Address
+Y= 290.3 X=  33.4 Field of Employment
+Y= 311.0 X=  33.4 Nationality
+Y= 331.7 X=  33.4 Highest Degree Attained
+Y= 352.5 X=  33.4 Educational Institute (Last Attended)
+Y= 373.2 X=  33.4 Organization -
+Y= 394.0 X=  33.4 Designation-
+Y= 440.1 X=  34.5 Sibling Details
+Y= 461.9 X=  33.4 Do you have a sibling ? : Yes
+Y= 508.4 X= 369.6 Name of Under Graduate
+Y= 514.0 X= 302.3 Name of High School Attended
+Y= 514.0 X= 436.9 Name of Post Graduate Institute
+Y= 514.0 X= 504.2 Name of Current Employer
+Y= 525.2 X= 100.6 First Name
+Y= 525.2 X= 167.9 Last Name
+Y= 525.2 X= 235.1 Age
+Y= 562.8 X=  33.4 1.
+Y= 590.4 X=  34.5 Address Details:
+Y= 612.3 X=  33.4 Is permanent address same as communication address?: Yes
+Y= 637.3 X=  33.4 Communication Address
+Y= 658.1 X=  33.4 Address
+Y= 678.8 X=  33.4 Town/City
+Y= 699.6 X=  33.4 District
+Y= 720.3 X=  33.4 State
+Y= 741.0 X=  33.4 Country Name
+Y= 761.8 X=  33.4 Pin Code
+Y= 807.2 X=  34.5 Class 9th / Equivalent
+
+--- Page 2 ---
+Y=  34.9 X=  33.4 Country: India
+Y=  34.9 X= 155.7 State
+Y=  34.9 X= 287.4 District:
+Y=  34.9 X= 440.3 Cit
+Y=  76.0 X= 298.2 Year of Passing
+Y=  76.0 X= 450.2 Obtained Percentage/CGPA
+Y=  80.9 X=  65.8 School Name
+Y=  80.9 X= 158.9 Board
+Y=  80.9 X= 365.9 Marking Scheme
+Y= 105.2 X= 158.9 CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)
+Y= 110.2 X=  33.4 9th
+Y= 110.2 X= 298.2 2022
+Y= 110.2 X= 365.9 Percentage
+Y= 110.2 X= 450.2 98.18
+Y= 137.9 X=  33.1 Upload Your Transcript: Yes
+Y= 137.9 X= 302.1 Upload Conversion Scale (In Case Of Letter Grades): NO
+Y= 160.4 X=  34.5 Subject Wise Marks/Grades
+Y= 180.9 X=  87.2 Subject
+Y= 180.9 X= 248.4 Maximum Marks/Grade
+Y= 180.9 X= 409.7 Obtained Marks/Grade
+Y= 200.3 X=  33.4 1.
+Y= 200.3 X=  87.2 Mathematics
+Y= 200.3 X= 248.4 100
+Y= 200.3 X= 409.7 99.6
+Y= 219.7 X=  33.4 2.
+Y= 219.7 X=  87.2 English
+Y= 219.7 X= 248.4 100
+Y= 219.7 X= 409.7 99.2
+Y= 239.1 X=  33.4 3.
+Y= 239.1 X=  87.2 Social Science
+Y= 239.1 X= 248.4 100
+Y= 239.1 X= 409.7 98.7
+Y= 258.5 X=  33.4 4.
+Y= 258.5 X=  87.2 Science
+Y= 258.5 X= 248.4 100
+Y= 258.5 X= 409.7 96.8
+Y= 277.9 X=  33.4 5.
+Y= 277.9 X=  87.2 Sanskrit
+Y= 277.9 X= 248.4 100
+Y= 277.9 X= 409.7 96.6
+Y= 302.7 X=  34.5 Class 10th / Equivalent
+Y= 329.0 X=  33.4 Country: India
+Y= 329.0 X= 161.4 State: India
+Y= 329.0 X= 273.8 District
+Y= 329.0 X= 434.3 City:
+Y= 367.8 X=  33.1 Upload Your Transcript: Yes
+Y= 367.8 X= 302.1 Upload Conversion Scale (In Case Of Letter Grades): NO
+Y= 389.1 X= 481.7 Obtained Percentage/CGPA
+Y= 394.0 X= 123.0 Institute Name
+Y= 394.0 X= 212.7 Board
+Y= 394.0 X= 302.4 Year of Passing
+Y= 394.0 X= 392.1 Marking Scheme
+Y= 418.4 X= 212.7 CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)
+Y= 428.2 X=  33.4 10th
+Y= 428.2 X= 302.4 2023
+Y= 428.2 X= 392.1 Percentage
+Y= 428.2 X= 481.7 97.4
+Y= 462.9 X=  34.5 Subject Wise Marks/Grades
+Y= 483.4 X=  87.2 Subject
+Y= 483.4 X= 248.4 Maximum Marks/Grade
+Y= 483.4 X= 409.7 Obtained Marks/Grade
+Y= 502.8 X=  33.4 1.
+Y= 502.8 X=  87.2 Mathematics
+Y= 502.8 X= 248.4 100
+Y= 502.8 X= 409.7 ​97​
+Y= 522.2 X=  33.4 2.
+Y= 522.2 X=  87.2 Science
+Y= 522.2 X= 248.4 100
+Y= 522.2 X= 409.7 97
+Y= 541.6 X=  33.4 3.
+Y= 541.6 X=  87.2 Social Science
+Y= 541.6 X= 248.4 100
+Y= 541.6 X= 409.7 100
+Y= 561.0 X=  33.4 4.
+Y= 561.0 X=  87.2 English
+Y= 561.0 X= 248.4 100
+Y= 561.0 X= 409.7 96
+Y= 580.4 X=  33.4 5.
+Y= 580.4 X=  87.2 Sanskrit
+Y= 580.4 X= 248.4 100
+Y= 580.4 X= 409.7 97
+Y= 605.6 X=  33.4 6.
+Y= 605.6 X=  87.2 Elements of Business
+Y= 605.6 X= 248.4 100
+Y= 605.6 X= 409.7 98
+Y= 630.8 X=  33.4 7.
+Y= 630.8 X=  87.2 Introduction to Financial Markets
+Y= 630.8 X= 248.4 100
+Y= 630.8 X= 409.7 97
+Y= 657.1 X=  34.5 Class 11th / Equivalent
+Y= 683.4 X=  33.4 Country: India
+Y= 683.4 X= 159.0 State:
+Y= 683.4 X= 289.5 District:
+Y= 683.4 X= 441.5 City
+Y= 721.9 X= 212.1 Upload Conversion Scale (In Case Of Letter Grades): NO
+Y= 726.6 X=  32.9 Upload Your Transcript: Yes
+Y= 726.6 X= 391.4 11th Mathematics Course:
+Y= 745.3 X=  32.9 Select your subject category for class : Mathematics and Physics
+Y= 765.9 X= 481.7 Obtained Percentage/CGPA
+Y= 770.8 X= 123.0 School Name
+Y= 770.8 X= 212.7 Board
+Y= 770.8 X= 302.4 Year of Passing
+Y= 770.8 X= 392.1 Marking Scheme
+Y= 795.1 X= 212.7 CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)
+Y= 805.0 X=  33.4 11th
+Y= 805.0 X= 302.4 2024
+Y= 805.0 X= 392.1 ​Percentage​
+Y= 805.0 X= 481.7 ​
+Y= 805.0 X= 481.7 ​
+Y= 805.0 X= 481.7 ​89.2​
+Y= 805.0 X= 498.2 ​
+Y= 805.0 X= 498.2 ​
+
+--- Page 3 ---
+Y=  36.0 X=  34.5 Subject Wise Marks/Grades
+Y=  56.5 X=  87.2 Subject
+Y=  56.5 X= 248.4 Maximum Marks/Grade
+Y=  56.5 X= 409.7 Obtained Marks/Grade
+Y=  75.9 X=  33.4 1.
+Y=  75.9 X=  87.2 Mathematics
+Y=  75.9 X= 248.4 100
+Y=  75.9 X= 409.7 90.6
+Y=  95.3 X=  33.4 2.
+Y=  95.3 X=  87.2 Physics
+Y=  95.3 X= 248.4 100
+Y=  95.3 X= 409.7 95.1
+Y= 114.7 X=  33.4 3.
+Y= 114.7 X=  87.2 English
+Y= 114.7 X= 248.4 100
+Y= 114.7 X= 409.7 92.8
+Y= 134.1 X=  33.4 4.
+Y= 134.1 X=  87.2 Biology
+Y= 134.1 X= 248.4 100
+Y= 134.1 X= 409.7 74.9
+Y= 153.5 X=  33.4 5.
+Y= 153.5 X=  87.2 Chemistry
+Y= 153.5 X= 248.4 100
+Y= 153.5 X= 409.7 92.8
+Y= 179.8 X=  34.5 Class 12th Details
+Y= 206.1 X=  33.4 Country: India
+Y= 206.1 X= 159.0 State
+Y= 206.1 X= 289.5 District
+Y= 206.1 X= 441.5 City:
+Y= 244.9 X=  33.1 Upload Your Transcript: Yes
+Y= 244.9 X= 302.2 Upload Conversion Scale (In Case Of Letter Grades): NO
+Y= 259.5 X=  33.1 Select your subject category for class 12:​Mathematics and Physics
+Y= 264.5 X= 302.2 12th Mathematics Course:
+Y= 311.8 X= 432.7 Obtained Percentage/CGP A
+Y= 316.5 X= 240.8 Year of Passing
+Y= 316.5 X= 368.8 Marking Scheme
+Y= 316.5 X= 506.8 Predicted Marks/Grades
+Y= 321.2 X=  97.1 School Name
+Y= 321.2 X= 161.1 Board
+Y= 321.2 X= 304.8 Result Status
+Y= 349.0 X= 161.1 CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)
+Y= 358.4 X=  33.2 12th
+Y= 358.4 X= 240.8 2025
+Y= 358.4 X= 304.8 Appearing
+Y= 358.4 X= 368.8 Percentage
+Y= 358.4 X= 506.8 ​98.6​
+Y= 393.3 X=  34.5 Predicted Marks/Grades
+Y= 413.8 X= 167.9 Subject
+Y= 413.8 X= 302.4 Maximum Marks/Grade
+Y= 413.8 X= 436.9 Predicted Marks/Grade
+Y= 433.2 X=  33.4 1.
+Y= 433.2 X= 167.9 Mathematics
+Y= 433.2 X= 302.4 100
+Y= 433.2 X= 436.9 99
+Y= 452.6 X=  33.4 2.
+Y= 452.6 X= 167.9 Physics
+Y= 452.6 X= 302.4 100
+Y= 452.6 X= 436.9 100
+Y= 472.0 X=  33.4 3.
+Y= 472.0 X= 167.9 Biology
+Y= 472.0 X= 302.4 100
+Y= 472.0 X= 436.9 99
+Y= 491.4 X=  33.4 4.
+Y= 491.4 X= 167.9 Chemistry
+Y= 491.4 X= 302.4 100
+Y= 491.4 X= 436.9 97
+Y= 510.8 X=  33.4 5.
+Y= 510.8 X= 167.9 English
+Y= 510.8 X= 302.4 100
+Y= 510.8 X= 436.9 98
+Y= 536.0 X=  33.4 Have you taken any gap after class 12th?
+Y= 536.0 X= 346.0 No
+Y= 562.3 X=  34.5 Standardized Test Scores
+Y= 582.8 X=  33.4 Please select the standardized tests which you may have given and share your results with us.
+Y= 587.8 X= 418.0 Joint Entrance Examination (JEE) Mains
+Y= 617.9 X=  33.4 Please select the option that is applicable to you with respect to the jee main examination
+Y= 617.9 X= 457.1 Attempted the examination.
+Y= 641.6 X=  32.8 Joint Entrance Examination (JEE) Main Details
+Y= 656.4 X= 521.4 Common Rank/Percent ile
+Y= 660.0 X= 325.6 Physics Percentile
+Y= 660.0 X= 375.0 Maths Percentile
+Y= 660.0 X= 425.1 Chemistry Percentile
+Y= 663.5 X= 225.4 Test Date
+Y= 663.5 X= 276.6 Roll Number
+Y= 663.5 X= 473.1 Total Score
+Y= 684.6 X=  32.0 JEE Mains
+Y= 684.6 X= 325.6 99.45
+Y= 684.6 X= 375.0 99.71
+Y= 684.6 X= 425.1 99.17
+Y= 684.6 X= 473.1 99.74
+Y= 698.5 X=  32.0 Upload Your JEE Mains Score Card : Yes
+Y= 718.9 X=  33.4 Did you qualify for JEE Advanced?
+Y= 718.9 X= 410.9 Awaited Result
+Y= 745.2 X=  34.5 Essays
+Y= 787.5 X=  33.4 What excites you about a career in engineering/technology? Why do you think your abilities and skill
+
+--- Page 4 ---
+Y=  34.9 X=  33.4 On 25th February 2017, I watched Marvel Studios' Iron Man for the ﬁrst time. Witnessing Jarvis, Tony
+Y= 281.2 X=  33.4 Share a time when you contributed to a project or activity that positively aﬀected your school or co
+Y= 310.5 X=  33.4 On 25th February 2017, I watched Marvel Studios' Iron Man for the ﬁrst time. Witnessing Jarvis, Tony
+Y= 562.6 X=  33.4 Is there anything else which you would like to share with us which would help us understand you bett
+Y= 567.5 X= 302.6 No
+Y= 597.7 X=  33.4 Description
+Y= 633.5 X=  34.5 Extra- Curricular Activities (Outside the Classroom)
+Y= 654.0 X= 463.8 Positions of responsibility/ achievement
+Y= 659.0 X= 248.5 Highest level of participation
+Y= 659.0 X= 356.2 Number of years of participation
+Y= 663.9 X= 140.9 Activity
+Y= 693.2 X=  33.4 1.
+Y= 693.2 X= 140.9 Kaizen OC Head
+Y= 693.2 X= 248.5 Intra School
+Y= 693.2 X= 356.2 1
+Y= 718.3 X=  33.4 2.
+Y= 718.3 X= 141.0 Web Developing Intern
+Y= 718.3 X= 248.7 National
+Y= 718.3 X= 356.3 1
+Y= 743.5 X=  33.4 3.
+Y= 743.5 X= 141.0 Digital Marketing Intern
+Y= 743.5 X= 248.7 International
+Y= 743.5 X= 356.3 1
+Y= 769.8 X=  34.5 Co- Curricular Activities (Tinkering, Research and More)
+Y= 790.4 X= 463.8 Positions of responsibility/ achievement
+Y= 795.3 X= 248.5 Highest level of participation
+Y= 795.3 X= 356.2 Number of years of participation
+Y= 800.2 X= 141.0 Activity
+
+--- Page 5 ---
+Y=  34.9 X=  33.4 1.
+Y=  34.9 X= 141.0 Freelance Writer
+Y=  34.9 X= 248.5 International
+Y=  34.9 X= 356.2 2
+Y=  61.2 X=  34.5 Leadership Role at School
+Y=  81.7 X= 167.9 Position
+Y=  81.7 X= 302.4 No of Years
+Y=  81.7 X= 436.9 Roles and responsibilities
+Y= 101.1 X=  33.4 1.
+Y= 101.1 X= 167.9 Head Boy
+Y= 101.1 X= 302.4 1
+Y= 126.3 X=  33.4 2.
+Y= 126.3 X= 167.9 Vice Head Boy
+Y= 126.3 X= 302.5 1
+Y= 151.5 X=  33.4 3.
+Y= 151.5 X= 167.9 Vice House Captain
+Y= 151.5 X= 302.5 1
+Y= 177.8 X=  34.5 Additional Information
+Y= 198.3 X=  33.4 Preferred Major
+Y= 198.3 X= 302.1 Computer Science and Artiﬁcial Intelligence
+Y= 223.9 X=  34.0 References
+Y= 242.8 X= 499.9 In what capacity does this reference know you?
+Y= 256.5 X= 103.8 Name
+Y= 256.5 X= 174.7 Organization
+Y= 256.5 X= 245.5 Designation
+Y= 256.5 X= 316.3 Mobile Number
+Y= 256.5 X= 387.2 Email ID
+Y= 292.6 X=  33.0 1
+Y= 319.6 X=  33.0 2
+Y= 348.0 X= 302.4 Have you attended Young Technology Scholars Programme?
+Y= 352.9 X=  33.4 Will you be applying for Financial Aid?
+Y= 357.9 X= 168.0 Yes
+Y= 357.9 X= 437.0 No
+Y= 387.1 X=  33.4 Where did you hear about Plaksha University?
+Y= 387.1 X= 302.4 Is there anything else you want to tell us?
+Y= 392.1 X= 168.0 School
+Y= 392.1 X= 437.0 No
+Y= 421.8 X=  34.5 Declaration
+Y= 447.8 X=  34.5 Disclosure
+Y= 468.3 X=  33.4 Have You Ever Had A First Information Report (FIR) Filed Against You Or Been Involved In Any Legal A
+Y= 497.5 X=  33.4 No
+Y= 522.4 X=  34.5 Consent
+Y= 542.9 X=  33.4 By submitting this admissions form, you acknowledge and consent to Plaksha University's data handlin
+Y= 611.6 X=  33.4 I Agree
+Y= 632.1 X=  34.5 Honour Pledge
+Y= 652.6 X=  33.4 The information provided in this form is true to the best of my knowledge. I pledge that the entire 
+Y= 715.8 X=  33.4 Applicant Name:

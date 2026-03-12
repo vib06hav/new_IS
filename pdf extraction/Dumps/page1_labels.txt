@@ -1,0 +1,15 @@
+Y=  36.7 X=  34.5 Please provide the details for at least one of the following
+Y=  36.7 X= 288.9 ​
+Y=  64.3 X=  33.4 Father Details
+Y=  85.1 X=  33.4 Name
+Y= 105.8 X=  33.4 Date of Birth
+Y= 126.5 X=  33.4 Mobile Number
+Y= 147.3 X=  33.4 Email Address
+Y= 168.0 X=  33.4 Field of Employment
+Y= 188.8 X=  33.4 Nationality
+Y= 209.5 X=  33.4 Highest Degree Attained
+Y= 230.3 X=  33.4 Educational Institute (Last Attended)
+Y= 251.0 X=  33.4 Organization
+Y= 271.7 X=  33.4 Designation
+Y= 298.3 X=  33.4 Mother Details
+Y= 319.0 X=  33.4 Name

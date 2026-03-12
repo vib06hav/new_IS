@@ -1,0 +1,168 @@
+﻿=== REDACTION BOX COORDINATES (Original Dummy App 3) ===
+
+Box  0 | Page 0 | ( 188.3,    9.3) -> ( 569.4,  182.8) | 381.2 x 173.5
+Box  1 | Page 0 | ( 299.0,  209.2) -> ( 440.8,  396.7) | 141.8 x 187.5
+Box  2 | Page 0 | ( 299.8,  416.0) -> ( 404.4,  605.9) | 104.6 x 189.8
+Box  3 | Page 1 | ( 299.0,  307.6) -> ( 409.1,  490.4) | 110.0 x 182.8
+Box  4 | Page 1 | ( 299.8,  676.6) -> ( 541.5,  805.2) | 241.7 x 128.6
+Box  5 | Page 2 | ( 175.1,   56.8) -> ( 223.1,   73.1) |  48.0 x  16.3
+Box  6 | Page 2 | ( 321.5,   57.6) -> ( 366.4,   70.8) |  44.9 x  13.2
+Box  7 | Page 2 | ( 459.4,   57.6) -> ( 510.6,   75.4) |  51.1 x  17.8
+Box  8 | Page 2 | (  67.4,  121.6) -> ( 104.6,  141.8) |  37.2 x  20.2
+Box  9 | Page 2 | ( 179.7,  339.6) -> ( 219.2,  354.3) |  39.5 x  14.7
+Box 10 | Page 2 | ( 301.4,  341.1) -> ( 352.5,  355.9) |  51.1 x  14.7
+Box 11 | Page 2 | ( 450.1,  344.2) -> ( 496.6,  359.0) |  46.5 x  14.7
+Box 12 | Page 2 | ( 116.2,  440.3) -> ( 205.3,  475.2) |  89.1 x  34.9
+Box 13 | Page 2 | ( 176.6,  652.3) -> ( 234.8,  672.5) |  58.1 x  20.1
+Box 14 | Page 2 | ( 323.1,  652.3) -> ( 372.7,  671.7) |  49.6 x  19.4
+Box 15 | Page 2 | ( 456.3,  654.7) -> ( 510.6,  671.7) |  54.2 x  17.0
+Box 16 | Page 2 | ( 121.6,  771.9) -> ( 158.0,  792.8) |  36.4 x  20.9
+Box 17 | Page 3 | ( 179.0,  179.2) -> ( 229.3,  199.4) |  50.4 x  20.2
+Box 18 | Page 3 | ( 326.2,  174.6) -> ( 375.8,  195.5) |  49.6 x  20.9
+Box 19 | Page 3 | ( 460.2,  179.2) -> ( 509.0,  197.8) |  48.8 x  18.6
+Box 20 | Page 3 | (  94.5,  321.5) -> ( 127.8,  345.5) |  33.3 x  24.0
+Box 21 | Page 3 | ( 271.9,  704.2) -> ( 316.9,  716.6) |  44.9 x  12.4
+Box 22 | Page 3 | ( 222.4,  705.0) -> ( 262.6,  715.9) |  40.3 x  10.8
+Box 23 | Page 5 | (  98.4,  177.4) -> ( 567.9,  243.3) | 469.5 x  65.8
+Box 24 | Page 5 | (  98.4,  615.1) -> ( 450.1,  633.0) | 351.7 x  17.8
+
+
+=== TEXT LABELS NEAR REDACTION BOXES ===
+
+
+--- Page 0 ---
+
+  Box 0: (188.3, 9.3) -> (569.4, 182.8)
+    [ 86.1] LEFT            "Personal Details"
+
+  Box 1: (299.0, 209.2) -> (440.8, 396.7)
+
+  Box 2: (299.8, 416.0) -> (404.4, 605.9)
+    [ 92.6] OVERLAP/SAME_ROW "Read"
+    [ 96.1] LEFT            "Speak"
+
+--- Page 1 ---
+
+  Box 3: (299.0, 307.6) -> (409.1, 490.4)
+
+  Box 4: (299.8, 676.6) -> (541.5, 805.2)
+    [ 30.3] LEFT            "Is permanent address same as communication address?: Yes"
+
+--- Page 2 ---
+
+  Box 5: (175.1, 56.8) -> (223.1, 73.1)
+    [  0.0] OVERLAP/SAME_ROW "State:"
+    [ 32.5] OVERLAP/SAME_ROW "Board"
+    [ 49.7] OVERLAP/SAME_ROW "TELANGANA BOARD OF
+SECONDARY EDUCATION"
+    [ 51.8] LEFT            "Class 9th / Equivalent"
+    [ 56.8] RIGHT           "Year of Passing Marking Scheme"
+
+  Box 6: (321.5, 57.6) -> (366.4, 70.8)
+    [  0.0] OVERLAP/SAME_ROW "District:"
+    [ 32.6] LEFT            "Year of Passing Marking Scheme"
+    [ 57.0] OVERLAP/SAME_ROW "CGPA out of 10"
+    [ 65.1] LEFT            "2022"
+    [ 73.8] RIGHT           "City:"
+
+  Box 7: (459.4, 57.6) -> (510.6, 75.4)
+    [  0.0] OVERLAP/SAME_ROW "City:"
+    [ 28.0] OVERLAP/SAME_ROW "Obtained Percentage/CGPA"
+    [ 50.6] LEFT            "Year of Passing Marking Scheme"
+    [ 53.2] OVERLAP/SAME_ROW "10"
+    [ 76.2] LEFT            "CGPA out of 10"
+
+  Box 8: (67.4, 121.6) -> (104.6, 141.8)
+    [ 10.0] OVERLAP/SAME_ROW "School Name"
+    [ 13.7] OVERLAP/SAME_ROW "Upload Your Transcript: Yes"
+    [ 20.1] OVERLAP/SAME_ROW "9th"
+    [ 34.0] RIGHT           "TELANGANA BOARD OF
+SECONDARY EDUCATION"
+    [ 35.5] RIGHT           "Board"
+
+  Box 9: (179.7, 339.6) -> (219.2, 354.3)
+    [  0.0] OVERLAP/SAME_ROW "State"
+    [ 44.5] LEFT            "Upload Your Transcript: Yes"
+    [ 46.3] RIGHT           "10"
+    [ 48.3] RIGHT           "District:"
+    [ 50.8] LEFT            "Class 10th / Equivalent"
+
+  Box 10: (301.4, 341.1) -> (352.5, 355.9)
+    [  0.0] OVERLAP/SAME_ROW "District:"
+    [ 29.5] OVERLAP/SAME_ROW "Upload Conversion Scale (In Case Of Letter Grades): NO"
+    [ 55.7] OVERLAP/SAME_ROW "Year of Passing"
+    [ 57.4] LEFT            "10"
+    [ 68.3] RIGHT           "Marking Scheme"
+
+  Box 11: (450.1, 344.2) -> (496.6, 359.0)
+    [  0.0] OVERLAP/SAME_ROW "City:"
+    [ 26.4] LEFT            "Upload Conversion Scale (In Case Of Letter Grades): NO"
+    [ 47.7] OVERLAP/SAME_ROW "Obtained
+Percentage/CGPA"
+    [ 51.0] ABOVE           "10"
+    [ 52.6] LEFT            "Marking Scheme"
+
+  Box 12: (116.2, 440.3) -> (205.3, 475.2)
+    [  7.4] RIGHT           "TELANGANA STATE
+BOARD OF
+INTERMEDIATE
+EDUCATION"
+    [ 15.2] LEFT            "Subject Wise Marks/Grades"
+    [ 20.5] ABOVE           "Institute Name"
+    [ 21.8] RIGHT           "Board"
+    [ 35.7] OVERLAP/SAME_ROW "Subject"
+
+  Box 13: (176.6, 652.3) -> (234.8, 672.5)
+    [  0.0] OVERLAP/SAME_ROW "State"
+    [ 25.0] OVERLAP/SAME_ROW "Upload Conversion Scale (In Case Of
+Letter Grades): NO"
+    [ 38.8] RIGHT           "10"
+    [ 45.8] LEFT            "Upload Your Transcript: Yes"
+    [ 47.9] LEFT            "Class 11th / Equivalent"
+
+  Box 14: (323.1, 652.3) -> (372.7, 671.7)
+    [  0.0] OVERLAP/SAME_ROW "District:"
+    [ 25.7] LEFT            "Upload Conversion Scale (In Case Of
+Letter Grades): NO"
+    [ 35.7] RIGHT           "11th Mathematics Course:"
+    [ 51.9] RIGHT           "9"
+    [ 65.5] LEFT            "Select your subject category for class : Mathematics and Phy"
+
+python : Traceback (most recent call last):
+At line:1 char:1
++ python Scripts/map_boxes_to_labels.py 2>&1 | Out-File -FilePath 
+Dumps ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most r    
+ecent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\vibha\OneDrive\Desktop\pdf 
+extraction\Scripts\map_boxes_to_labels.py", line 98, in <module>
+    print(f"    [{dist:5.1f}] {direction:15s} \"{text}\"")
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\enc
+odings\cp1252.py", line 19, in encode
+  Box 15: (456.3, 654.7) -> (510.6, 671.7)
+    [  0.0] OVERLAP/SAME_ROW "City"
+    [ 30.4] LEFT            "11th Mathematics Course:"
+    [ 57.0] ABOVE           "9"
+    [ 69.7] OVERLAP/SAME_ROW "Obtained
+Percentage/CGPA"
+    [ 71.5] ABOVE           "9"
+
+  Box 16: (121.6, 771.9) -> (158.0, 792.8)
+    [ 17.3] ABOVE           "School Name"
+    [ 23.9] LEFT            "Subject Wise Marks/Grades"
+    [ 43.3] LEFT            "Select your subject category for class : Mathematics and Phy"
+    [ 54.6] RIGHT           "TELANGANA BOARD
+OF SECONDARY
+EDUCATION"
+    [ 57.3] RIGHT           "Board"
+
+--- Page 3 ---
+
+  Box 17: (179.0, 179.2) -> (229.3, 199.4)
+    [  0.0] OVERLAP/SAME_ROW "State:"
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+UnicodeEncodeError: 'charmap' codec can't encode character '\u200b' 
+in position 71: character maps to <undefined>

@@ -1,0 +1,174 @@
+=== BOX COORDINATES ===
+Box  0 | Page 0 | ( 182.1,   24.8) -> ( 567.9,  158.0) | 385.8 x 133.3 [LARGE]
+Box  1 | Page 0 | ( 299.8,  179.7) -> ( 417.6,  366.5) | 117.8 x 186.7 [LARGE]
+Box  2 | Page 0 | ( 299.8,  393.6) -> ( 384.3,  575.6) |  84.5 x 182.1 [LARGE]
+Box  3 | Page 0 | ( 298.3,  806.8) -> ( 372.6,  840.9) |  74.4 x  34.1 [small]
+Box  4 | Page 1 | ( 299.8,   26.3) -> ( 426.9,  216.9) | 127.1 x 190.6 [LARGE]
+Box  5 | Page 1 | (  93.7,  362.6) -> ( 545.4,  421.5) | 451.7 x  58.9 [LARGE]
+Box  6 | Page 1 | ( 296.7,  485.0) -> ( 554.7,  619.0) | 258.0 x 134.0 [LARGE]
+Box  7 | Page 1 | (  64.3,  737.0) -> ( 144.9,  764.1) |  80.6 x  27.1 [LARGE]
+Box  8 | Page 1 | ( 175.1,  667.3) -> ( 222.3,  685.1) |  47.3 x  17.8 [small]
+Box  9 | Page 1 | ( 320.0,  668.1) -> ( 371.1,  685.9) |  51.1 x  17.8 [small]
+Box 10 | Page 1 | ( 461.0,  668.9) -> ( 502.8,  689.8) |  41.8 x  20.9 [small]
+Box 11 | Page 2 | ( 300.6,  184.4) -> ( 363.4,  207.6) |  62.8 x  23.2 [small]
+Box 12 | Page 2 | ( 455.5,  182.8) -> ( 502.0,  204.5) |  46.5 x  21.7 [small]
+Box 13 | Page 2 | ( 117.0,  273.5) -> ( 204.5,  314.5) |  87.5 x  41.1 [LARGE]
+Box 14 | Page 2 | ( 179.0,  512.4) -> ( 233.2,  534.0) |  54.2 x  21.7 [small]
+Box 15 | Page 2 | ( 299.8,  513.9) -> ( 352.5,  535.6) |  52.7 x  21.7 [small]
+Box 16 | Page 2 | ( 447.8,  513.9) -> ( 502.0,  534.0) |  54.2 x  20.1 [small]
+Box 17 | Page 2 | ( 119.3,  625.5) -> ( 203.0,  664.2) |  83.7 x  38.7 [LARGE]
+Box 18 | Page 3 | ( 183.6,   30.2) -> ( 222.4,   48.8) |  38.7 x  18.6 [small]
+Box 19 | Page 3 | ( 302.9,   31.8) -> ( 352.5,   48.8) |  49.6 x  17.0 [small]
+Box 20 | Page 3 | ( 449.4,   31.0) -> ( 500.5,   46.5) |  51.1 x  15.5 [small]
+Box 21 | Page 3 | (  93.7,  173.5) -> ( 151.9,  216.2) |  58.1 x  42.6 [small]
+Box 22 | Page 3 | ( 217.7,  500.7) -> ( 299.0,  524.8) |  81.3 x  24.0 [LARGE]
+Box 23 | Page 3 | ( 215.4,  575.9) -> ( 318.4,  598.4) | 103.0 x  22.5 [LARGE]
+Box 24 | Page 5 | (  92.2,  469.0) -> ( 567.9,  532.5) | 475.7 x  63.5 [LARGE]
+Box 25 | Page 6 | (  99.9,   89.9) -> ( 466.4,  120.1) | 366.5 x  30.2 [LARGE]
+
+=== LABEL CONTEXT ===
+
+--- Page 0 ---
+
+  Box 0 (182,25)->(568,158) [386x133]
+
+  Box 1 (300,180)->(418,366) [118x187]
+    Y= 188.3 X=  33.4 Name
+    Y= 209.0 X=  33.4 Mobile No.
+    Y= 229.7 X=  33.4 Email Address
+    Y= 250.5 X=  33.4 Date of Birth
+    Y= 271.2 X=  33.4 Age as on 31st July 2025
+    Y= 292.0 X=  33.4 Blood Group
+    Y= 312.7 X=  33.4 Gender
+    Y= 333.5 X=  33.4 Nationality
+    Y= 354.2 X=  33.4 Category
+
+  Box 2 (300,394)->(384,576) [84x182]
+    Y= 399.2 X=  33.4 Do you hold a Punjab Domicile status?
+    Y= 419.9 X=  33.4 Proof of Identity
+    Y= 440.6 X=  33.4 Upload your punjab domicile certiﬁcate
+    Y= 461.4 X=  33.4 ABC/NAD ID Number
+    Y= 482.1 X=  33.4 Upload your PAN Card
+    Y= 502.9 X=  33.4 Upload your Aadhaar Card
+    Y= 523.6 X=  33.4 Upload your Voter ID Card
+    Y= 544.4 X=  33.4 Upload your Driving License
+    Y= 565.1 X=  33.4 Proof of Identity
+
+  Box 3 (298,807)->(373,841) [74x34]
+    Y= 802.8 X=  33.4 Father Details
+    Y= 823.5 X=  33.4 Name
+
+--- Page 1 ---
+
+  Box 4 (300,26)->(427,217) [127x191]
+    Y=  35.6 X=  33.4 Date of Birth
+    Y=  56.3 X=  33.4 Mobile Number
+    Y=  77.0 X=  33.4 Email Address
+    Y=  97.8 X=  33.4 Field of Employment
+    Y= 118.5 X=  33.4 Nationality
+    Y= 139.3 X=  33.4 Highest Degree Attained
+    Y= 160.0 X=  33.4 Educational Institute (Last Attended)
+    Y= 180.8 X=  33.4 Organization
+    Y= 201.5 X=  33.4 Designation
+
+  Box 5 (94,363)->(545,421) [452x59]
+    Y= 387.1 X=  33.4 1.
+
+  Box 6 (297,485)->(555,619) [258x134]
+    Y= 499.2 X=  33.4 Address
+    Y= 520.0 X=  33.4 Town/City
+    Y= 540.7 X=  33.4 District
+    Y= 561.5 X=  33.4 State
+    Y= 582.2 X=  33.4 Country Name
+    Y= 602.9 X=  33.4 Pin Code
+
+  Box 7 (64,737)->(145,764) [81x27]
+    Y= 750.0 X=  33.4 9th
+
+  Box 8 (175,667)->(222,685) [47x18]
+    Y= 674.7 X=  33.4 Country: India
+    Y= 674.7 X= 155.2 Stat
+
+  Box 9 (320,668)->(371,686) [51x18]
+    Y= 674.7 X=  33.4 Country: India
+    Y= 674.7 X= 155.2 Stat
+    Y= 674.7 X= 286.4 District:
+
+  Box 10 (461,669)->(503,690) [42x21]
+    Y= 674.7 X=  33.4 Country: India
+    Y= 674.7 X= 155.2 Stat
+    Y= 674.7 X= 286.4 District:
+    Y= 674.7 X= 439.8 City:
+
+--- Page 2 ---
+
+  Box 11 (301,184)->(363,208) [63x23]
+    Y= 190.3 X=  33.4 Country: India
+    Y= 190.3 X= 160.9 State: India
+    Y= 190.3 X= 272.7 Distric
+
+  Box 12 (456,183)->(502,205) [46x22]
+    Y= 190.3 X=  33.4 Country: India
+    Y= 190.3 X= 160.9 State: India
+    Y= 190.3 X= 272.7 Distric
+    Y= 190.3 X= 433.7 City:
+
+  Box 13 (117,273)->(205,315) [88x41]
+    Y= 289.5 X=  33.4 10th
+
+  Box 14 (179,512)->(233,534) [54x22]
+    Y= 519.5 X=  33.4 Country: India
+    Y= 519.5 X= 159.2 Stat
+
+  Box 15 (300,514)->(353,536) [53x22]
+    Y= 519.5 X=  33.4 Country: India
+    Y= 519.5 X= 159.2 Stat
+    Y= 519.5 X= 267.4 District
+
+  Box 16 (448,514)->(502,534) [54x20]
+    Y= 519.5 X=  33.4 Country: India
+    Y= 519.5 X= 159.2 Stat
+    Y= 519.5 X= 267.4 District
+    Y= 519.5 X= 430.5 City
+
+  Box 17 (119,625)->(203,664) [84x39]
+    Y= 641.1 X=  33.4 11th
+
+--- Page 3 ---
+
+  Box 18 (184,30)->(222,49) [39x19]
+    Y=  34.9 X=  33.4 Country: India
+    Y=  34.9 X= 159.2 State:
+
+  Box 19 (303,32)->(353,49) [50x17]
+    Y=  34.9 X=  33.4 Country: India
+    Y=  34.9 X= 159.2 State:
+    Y=  34.9 X= 267.4 District:
+
+  Box 20 (449,31)->(500,46) [51x15]
+    Y=  34.9 X=  33.4 Country: India
+    Y=  34.9 X= 159.2 State:
+    Y=  34.9 X= 267.4 District:
+    Y=  34.9 X= 430.5 City:
+
+  Box 21 (94,174)->(152,216) [58x43]
+    Y= 191.9 X=  33.2 12th
+
+  Box 22 (218,501)->(299,525) [81x24]
+    Y= 508.8 X=  32.0 SAT
+    Y= 522.8 X=  32.0 Upload Your SAT Score Card : Yes
+
+  Box 23 (215,576)->(318,598) [103x22]
+    Y= 584.8 X=  32.0 JEE Mains
+    Y= 598.7 X=  32.0 Upload Your JEE Mains Score Card : Yes
+
+--- Page 5 ---
+
+  Box 24 (92,469)->(568,532) [476x64]
+    Y= 484.0 X=  33.1 1
+    Y= 511.6 X=  33.1 2
+
+--- Page 6 ---
+
+  Box 25 (100,90)->(466,120) [366x30]
+    Y=  98.1 X=  33.4 Applicant Name

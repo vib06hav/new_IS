@@ -1,0 +1,162 @@
+=== BOX COORDINATES ===
+Box  0 | Page 0 | ( 188.3,   35.6) -> ( 573.3,  147.2) | 385.1 x 111.6 [LARGE]
+Box  1 | Page 0 | ( 301.4,  168.9) -> ( 422.2,  351.7) | 120.9 x 182.8 [LARGE]
+Box  2 | Page 0 | ( 300.6,  378.9) -> ( 371.9,  560.9) |  71.3 x 182.1 [LARGE]
+Box  3 | Page 1 | ( 299.8,  192.9) -> ( 426.9,  368.0) | 127.1 x 175.1 [LARGE]
+Box  4 | Page 1 | (  81.3,  545.4) -> ( 547.0,  576.4) | 465.6 x  31.0 [LARGE]
+Box  5 | Page 1 | ( 300.6,  639.2) -> ( 509.0,  776.3) | 208.4 x 137.1 [LARGE]
+Box  6 | Page 2 | ( 179.0,   26.3) -> ( 217.7,   49.6) |  38.7 x  23.2 [small]
+Box  7 | Page 2 | ( 320.0,   22.5) -> ( 372.6,   48.0) |  52.7 x  25.6 [small]
+Box  8 | Page 2 | ( 454.8,   24.8) -> ( 505.1,   48.0) |  50.4 x  23.2 [small]
+Box  9 | Page 2 | (  62.0,  100.7) -> ( 142.6,  128.6) |  80.6 x  27.9 [LARGE]
+Box 10 | Page 2 | ( 305.2,  323.3) -> ( 364.1,  340.4) |  58.9 x  17.1 [small]
+Box 11 | Page 2 | ( 452.5,  324.1) -> ( 506.7,  341.9) |  54.2 x  17.8 [small]
+Box 12 | Page 2 | ( 119.3,  414.7) -> ( 199.1,  448.8) |  79.8 x  34.1 [small]
+Box 13 | Page 2 | ( 185.2,  675.1) -> ( 226.2,  695.2) |  41.1 x  20.1 [small]
+Box 14 | Page 2 | ( 324.6,  677.4) -> ( 369.5,  696.8) |  44.9 x  19.4 [small]
+Box 15 | Page 2 | ( 459.4,  679.7) -> ( 509.0,  693.7) |  49.6 x  14.0 [small]
+Box 16 | Page 2 | ( 121.6,  794.1) -> ( 198.3,  822.0) |  76.7 x  27.9 [small]
+Box 17 | Page 3 | ( 180.5,  199.4) -> ( 229.3,  214.9) |  48.8 x  15.5 [small]
+Box 18 | Page 3 | ( 319.2,  199.4) -> ( 372.6,  221.8) |  53.5 x  22.5 [small]
+Box 19 | Page 3 | ( 462.5,  199.4) -> ( 505.9,  214.9) |  43.4 x  15.5 [small]
+Box 20 | Page 3 | (  95.3,  345.5) -> ( 143.3,  378.9) |  48.0 x  33.3 [small]
+Box 21 | Page 3 | ( 223.9,  678.2) -> ( 313.8,  695.2) |  89.9 x  17.0 [LARGE]
+Box 22 | Page 5 | (  86.8,  277.4) -> ( 538.4,  340.9) | 451.7 x  63.5 [LARGE]
+Box 23 | Page 5 | ( 102.3,  708.1) -> ( 491.2,  729.8) | 388.9 x  21.7 [LARGE]
+
+=== LABEL CONTEXT ===
+
+--- Page 0 ---
+
+  Box 0 (188,36)->(573,147) [385x112]
+
+  Box 1 (301,169)->(422,352) [121x183]
+    Y= 174.2 X=  33.4 Name
+    Y= 195.0 X=  33.4 Mobile No.
+    Y= 215.7 X=  33.4 Email Address
+    Y= 236.5 X=  33.4 Date of Birth
+    Y= 257.2 X=  33.4 Age as on 31st July 2025
+    Y= 278.0 X=  33.4 Blood Group
+    Y= 298.7 X=  33.4 Gender
+    Y= 319.4 X=  33.4 Nationality
+    Y= 340.2 X=  33.4 Category
+
+  Box 2 (301,379)->(372,561) [71x182]
+    Y= 385.1 X=  33.4 Do you hold a Punjab Domicile status?
+    Y= 405.9 X=  33.4 Proof of Identity
+    Y= 426.6 X=  33.4 Upload your punjab domicile certiﬁcate
+    Y= 447.4 X=  33.4 ABC/NAD ID Number
+    Y= 468.1 X=  33.4 Upload your PAN Card
+    Y= 488.9 X=  33.4 Upload your Aadhaar Card
+    Y= 509.6 X=  33.4 Upload your Voter ID Card
+    Y= 530.3 X=  33.4 Upload your Driving License
+    Y= 551.1 X=  33.4 Proof of Identity
+
+--- Page 1 ---
+
+  Box 3 (300,193)->(427,368) [127x175]
+    Y= 207.3 X=  33.4 Name
+    Y= 228.0 X=  33.4 Date of Birth
+    Y= 248.8 X=  33.4 Mobile Number
+    Y= 269.5 X=  33.4 Email Address
+    Y= 290.3 X=  33.4 Field of Employment
+    Y= 311.0 X=  33.4 Nationality
+    Y= 331.7 X=  33.4 Highest Degree Attained
+    Y= 352.5 X=  33.4 Educational Institute (Last Attended)
+
+  Box 4 (81,545)->(547,576) [466x31]
+    Y= 562.8 X=  33.4 1.
+
+  Box 5 (301,639)->(509,776) [208x137]
+    Y= 637.3 X=  33.4 Communication Address
+    Y= 658.1 X=  33.4 Address
+    Y= 678.8 X=  33.4 Town/City
+    Y= 699.6 X=  33.4 District
+    Y= 720.3 X=  33.4 State
+    Y= 741.0 X=  33.4 Country Name
+    Y= 761.8 X=  33.4 Pin Code
+
+--- Page 2 ---
+
+  Box 6 (179,26)->(218,50) [39x23]
+    Y=  34.9 X=  33.4 Country: India
+    Y=  34.9 X= 155.7 State
+
+  Box 7 (320,22)->(373,48) [53x26]
+    Y=  34.9 X=  33.4 Country: India
+    Y=  34.9 X= 155.7 State
+    Y=  34.9 X= 287.4 District:
+
+  Box 8 (455,25)->(505,48) [50x23]
+    Y=  34.9 X=  33.4 Country: India
+    Y=  34.9 X= 155.7 State
+    Y=  34.9 X= 287.4 District:
+    Y=  34.9 X= 440.3 Cit
+
+  Box 9 (62,101)->(143,129) [81x28]
+    Y= 110.2 X=  33.4 9th
+
+  Box 10 (305,323)->(364,340) [59x17]
+    Y= 329.0 X=  33.4 Country: India
+    Y= 329.0 X= 161.4 State: India
+    Y= 329.0 X= 273.8 District
+
+  Box 11 (452,324)->(507,342) [54x18]
+    Y= 329.0 X=  33.4 Country: India
+    Y= 329.0 X= 161.4 State: India
+    Y= 329.0 X= 273.8 District
+    Y= 329.0 X= 434.3 City:
+
+  Box 12 (119,415)->(199,449) [80x34]
+    Y= 428.2 X=  33.4 10th
+
+  Box 13 (185,675)->(226,695) [41x20]
+    Y= 683.4 X=  33.4 Country: India
+    Y= 683.4 X= 159.0 State:
+
+  Box 14 (325,677)->(370,697) [45x19]
+    Y= 683.4 X=  33.4 Country: India
+    Y= 683.4 X= 159.0 State:
+    Y= 683.4 X= 289.5 District:
+
+  Box 15 (459,680)->(509,694) [50x14]
+    Y= 683.4 X=  33.4 Country: India
+    Y= 683.4 X= 159.0 State:
+    Y= 683.4 X= 289.5 District:
+    Y= 683.4 X= 441.5 City
+
+  Box 16 (122,794)->(198,822) [77x28]
+    Y= 805.0 X=  33.4 11th
+
+--- Page 3 ---
+
+  Box 17 (181,199)->(229,215) [49x15]
+    Y= 206.1 X=  33.4 Country: India
+    Y= 206.1 X= 159.0 State
+
+  Box 18 (319,199)->(373,222) [53x22]
+    Y= 206.1 X=  33.4 Country: India
+    Y= 206.1 X= 159.0 State
+    Y= 206.1 X= 289.5 District
+
+  Box 19 (463,199)->(506,215) [43x15]
+    Y= 206.1 X=  33.4 Country: India
+    Y= 206.1 X= 159.0 State
+    Y= 206.1 X= 289.5 District
+    Y= 206.1 X= 441.5 City:
+
+  Box 20 (95,346)->(143,379) [48x33]
+    Y= 358.4 X=  33.2 12th
+
+  Box 21 (224,678)->(314,695) [90x17]
+    Y= 684.6 X=  32.0 JEE Mains
+    Y= 698.5 X=  32.0 Upload Your JEE Mains Score Card : Yes
+
+--- Page 5 ---
+
+  Box 22 (87,277)->(538,341) [452x64]
+    Y= 292.6 X=  33.0 1
+    Y= 319.6 X=  33.0 2
+
+  Box 23 (102,708)->(491,730) [389x22]
+    Y= 715.8 X=  33.4 Applicant Name:

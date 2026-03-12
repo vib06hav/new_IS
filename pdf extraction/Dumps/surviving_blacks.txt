@@ -1,0 +1,23 @@
+
+=== Page 0 ===
+  Total surviving: 0
+
+=== Page 1 ===
+  SURVIVING BLACK: Rect(81.3, 545.4, 547.0, 576.4) W=465.6 H=31.0
+  SURVIVING BLACK: Rect(300.6, 639.2, 509.0, 776.3) W=208.4 H=137.1
+  Total surviving: 2
+
+=== Page 2 ===
+  SURVIVING BLACK: Rect(185.2, 675.1, 226.2, 695.2) W=41.1 H=20.1
+  SURVIVING BLACK: Rect(324.6, 677.4, 369.5, 696.8) W=44.9 H=19.4
+  SURVIVING BLACK: Rect(121.6, 794.1, 198.3, 822.0) W=76.7 H=27.9
+  Total surviving: 3
+
+=== Page 3 ===
+  Total surviving: 0
+
+=== Page 4 ===
+  Total surviving: 0
+
+=== Page 5 ===
+  Total surviving: 0

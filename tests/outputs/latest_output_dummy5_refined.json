@@ -1,0 +1,907 @@
+{
+  "canonical_data": {
+    "canonical_version": "1.1",
+    "identifiers": {
+      "application_id": "dummy5_refinement",
+      "full_name": "Raghav Sharma",
+      "date_of_birth": "2007-04-11",
+      "family_background": {
+        "father": {
+          "name": "Mahesh Sharma",
+          "education": "B.Tech Civil Engineering",
+          "field_of_employment": "Civil Engineering and Construction",
+          "organization": "Shree Buildcon Pvt Ltd",
+          "designation": "Senior Site Engineer"
+        },
+        "mother": {
+          "name": "Sunita Sharma",
+          "education": "M.Sc Mathematics",
+          "field_of_employment": "Education",
+          "organization": "Government Higher Secondary School",
+          "designation": "Mathematics Teacher"
+        }
+      },
+      "declared_preferences": {},
+      "demographic_flags": {}
+    },
+    "profile_meta": {
+      "source_document_page_count": 6,
+      "extraction_timestamp": "2026-03-12T17:23:44.895925Z",
+      "layout_block_count": 417,
+      "detected_section_labels": [
+        "Personal Details",
+        "Class 9th / Equivalent",
+        "CENTRAL BOARD OF SECONDARY",
+        "Class 10th / Equivalent",
+        "Class 11th / Equivalent",
+        "CENTRAL BOARD OF",
+        "CENTRAL BOARD OF",
+        "Class 12th Details",
+        "Standardized Test Scores",
+        "Essays",
+        "Leadership Role at School",
+        "Declaration"
+      ]
+    },
+    "academic_entries": [
+      {
+        "entry_id": "792cbfef-a16e-4597-9143-ac26028ce245",
+        "academic_level": "9TH",
+        "school_name": "Delhi Public School Indore",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "academic_year": "2022",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "98.18",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "99.6",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "99.2",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Social Science",
+            "score_raw": "98.7",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Science",
+            "score_raw": "96.8",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Sanskrit",
+            "score_raw": "96.6",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "ab221f34-cc41-479c-bdd9-6b5ed0d49f5e",
+        "academic_level": "10TH",
+        "school_name": "Delhi Public School Indore",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "academic_year": "2023",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "97.4",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "97",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Science",
+            "score_raw": "97",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Social Science",
+            "score_raw": "100",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "96",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Sanskrit",
+            "score_raw": "97",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Elements of Business",
+            "score_raw": "98",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Introduction to Financial Markets",
+            "score_raw": "97",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "bc04959e-edf8-4bd9-a857-30c6d404c2c7",
+        "academic_level": "11TH",
+        "school_name": "Delhi Public School Indore",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "academic_year": "2024",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "89.2",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "90.6",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Physics",
+            "score_raw": "95.1",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "92.8",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Biology",
+            "score_raw": "74.9",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Chemistry",
+            "score_raw": "92.8",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "7d8472c8-9e60-4e55-ae6c-26bca537ae4b",
+        "academic_level": "12TH",
+        "school_name": "Delhi Public School Indore",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "academic_year": "2025",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "98.6",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "99",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Physics",
+            "score_raw": "100",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Biology",
+            "score_raw": "99",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Chemistry",
+            "score_raw": "97",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "98",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      }
+    ],
+    "schooling_history": [
+      {
+        "entry_id": "6164f1fd-a9b6-499c-881c-ce76b1730763",
+        "level": "9TH",
+        "school_name": "Delhi Public School Indore",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "6bb5bad9-17de-454d-aaab-63839b939113",
+        "level": "10TH",
+        "school_name": "Delhi Public School Indore",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "57bb86c1-e57e-42e2-9355-9c58e1fe0228",
+        "level": "11TH",
+        "school_name": "Delhi Public School Indore",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "49de7f51-5cf2-4b83-9364-37b75189fb8f",
+        "level": "12TH",
+        "school_name": "Delhi Public School Indore",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "location": null,
+        "confidence_score": 0.85
+      }
+    ],
+    "test_entries": [
+      {
+        "entry_id": "def50584-8b87-458f-981d-cfa75769ab4d",
+        "test_name": "Joint Entrance Examination (JEE) Mains",
+        "test_date": null,
+        "total_score": null,
+        "sectional_scores": [],
+        "percentile": null,
+        "rank": null,
+        "result_status": "available",
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "3d2e74c2-4bb7-4ec2-982d-fa9960e6730a",
+        "test_name": "Roll Number",
+        "test_date": "Physics Percentile 99.45",
+        "total_score": null,
+        "sectional_scores": [],
+        "percentile": null,
+        "rank": null,
+        "result_status": "available",
+        "confidence_score": 0.85
+      }
+    ],
+    "essay_entries": [
+      {
+        "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b",
+        "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skill",
+        "raw_text": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing\ncomplex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research\nand realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my\njourney into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal\nprojects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics,\nparticipating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and I aim to\ncombine these skills with my attitude of continuous learning, growth & innovation, contributing meaningfully to the technological\nadvancements shaping our future. My problem-solving skills have developed through consistent effort and practice, as reflected in my\nacademic journey and exams like the Math & Physics Olympiads, which require analytical thinking and perseverance. Mathematics and\nComputer Science have helped me tackle complex problems under time constrain, reinforcing my ability to work under pressure with a\nsolution-oriented mindset. During my high school years, I undertook various projects that enhanced my understanding of programming\nlanguages and algorithms. I designed a code that could encrypt and decrypt texts adopting unique algorithms each time (which I now\npersonally use as a brain-teaser). Though rudimentary compared to Jarvis, it has been a motivating step towards my vision of creating\nimpactful technology. Beyond academics, I have actively participated in STEM and leadership activities. As Head Boy of my school, I had the\nopportunity to contribute to initiatives that combined leadership with technological innovation, such as implementing digital tools to improve\nproject management. These experiences taught me the importance of collaboration and leadership in bringing ideas to life. I have also\ndeveloped several Science models reflecting my dedication to creating innovative solutions. To broaden my knowledge and skill-set, I\nundertook an internship at AccelEd, a career counseling firm, where I contributed as a content writer, web-developer, and video editor. This\nexperience helped me gain knowledge of applications of software in the industry. My extracurricular activities have positively affected my\npersonality and work ethic. As an avid guitarist, I've developed creativity and precision, which I apply to my software projects. Representing\nmy school in sports (athletics) at various levels helped me learn discipline, teamwork, and perseverance, all crucial for success in technology.\nThese experiences have given me an all-round perspective, enabling me to approach software development with both, technical and creative\napproaches. With this holistic approach, I am keen to contribute to and grow within leading universities. In conclusion, my journey from being\ninspired by Tony Stark's Jarvis to pursuing innovation has been one of continuous learning.\n",
+        "word_count": 470,
+        "character_count": 3237,
+        "placeholder_flag": false,
+        "duplication_ratio": 0.0,
+        "short_response_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102",
+        "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or c",
+        "raw_text": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing\ncomplex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research\nand realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my\njourney into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal\nprojects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics,\nparticipating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and I aim to\ncombine these skills with my attitude of continuous learning, growth & innovation, contributing meaningfully to the technological\nadvancements shaping our future. My problem-solving skills have developed through consistent effort and practice, as reflected in my\nacademic journey and exams like the Math & Physics Olympiads, which require analytical thinking and perseverance. Mathematics and\nComputer Science have helped me tackle complex problems under time constrain, reinforcing my ability to work under pressure with a\nsolution-oriented mindset. During my high school years, I undertook various projects that enhanced my understanding of programming\nlanguages and algorithms. I designed a code that could encrypt and decrypt texts adopting unique algorithms each time (which I now\npersonally use as a brain-teaser). Though rudimentary compared to Jarvis, it has been a motivating step towards my vision of creating\nimpactful technology. Beyond academics, I have actively participated in STEM and leadership activities. As Head Boy of my school, I had the\nopportunity to contribute to initiatives that combined leadership with technological innovation, such as implementing digital tools to improve\nproject management. These experiences taught me the importance of collaboration and leadership in bringing ideas to life. I have also\ndeveloped several Science models reflecting my dedication to creating innovative solutions. To broaden my knowledge and skill-set, I\nundertook an internship at AccelEd, a career counseling firm, where I contributed as a content writer, web-developer, and video editor. This\nexperience helped me gain knowledge of applications of software in the industry. My extracurricular activities have positively affected my\npersonality and work ethic. As an avid guitarist, I've developed creativity and precision, which I apply to my software projects. Representing\nmy school in sports (athletics) at various levels helped me learn discipline, teamwork, and perseverance, all crucial for success in technology.\nThese experiences have given me an all-round perspective, enabling me to approach software development with both, technical and creative\napproaches. With this holistic approach, I am keen to contribute to and grow within leading universities. In conclusion, my journey from being\ninspired by Tony Stark's Jarvis to pursuing innovation has been one of continuous learning.\n",
+        "word_count": 470,
+        "character_count": 3237,
+        "placeholder_flag": false,
+        "duplication_ratio": 0.0,
+        "short_response_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "83538915-b15a-41ed-ab28-979395e3945c",
+        "essay_identifier": "Is there anything else which you would like to share with us\nwhich would help us understand you bett",
+        "raw_text": "No\nDescription\nExtra- Curricular Activities (Outside the Classroom)\nActivity\nHighest level of\nparticipation\nNumber of years of\nparticipation\nPositions of\nresponsibility/\nachievement\n1.\n2.\n3.\nKaizen OC Head\nIntra School\nWeb Developing Intern\nNational\nDigital Marketing Intern\nInternational\n1\n1\n1\nCo- Curricular Activities (Tinkering, Research and More)\nActivity\nHighest level of\nparticipation\nNumber of years of\nparticipation\nPositions of\nresponsibility/\nachievement\n1.\nFreelance Writer\nInternational\n2\nPosition\nHead Boy\nVice Head Boy\nVice House Captain",
+        "word_count": 76,
+        "character_count": 553,
+        "placeholder_flag": false,
+        "duplication_ratio": 0.0,
+        "short_response_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "activity_entries": [
+      {
+        "entry_id": "d1821079-83bc-4ece-88a9-66ebb703e118",
+        "activity_type": "other",
+        "category": null,
+        "activity_name": "1. 2. 3. Additional Information Preferred Major References",
+        "level": null,
+        "duration": null,
+        "description_raw": "Computer Science and Artificial Intelligence Name 1 2 Yes Will you be applying for Financial Aid? Where did you hear about Plaksha University? School",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "timeline_entries": [
+      {
+        "entry_id": "5e25d78b-81ad-4c31-8da6-273edb13756c",
+        "year": "Physics Percentile 99.45",
+        "event_label": "Test: Roll Number",
+        "source_type": "test",
+        "source_reference": "3d2e74c2-4bb7-4ec2-982d-fa9960e6730a"
+      },
+      {
+        "entry_id": "b984eddf-607f-434d-be53-6d637c2a629c",
+        "year": "2025",
+        "event_label": "Academic Record: 12TH",
+        "source_type": "academic",
+        "source_reference": "7d8472c8-9e60-4e55-ae6c-26bca537ae4b"
+      },
+      {
+        "entry_id": "2378ea8c-eef0-4211-b115-5ea2dbbab200",
+        "year": "2024",
+        "event_label": "Academic Record: 11TH",
+        "source_type": "academic",
+        "source_reference": "bc04959e-edf8-4bd9-a857-30c6d404c2c7"
+      },
+      {
+        "entry_id": "5e597830-36db-4afe-adcc-33111d0e4d79",
+        "year": "2023",
+        "event_label": "Academic Record: 10TH",
+        "source_type": "academic",
+        "source_reference": "ab221f34-cc41-479c-bdd9-6b5ed0d49f5e"
+      },
+      {
+        "entry_id": "303169fc-b530-4a4d-8068-09e834a28202",
+        "year": "2022",
+        "event_label": "Academic Record: 9TH",
+        "source_type": "academic",
+        "source_reference": "792cbfef-a16e-4597-9143-ac26028ce245"
+      }
+    ],
+    "cross_references": {
+      "entity_map": [
+        {
+          "entity_token": "Mathematics",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "792cbfef-a16e-4597-9143-ac26028ce245"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "ab221f34-cc41-479c-bdd9-6b5ed0d49f5e"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "bc04959e-edf8-4bd9-a857-30c6d404c2c7"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "7d8472c8-9e60-4e55-ae6c-26bca537ae4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "English",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "792cbfef-a16e-4597-9143-ac26028ce245"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "ab221f34-cc41-479c-bdd9-6b5ed0d49f5e"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "bc04959e-edf8-4bd9-a857-30c6d404c2c7"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "7d8472c8-9e60-4e55-ae6c-26bca537ae4b"
+            }
+          ]
+        },
+        {
+          "entity_token": "Science",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "792cbfef-a16e-4597-9143-ac26028ce245"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "ab221f34-cc41-479c-bdd9-6b5ed0d49f5e"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            },
+            {
+              "source_type": "activity",
+              "entry_id": "d1821079-83bc-4ece-88a9-66ebb703e118"
+            }
+          ]
+        },
+        {
+          "entity_token": "Social",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "792cbfef-a16e-4597-9143-ac26028ce245"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "ab221f34-cc41-479c-bdd9-6b5ed0d49f5e"
+            }
+          ]
+        },
+        {
+          "entity_token": "Sanskrit",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "792cbfef-a16e-4597-9143-ac26028ce245"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "ab221f34-cc41-479c-bdd9-6b5ed0d49f5e"
+            }
+          ]
+        },
+        {
+          "entity_token": "Financial",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "ab221f34-cc41-479c-bdd9-6b5ed0d49f5e"
+            },
+            {
+              "source_type": "activity",
+              "entry_id": "d1821079-83bc-4ece-88a9-66ebb703e118"
+            }
+          ]
+        },
+        {
+          "entity_token": "Physics",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "bc04959e-edf8-4bd9-a857-30c6d404c2c7"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "7d8472c8-9e60-4e55-ae6c-26bca537ae4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Biology",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "bc04959e-edf8-4bd9-a857-30c6d404c2c7"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "7d8472c8-9e60-4e55-ae6c-26bca537ae4b"
+            }
+          ]
+        },
+        {
+          "entity_token": "Chemistry",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "bc04959e-edf8-4bd9-a857-30c6d404c2c7"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "7d8472c8-9e60-4e55-ae6c-26bca537ae4b"
+            }
+          ]
+        },
+        {
+          "entity_token": "Number",
+          "source_references": [
+            {
+              "source_type": "test",
+              "entry_id": "3d2e74c2-4bb7-4ec2-982d-fa9960e6730a"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "83538915-b15a-41ed-ab28-979395e3945c"
+            }
+          ]
+        },
+        {
+          "entity_token": "From",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "These",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Studios",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Math",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "February",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Computer",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            },
+            {
+              "source_type": "activity",
+              "entry_id": "d1821079-83bc-4ece-88a9-66ebb703e118"
+            }
+          ]
+        },
+        {
+          "entity_token": "Iron",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Though",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Stark",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Head",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "83538915-b15a-41ed-ab28-979395e3945c"
+            }
+          ]
+        },
+        {
+          "entity_token": "Olympiads",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Jarvis",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "This",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Beyond",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "During",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "With",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Tony",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Witnessing",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Marvel",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "Representing",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "d60cc750-7f29-4086-a0c2-aae8e3292b4b"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "3de66b32-343f-4230-8bf6-6d5e8a0a2102"
+            }
+          ]
+        },
+        {
+          "entity_token": "School",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "83538915-b15a-41ed-ab28-979395e3945c"
+            },
+            {
+              "source_type": "activity",
+              "entry_id": "d1821079-83bc-4ece-88a9-66ebb703e118"
+            }
+          ]
+        }
+      ]
+    },
+    "integrity_report": {
+      "anomalies": []
+    },
+    "extraction_confidence": {
+      "agent_scores": [
+        {
+          "agent_id": 1,
+          "agent_name": "Layout Block Extractor",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 2,
+          "agent_name": "Section Boundary Detector",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 3,
+          "agent_name": "Personal Information Extractor",
+          "confidence_score": 0.85
+        },
+        {
+          "agent_id": 4,
+          "agent_name": "Academic Records Extractor",
+          "confidence_score": 0.85
+        },
+        {
+          "agent_id": 5,
+          "agent_name": "Standardized Test Extractor",
+          "confidence_score": 0.85
+        },
+        {
+          "agent_id": 6,
+          "agent_name": "Essay Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 7,
+          "agent_name": "Activity Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 8,
+          "agent_name": "Cross-Section Entity Detector",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 9,
+          "agent_name": "Timeline Builder",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 10,
+          "agent_name": "Completeness & Integrity Analyzer",
+          "confidence_score": 0.95
+        }
+      ],
+      "aggregate_confidence": 0.905
+    }
+  },
+  "ros_v1": null,
+  "validation_result": {
+    "passed": false,
+    "error": "LLM Synthesis Failed: [Errno 11001] getaddrinfo failed"
+  },
+  "confidence": 0.905
+}

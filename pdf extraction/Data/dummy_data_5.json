@@ -1,0 +1,108 @@
+{
+  "personal_details": {
+    "name": "Raghav Sharma",
+    "mobile_number": "9827315462",
+    "email": "raghav.sharma17@gmail.com",
+    "date_of_birth": "2007-04-11",
+    "age_as_on_31_july_2025": 18,
+    "blood_group": "A+",
+    "gender": "Male",
+    "nationality": "Indian",
+    "category": "General",
+    "punjab_domicile": "No",
+    "proof_of_identity": "Aadhaar Card",
+    "abc_nad_id": "ABC572819034",
+    "pan_card": "FQUPS7284M",
+    "aadhaar_card": "4382 6721 5194"
+  },
+  "parent_details": {
+    "father": {
+      "name": "Mahesh Sharma",
+      "date_of_birth": "1976-01-19",
+      "mobile_number": "9827211034",
+      "email": "mahesh.sharma76@gmail.com",
+      "field_of_employment": "Civil Engineering and Construction",
+      "nationality": "Indian",
+      "highest_degree": "B.Tech Civil Engineering",
+      "educational_institute_last_attended": "Government Engineering College Ujjain",
+      "organization": "Shree Buildcon Pvt Ltd",
+      "designation": "Senior Site Engineer"
+    },
+    "mother": {
+      "name": "Sunita Sharma",
+      "date_of_birth": "1979-08-03",
+      "mobile_number": "9827361128",
+      "email": "sunitasharma.maths@gmail.com",
+      "field_of_employment": "Education",
+      "nationality": "Indian",
+      "highest_degree": "M.Sc Mathematics",
+      "educational_institute_last_attended": "Devi Ahilya Vishwavidyalaya",
+      "organization": "Government Higher Secondary School",
+      "designation": "Mathematics Teacher"
+    }
+  },
+  "siblings": {
+    "has_sibling": true,
+    "details": [
+      {
+        "first_name": "Aman",
+        "last_name": "Sharma",
+        "age": 20,
+        "high_school": "Delhi Public School Indore",
+        "undergraduate_institute": "Indian Institute of Technology Gandhinagar",
+        "postgraduate_institute": null,
+        "current_employer": null
+      }
+    ]
+  },
+  "address_details": {
+    "permanent_same_as_communication": true,
+    "communication_address": {
+      "address": "54 Shalimar Township",
+      "town_city": "Indore",
+      "district": "Indore",
+      "state": "Madhya Pradesh",
+      "country": "India",
+      "pin_code": "452010"
+    }
+  },
+  "education": {
+    "class_9": {
+      "country": "India",
+      "state": "Madhya Pradesh",
+      "district": "Indore",
+      "city": "Indore",
+      "school_name": "Delhi Public School Indore",
+      "board": "CBSE",
+      "year_of_passing": 2022
+    },
+    "class_10": {
+      "country": "India",
+      "state": "Madhya Pradesh",
+      "district": "Indore",
+      "city": "Indore",
+      "school_name": "Delhi Public School Indore",
+      "board": "CBSE",
+      "year_of_passing": 2023
+    },
+    "class_11": {
+      "country": "India",
+      "state": "Madhya Pradesh",
+      "district": "Indore",
+      "city": "Indore",
+      "school_name": "Delhi Public School Indore",
+      "board": "CBSE",
+      "year_of_passing": 2024
+    },
+    "class_12": {
+      "country": "India",
+      "state": "Madhya Pradesh",
+      "district": "Indore",
+      "city": "Indore",
+      "school_name": "Delhi Public School Indore",
+      "board": "CBSE",
+      "year_of_passing": 2025,
+      "status": "Appearing"
+    }
+  }
+}

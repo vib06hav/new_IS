@@ -1,0 +1,171 @@
+=== BOX COORDINATES ===
+Box  0 | Page 0 | ( 183.6,   26.3) -> ( 567.9,  144.9) | 384.3 x 118.5 [LARGE]
+Box  1 | Page 0 | ( 301.4,  165.3) -> ( 416.0,  349.7) | 114.7 x 184.4 [LARGE]
+Box  2 | Page 0 | ( 299.0,  379.1) -> ( 406.0,  561.2) | 106.9 x 182.1 [LARGE]
+Box  3 | Page 0 | ( 301.4,  792.0) -> ( 371.1,  819.9) |  69.7 x  27.9 [small]
+Box  4 | Page 1 | ( 299.8,   26.6) -> ( 388.9,  214.1) |  89.1 x 187.5 [LARGE]
+Box  5 | Page 1 | (  78.2,  359.7) -> ( 538.4,  410.1) | 460.2 x  50.4 [LARGE]
+Box  6 | Page 1 | ( 301.4,  475.2) -> ( 564.0,  613.9) | 262.6 x 138.7 [LARGE]
+Box  7 | Page 1 | (  64.3,  728.5) -> ( 154.2,  757.2) |  89.9 x  28.7 [LARGE]
+Box  8 | Page 1 | ( 179.7,  658.0) -> ( 251.0,  672.7) |  71.3 x  14.7 [small]
+Box  9 | Page 1 | ( 347.9,  659.6) -> ( 392.8,  673.5) |  44.9 x  14.0 [small]
+Box 10 | Page 1 | ( 473.4,  661.1) -> ( 511.3,  678.9) |  38.0 x  17.8 [small]
+Box 11 | Page 2 | ( 192.9,  182.8) -> ( 223.1,  199.9) |  30.2 x  17.0 [small]
+Box 12 | Page 2 | ( 322.3,  185.2) -> ( 360.2,  198.3) |  38.0 x  13.2 [small]
+Box 13 | Page 2 | ( 461.0,  185.9) -> ( 498.2,  200.7) |  37.2 x  14.7 [small]
+Box 14 | Page 2 | ( 119.3,  283.6) -> ( 193.7,  321.5) |  74.4 x  38.0 [small]
+Box 15 | Page 2 | ( 185.2,  533.0) -> ( 245.6,  550.1) |  60.4 x  17.0 [small]
+Box 16 | Page 2 | ( 350.2,  533.0) -> ( 390.5,  550.8) |  40.3 x  17.8 [small]
+Box 17 | Page 2 | ( 474.9,  531.5) -> ( 516.0,  551.6) |  41.1 x  20.1 [small]
+Box 18 | Page 2 | ( 120.1,  647.7) -> ( 192.1,  670.9) |  72.1 x  23.2 [small]
+Box 19 | Page 3 | ( 183.6,   56.8) -> ( 240.2,   76.2) |  56.6 x  19.4 [small]
+Box 20 | Page 3 | ( 351.0,   58.4) -> ( 392.8,   72.3) |  41.8 x  14.0 [small]
+Box 21 | Page 3 | ( 474.9,   60.7) -> ( 524.5,   73.1) |  49.6 x  12.4 [small]
+Box 22 | Page 3 | (  96.8,  193.2) -> ( 154.9,  226.5) |  58.1 x  33.3 [small]
+Box 23 | Page 3 | ( 219.2,  526.8) -> ( 320.7,  542.3) | 101.5 x  15.5 [LARGE]
+Box 24 | Page 5 | (  96.8,  281.2) -> ( 567.9,  344.0) | 471.0 x  62.8 [LARGE]
+Box 25 | Page 5 | ( 101.5,  715.3) -> ( 457.1,  731.6) | 355.6 x  16.3 [LARGE]
+
+=== LABEL CONTEXT ===
+
+--- Page 0 ---
+
+  Box 0 (184,26)->(568,145) [384x119]
+
+  Box 1 (301,165)->(416,350) [115x184]
+    Y= 172.4 X=  33.4 Name
+    Y= 193.1 X=  33.4 Mobile No.
+    Y= 213.9 X=  33.4 Email Address
+    Y= 234.6 X=  33.4 Date of Birth
+    Y= 255.4 X=  33.4 Age as on 31st July 2025
+    Y= 276.1 X=  33.4 Blood Group
+    Y= 296.9 X=  33.4 Gender
+    Y= 317.6 X=  33.4 Nationality
+    Y= 338.3 X=  33.4 Category
+
+  Box 2 (299,379)->(406,561) [107x182]
+    Y= 383.3 X=  33.4 Do you hold a Punjab Domicile status?
+    Y= 404.0 X=  33.4 Proof of Identity
+    Y= 424.8 X=  33.4 Upload your punjab domicile certiﬁcate
+    Y= 445.5 X=  33.4 ABC/NAD ID Number
+    Y= 466.3 X=  33.4 Upload your PAN Card
+    Y= 487.0 X=  33.4 Upload your Aadhaar Card
+    Y= 507.8 X=  33.4 Upload your Voter ID Card
+    Y= 528.5 X=  33.4 Upload your Driving License
+    Y= 549.2 X=  33.4 Proof of Identity
+
+  Box 3 (301,792)->(371,820) [70x28]
+    Y= 807.7 X=  33.4 Name
+
+--- Page 1 ---
+
+  Box 4 (300,27)->(389,214) [89x187]
+    Y=  35.6 X=  33.4 Date of Birth
+    Y=  56.3 X=  33.4 Mobile Number
+    Y=  77.0 X=  33.4 Email Address
+    Y=  97.8 X=  33.4 Field of Employment
+    Y= 118.5 X=  33.4 Nationality
+    Y= 139.3 X=  33.4 Highest Degree Attained
+    Y= 160.0 X=  33.4 Educational Institute (Last Attended)
+    Y= 180.8 X=  33.4 Organization
+    Y= 201.5 X=  33.4 Designation
+
+  Box 5 (78,360)->(538,410) [460x50]
+    Y= 381.5 X=  33.4 1.
+
+  Box 6 (301,475)->(564,614) [263x139]
+    Y= 488.0 X=  33.4 Address
+    Y= 508.8 X=  33.4 Town/City
+    Y= 529.5 X=  33.4 District
+    Y= 550.2 X=  33.4 State
+    Y= 571.0 X=  33.4 Country Name
+    Y= 591.7 X=  33.4 Pin Code
+
+  Box 7 (64,729)->(154,757) [90x29]
+    Y= 738.8 X=  33.4 9th
+
+  Box 8 (180,658)->(251,673) [71x15]
+    Y= 663.5 X=  33.4 Country: India
+    Y= 663.5 X= 155.5 State:
+
+  Box 9 (348,660)->(393,674) [45x14]
+    Y= 663.5 X=  33.4 Country: India
+    Y= 663.5 X= 155.5 State:
+    Y= 663.5 X= 315.5 District
+
+  Box 10 (473,661)->(511,679) [38x18]
+    Y= 663.5 X=  33.4 Country: India
+    Y= 663.5 X= 155.5 State:
+    Y= 663.5 X= 315.5 District
+    Y= 663.5 X= 454.4 City:
+
+--- Page 2 ---
+
+  Box 11 (193,183)->(223,200) [30x17]
+    Y= 190.3 X=  33.4 Country: India
+    Y= 190.3 X= 168.7 State:
+
+  Box 12 (322,185)->(360,198) [38x13]
+    Y= 190.3 X=  33.4 Country: India
+    Y= 190.3 X= 168.7 State:
+    Y= 190.3 X= 287.4 District:
+
+  Box 13 (461,186)->(498,201) [37x15]
+    Y= 190.3 X=  33.4 Country: India
+    Y= 190.3 X= 168.7 State:
+    Y= 190.3 X= 287.4 District:
+    Y= 190.3 X= 441.8 City:
+
+  Box 14 (119,284)->(194,322) [74x38]
+    Y= 299.4 X=  33.4 10th
+
+  Box 15 (185,533)->(246,550) [60x17]
+    Y= 539.2 X=  33.4 Country: India
+    Y= 539.2 X= 158.7 State:
+
+  Box 16 (350,533)->(390,551) [40x18]
+    Y= 539.2 X=  33.4 Country: India
+    Y= 539.2 X= 158.7 State:
+    Y= 539.2 X= 317.4 District:
+
+  Box 17 (475,531)->(516,552) [41x20]
+    Y= 539.2 X=  33.4 Country: India
+    Y= 539.2 X= 158.7 State:
+    Y= 539.2 X= 317.4 District:
+    Y= 539.2 X= 455.4 City:
+
+  Box 18 (120,648)->(192,671) [72x23]
+    Y= 655.9 X=  33.4 11th
+
+--- Page 3 ---
+
+  Box 19 (184,57)->(240,76) [57x19]
+    Y=  62.3 X=  33.4 Country: India
+    Y=  62.3 X= 158.7 State:
+
+  Box 20 (351,58)->(393,72) [42x14]
+    Y=  62.3 X=  33.4 Country: India
+    Y=  62.3 X= 158.7 State:
+    Y=  62.3 X= 317.4 District:
+
+  Box 21 (475,61)->(524,73) [50x12]
+    Y=  62.3 X=  33.4 Country: India
+    Y=  62.3 X= 158.7 State:
+    Y=  62.3 X= 317.4 District:
+    Y=  62.3 X= 455.4 City:
+
+  Box 22 (97,193)->(155,226) [58x33]
+    Y= 206.2 X=  33.3 12th
+
+  Box 23 (219,527)->(321,542) [101x16]
+    Y= 532.8 X=  32.0 JEE Mains
+    Y= 546.8 X=  32.0 Upload Your JEE Mains Score Card : Yes
+
+--- Page 5 ---
+
+  Box 24 (97,281)->(568,344) [471x63]
+    Y= 299.3 X=  32.9 1
+    Y= 325.6 X=  32.9 2
+
+  Box 25 (101,715)->(457,732) [356x16]
+    Y= 721.3 X=  33.4 Applicant Name:

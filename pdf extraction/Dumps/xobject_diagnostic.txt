@@ -1,0 +1,34 @@
+
+=== Page 0 ===
+  Images: 2
+    Image xref=30, name=Im3, size=242x101, cs=ICCBased
+    Image xref=147, name=Im4, size=195x255, cs=DeviceRGB
+  Page xref: 3
+  XObjects: 0
+
+=== Page 1 ===
+  Images: 0
+  Page xref: 5
+  XObjects: 0
+
+=== Page 2 ===
+  Images: 0
+  Page xref: 7
+  XObjects: 0
+
+=== Page 3 ===
+  Images: 0
+  Page xref: 9
+  XObjects: 0
+
+=== Page 4 ===
+  Images: 2
+    Image xref=30, name=I1, size=242x101, cs=ICCBased
+    Image xref=32, name=I2, size=195x255, cs=DeviceRGB
+  Page xref: 11
+  XObjects: 0
+
+=== Page 5 ===
+  Images: 0
+  Page xref: 13
+  XObjects: 0

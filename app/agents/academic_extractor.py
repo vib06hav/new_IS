@@ -82,6 +82,7 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
             "additional information", "preferred major", "positions of",
             "date of birth", "mobile number", "email address",
             "nationality", "first generation", "full name",
+            "subject category",
         ]):
             continue
 
@@ -129,7 +130,8 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
         # ── C. Subject table header ──
         if ("subject wise marks" in lower_full
             or ("subject" in lower_full
-                and ("maximum" in lower_full or "obtained" in lower_full))):
+                and ("maximum" in lower_full or "obtained" in lower_full
+                     or "predicted" in lower_full))):
             in_subject_table = True
             continue
 
@@ -150,7 +152,7 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
                 continue
 
             # Valid subject: must have digits in score and short subject name
-            if (len(subj_name) > 2 and len(subj_name) < 50
+            if (len(subj_name) >= 2 and len(subj_name) < 50
                     and any(c.isdigit() for c in obtained)
                     and not any(kw in subj_name.lower() for kw in [
                         "applicant", "date:", "rank", "position", "role",

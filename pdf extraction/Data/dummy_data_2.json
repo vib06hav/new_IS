@@ -1,0 +1,108 @@
+{
+  "personal_details": {
+    "name": "Ananya Kapoor",
+    "mobile_number": "9876543182",
+    "email": "ananya.kapoor07@gmail.com",
+    "date_of_birth": "2007-02-18",
+    "age_as_on_31_july_2025": 18,
+    "blood_group": "B+",
+    "gender": "Female",
+    "nationality": "Indian",
+    "category": "General",
+    "punjab_domicile": "No",
+    "proof_of_identity": "Aadhaar Card",
+    "abc_nad_id": "ABC483920174",
+    "pan_card": "CDAPK6294Q",
+    "aadhaar_card": "5183 4721 6609"
+  },
+  "parent_details": {
+    "father": {
+      "name": "Rohit Kapoor",
+      "date_of_birth": "1974-06-14",
+      "mobile_number": "9811156673",
+      "email": "rohit.kapoor@kpmg.com",
+      "field_of_employment": "Finance and Consulting",
+      "nationality": "Indian",
+      "highest_degree": "MBA",
+      "educational_institute_last_attended": "Indian School of Business",
+      "organization": "KPMG India",
+      "designation": "Partner"
+    },
+    "mother": {
+      "name": "Neha Kapoor",
+      "date_of_birth": "1977-09-02",
+      "mobile_number": "9811132205",
+      "email": "neha.kapoor@maxhealthcare.com",
+      "field_of_employment": "Healthcare",
+      "nationality": "Indian",
+      "highest_degree": "MBBS",
+      "educational_institute_last_attended": "Maulana Azad Medical College",
+      "organization": "Max Healthcare",
+      "designation": "Senior Consultant Physician"
+    }
+  },
+  "siblings": {
+    "has_sibling": true,
+    "details": [
+      {
+        "first_name": "Riya",
+        "last_name": "Kapoor",
+        "age": 21,
+        "high_school": "The Shri Ram School, Vasant Vihar",
+        "undergraduate_institute": "University College London",
+        "postgraduate_institute": null,
+        "current_employer": null
+      }
+    ]
+  },
+  "address_details": {
+    "permanent_same_as_communication": true,
+    "communication_address": {
+      "address": "B-214, Vasant Vihar",
+      "town_city": "New Delhi",
+      "district": "South West Delhi",
+      "state": "Delhi",
+      "country": "India",
+      "pin_code": "110057"
+    }
+  },
+  "education": {
+    "class_9": {
+      "country": "India",
+      "state": "Delhi",
+      "district": "South West Delhi",
+      "city": "New Delhi",
+      "school_name": "The Shri Ram School, Vasant Vihar",
+      "board": "ICSE",
+      "year_of_passing": 2022
+    },
+    "class_10": {
+      "country": "India",
+      "state": "Delhi",
+      "district": "South West Delhi",
+      "city": "New Delhi",
+      "school_name": "The Shri Ram School, Vasant Vihar",
+      "board": "ICSE",
+      "year_of_passing": 2023
+    },
+    "class_11": {
+      "country": "India",
+      "state": "Delhi",
+      "district": "South West Delhi",
+      "city": "New Delhi",
+      "school_name": "The Shri Ram School, Vasant Vihar",
+      "board": "ISC",
+      "year_of_passing": 2024
+    },
+    "class_12": {
+      "country": "India",
+      "state": "Delhi",
+      "district": "South West Delhi",
+      "city": "New Delhi",
+      "school_name": "The Shri Ram School, Vasant Vihar",
+      "board": "ISC",
+      "year_of_passing": 2025,
+      "status": "Appearing"
+    }
+  }
+}

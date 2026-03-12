@@ -18,6 +18,14 @@ def extract_layout_blocks(pdf_path: str) -> Dict[str, Any]:
     page_count = 0
     confidence = 0.95  # Base confidence for native PDF extraction
 
+    def clean_text(t: str) -> str:
+        if not t: return t
+        # Strip zero-width space and decompose common PDF ligatures
+        t = t.replace("\u200b", "")
+        t = t.replace("\ufb00", "ff").replace("\ufb01", "fi").replace("\ufb02", "fl")
+        t = t.replace("\ufb03", "ffi").replace("\ufb04", "ffl")
+        return t
+
     try:
         for page_layout in extract_pages(pdf_path):
             page_count += 1
@@ -27,7 +35,7 @@ def extract_layout_blocks(pdf_path: str) -> Dict[str, Any]:
                     if text:
                         blocks.append({
                             "page": page_count,
-                            "text": text,
+                            "text": clean_text(text),
                             "bbox": element.bbox,  # (x0, y0, x1, y1)
                         })
     except Exception as e:

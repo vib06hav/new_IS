@@ -11,8 +11,8 @@ def extract_personal_info(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any
         "full_name": None,
         "date_of_birth": None,
         "family_background": {
-            "father": {"name": None, "education": None, "occupation": None, "organization": None},
-            "mother": {"name": None, "education": None, "occupation": None, "organization": None}
+            "father": {"name": None, "education": None, "field_of_employment": None, "organization": None, "designation": None},
+            "mother": {"name": None, "education": None, "field_of_employment": None, "organization": None, "designation": None}
         },
         "declared_preferences": {},
         "demographic_flags": {}
@@ -106,7 +106,7 @@ def extract_personal_info(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any
     # Mother's data is on page 2 below Mother Details header.
     PARENT_LABELS = {
         "name", "highest degree attained", "education",
-        "field of employment", "occupation", "organization",
+        "field of employment", "occupation", "organization", "designation",
         "mobile number", "email address", "date of birth",
         "nationality", "educational institute (last attended)",
     }
@@ -136,29 +136,45 @@ def extract_personal_info(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any
                 elif bp == next_page and by > next_y:
                     section.append(b)
             else:
-                # Last header: collect everything below on same page
+                # Last header: collect blocks below on same page AND the next page,
+                # bounded by known section headers (Sibling Details, Address Details, etc.)
+                BOUNDARY_LABELS = {
+                    "sibling details", "address details", "address details:",
+                    "class 9th / equivalent", "class 9th", "languages known",
+                }
+                next_page = hdr_page + 1
                 if bp == hdr_page and by < hdr_y:
                     section.append(b)
+                elif bp == next_page:
+                    # Stop before boundary sections on the next page
+                    btext = b.get("text", "").strip().lower()
+                    if btext not in BOUNDARY_LABELS:
+                        section.append(b)
         
         for block in section:
             text = block.get("text", "").strip()
             lower_text = text.lower()
             
-            if lower_text not in PARENT_LABELS:
+            # Match labels with tolerance for trailing hyphens/spaces (e.g. "Organization -")
+            clean_label = lower_text.strip(" -:")
+            
+            if clean_label not in PARENT_LABELS:
                 continue
                 
             val = find_value_for_label(block)
             if not val:
                 continue
                 
-            if lower_text == "name":
+            if clean_label == "name":
                 identifiers["family_background"][context]["name"] = val
-            elif lower_text in ("highest degree attained", "education"):
+            elif clean_label in ("highest degree attained", "education"):
                 identifiers["family_background"][context]["education"] = val
-            elif lower_text in ("field of employment", "occupation"):
-                identifiers["family_background"][context]["occupation"] = val
-            elif lower_text == "organization":
+            elif clean_label in ("field of employment", "occupation"):
+                identifiers["family_background"][context]["field_of_employment"] = val
+            elif clean_label == "organization":
                 identifiers["family_background"][context]["organization"] = val
+            elif clean_label == "designation":
+                identifiers["family_background"][context]["designation"] = val
 
     return {
         "identifiers": identifiers,

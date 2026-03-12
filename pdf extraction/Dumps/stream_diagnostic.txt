@@ -1,0 +1,30 @@
+
+=== Page 0 ===
+  Total rects in stream: 1
+  Black filled rects (>5x5): 0
+  get_drawings() black filled rects (>5x5): 3
+
+=== Page 1 ===
+  Total rects in stream: 1
+  Black filled rects (>5x5): 0
+  get_drawings() black filled rects (>5x5): 3
+
+=== Page 2 ===
+  Total rects in stream: 1
+  Black filled rects (>5x5): 0
+  get_drawings() black filled rects (>5x5): 11
+
+=== Page 3 ===
+  Total rects in stream: 1
+  Black filled rects (>5x5): 0
+  get_drawings() black filled rects (>5x5): 5
+
+=== Page 4 ===
+  Total rects in stream: 0
+  Black filled rects (>5x5): 0
+  get_drawings() black filled rects (>5x5): 0
+
+=== Page 5 ===
+  Total rects in stream: 1
+  Black filled rects (>5x5): 0
+  get_drawings() black filled rects (>5x5): 2

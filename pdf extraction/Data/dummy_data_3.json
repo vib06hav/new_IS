@@ -1,0 +1,108 @@
+{
+  "personal_details": {
+    "name": "Sai Kiran Reddy",
+    "mobile_number": "9390127843",
+    "email": "saikiran.reddy18@gmail.com",
+    "date_of_birth": "2007-03-05",
+    "age_as_on_31_july_2025": 18,
+    "blood_group": "O+",
+    "gender": "Male",
+    "nationality": "Indian",
+    "category": "General",
+    "punjab_domicile": "No",
+    "proof_of_identity": "Aadhaar Card",
+    "abc_nad_id": "ABC381904572",
+    "pan_card": "KTRPS4821H",
+    "aadhaar_card": "6274 1935 8842"
+  },
+  "parent_details": {
+    "father": {
+      "name": "Ravi Reddy",
+      "date_of_birth": "1975-11-12",
+      "mobile_number": "9849123845",
+      "email": "ravireddy1975@gmail.com",
+      "field_of_employment": "Public Utilities",
+      "nationality": "Indian",
+      "highest_degree": "Diploma in Electrical Engineering",
+      "educational_institute_last_attended": "Government Polytechnic Warangal",
+      "organization": "Telangana State Southern Power Distribution Company Limited",
+      "designation": "Senior Line Technician"
+    },
+    "mother": {
+      "name": "Padma Reddy",
+      "date_of_birth": "1979-06-22",
+      "mobile_number": "9849117623",
+      "email": "padmareddy.teacher@gmail.com",
+      "field_of_employment": "Education",
+      "nationality": "Indian",
+      "highest_degree": "B.Ed",
+      "educational_institute_last_attended": "Kakatiya University",
+      "organization": "Government High School",
+      "designation": "Teacher"
+    }
+  },
+  "siblings": {
+    "has_sibling": true,
+    "details": [
+      {
+        "first_name": "Nikhil",
+        "last_name": "Reddy",
+        "age": 20,
+        "high_school": "SR Prime School Warangal",
+        "undergraduate_institute": "National Institute of Technology Warangal",
+        "postgraduate_institute": null,
+        "current_employer": null
+      }
+    ]
+  },
+  "address_details": {
+    "permanent_same_as_communication": true,
+    "communication_address": {
+      "address": "H.No 2-3-45, Subedari",
+      "town_city": "Hanamkonda",
+      "district": "Hanamkonda",
+      "state": "Telangana",
+      "country": "India",
+      "pin_code": "506001"
+    }
+  },
+  "education": {
+    "class_9": {
+      "country": "India",
+      "state": "Telangana",
+      "district": "Hanamkonda",
+      "city": "Warangal",
+      "school_name": "SR Prime School",
+      "board": "Telangana Board of Secondary Education",
+      "year_of_passing": 2022
+    },
+    "class_10": {
+      "country": "India",
+      "state": "Telangana",
+      "district": "Hanamkonda",
+      "city": "Warangal",
+      "school_name": "SR Prime School",
+      "board": "Telangana Board of Secondary Education",
+      "year_of_passing": 2023
+    },
+    "class_11": {
+      "country": "India",
+      "state": "Telangana",
+      "district": "Hanamkonda",
+      "city": "Warangal",
+      "school_name": "SR Junior College",
+      "board": "Telangana State Board of Intermediate Education",
+      "year_of_passing": 2024
+    },
+    "class_12": {
+      "country": "India",
+      "state": "Telangana",
+      "district": "Hanamkonda",
+      "city": "Warangal",
+      "school_name": "SR Junior College",
+      "board": "Telangana State Board of Intermediate Education",
+      "year_of_passing": 2025,
+      "status": "Passed"
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "personal_details": {
+    "name": "Arjun Mehta",
+    "mobile_number": "9876543120",
+    "email": "arjun.mehta05@gmail.com",
+    "date_of_birth": "2007-03-12",
+    "age_as_on_31_july_2025": 18,
+    "blood_group": "O+",
+    "gender": "Male",
+    "nationality": "Indian",
+    "category": "General",
+    "punjab_domicile": "No",
+    "proof_of_identity": "Aadhaar Card",
+    "abc_nad_id": "ABC345672189",
+    "pan_card": "BGTPM7392K",
+    "aadhaar_card": "7215 4382 1096",
+    "voter_id": null,
+    "driving_license": null
+  },
+
+  "parent_details": {
+    "father": {
+      "name": "Rajiv Mehta",
+      "date_of_birth": "1975-11-21",
+      "mobile_number": "9811123456",
+      "email": "rajiv.mehta@infosys.com",
+      "field_of_employment": "Information Technology",
+      "nationality": "Indian",
+      "highest_degree": "MBA",
+      "educational_institute_last_attended": "Indian Institute of Management Bangalore",
+      "organization": "Infosys Ltd",
+      "designation": "Senior Vice President"
+    }
+  },
+
+  "siblings": {
+    "has_sibling": true,
+    "details": [
+      {
+        "first_name": "Riya",
+        "last_name": "Mehta",
+        "age": 21,
+        "high_school": "Delhi Public School R.K. Puram",
+        "undergraduate_institute": "Ashoka University",
+        "postgraduate_institute": null,
+        "current_employer": null
+      }
+    ]
+  },
+
+  "address_details": {
+    "permanent_same_as_communication": true,
+    "communication_address": {
+      "address": "D-164, Vasant Vihar",
+      "town_city": "New Delhi",
+      "district": "South West Delhi",
+      "state": "Delhi",
+      "country": "India",
+      "pin_code": "110057"
+    }
+  },
+
+  "education": {
+    "class_9": {
+      "country": "India",
+      "state": "Delhi",
+      "district": "South Delhi",
+      "city": "New Delhi",
+      "school_name": "Delhi Public School Mathura Road",
+      "board": "CBSE",
+      "year_of_passing": 2022
+    },
+    "class_10": {
+      "country": "India",
+      "state": "Delhi",
+      "district": "South Delhi",
+      "city": "New Delhi",
+      "school_name": "Delhi Public School Mathura Road",
+      "board": "CBSE",
+      "year_of_passing": 2023
+    },
+    "class_11": {
+      "country": "India",
+      "state": "Delhi",
+      "district": "South Delhi",
+      "city": "New Delhi",
+      "school_name": "Delhi Public School Mathura Road",
+      "board": "CBSE",
+      "year_of_passing": 2024
+    },
+    "class_12": {
+      "country": "India",
+      "state": "Delhi",
+      "district": "South Delhi",
+      "city": "New Delhi",
+      "school_name": "Delhi Public School Mathura Road",
+      "board": "CBSE",
+      "year_of_passing": 2025,
+      "status": "Appearing"
+    }
+  },
+
+  "standardized_tests": {
+    "jee_main": {
+      "attempted": true,
+      "test_date": "2025-01-29",
+      "roll_number": "DL25JEE617284"
+    }
+  }
+}
