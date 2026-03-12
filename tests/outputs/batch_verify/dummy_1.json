@@ -1,0 +1,636 @@
+{
+  "canonical_data": {
+    "canonical_version": "1.1",
+    "identifiers": {
+      "application_id": "batch_verify_1",
+      "full_name": "Aarav Jain",
+      "date_of_birth": "2007-06-14",
+      "family_background": {
+        "father": {
+          "name": "Sandeep Jain",
+          "education": "B.Com",
+          "field_of_employment": "Textile Export Business",
+          "organization": "Jain Tex Exports",
+          "designation": "Founder and Managing Director"
+        },
+        "mother": {
+          "name": null,
+          "education": null,
+          "field_of_employment": null,
+          "organization": null,
+          "designation": null
+        }
+      },
+      "declared_preferences": {},
+      "demographic_flags": {}
+    },
+    "profile_meta": {
+      "source_document_page_count": 6,
+      "extraction_timestamp": "2026-03-12T20:10:55.106028Z",
+      "layout_block_count": 418,
+      "detected_section_labels": [
+        "Personal Details",
+        "CENTRAL BOARD OF SECONDARY",
+        "CENTRAL BOARD OF",
+        "Standardized Test Scores",
+        "Essays",
+        "Extra- Curricular Activities (Outside the Classroom)",
+        "Co- Curricular Activities (Tinkering, Research and More)",
+        "Leadership Role at School",
+        "Declaration"
+      ]
+    },
+    "academic_entries": [
+      {
+        "entry_id": "9476a780-87f9-43df-b7f6-ec7b1e30b2e1",
+        "academic_level": "9TH",
+        "school_name": "Jayshree Periwal International School",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "academic_year": "2022",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "81.6",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "95.8",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "81.8",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Hindi",
+            "score_raw": "86.6",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Science",
+            "score_raw": "87.4",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Social Studies",
+            "score_raw": "77.5",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "6336d88b-d6c5-496c-9679-49f1b87e8c1e",
+        "academic_level": "10TH",
+        "school_name": "Jayshree Periwal International School",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "academic_year": "2023",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "96.6",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "98",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Science",
+            "score_raw": "95",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "95",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Hindi",
+            "score_raw": "95",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Artificial Intelligence",
+            "score_raw": "100",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "4e7456c2-8dc0-4972-9b28-74eb9aabb4a3",
+        "academic_level": "11TH",
+        "school_name": "Jayshree Periwal International School",
+        "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+        "academic_year": "2024",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "97.9",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "150",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Physics",
+            "score_raw": "58",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Chemistry",
+            "score_raw": "60",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Sanskrit",
+            "score_raw": "95",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "97",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "bb7e751c-e65c-4c7f-966f-80ab9bc7cf91",
+        "academic_level": "12TH",
+        "school_name": "Jayshree Periwal International School",
+        "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+        "academic_year": "2025",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "97.4",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "144",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Physics",
+            "score_raw": "52",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Chemistry",
+            "score_raw": "56",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Sanskrit",
+            "score_raw": "99",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "96",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      }
+    ],
+    "schooling_history": [
+      {
+        "entry_id": "09f5f7cb-4e71-4db2-ae31-fdad237ddae9",
+        "level": "9TH",
+        "school_name": "Jayshree Periwal International School",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "8d482aae-552f-4127-b647-da4fce8ef8bf",
+        "level": "10TH",
+        "school_name": "Jayshree Periwal International School",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "3a847bae-6d22-474e-9f4c-a402163b42fb",
+        "level": "11TH",
+        "school_name": "Jayshree Periwal International School",
+        "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "e52b964c-059d-4826-9381-5b1e8ab5b442",
+        "level": "12TH",
+        "school_name": "Jayshree Periwal International School",
+        "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+        "location": null,
+        "confidence_score": 0.85
+      }
+    ],
+    "test_entries": [
+      {
+        "entry_id": "bbb3eecb-c006-4fb8-9d4b-53b66e8cf892",
+        "test_name": "JEE Mains",
+        "test_date": null,
+        "total_score": "99.33",
+        "sectional_scores": [
+          {
+            "label": "Maths Percentile",
+            "raw_score": "96.67"
+          },
+          {
+            "label": "Chemistry Percentile",
+            "raw_score": "99.01"
+          }
+        ],
+        "percentile": null,
+        "rank": null,
+        "result_status": "available",
+        "confidence_score": 0.9
+      }
+    ],
+    "essay_entries": [
+      {
+        "entry_id": "5d4b9a44-420b-4354-8d93-850109bc5dfa",
+        "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+        "raw_text": "From a young age, I\u2019ve been fascinated by how things work\u2014whether it's the logic behind mobile apps, the science in smart devices, or the\ninnovation that powers everyday life. What excites me most about engineering and technology is the ability to solve real-world problems\nusing creativity and logic. It's not just about building machines or writing code\u2014it's about designing solutions that can create meaningful\nimpact. The ever-evolving nature of tech, combined with its potential to transform industries from healthcare to climate, makes this field\nincredibly exciting for me. I believe my curiosity, collaborative mindset, and eagerness to learn make me a strong fit for Plaksha\u2019s B.Tech program. I enjoy working on\nprojects, asking questions, and applying what I learn to practical challenges. I also have a keen interest in interdisciplinary learning\u2014blending\ntech with design, data, and human behavior\u2014which I understand is core to Plaksha\u2019s approach. What draws me most to Plaksha is its focus\non innovation, entrepreneurship, and societal impact. I\u2019m excited by the opportunity to learn from faculty, mentors, and peers who are\npassionate about building a better future through technology. Plaksha\u2019s hands-on curriculum, values-driven mission, and emphasis on\nleadership resonate deeply with my aspirations.",
+        "word_count": 196,
+        "character_count": 1317,
+        "placeholder_flag": false,
+        "duplication_ratio": 0.0,
+        "short_response_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "e739ac61-ab56-4f39-8ea6-6b802ba884c1",
+        "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+        "raw_text": "Having grown up with a pet dog, I\u2019ve developed a deep sense of empathy and care for animals. That personal connection inspired me to take\naction when I noticed several stray dogs in my neighborhood struggling with hunger, injuries, and neglect. I initiated a small project with a\nfew classmates to support these animals by organizing feeding drives, arranging basic medical aid through local NGOs, and spreading\nawareness about responsible and humane treatment of strays. One of the major challenges was addressing concerns from some residents who were initially uncomfortable with our activities. There were\nworries about safety and cleanliness. Instead of giving up, I took the time to understand their perspective and created a small awareness\ncampaign. We shared how caring for strays through sterilization and regular feeding could actually make the community safer. We also made\nsure to clean up after every feeding and involved local animal welfare volunteers to lend credibility to our efforts. This experience taught me that leadership is as much about listening and empathy as it is about action. It showed me how\nperseverance\u2014combined with teamwork and a clear sense of purpose\u2014can gradually change mindsets and make a difference. It also\nreinforced that even small initiatives, when pursued with sincerity, can have a positive and lasting impact.",
+        "word_count": 213,
+        "character_count": 1358,
+        "placeholder_flag": false,
+        "duplication_ratio": 0.0,
+        "short_response_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "activity_entries": [
+      {
+        "entry_id": "4224d2bf-16db-4f0c-ae95-e3a1c17b25af",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "Music Piano",
+        "level": "International",
+        "duration": "5",
+        "description_raw": "",
+        "original_row_content": "1. | Music Piano | International | 5",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "0223e558-a630-48a5-8aa7-6cf537d06628",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "Yoga",
+        "level": "Personal",
+        "duration": "2",
+        "description_raw": "",
+        "original_row_content": "2. | Yoga | Personal | 2",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "da7f7c71-0c98-4d0f-8fe5-6971076e0db6",
+        "activity_type": "co_curricular",
+        "category": null,
+        "activity_name": "Reading",
+        "level": "Personal",
+        "duration": "6",
+        "description_raw": "",
+        "original_row_content": "2. | Reading | Personal | 6",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "40618897-f971-4975-bba8-c65ea9912394",
+        "activity_type": "leadership",
+        "category": null,
+        "activity_name": "Yes",
+        "level": null,
+        "duration": null,
+        "description_raw": "Have you attended Young Technology Scholars Programme? Is there anything else you want to tell us? No",
+        "original_row_content": "Yes | Have you attended Young Technology Scholars Programme? Is there anything else you want to tell us? | No",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "extracurricular_activities": [
+      {
+        "entry_id": "4224d2bf-16db-4f0c-ae95-e3a1c17b25af",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "Music Piano",
+        "level": "International",
+        "duration": "5",
+        "description_raw": "",
+        "original_row_content": "1. | Music Piano | International | 5",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "0223e558-a630-48a5-8aa7-6cf537d06628",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "Yoga",
+        "level": "Personal",
+        "duration": "2",
+        "description_raw": "",
+        "original_row_content": "2. | Yoga | Personal | 2",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "co_curricular_activities": [
+      {
+        "entry_id": "da7f7c71-0c98-4d0f-8fe5-6971076e0db6",
+        "activity_type": "co_curricular",
+        "category": null,
+        "activity_name": "Reading",
+        "level": "Personal",
+        "duration": "6",
+        "description_raw": "",
+        "original_row_content": "2. | Reading | Personal | 6",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "leadership_activities": [
+      {
+        "entry_id": "40618897-f971-4975-bba8-c65ea9912394",
+        "activity_type": "leadership",
+        "category": null,
+        "activity_name": "Yes",
+        "level": null,
+        "duration": null,
+        "description_raw": "Have you attended Young Technology Scholars Programme? Is there anything else you want to tell us? No",
+        "original_row_content": "Yes | Have you attended Young Technology Scholars Programme? Is there anything else you want to tell us? | No",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "timeline_entries": [
+      {
+        "entry_id": "6d9b0e6f-bc57-4c52-9bb2-4b08a443a5e6",
+        "year": "Unknown",
+        "event_label": "Activity: Music Piano",
+        "source_type": "activity",
+        "source_reference": "4224d2bf-16db-4f0c-ae95-e3a1c17b25af"
+      },
+      {
+        "entry_id": "8af88b4e-85ae-45b7-8fe6-a481ec58c460",
+        "year": "Unknown",
+        "event_label": "Activity: Yoga",
+        "source_type": "activity",
+        "source_reference": "0223e558-a630-48a5-8aa7-6cf537d06628"
+      },
+      {
+        "entry_id": "50f3c9bb-2812-4c64-83be-5567787e6010",
+        "year": "Unknown",
+        "event_label": "Activity: Reading",
+        "source_type": "activity",
+        "source_reference": "da7f7c71-0c98-4d0f-8fe5-6971076e0db6"
+      },
+      {
+        "entry_id": "c1874d92-dd20-45a8-a5ca-e723e1e194a7",
+        "year": "2025",
+        "event_label": "Academic Record: 12TH",
+        "source_type": "academic",
+        "source_reference": "bb7e751c-e65c-4c7f-966f-80ab9bc7cf91"
+      },
+      {
+        "entry_id": "0cfc4fae-bafd-4e16-b3e7-96dcb602a65d",
+        "year": "2024",
+        "event_label": "Academic Record: 11TH",
+        "source_type": "academic",
+        "source_reference": "4e7456c2-8dc0-4972-9b28-74eb9aabb4a3"
+      },
+      {
+        "entry_id": "474cf233-e2e5-44f9-910d-8ccf9bc049d5",
+        "year": "2023",
+        "event_label": "Academic Record: 10TH",
+        "source_type": "academic",
+        "source_reference": "6336d88b-d6c5-496c-9679-49f1b87e8c1e"
+      },
+      {
+        "entry_id": "b4cb2f7c-df50-4f5f-8861-8f3d89f63a0c",
+        "year": "2022",
+        "event_label": "Academic Record: 9TH",
+        "source_type": "academic",
+        "source_reference": "9476a780-87f9-43df-b7f6-ec7b1e30b2e1"
+      }
+    ],
+    "cross_references": {
+      "entity_map": [
+        {
+          "entity_token": "Mathematics",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "9476a780-87f9-43df-b7f6-ec7b1e30b2e1"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "6336d88b-d6c5-496c-9679-49f1b87e8c1e"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "4e7456c2-8dc0-4972-9b28-74eb9aabb4a3"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "bb7e751c-e65c-4c7f-966f-80ab9bc7cf91"
+            }
+          ]
+        },
+        {
+          "entity_token": "English",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "9476a780-87f9-43df-b7f6-ec7b1e30b2e1"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "6336d88b-d6c5-496c-9679-49f1b87e8c1e"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "4e7456c2-8dc0-4972-9b28-74eb9aabb4a3"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "bb7e751c-e65c-4c7f-966f-80ab9bc7cf91"
+            }
+          ]
+        },
+        {
+          "entity_token": "Hindi",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "9476a780-87f9-43df-b7f6-ec7b1e30b2e1"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "6336d88b-d6c5-496c-9679-49f1b87e8c1e"
+            }
+          ]
+        },
+        {
+          "entity_token": "Science",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "9476a780-87f9-43df-b7f6-ec7b1e30b2e1"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "6336d88b-d6c5-496c-9679-49f1b87e8c1e"
+            }
+          ]
+        },
+        {
+          "entity_token": "Physics",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "4e7456c2-8dc0-4972-9b28-74eb9aabb4a3"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "bb7e751c-e65c-4c7f-966f-80ab9bc7cf91"
+            }
+          ]
+        },
+        {
+          "entity_token": "Chemistry",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "4e7456c2-8dc0-4972-9b28-74eb9aabb4a3"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "bb7e751c-e65c-4c7f-966f-80ab9bc7cf91"
+            }
+          ]
+        },
+        {
+          "entity_token": "Sanskrit",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "4e7456c2-8dc0-4972-9b28-74eb9aabb4a3"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "bb7e751c-e65c-4c7f-966f-80ab9bc7cf91"
+            }
+          ]
+        }
+      ]
+    },
+    "integrity_report": {
+      "anomalies": []
+    },
+    "extraction_confidence": {
+      "agent_scores": [
+        {
+          "agent_id": 1,
+          "agent_name": "Layout Block Extractor",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 2,
+          "agent_name": "Section Boundary Detector",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 3,
+          "agent_name": "Personal Information Extractor",
+          "confidence_score": 0.85
+        },
+        {
+          "agent_id": 4,
+          "agent_name": "Academic Records Extractor",
+          "confidence_score": 0.85
+        },
+        {
+          "agent_id": 5,
+          "agent_name": "Standardized Test Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 6,
+          "agent_name": "Essay Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 7,
+          "agent_name": "Activity Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 8,
+          "agent_name": "Cross-Section Entity Detector",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 9,
+          "agent_name": "Timeline Builder",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 10,
+          "agent_name": "Completeness & Integrity Analyzer",
+          "confidence_score": 0.95
+        }
+      ],
+      "aggregate_confidence": 0.9099999999999999
+    }
+  },
+  "ros_v1": null,
+  "validation_result": {
+    "passed": false,
+    "error": "LLM Synthesis Failed: [Errno 11001] getaddrinfo failed"
+  },
+  "confidence": 0.9099999999999999
+}

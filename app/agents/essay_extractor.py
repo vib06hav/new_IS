@@ -11,41 +11,76 @@ def extract_essays(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
     current_identifier = "Essay"
     current_text = ""
     
+    EXCLUDED_PROMPTS = [
+        "is there anything else which you would like to share with us",
+        "help us understand you better",
+        "upload your file",
+        "additional information",
+        "preferred major",
+        "declaration",
+        "extra- curricular activities",
+        "leadership role at school",
+        "co- curricular activities"
+    ]
+    
+    # Function to flush current essay
+    def flush_essay():
+        nonlocal current_text, current_identifier
+        text_to_flush = current_text.strip()
+        word_count = len(text_to_flush.split())
+        
+        # Only flush if there's substantial text
+        if text_to_flush and word_count > 30:
+            entries.append({
+                "entry_id": str(uuid.uuid4()),
+                "essay_identifier": current_identifier[:200],
+                "raw_text": text_to_flush,
+                "word_count": word_count,
+                "character_count": len(text_to_flush),
+                "placeholder_flag": False,
+                "duplication_ratio": 0.0,
+                "short_response_flag": word_count < 50,
+                "confidence_score": confidence
+            })
+        current_text = ""
+        current_identifier = "Unidentified Section"
+
     for block in section_blocks:
         text = block.get("text", "").strip()
-        if not text or text.lower() == "essays": continue
+        lower_text = text.lower()
+        if not text or lower_text == "essays": continue
         
-        # If block looks like a question or instruction
-        if text.endswith("?") or 10 < len(text.split()) < 40 or "prompt:" in text.lower():
-            if current_text and len(current_text.split()) > 30:
-                entries.append({
-                    "entry_id": str(uuid.uuid4()),
-                    "essay_identifier": current_identifier[:100],
-                    "raw_text": current_text,
-                    "word_count": len(current_text.split()),
-                    "character_count": len(current_text),
-                    "placeholder_flag": False,
-                    "duplication_ratio": 0.0,
-                    "short_response_flag": len(current_text.split()) < 50,
-                    "confidence_score": confidence
-                })
+        # 1. Detect and Switch Context for specific headers
+        if any(exc in lower_text for exc in EXCLUDED_PROMPTS):
+            flush_essay()
+            # If it's a known header, we might want to skip subsequent text
+            current_identifier = "Excluded: " + text
+            continue
+        
+        # 2. Skip short boilerplate
+        if len(text.split()) < 3 and text.lower() in ["no", "yes", "description", "1.", "2.", "3."]:
+            continue
+
+        # 3. Detect Essay Prompt
+        is_prompt = (text.endswith("?") and len(text.split()) < 60) or \
+                    "prompt:" in lower_text or \
+                    lower_text.startswith("what excites you") or \
+                    lower_text.startswith("share a time")
+
+        if is_prompt:
+            # If we were in an 'Excluded' zone, reset ID
+            if "Excluded:" in current_identifier or "Unidentified" in current_identifier:
                 current_text = ""
+            
+            flush_essay()
             current_identifier = text
         else:
-            current_text += text + "\n"
+            # Only append if we have a valid identifier (not in excluded zone)
+            if not current_identifier.startswith("Excluded:"):
+                current_text += text + " "
             
-    if current_text and len(current_text.split()) > 20:
-        entries.append({
-            "entry_id": str(uuid.uuid4()),
-            "essay_identifier": current_identifier[:100],
-            "raw_text": current_text.strip(),
-            "word_count": len(current_text.split()),
-            "character_count": len(current_text),
-            "placeholder_flag": False,
-            "duplication_ratio": 0.0,
-            "short_response_flag": len(current_text.split()) < 50,
-            "confidence_score": confidence
-        })
+    # Final flush
+    flush_essay()
 
     return {
         "essay_entries": entries,

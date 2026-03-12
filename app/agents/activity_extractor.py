@@ -2,112 +2,101 @@ from typing import List, Dict, Any
 import uuid
 import re
 
-def extract_activities(normalized_rows: List[List[str]]) -> Dict[str, Any]:
+def extract_activities(normalized_rows: List[List[str]], category_hint: str = "other") -> Dict[str, Any]:
     """
-    Extract activities as a collection using normalized rows. No ranking inferred.
+    Extract activities using a Hybrid Scoring approach.
+    - Uses regex for Duration and Level.
+    - Uses 'Greedy Sweep-up' for descriptions.
+    - Stores raw text in original_row_content as a safety net.
     """
     entries = []
     confidence = 0.90
     
-    current_entry = None
-    in_table = False
+    # regex for Duration: looks for digits + time units or a standalone small digit
+    # e.g. "3 years", "2 months", "4"
+    DURATION_PATTERN = re.compile(r'(\d+\s*(?:years?|yrs?|months?|weeks?)|^\s*\d{1,2}\s*$)', re.IGNORECASE)
     
+    # Semantic anchors for Level
+    LEVEL_ANCHORS = ["national", "international", "state", "zonal", "intra", "district", "personal", "grade", "school", "community"]
+
+    def clean_text(t):
+        if not t: return ""
+        return re.sub(r'^(?:\d+\.|\w+\s+\d+:?)\s*', '', t.strip()).strip()
+
+    def is_header(row):
+        row_joined = " ".join(row).lower()
+        header_keywords = ["activity", "participation", "years", "position", "responsibility", "roles", "curricular", "extra", "level", "achievement", "duration"]
+        match_count = sum(1 for kw in header_keywords if kw in row_joined)
+        return match_count >= 2
+
     for row in normalized_rows:
         if not row: continue
-        text = " ".join(row).strip()
-        lower_line = text.lower()
+        if is_header(row): continue
         
-        # Header detection for activities table
-        if "activity" in lower_line and ("category" in lower_line or "participation" in lower_line):
-            in_table = True
-            continue
-            
-        # Parse table row: ["Debate Club", "Co-Curricular", "2 Years", "State"]
-        if in_table and len(row) >= 2:
-            clean_name = row[0].strip("-* ")
-            name_lower = clean_name.lower()
-            activity_type = "other"
-            if "club" in name_lower or "sport" in name_lower or "music" in name_lower or "art" in name_lower:
-                activity_type = "extracurricular"
-            elif "olympiad" in name_lower or "competition" in name_lower or "research" in name_lower:
-                activity_type = "co_curricular"
-            elif "president" in name_lower or "captain" in name_lower or "founder" in name_lower or "lead" in name_lower:
-                activity_type = "leadership"
-                
-            entries.append({
-                "entry_id": str(uuid.uuid4()),
-                "activity_type": activity_type,
-                "category": row[1].strip() if len(row) > 1 else None,
-                "activity_name": clean_name or "Unknown Activity",
-                "level": row[3].strip() if len(row) > 3 else None,
-                "duration": row[2].strip() if len(row) > 2 else None,
-                "description_raw": "",
-                "upload_flag": False,
-                "confidence_score": confidence
-            })
+        raw_content = " | ".join(row).strip()
+        
+        # Determine Activity Name (Identity)
+        # Default strategy: first cell is likely name, unless it's a numeric sentinel
+        name_candidate = ""
+        other_cells = []
+        
+        if len(row) > 1 and re.match(r'^\d+\.?$', row[0].strip()):
+            name_candidate = row[1]
+            other_cells = row[2:]
+        elif len(row) > 0:
+            name_candidate = row[0]
+            other_cells = row[1:]
+        else:
             continue
 
-        # non-table list processing
-        if text.startswith("-") or text.startswith("*") or "activity:" in lower_line or re.match(r'^\d+\.', text):
-            in_table = False
-            if current_entry:
-                entries.append(current_entry)
-            
-            clean_name = text.strip("-* ").split(":", 1)[-1].strip()
-            if len(row) > 1 and "activity" in row[0].lower():
-                clean_name = row[1].strip("-* ")
-                
-            name_lower = clean_name.lower()
-            activity_type = "other"
-            if "club" in name_lower or "sport" in name_lower or "music" in name_lower or "art" in name_lower:
-                activity_type = "extracurricular"
-            elif "olympiad" in name_lower or "competition" in name_lower or "research" in name_lower:
-                activity_type = "co_curricular"
-            elif "president" in name_lower or "captain" in name_lower or "founder" in name_lower or "lead" in name_lower:
-                activity_type = "leadership"
-            
-            current_entry = {
-                "entry_id": str(uuid.uuid4()),
-                "activity_type": activity_type,
-                "category": None,
-                "activity_name": clean_name or "Unknown Activity",
-                "level": None,
-                "duration": None,
-                "description_raw": "",
-                "upload_flag": False,
-                "confidence_score": confidence
-            }
-            continue
-            
-        if current_entry and not in_table:
-            for i, cell in enumerate(row):
-                lower_cell = cell.lower()
-                next_val = row[i+1].strip() if i + 1 < len(row) else cell.split(":", 1)[1].strip() if ":" in cell else ""
-                
-                if "level" in lower_cell:
-                    current_entry["level"] = next_val
-                elif "duration" in lower_cell:
-                    current_entry["duration"] = next_val
-                elif "category" in lower_cell:
-                    cat = next_val
-                    current_entry["category"] = cat
-                    
-                    cat_lower = cat.lower()
-                    if "club" in cat_lower or "sport" in cat_lower or "music" in cat_lower or "art" in cat_lower:
-                        current_entry["activity_type"] = "extracurricular"
-                    elif "olympiad" in cat_lower or "competition" in cat_lower or "research" in cat_lower:
-                        current_entry["activity_type"] = "co_curricular"
-                    elif "leadership" in cat_lower or "president" in cat_lower or "captain" in cat_lower or "founder" in cat_lower:
-                        current_entry["activity_type"] = "leadership"
-                else:
-                    if i == 0 and not ":" in cell:
-                        current_entry["description_raw"] += cell + " "
+        entry = {
+            "entry_id": str(uuid.uuid4()),
+            "activity_type": category_hint,
+            "category": None,
+            "activity_name": clean_text(name_candidate),
+            "level": None,
+            "duration": None,
+            "description_raw": "",
+            "original_row_content": raw_content,
+            "upload_flag": False,
+            "confidence_score": confidence
+        }
 
-    if current_entry:
-        entries.append(current_entry)
+        description_parts = []
         
-    for entry in entries:
-        entry["description_raw"] = entry["description_raw"].strip()
+        # Tagging remaining cells
+        for cell in other_cells:
+            cell_stripped = cell.strip()
+            if not cell_stripped: continue
+            
+            # Check for Duration
+            if not entry["duration"] and DURATION_PATTERN.search(cell_stripped):
+                # Ensure it's not a False Positive (like a Grade level)
+                if not any(anchor in cell_stripped.lower() for anchor in ["grade", "level"]):
+                    entry["duration"] = cell_stripped
+                    continue
+            
+            # Check for Level
+            if not entry["level"] and any(anchor in cell_stripped.lower() for anchor in LEVEL_ANCHORS):
+                entry["level"] = cell_stripped
+                continue
+            
+            # Greedy Sweep-up: Anything else is description
+            description_parts.append(cell_stripped)
+
+        entry["description_raw"] = " ".join(description_parts).strip()
+        
+        # Noise Filtering
+        name_val = str(entry["activity_name"] or "").lower()
+        if len(name_val) > 1:
+            noise_patterns = [
+                r'^additional information.*', r'^references.*', r'^declaration.*', r'^designation.*',
+                r'^organization.*', r'^preferred major.*', r'^where did you hear.*', r'^financial aid.*',
+                r'^school$', r'^friends/family.*', r'^activity$', r'^position$', r'^in what capacity.*',
+                r'^will you be applying.*', r'^references.*', r'^name.*', r'^email.*', r'^mobile.*'
+            ]
+            if not any(re.search(p, name_val) for p in noise_patterns):
+                entries.append(entry)
 
     return {
         "activity_entries": entries,

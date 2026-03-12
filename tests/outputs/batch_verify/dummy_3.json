@@ -1,0 +1,594 @@
+{
+  "canonical_data": {
+    "canonical_version": "1.1",
+    "identifiers": {
+      "application_id": "batch_verify_3",
+      "full_name": "Sai Kiran Reddy",
+      "date_of_birth": "2007-03-05",
+      "family_background": {
+        "father": {
+          "name": "Padma Reddy",
+          "education": "B.Ed",
+          "field_of_employment": "Education",
+          "organization": "Government High School",
+          "designation": "Teacher"
+        },
+        "mother": {
+          "name": "Padma Reddy",
+          "education": "B.Ed",
+          "field_of_employment": "Education",
+          "organization": "Government High School",
+          "designation": "Teacher"
+        }
+      },
+      "declared_preferences": {},
+      "demographic_flags": {}
+    },
+    "profile_meta": {
+      "source_document_page_count": 6,
+      "extraction_timestamp": "2026-03-12T20:11:01.178058Z",
+      "layout_block_count": 422,
+      "detected_section_labels": [
+        "Personal Details",
+        "TELANGANA BOARD OF",
+        "Standardized Test Scores",
+        "Essays",
+        "Extra- Curricular Activities (Outside the Classroom)",
+        "Co- Curricular Activities (Tinkering, Research and More)",
+        "Leadership Role at School",
+        "Declaration"
+      ]
+    },
+    "academic_entries": [
+      {
+        "entry_id": "ff789a68-9c5c-4394-97b2-e5242deedb3a",
+        "academic_level": "9TH",
+        "school_name": "SR Prime School",
+        "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
+        "academic_year": "2022",
+        "marking_scheme_raw": null,
+        "grading_mode": "unknown",
+        "score_raw": "CGPA out of 10",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "10",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Physics",
+            "score_raw": "10",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Biology",
+            "score_raw": "10",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Chemistry",
+            "score_raw": "10",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Social studies",
+            "score_raw": "10",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "0394b8c5-1a77-4652-af2f-d18a6deaf473",
+        "academic_level": "10TH",
+        "school_name": "SR Prime School",
+        "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+        "academic_year": "2023",
+        "marking_scheme_raw": "CGPA out of 10",
+        "grading_mode": "cgpa",
+        "score_raw": "9.2",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "10",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "science",
+            "score_raw": "10",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "social",
+            "score_raw": "9",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "english",
+            "score_raw": "9",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "telugu",
+            "score_raw": "9",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "bbffabde-f53e-4714-8dc5-6eaa3ddc40b0",
+        "academic_level": "11TH",
+        "school_name": "SR Junior College",
+        "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
+        "academic_year": "2024",
+        "marking_scheme_raw": "Other|marks",
+        "grading_mode": "unknown",
+        "score_raw": "96.17",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "141",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Physics",
+            "score_raw": "60",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "chemistry",
+            "score_raw": "60",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "french",
+            "score_raw": "99",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "english",
+            "score_raw": "92",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "e5143d6c-cc16-4ed0-b834-3340054a51ca",
+        "academic_level": "12TH",
+        "school_name": "SR Junior College",
+        "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
+        "academic_year": "2025",
+        "marking_scheme_raw": "Other|marks",
+        "grading_mode": "unknown",
+        "score_raw": "92.45",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "150",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Physics",
+            "score_raw": "59",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "chemistry",
+            "score_raw": "59",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "english",
+            "score_raw": "85",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "french",
+            "score_raw": "77",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      }
+    ],
+    "schooling_history": [
+      {
+        "entry_id": "b8807201-b21d-4de9-89e9-a36f06eaf20a",
+        "level": "9TH",
+        "school_name": "SR Prime School",
+        "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "8e5e2cc3-a0ad-4e9e-b281-a1be2245434d",
+        "level": "10TH",
+        "school_name": "SR Prime School",
+        "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "930887c4-fced-49a8-bbca-dfca52d62951",
+        "level": "11TH",
+        "school_name": "SR Junior College",
+        "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "70b18866-cf14-4846-83af-405d73ac6ded",
+        "level": "12TH",
+        "school_name": "SR Junior College",
+        "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
+        "location": null,
+        "confidence_score": 0.85
+      }
+    ],
+    "test_entries": [
+      {
+        "entry_id": "84812733-4aa6-4d32-b905-53aa5d5ec074",
+        "test_name": "JEE Mains",
+        "test_date": null,
+        "total_score": "97.38",
+        "sectional_scores": [
+          {
+            "label": "Physics Percentile",
+            "raw_score": "94.75"
+          },
+          {
+            "label": "Maths Percentile",
+            "raw_score": "98.96"
+          },
+          {
+            "label": "Chemistry Percentile",
+            "raw_score": "92.78"
+          }
+        ],
+        "percentile": null,
+        "rank": null,
+        "result_status": "available",
+        "confidence_score": 0.9
+      }
+    ],
+    "essay_entries": [
+      {
+        "entry_id": "47c67b01-b32f-4ed9-a9f9-7f17c5262ed9",
+        "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+        "raw_text": "I always wanted to do engineering as i always loved experimenting with computer, mobile devices.The current trend is moving towards new\ntechnology and improvements to the existing hardware and software at a rapid pace.I as a student need to be ahead of my competition by\nchoosing a good institute like plaksha which not only offers great teacher student ratio but also regular hackathons, labs and research\nfacilities , students of plaksha winning the hackathon organised by yale is also a great achievement which i suppose would only be possible\nwith the right guidance by faculty and also the efforts of students .I as a tech enthusiast would love being under the guidance of such\nesteemed faculty , i have already learnt basics of java and published a few games in google play store , thus possesing a good foundation\nwhich could be polished under the faculty of plaksha.The b.tech program at plaksha is going to be very useful for someone like me who is\nintrested in tech , plaksha has a huge number of clubs which would also be great for overall development,I personally like chess a lot and\nalso have won a few state tournaments when i was younger, i would definitely love reviving that hobby of mine at plaksha which has a huge\nnumber of clubs and option for new clubs.Maths being my favourite subject and also my strongest with the exception of mechanics in physics\nas it requires visualisation would be very helpful in my competitive programs.The best part of technology is that it can go on forever meaning\ni would have the oportunity to learn forever and explore many of the untouched , yet to be discovered parts of it.Plaksha having a vast\nnumber of reaserch labs and other things to support students would support me learn new things about technology and other things that i\nwould need to know about engineering.",
+        "word_count": 316,
+        "character_count": 1826,
+        "placeholder_flag": false,
+        "duplication_ratio": 0.0,
+        "short_response_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "fdebee4e-725f-4449-8d86-7d2afc04f8ac",
+        "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+        "raw_text": "I was almost always the head of the group when we were doing a science project / science fair.There were many times when the intitial idea\nwas good but many improvements could have been made later on.One such incident was us designing a alarm for water tank the initial\nprototype had a basic wire with a metal strip at the bottom of the tank and then another at the top of it , the alarm would go off when the\ncircuit was complete i.e water is completely filled, there were a few reasons why this prototype was good but not the best way.The first was\nthe risk of corrosion at the metal plate especially the bottom one, we simply fixed that by moving both the metal strips to the top. another\nproblem was this wasnt universal i.e didnot work for pure , distilled water which couldve been a limitation , we fixed this by having a closed\nenclosure with the bottom open and the insides having a earbud which had a thin lining of metal on top and a metal strip on top of the\nenclousure , the earbud being light and with less density would float up and hit the metal strip completing the circuit this eliminated the\nfactor of conductance of water , this new setup now could be used in many places with a liquid system or even pressure chambers when\nbuild with enough resistance for the movement of earbud. outside of the setup was a simple 9v battery and a buzzer which would normally\nwork and the setup acting as our switch. similar setup (initial prototype) was also used as a alarm mechanism for doors with an addition of a\nspring at the hinge which would make buzzer go off even at slight opening of door and also let the door be completely open, the metal strips\nare attached at the hinge and wall , the strip on the wall had spring to complete circuit at the slightest opening.We used a switch in the\nsecond system as we didnt want it to ring when we our clasroom doors were open while teaching.",
+        "word_count": 356,
+        "character_count": 1895,
+        "placeholder_flag": false,
+        "duplication_ratio": 0.0,
+        "short_response_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "activity_entries": [
+      {
+        "entry_id": "bdb8f6ec-3d15-401a-89f4-ac195b921979",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "2. 3.",
+        "level": null,
+        "duration": null,
+        "description_raw": "chess cricket table tennis",
+        "original_row_content": "1. 2. 3. | chess cricket table tennis",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "c27c8f20-0605-4f14-95d8-09dda545a906",
+        "activity_type": "co_curricular",
+        "category": null,
+        "activity_name": "science fair",
+        "level": "Intra School",
+        "duration": "3",
+        "description_raw": "",
+        "original_row_content": "1. | science fair | Intra School | 3",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "2af2b7b7-a4cf-4f8d-8922-3fe0c54a1179",
+        "activity_type": "co_curricular",
+        "category": null,
+        "activity_name": "made a game on teachers day",
+        "level": null,
+        "duration": "1",
+        "description_raw": "Class",
+        "original_row_content": "2. | made a game on teachers day | Class | 1",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "08ce6a33-43c4-4627-bcc3-b662d1ff3f9d",
+        "activity_type": "leadership",
+        "category": null,
+        "activity_name": "science fair",
+        "level": null,
+        "duration": "3",
+        "description_raw": "make sure everyone did their part , check for improvements at everypoint.",
+        "original_row_content": "2. | science fair | 3 | make sure everyone did their part , check for improvements at everypoint.",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "594ae323-c620-4327-9174-e627163bdc16",
+        "activity_type": "leadership",
+        "category": null,
+        "activity_name": "No",
+        "level": null,
+        "duration": null,
+        "description_raw": "Have you attended Young Technology Scholars Programme? Is there anything else you want to tell us? No",
+        "original_row_content": "No | Have you attended Young Technology Scholars Programme? Is there anything else you want to tell us? | No",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "extracurricular_activities": [
+      {
+        "entry_id": "bdb8f6ec-3d15-401a-89f4-ac195b921979",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "2. 3.",
+        "level": null,
+        "duration": null,
+        "description_raw": "chess cricket table tennis",
+        "original_row_content": "1. 2. 3. | chess cricket table tennis",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "co_curricular_activities": [
+      {
+        "entry_id": "c27c8f20-0605-4f14-95d8-09dda545a906",
+        "activity_type": "co_curricular",
+        "category": null,
+        "activity_name": "science fair",
+        "level": "Intra School",
+        "duration": "3",
+        "description_raw": "",
+        "original_row_content": "1. | science fair | Intra School | 3",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "2af2b7b7-a4cf-4f8d-8922-3fe0c54a1179",
+        "activity_type": "co_curricular",
+        "category": null,
+        "activity_name": "made a game on teachers day",
+        "level": null,
+        "duration": "1",
+        "description_raw": "Class",
+        "original_row_content": "2. | made a game on teachers day | Class | 1",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "leadership_activities": [
+      {
+        "entry_id": "08ce6a33-43c4-4627-bcc3-b662d1ff3f9d",
+        "activity_type": "leadership",
+        "category": null,
+        "activity_name": "science fair",
+        "level": null,
+        "duration": "3",
+        "description_raw": "make sure everyone did their part , check for improvements at everypoint.",
+        "original_row_content": "2. | science fair | 3 | make sure everyone did their part , check for improvements at everypoint.",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "594ae323-c620-4327-9174-e627163bdc16",
+        "activity_type": "leadership",
+        "category": null,
+        "activity_name": "No",
+        "level": null,
+        "duration": null,
+        "description_raw": "Have you attended Young Technology Scholars Programme? Is there anything else you want to tell us? No",
+        "original_row_content": "No | Have you attended Young Technology Scholars Programme? Is there anything else you want to tell us? | No",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "timeline_entries": [
+      {
+        "entry_id": "d45a70e6-5023-4517-a173-6bdb4ac202b1",
+        "year": "Unknown",
+        "event_label": "Activity: science fair",
+        "source_type": "activity",
+        "source_reference": "c27c8f20-0605-4f14-95d8-09dda545a906"
+      },
+      {
+        "entry_id": "6d246a71-b3bf-43bf-954e-c761b48feb1d",
+        "year": "Unknown",
+        "event_label": "Activity: made a game on teachers day",
+        "source_type": "activity",
+        "source_reference": "2af2b7b7-a4cf-4f8d-8922-3fe0c54a1179"
+      },
+      {
+        "entry_id": "f7d11336-ebd6-4a6d-9936-2e07c1ee050b",
+        "year": "Unknown",
+        "event_label": "Activity: science fair",
+        "source_type": "activity",
+        "source_reference": "08ce6a33-43c4-4627-bcc3-b662d1ff3f9d"
+      },
+      {
+        "entry_id": "779d439b-7834-470a-97d1-8a25519fca51",
+        "year": "2025",
+        "event_label": "Academic Record: 12TH",
+        "source_type": "academic",
+        "source_reference": "e5143d6c-cc16-4ed0-b834-3340054a51ca"
+      },
+      {
+        "entry_id": "ec0f10b9-549a-4b12-b920-15dd4bdbb2e0",
+        "year": "2024",
+        "event_label": "Academic Record: 11TH",
+        "source_type": "academic",
+        "source_reference": "bbffabde-f53e-4714-8dc5-6eaa3ddc40b0"
+      },
+      {
+        "entry_id": "4c3227bc-d0ea-4538-b196-5eb992ebfe2c",
+        "year": "2023",
+        "event_label": "Academic Record: 10TH",
+        "source_type": "academic",
+        "source_reference": "0394b8c5-1a77-4652-af2f-d18a6deaf473"
+      },
+      {
+        "entry_id": "fbea8370-c781-45eb-bf4c-61e68bbcf130",
+        "year": "2022",
+        "event_label": "Academic Record: 9TH",
+        "source_type": "academic",
+        "source_reference": "ff789a68-9c5c-4394-97b2-e5242deedb3a"
+      }
+    ],
+    "cross_references": {
+      "entity_map": [
+        {
+          "entity_token": "Mathematics",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "ff789a68-9c5c-4394-97b2-e5242deedb3a"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "0394b8c5-1a77-4652-af2f-d18a6deaf473"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "bbffabde-f53e-4714-8dc5-6eaa3ddc40b0"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "e5143d6c-cc16-4ed0-b834-3340054a51ca"
+            }
+          ]
+        },
+        {
+          "entity_token": "Physics",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "ff789a68-9c5c-4394-97b2-e5242deedb3a"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "bbffabde-f53e-4714-8dc5-6eaa3ddc40b0"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "e5143d6c-cc16-4ed0-b834-3340054a51ca"
+            }
+          ]
+        }
+      ]
+    },
+    "integrity_report": {
+      "anomalies": []
+    },
+    "extraction_confidence": {
+      "agent_scores": [
+        {
+          "agent_id": 1,
+          "agent_name": "Layout Block Extractor",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 2,
+          "agent_name": "Section Boundary Detector",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 3,
+          "agent_name": "Personal Information Extractor",
+          "confidence_score": 0.85
+        },
+        {
+          "agent_id": 4,
+          "agent_name": "Academic Records Extractor",
+          "confidence_score": 0.85
+        },
+        {
+          "agent_id": 5,
+          "agent_name": "Standardized Test Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 6,
+          "agent_name": "Essay Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 7,
+          "agent_name": "Activity Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 8,
+          "agent_name": "Cross-Section Entity Detector",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 9,
+          "agent_name": "Timeline Builder",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 10,
+          "agent_name": "Completeness & Integrity Analyzer",
+          "confidence_score": 0.95
+        }
+      ],
+      "aggregate_confidence": 0.9099999999999999
+    }
+  },
+  "ros_v1": null,
+  "validation_result": {
+    "passed": false,
+    "error": "LLM Synthesis Failed: [Errno 11001] getaddrinfo failed"
+  },
+  "confidence": 0.9099999999999999
+}

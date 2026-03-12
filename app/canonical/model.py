@@ -99,6 +99,7 @@ class ActivityEntry(BaseModel):
     level: Optional[str] = None
     duration: Optional[str] = None
     description_raw: Optional[str] = None
+    original_row_content: Optional[str] = None # Safety net
     upload_flag: bool
     confidence_score: float = Field(ge=0.0, le=1.0)
 
@@ -153,6 +154,9 @@ class CanonicalData(BaseModel):
     test_entries: List[TestEntry] = Field(default_factory=list)
     essay_entries: List[EssayEntry] = Field(default_factory=list)
     activity_entries: List[ActivityEntry] = Field(default_factory=list)
+    extracurricular_activities: List[ActivityEntry] = Field(default_factory=list)
+    co_curricular_activities: List[ActivityEntry] = Field(default_factory=list)
+    leadership_activities: List[ActivityEntry] = Field(default_factory=list)
     timeline_entries: List[TimelineEntry] = Field(default_factory=list)
     cross_references: CrossReferences
     integrity_report: IntegrityReport

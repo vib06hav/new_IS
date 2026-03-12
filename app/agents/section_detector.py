@@ -44,8 +44,11 @@ def detect_sections(blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
         
         # Heuristic for section header: short text, title case or upper case, potentially matching known headers
         is_header = False
-        if len(first_line) < 50:
-            if any(first_line.lower() == known.lower() for known in KNOWN_SECTIONS):
+        if len(first_line) < 60:
+            # Clean first_line of common prefixes like "1. ", "Activity 1:"
+            cleaned_line = re.sub(r'^(?:\d+\.|\w+\s+\d+:?)\s*', '', first_line).strip()
+            
+            if cleaned_line and any(cleaned_line.lower() == known.lower() for known in KNOWN_SECTIONS):
                 is_header = True
             elif first_line.isupper() and 2 < len(first_line.split()) < 6 and first_line not in ["YES", "NO", "NA"]:
                 # Potential unknown section

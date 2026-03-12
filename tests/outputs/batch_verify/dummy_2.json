@@ -1,0 +1,794 @@
+{
+  "canonical_data": {
+    "canonical_version": "1.1",
+    "identifiers": {
+      "application_id": "batch_verify_2",
+      "full_name": "Ananya Kapoor",
+      "date_of_birth": "2007-02-18",
+      "family_background": {
+        "father": {
+          "name": "Rohit Kapoor",
+          "education": "MBA",
+          "field_of_employment": "Finance and Consulting",
+          "organization": "KPMG India",
+          "designation": "Partner"
+        },
+        "mother": {
+          "name": null,
+          "education": null,
+          "field_of_employment": null,
+          "organization": null,
+          "designation": null
+        }
+      },
+      "declared_preferences": {},
+      "demographic_flags": {}
+    },
+    "profile_meta": {
+      "source_document_page_count": 6,
+      "extraction_timestamp": "2026-03-12T20:10:58.378284Z",
+      "layout_block_count": 405,
+      "detected_section_labels": [
+        "Personal Details",
+        "COUNCIL FOR THE INDIAN SCHOOL",
+        "COUNCIL FOR THE",
+        "Standardized Test Scores",
+        "Essays",
+        "Extra- Curricular Activities (Outside the Classroom)",
+        "Co- Curricular Activities (Tinkering, Research and More)",
+        "Leadership Role at School",
+        "Declaration"
+      ]
+    },
+    "academic_entries": [
+      {
+        "entry_id": "094fbaa0-6f3b-4d02-9fd3-9df167ba728d",
+        "academic_level": "9TH",
+        "school_name": "The Shri Ram School, Vasant Vihar",
+        "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ISC)",
+        "academic_year": "2022",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "91",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "92",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "89",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Science",
+            "score_raw": "94",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Computer Applications",
+            "score_raw": "95",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Social Studies",
+            "score_raw": "97",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Hindi",
+            "score_raw": "81",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "fe12bb14-c445-44a3-a026-0aabff1bfb64",
+        "academic_level": "10TH",
+        "school_name": "The Shri Ram School, Vasant Vihar",
+        "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ICSE)",
+        "academic_year": "2023",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "99",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "100",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Science",
+            "score_raw": "99",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Computer Applications",
+            "score_raw": "100",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Social Studies",
+            "score_raw": "100",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "97",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Hindi",
+            "score_raw": "96",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "df9246f1-aff3-4552-bcdb-1109af70e39d",
+        "academic_level": "11TH",
+        "school_name": "The Shri Ram School, Vasant Vihar",
+        "board_name": "Indian School Certificate (ISC)",
+        "academic_year": "2024",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "90",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "95",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Physics",
+            "score_raw": "88",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Chemistry",
+            "score_raw": "94",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Computer Science",
+            "score_raw": "96",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "84",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "825f3d46-bab6-4428-a112-5abe82d116ba",
+        "academic_level": "12TH",
+        "school_name": "The Shri Ram School, Vasant Vihar",
+        "board_name": "Indian School Certificate (ISC)",
+        "academic_year": "2025",
+        "marking_scheme_raw": "Percentage",
+        "grading_mode": "percentage",
+        "score_raw": "96",
+        "predicted_score_raw": null,
+        "subject_entries": [
+          {
+            "subject_name": "Mathematics",
+            "score_raw": "97",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Physics",
+            "score_raw": "95",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Chemistry",
+            "score_raw": "97",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "Computer Science",
+            "score_raw": "99",
+            "predicted_score_raw": null,
+            "component_tag": null
+          },
+          {
+            "subject_name": "English",
+            "score_raw": "95",
+            "predicted_score_raw": null,
+            "component_tag": null
+          }
+        ],
+        "component_tags": [],
+        "confidence_score": 0.85
+      }
+    ],
+    "schooling_history": [
+      {
+        "entry_id": "056d0720-ed11-48d7-950e-99f42156aee1",
+        "level": "9TH",
+        "school_name": "The Shri Ram School, Vasant Vihar",
+        "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ISC)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "97679d7d-5081-4262-85df-fda2f93b2752",
+        "level": "10TH",
+        "school_name": "The Shri Ram School, Vasant Vihar",
+        "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ICSE)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "a3b24b61-ccfb-461f-b01a-e5be7182665c",
+        "level": "11TH",
+        "school_name": "The Shri Ram School, Vasant Vihar",
+        "board_name": "Indian School Certificate (ISC)",
+        "location": null,
+        "confidence_score": 0.85
+      },
+      {
+        "entry_id": "01abebf0-bd1d-4ad6-a9ca-31944583e521",
+        "level": "12TH",
+        "school_name": "The Shri Ram School, Vasant Vihar",
+        "board_name": "Indian School Certificate (ISC)",
+        "location": null,
+        "confidence_score": 0.85
+      }
+    ],
+    "test_entries": [
+      {
+        "entry_id": "3aa160f3-885f-4dab-a2b5-47c6a62f9416",
+        "test_name": "JEE Mains",
+        "test_date": null,
+        "total_score": "98.4",
+        "sectional_scores": [
+          {
+            "label": "Physics Percentile",
+            "raw_score": "96.9"
+          },
+          {
+            "label": "Maths Percentile",
+            "raw_score": "98.4"
+          },
+          {
+            "label": "Chemistry Percentile",
+            "raw_score": "97.0"
+          }
+        ],
+        "percentile": null,
+        "rank": null,
+        "result_status": "available",
+        "confidence_score": 0.9
+      }
+    ],
+    "essay_entries": [
+      {
+        "entry_id": "cc783328-f7f2-4ed0-a7d2-cd08b63bd567",
+        "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+        "raw_text": "My interest in technology has grown over the years. My first tryst with computers was probably in Grade 4 when it was introduced in our\nschool curriculum. This curriculum, entailing foundational coding languages like QBasic and Scratch, piqued my interest and I tried to develop\na simple arithmetic calculator. This interest was further strengthened when my chess coach told me that computer programs could outsmart\nhumans. Intrigued by this notion, I spent months trying to comprehend algorithms behind these programs. My penchant for mathematics\nfrom my formative days was another factor that drew me towards this futuristic domain. Apart from being my top-scoring subject, I enjoyed\nthe challenge of participating and excelling in competitions like the SOF Olympiad and UNSW. My exposure expanded through participation in national competitions like IJSO, international trips (NASA, Silicon Valley, and the Hadron\nCollider at CERN), and industry internships. Multiple internships helped me understand Indian IT landscape, and reinforced the importance of\nsophisticated computing technologies for continued innovation and exploration. These experiences reinforced my desire to pursue graduation\nin the field of computers. Driven by a strong desire to develop academic rigour, I embarked on the preparation for one of the most challenging examinations in the\nworld- the JEE Advanced. This examination tests not only mathematical prowess but also analytical capabilities. Over the past two years, I\nhave dedicated myself to an intensive study regimen, solving intricate problems and tackling baffling concepts from calculus to mechanics.\nThe journey has been demanding, yet it has equipped me with invaluable skills that are beneficial in understanding algorithms, data\nstructures, and software development. Additionally, I have enhanced my technical acumen by studying Java and Html and also secured Rank\n2 in Grade 11 at my school.\nFocusing on personality and leadership development, I have participated in the student council and various inter-school events over the last\nfour years. My interest in Speech and Drama enabled me to complete Grade 7 at Trinity College, London. I have also actively engaged in\nmany non-profit activities such as waste collection drives and beach clean-ups.\nCumulatively, my journey has crystallised my desire to pursue graduation in computer science. I intend to follow-up with higher education\nand industry experience at leading global firms to contribute meaningfully to the society and field of science. I believe that studying at a modern and state-of-the-art university like Plaksha would help me realize my ambitions.",
+        "word_count": 398,
+        "character_count": 2655,
+        "placeholder_flag": false,
+        "duplication_ratio": 0.0,
+        "short_response_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "9e52f658-b0f2-424c-ab1e-ad20bfdf4ab8",
+        "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+        "raw_text": "The importance of social responsibility and community involvement had been emphasized time and again in my school since early days.\nHowever, initially I was oblivious to its true meaning till I undertook the SignBee project by V-shesh Foundation. I came to know about V-\nshesh from my classmates in the 10th grade. This project entailed learning Sign Language which is imperative for communicating with the\ndifferently-abled and creating awareness about the same in society. The initial phase of this project was interesting and informative as I imbibed a plethora of symbols and understood the intricacies of the\nlanguage. As we moved to the practical phase, we were required to perform a short story for the differently-abled kids. This was an eye-\nopener for me in terms of real challenges involved in converting theory to practice and taught me various lessons like empathy, gratitude,\ncompassion and responsibility. Towards the end of the project, I made an online presentation to educate people of my locality about the sign\nlanguage and this helped me implement by learnings on wider scope. I organized workshops and sessions in my society to sensitize people on this topic and make people understand that how simple uses of sign\nlanguage can help the differently-abled people feel more inclusive in our society. Reception to this idea was lukewarm at first as most people\nseemed unwilling to make an effort to learn the language. I had to go through several iterations like organizing personalized sessions over\nweekends and using different pneumonic tools to make sign language easy to learn and assimilate. To my surprise, the younger generation\nwas more enthusiastic about learning. This required me to involve my family who could put forth the ideas in a better way than I could\nenvisage.\nI was extremely satisfied that I was able to contribute in a small yet meaningful way towards the society over a span of two months.\nPredominantly, I learnt about leadership and how it requires one to approach a situation from different avenues and emerge with new ideas\nand have the passion to keep going through tough times. It also required motivating my colleagues several times who helped me during\nexecution. Today, I look back at the Signbee experience as one that made a better human being with a new perspective of the world and society.",
+        "word_count": 388,
+        "character_count": 2347,
+        "placeholder_flag": false,
+        "duplication_ratio": 0.0,
+        "short_response_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "activity_entries": [
+      {
+        "entry_id": "e37a671e-0fa0-4dfd-9427-0ebe59eb0b40",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "Chess",
+        "level": "District",
+        "duration": "4",
+        "description_raw": "",
+        "original_row_content": "1. | Chess | District | 4",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "849d356b-b264-486b-8bfd-c18f8819ea3a",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "Trinity College London",
+        "level": "Personal",
+        "duration": "7",
+        "description_raw": "",
+        "original_row_content": "2. | Trinity College London | Personal | 7",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "3fd8fe0e-c0c6-4293-9a25-2f51fd03954a",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "School Events Organization and Social Impaact",
+        "level": "Personal",
+        "duration": "10",
+        "description_raw": "",
+        "original_row_content": "3. | School Events Organization and Social Impaact | Personal | 10",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "892b6ace-21ac-40e8-8614-ec976529ad62",
+        "activity_type": "co_curricular",
+        "category": null,
+        "activity_name": "Participation in maths competitions like IPM Mental Maths NSEJS",
+        "level": "National",
+        "duration": "10",
+        "description_raw": "",
+        "original_row_content": "1. | Participation in maths competitions like IPM Mental Maths NSEJS | National | 10",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "223bfd8d-0b3a-4d29-a14f-a6f2f1a58b9b",
+        "activity_type": "leadership",
+        "category": null,
+        "activity_name": "No",
+        "level": null,
+        "duration": null,
+        "description_raw": "",
+        "original_row_content": "No",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "extracurricular_activities": [
+      {
+        "entry_id": "e37a671e-0fa0-4dfd-9427-0ebe59eb0b40",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "Chess",
+        "level": "District",
+        "duration": "4",
+        "description_raw": "",
+        "original_row_content": "1. | Chess | District | 4",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "849d356b-b264-486b-8bfd-c18f8819ea3a",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "Trinity College London",
+        "level": "Personal",
+        "duration": "7",
+        "description_raw": "",
+        "original_row_content": "2. | Trinity College London | Personal | 7",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      },
+      {
+        "entry_id": "3fd8fe0e-c0c6-4293-9a25-2f51fd03954a",
+        "activity_type": "extracurricular",
+        "category": null,
+        "activity_name": "School Events Organization and Social Impaact",
+        "level": "Personal",
+        "duration": "10",
+        "description_raw": "",
+        "original_row_content": "3. | School Events Organization and Social Impaact | Personal | 10",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "co_curricular_activities": [
+      {
+        "entry_id": "892b6ace-21ac-40e8-8614-ec976529ad62",
+        "activity_type": "co_curricular",
+        "category": null,
+        "activity_name": "Participation in maths competitions like IPM Mental Maths NSEJS",
+        "level": "National",
+        "duration": "10",
+        "description_raw": "",
+        "original_row_content": "1. | Participation in maths competitions like IPM Mental Maths NSEJS | National | 10",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "leadership_activities": [
+      {
+        "entry_id": "223bfd8d-0b3a-4d29-a14f-a6f2f1a58b9b",
+        "activity_type": "leadership",
+        "category": null,
+        "activity_name": "No",
+        "level": null,
+        "duration": null,
+        "description_raw": "",
+        "original_row_content": "No",
+        "upload_flag": false,
+        "confidence_score": 0.9
+      }
+    ],
+    "timeline_entries": [
+      {
+        "entry_id": "d735c065-8911-4430-a55a-b63c4f68c676",
+        "year": "Unknown",
+        "event_label": "Activity: Chess",
+        "source_type": "activity",
+        "source_reference": "e37a671e-0fa0-4dfd-9427-0ebe59eb0b40"
+      },
+      {
+        "entry_id": "decaa8e9-742e-400a-83ac-88672dec6c86",
+        "year": "Unknown",
+        "event_label": "Activity: Trinity College London",
+        "source_type": "activity",
+        "source_reference": "849d356b-b264-486b-8bfd-c18f8819ea3a"
+      },
+      {
+        "entry_id": "819b11cc-9c71-4101-9164-3288d028d068",
+        "year": "Unknown",
+        "event_label": "Activity: School Events Organization and Social Impaact",
+        "source_type": "activity",
+        "source_reference": "3fd8fe0e-c0c6-4293-9a25-2f51fd03954a"
+      },
+      {
+        "entry_id": "fa352938-1220-4a35-b45d-c86e5bd5c00b",
+        "year": "Unknown",
+        "event_label": "Activity: Participation in maths competitions like IPM Mental Maths NSEJS",
+        "source_type": "activity",
+        "source_reference": "892b6ace-21ac-40e8-8614-ec976529ad62"
+      },
+      {
+        "entry_id": "c7ecdeab-0f54-4731-b4cf-448094dc9d82",
+        "year": "2025",
+        "event_label": "Academic Record: 12TH",
+        "source_type": "academic",
+        "source_reference": "825f3d46-bab6-4428-a112-5abe82d116ba"
+      },
+      {
+        "entry_id": "a779a35f-3853-4d6a-8eed-7448d410d20b",
+        "year": "2024",
+        "event_label": "Academic Record: 11TH",
+        "source_type": "academic",
+        "source_reference": "df9246f1-aff3-4552-bcdb-1109af70e39d"
+      },
+      {
+        "entry_id": "13ec19f9-fd59-4126-a217-da4d58263147",
+        "year": "2023",
+        "event_label": "Academic Record: 10TH",
+        "source_type": "academic",
+        "source_reference": "fe12bb14-c445-44a3-a026-0aabff1bfb64"
+      },
+      {
+        "entry_id": "faff147f-19a0-499b-b163-6918bd2205cd",
+        "year": "2022",
+        "event_label": "Academic Record: 9TH",
+        "source_type": "academic",
+        "source_reference": "094fbaa0-6f3b-4d02-9fd3-9df167ba728d"
+      }
+    ],
+    "cross_references": {
+      "entity_map": [
+        {
+          "entity_token": "Mathematics",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "094fbaa0-6f3b-4d02-9fd3-9df167ba728d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "fe12bb14-c445-44a3-a026-0aabff1bfb64"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "df9246f1-aff3-4552-bcdb-1109af70e39d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "825f3d46-bab6-4428-a112-5abe82d116ba"
+            }
+          ]
+        },
+        {
+          "entity_token": "English",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "094fbaa0-6f3b-4d02-9fd3-9df167ba728d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "fe12bb14-c445-44a3-a026-0aabff1bfb64"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "df9246f1-aff3-4552-bcdb-1109af70e39d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "825f3d46-bab6-4428-a112-5abe82d116ba"
+            }
+          ]
+        },
+        {
+          "entity_token": "Science",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "094fbaa0-6f3b-4d02-9fd3-9df167ba728d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "fe12bb14-c445-44a3-a026-0aabff1bfb64"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "df9246f1-aff3-4552-bcdb-1109af70e39d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "825f3d46-bab6-4428-a112-5abe82d116ba"
+            }
+          ]
+        },
+        {
+          "entity_token": "Applications",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "094fbaa0-6f3b-4d02-9fd3-9df167ba728d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "fe12bb14-c445-44a3-a026-0aabff1bfb64"
+            }
+          ]
+        },
+        {
+          "entity_token": "Computer",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "094fbaa0-6f3b-4d02-9fd3-9df167ba728d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "fe12bb14-c445-44a3-a026-0aabff1bfb64"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "df9246f1-aff3-4552-bcdb-1109af70e39d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "825f3d46-bab6-4428-a112-5abe82d116ba"
+            }
+          ]
+        },
+        {
+          "entity_token": "Studies",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "094fbaa0-6f3b-4d02-9fd3-9df167ba728d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "fe12bb14-c445-44a3-a026-0aabff1bfb64"
+            }
+          ]
+        },
+        {
+          "entity_token": "Social",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "094fbaa0-6f3b-4d02-9fd3-9df167ba728d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "fe12bb14-c445-44a3-a026-0aabff1bfb64"
+            },
+            {
+              "source_type": "activity",
+              "entry_id": "3fd8fe0e-c0c6-4293-9a25-2f51fd03954a"
+            }
+          ]
+        },
+        {
+          "entity_token": "Hindi",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "094fbaa0-6f3b-4d02-9fd3-9df167ba728d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "fe12bb14-c445-44a3-a026-0aabff1bfb64"
+            }
+          ]
+        },
+        {
+          "entity_token": "Physics",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "df9246f1-aff3-4552-bcdb-1109af70e39d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "825f3d46-bab6-4428-a112-5abe82d116ba"
+            }
+          ]
+        },
+        {
+          "entity_token": "Chemistry",
+          "source_references": [
+            {
+              "source_type": "academic",
+              "entry_id": "df9246f1-aff3-4552-bcdb-1109af70e39d"
+            },
+            {
+              "source_type": "academic",
+              "entry_id": "825f3d46-bab6-4428-a112-5abe82d116ba"
+            }
+          ]
+        },
+        {
+          "entity_token": "This",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "cc783328-f7f2-4ed0-a7d2-cd08b63bd567"
+            },
+            {
+              "source_type": "essay",
+              "entry_id": "9e52f658-b0f2-424c-ab1e-ad20bfdf4ab8"
+            }
+          ]
+        },
+        {
+          "entity_token": "Trinity",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "cc783328-f7f2-4ed0-a7d2-cd08b63bd567"
+            },
+            {
+              "source_type": "activity",
+              "entry_id": "849d356b-b264-486b-8bfd-c18f8819ea3a"
+            }
+          ]
+        },
+        {
+          "entity_token": "London",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "cc783328-f7f2-4ed0-a7d2-cd08b63bd567"
+            },
+            {
+              "source_type": "activity",
+              "entry_id": "849d356b-b264-486b-8bfd-c18f8819ea3a"
+            }
+          ]
+        },
+        {
+          "entity_token": "College",
+          "source_references": [
+            {
+              "source_type": "essay",
+              "entry_id": "cc783328-f7f2-4ed0-a7d2-cd08b63bd567"
+            },
+            {
+              "source_type": "activity",
+              "entry_id": "849d356b-b264-486b-8bfd-c18f8819ea3a"
+            }
+          ]
+        }
+      ]
+    },
+    "integrity_report": {
+      "anomalies": []
+    },
+    "extraction_confidence": {
+      "agent_scores": [
+        {
+          "agent_id": 1,
+          "agent_name": "Layout Block Extractor",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 2,
+          "agent_name": "Section Boundary Detector",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 3,
+          "agent_name": "Personal Information Extractor",
+          "confidence_score": 0.85
+        },
+        {
+          "agent_id": 4,
+          "agent_name": "Academic Records Extractor",
+          "confidence_score": 0.85
+        },
+        {
+          "agent_id": 5,
+          "agent_name": "Standardized Test Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 6,
+          "agent_name": "Essay Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 7,
+          "agent_name": "Activity Extractor",
+          "confidence_score": 0.9
+        },
+        {
+          "agent_id": 8,
+          "agent_name": "Cross-Section Entity Detector",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 9,
+          "agent_name": "Timeline Builder",
+          "confidence_score": 0.95
+        },
+        {
+          "agent_id": 10,
+          "agent_name": "Completeness & Integrity Analyzer",
+          "confidence_score": 0.95
+        }
+      ],
+      "aggregate_confidence": 0.9099999999999999
+    }
+  },
+  "ros_v1": null,
+  "validation_result": {
+    "passed": false,
+    "error": "LLM Synthesis Failed: [Errno 11001] getaddrinfo failed"
+  },
+  "confidence": 0.9099999999999999
+}

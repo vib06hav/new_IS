@@ -1,4 +1,5 @@
 from typing import Dict, Any
+import re
 
 from app.agents.layout_extractor import extract_layout_blocks
 from app.agents.section_detector import detect_sections
@@ -46,22 +47,39 @@ def run_pipeline(application_id: str, pdf_path: str) -> Dict[str, Any]:
     academic_blocks = []
     test_blocks = []
     essay_blocks = []
-    activity_blocks = []
+    
+    extra_blocks = []
+    co_blocks = []
+    leadership_blocks = []
 
     for section in section_data.get("sections", []):
         label = section.get("label", "").lower()
-        if "class" in label or "academic" in label or "education" in label or "degree" in label or "school" in label:
-            academic_blocks.extend(section.get("blocks", []))
-        if "test" in label or "jee" in label or "sat" in label or "act" in label or "examination" in label:
-            test_blocks.extend(section.get("blocks", []))
-        if "essay" in label:
-            essay_blocks.extend(section.get("blocks", []))
-        if "activit" in label or "leadership" in label or "role" in label or "co-curricular" in label or "extra-curricular" in label:
-            activity_blocks.extend(section.get("blocks", []))
+        blocks = section.get("blocks", [])
+        logger.debug(f"Processing section: '{label}' with {len(blocks)} blocks")
+        
+        if "extra" in label and "curricul" in label:
+            logger.debug(f"Row matched Extra category: {label}")
+            extra_blocks.extend(blocks)
+        elif "co" in label and "curricul" in label:
+            logger.debug(f"Row matched Co-Curricular category: {label}")
+            co_blocks.extend(blocks)
+        elif "leadership" in label:
+            logger.debug(f"Row matched Leadership category: {label}")
+            leadership_blocks.extend(blocks)
+        elif any(kw in label for kw in ["class", "academic", "education", "degree", "school"]):
+            logger.debug(f"Row matched Academic category: {label}")
+            academic_blocks.extend(blocks)
+        elif any(kw in label for kw in ["test", "jee", "sat", "act", "examination"]):
+            logger.debug(f"Row matched Test category: {label}")
+            test_blocks.extend(blocks)
+        elif "essay" in label:
+            logger.debug(f"Row matched Essay category: {label}")
+            essay_blocks.extend(blocks)
+        else:
+            logger.debug(f"No match for section: {label}")
 
     academic_rows = normalize_layout(academic_blocks) if academic_blocks else layout_data["normalized_rows"]
     test_rows = normalize_layout(test_blocks) if test_blocks else layout_data["normalized_rows"]
-    activity_rows = normalize_layout(activity_blocks) if activity_blocks else layout_data["normalized_rows"]
     essay_blocks_to_pass = essay_blocks if essay_blocks else layout_data["blocks"]
 
     # Agent 3: Personal Information
@@ -71,8 +89,6 @@ def run_pipeline(application_id: str, pdf_path: str) -> Dict[str, Any]:
 
     # Agent 4: Academic Records
     logger.debug("Agent invocation (agent_id: 4, agent_name: Academic Records Extractor Python Agent)")
-    # Pass ALL blocks — the section detector misses some board/year/score blocks
-    # for 9th/10th/11th. The academic extractor's state machine ignores irrelevant rows.
     academic_data = extract_academic_records(layout_data["blocks"])
     logger.debug(f"Agent completion (agent_id: 4, confidence_score: {academic_data.get('confidence_score', 'N/A')})")
 
@@ -86,10 +102,39 @@ def run_pipeline(application_id: str, pdf_path: str) -> Dict[str, Any]:
     essay_data = extract_essays(essay_blocks_to_pass)
     logger.debug(f"Agent completion (agent_id: 6, confidence_score: {essay_data.get('confidence_score', 'N/A')})")
 
-    # Agent 7: Activities
+    # Agent 7: Activities (Categorized)
     logger.debug("Agent invocation (agent_id: 7, agent_name: Activities Extractor Python Agent)")
-    activity_data = extract_activities(activity_rows)
-    logger.debug(f"Agent completion (agent_id: 7, confidence_score: {activity_data.get('confidence_score', 'N/A')})")
+    
+    logger.debug(f"Categorizing activity blocks: extra={len(extra_blocks)}, co={len(co_blocks)}, lead={len(leadership_blocks)}")
+    
+    extra_rows = normalize_layout(extra_blocks) if extra_blocks else []
+    co_rows = normalize_layout(co_blocks) if co_blocks else []
+    lead_rows = normalize_layout(leadership_blocks) if leadership_blocks else []
+    
+    logger.debug(f"Normalized activity rows: extra={len(extra_rows)}, co={len(co_rows)}, lead={len(lead_rows)}")
+    
+    extra_res = extract_activities(extra_rows, category_hint="extracurricular")
+    co_res = extract_activities(co_rows, category_hint="co_curricular")
+    lead_res = extract_activities(lead_rows, category_hint="leadership")
+    
+    # Consolidate
+    activity_data = {
+        "extracurricular_activities": extra_res.get("activity_entries", []),
+        "co_curricular_activities": co_res.get("activity_entries", []),
+        "leadership_activities": lead_res.get("activity_entries", []),
+        "activity_entries": [] # Legacy field
+    }
+    # For backward compatibility with agents 8 and 9, we merge them into activity_entries
+    activity_data["activity_entries"] = (
+        activity_data["extracurricular_activities"] + 
+        activity_data["co_curricular_activities"] + 
+        activity_data["leadership_activities"]
+    )
+    activity_data["confidence_score"] = min(
+        extra_res.get("confidence_score", 1.0),
+        co_res.get("confidence_score", 1.0),
+        lead_res.get("confidence_score", 1.0)
+    )
 
     # Agent 8: Cross-Section Entity Detection
     logger.debug("Agent invocation (agent_id: 8, agent_name: Cross-Section Entity Detector Python Agent)")
