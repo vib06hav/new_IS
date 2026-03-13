@@ -1,104 +1,211 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import uuid
 import re
+import math
+import logging
+from app.utils.grid_detector import get_vertical_lines, get_page_heights
 
-def extract_activities(normalized_rows: List[List[str]], category_hint: str = "other") -> Dict[str, Any]:
+logger = logging.getLogger(__name__)
+
+def extract_activities(section_blocks: List[Dict[str, Any]], pdf_path: str = "") -> Dict[str, Any]:
     """
-    Extract activities using a Hybrid Scoring approach.
-    - Uses regex for Duration and Level.
-    - Uses 'Greedy Sweep-up' for descriptions.
-    - Stores raw text in original_row_content as a safety net.
+    Extract activities using a Grid-Line based spatial approach with Dynamic Column Mapping.
+    Handles isolated headers, cross-page stitching, and horizontal layout shifts.
     """
-    entries = []
+    all_entries = []
+    preferred_major = None
     confidence = 0.90
+    if not section_blocks: return {"activity_entries": [], "confidence_score": confidence}
+
+    # 1. Page Heights and Virtual Coordinates
+    page_heights = {}
+    if pdf_path:
+        page_heights = get_page_heights(pdf_path)
     
-    # regex for Duration: looks for digits + time units or a standalone small digit
-    # e.g. "3 years", "2 months", "4"
-    DURATION_PATTERN = re.compile(r'(\d+\s*(?:years?|yrs?|months?|weeks?)|^\s*\d{1,2}\s*$)', re.IGNORECASE)
-    
-    # Semantic anchors for Level
-    LEVEL_ANCHORS = ["national", "international", "state", "zonal", "intra", "district", "personal", "grade", "school", "community"]
+    cumulative_offsets = {1: 0.0}
+    max_page = max(b.get("page", 1) for b in section_blocks)
+    for p in range(2, max_page + 1):
+        cumulative_offsets[p] = cumulative_offsets[p-1] + page_heights.get(p-1, 842.0)
 
-    def clean_text(t):
-        if not t: return ""
-        return re.sub(r'^(?:\d+\.|\w+\s+\d+:?)\s*', '', t.strip()).strip()
+    for b in section_blocks:
+        p = int(b.get("page", 1))
+        offset = cumulative_offsets.get(p, 0.0)
+        p_height = page_heights.get(p, 842.0)
+        # Convert to Top-Down Virtual coordinates
+        b["v_y_top"] = offset + (p_height - float(b["bbox"][3]))
+        b["v_y_bottom"] = offset + (p_height - float(b["bbox"][1]))
+        b["v_y_center"] = (b["v_y_top"] + b["v_y_bottom"]) / 2
 
-    def is_header(row):
-        row_joined = " ".join(row).lower()
-        header_keywords = ["activity", "participation", "years", "position", "responsibility", "roles", "curricular", "extra", "level", "achievement", "duration"]
-        match_count = sum(1 for kw in header_keywords if kw in row_joined)
-        return match_count >= 2
-
-    for row in normalized_rows:
-        if not row: continue
-        if is_header(row): continue
-        
-        raw_content = " | ".join(row).strip()
-        
-        # Determine Activity Name (Identity)
-        # Default strategy: first cell is likely name, unless it's a numeric sentinel
-        name_candidate = ""
-        other_cells = []
-        
-        if len(row) > 1 and re.match(r'^\d+\.?$', row[0].strip()):
-            name_candidate = row[1]
-            other_cells = row[2:]
-        elif len(row) > 0:
-            name_candidate = row[0]
-            other_cells = row[1:]
+    # 2. Cluster rows globally
+    sorted_blocks = sorted(section_blocks, key=lambda b: (b["v_y_center"], float(b["bbox"][0])))
+    all_rows: List[List[Dict[str, Any]]] = []
+    cur_row, cur_v_y = [], None
+    for b in sorted_blocks:
+        vcy = b["v_y_center"]
+        if cur_v_y is None or abs(vcy - cur_v_y) < 8:
+            cur_row.append(b)
+            cur_v_y = vcy if cur_v_y is None else cur_v_y
         else:
+            all_rows.append(cur_row)
+            cur_row, cur_v_y = [b], vcy
+    if cur_row: all_rows.append(cur_row)
+
+    # 3. Extraction Logic
+    SECTION_RE = {
+        "extracurricular": re.compile(r'extra\s*-?\s*curricular\s*activities', re.IGNORECASE),
+        "co_curricular": re.compile(r'co\s*-?\s*curricular\s*activities', re.IGNORECASE),
+        "leadership": re.compile(r'leadership\s*role\s*at\s*school|leadership\s*positions?', re.IGNORECASE)
+    }
+
+    # Stopper keywords to identify the end of the activities cluster
+    STOPPER_KEYWORDS = [
+        "reference 1", "reference- 1", "reference-1", "referees", 
+        "reference 2", "declaration", 
+        "anything else which you would like", "honour pledge", "admission office"
+    ]
+
+    # Keyword mapping for dynamic column header detection
+    LABEL_FIELD_MAP = {
+        "activity": "activity_name",
+        "level": "level",
+        "participation": "level",
+        "duration": "duration",
+        "years": "duration",
+        "achievement": "achievement",
+        "responsibility": "roles_and_responsibilities",
+        "roles": "roles_and_responsibilities",
+        "position": "position_title",
+        "title": "position_title"
+    }
+
+    FIELD_MAPS_FALLBACK = {
+        "extracurricular": {1: "activity_name", 2: "level", 3: "duration", 4: "achievement", 5: "achievement"},
+        "co_curricular": {1: "activity_name", 2: "level", 3: "duration", 4: "achievement", 5: "achievement"},
+        "leadership": {1: "position_title", 2: "duration", 3: "roles_and_responsibilities"}
+    }
+
+    current_section: Optional[str] = None
+    v_lines: List[float] = []
+    v_lines_page = -1
+    active_field_map: Dict[int, str] = {}
+    
+    for row in all_rows:
+        row_text = " ".join([str(b.get("text", "")).strip() for b in row]).lower()
+        row_page = int(row[0]["page"])
+        row_y_top_pdf = float(row[0]["bbox"][3])
+        row_y_bottom_pdf = float(row[0]["bbox"][1])
+        
+        # X. Specific catch for Preferred Major (Additional Information section)
+        if "preferred major" in row_text:
+            # The value is usually to the right or in the same row
+            # Let's try to grab all text in the row excluding the label
+            label_match = re.search(r'preferred\s*major', row_text)
+            if label_match:
+                # Find blocks to the right of the label block
+                label_blocks = [b for b in row if "preferred" in b.get("text", "").lower() or "major" in b.get("text", "").lower()]
+                if label_blocks:
+                    label_x1 = max(b["bbox"][2] for b in label_blocks)
+                    val_blocks = [b for b in row if b["bbox"][0] > label_x1 - 5]
+                    val_text = " ".join([b["text"].strip() for b in val_blocks if b not in label_blocks]).strip()
+                    if val_text:
+                        preferred_major = val_text
+                        logger.info(f"Extracted Preferred Major: {preferred_major}")
             continue
 
-        entry = {
-            "entry_id": str(uuid.uuid4()),
-            "activity_type": category_hint,
-            "category": None,
-            "activity_name": clean_text(name_candidate),
-            "level": None,
-            "duration": None,
-            "description_raw": "",
-            "original_row_content": raw_content,
-            "upload_flag": False,
-            "confidence_score": confidence
-        }
+        # A. Detect Stoppers (ignore if at the very top of a page as header)
+        is_top_of_page = row[0]["v_y_top"] - cumulative_offsets.get(row_page, 0) < 60
+        if any(stop in row_text for stop in STOPPER_KEYWORDS) and not is_top_of_page:
+            current_section = None
+            continue
 
-        description_parts = []
+        # B. Detect Section Start/Reset
+        found_section = None
+        for s_type, pattern in SECTION_RE.items():
+            if pattern.search(row_text):
+                found_section = s_type
+                break
         
-        # Tagging remaining cells
-        for cell in other_cells:
-            cell_stripped = cell.strip()
-            if not cell_stripped: continue
-            
-            # Check for Duration
-            if not entry["duration"] and DURATION_PATTERN.search(cell_stripped):
-                # Ensure it's not a False Positive (like a Grade level)
-                if not any(anchor in cell_stripped.lower() for anchor in ["grade", "level"]):
-                    entry["duration"] = cell_stripped
-                    continue
-            
-            # Check for Level
-            if not entry["level"] and any(anchor in cell_stripped.lower() for anchor in LEVEL_ANCHORS):
-                entry["level"] = cell_stripped
+        if found_section:
+            # Handle continuation headers on new pages
+            if found_section == current_section and is_top_of_page:
                 continue
-            
-            # Greedy Sweep-up: Anything else is description
-            description_parts.append(cell_stripped)
+            current_section = found_section
+            active_field_map = {} # Reset field map for new section or layout
+            # Trigger fresh grid detection on the header page
+            v_lines = get_vertical_lines(pdf_path, row_page, row_y_bottom_pdf - 300, row_y_top_pdf + 10)
+            v_lines_page = row_page
+            continue
 
-        entry["description_raw"] = " ".join(description_parts).strip()
+        if not current_section:
+            continue
+
+        # C. Page-Based Grid Maintenance
+        if pdf_path and (row_page != v_lines_page or not v_lines):
+            # Localized grid search to handle tables spanning multiple pages or multiple tables on one page
+            v_lines = get_vertical_lines(pdf_path, row_page, row_y_bottom_pdf - 100, row_y_top_pdf + 100)
+            v_lines_page = row_page
+            active_field_map = {} # Potential column shift on new page or new table body
+
+        if not v_lines:
+            continue
+
+        # D. Dynamic Column Detection (Header Row)
+        gaps = [{"x0": v_lines[g], "x1": v_lines[g+1], "center": (v_lines[g] + v_lines[g+1])/2} for g in range(len(v_lines)-1)]
+        is_header_row = sum(1 for kw in ["activity", "level", "duration", "achievement", "position", "responsibility", "roles", "years", "participation"] if kw in row_text) >= 2
         
-        # Noise Filtering
-        name_val = str(entry["activity_name"] or "").lower()
-        if len(name_val) > 1:
-            noise_patterns = [
-                r'^additional information.*', r'^references.*', r'^declaration.*', r'^designation.*',
-                r'^organization.*', r'^preferred major.*', r'^where did you hear.*', r'^financial aid.*',
-                r'^school$', r'^friends/family.*', r'^activity$', r'^position$', r'^in what capacity.*',
-                r'^will you be applying.*', r'^references.*', r'^name.*', r'^email.*', r'^mobile.*'
-            ]
-            if not any(re.search(p, name_val) for p in noise_patterns):
-                entries.append(entry)
+        if is_header_row:
+            for b in row:
+                bx_center = (float(b["bbox"][0]) + float(b["bbox"][2])) / 2
+                txt = b.get("text", "").lower()
+                for idx, g in enumerate(gaps):
+                    if g["x0"] - 10 <= bx_center <= g["x1"] + 10:
+                        for kw, field in LABEL_FIELD_MAP.items():
+                            if kw in txt:
+                                if idx not in active_field_map or len(kw) > 3:
+                                    active_field_map[idx] = field
+            continue
+
+        # E. Data Row Processing
+        if not active_field_map:
+            active_field_map = FIELD_MAPS_FALLBACK.get(current_section, {})
+
+        entry: Dict[str, Any] = {
+            "entry_id": str(uuid.uuid4()), "activity_type": current_section,
+            "activity_name": None, "position_title": None, "level": None,
+            "duration": None, "achievement": None, "roles_and_responsibilities": None,
+            "confidence_score": 0.95
+        }
+        
+        row_has_data = False
+        for b in row:
+            bx_center = (float(b["bbox"][0]) + float(b["bbox"][2])) / 2
+            txt = str(b.get("text", "")).strip()
+            
+            best_gap_idx, min_dist = -1, 9999.0
+            for idx, g in enumerate(gaps):
+                if g["x0"] - 15 <= bx_center <= g["x1"] + 15:
+                    dist = abs(bx_center - g["center"])
+                    if dist < min_dist:
+                        min_dist = dist
+                        best_idx = idx
+            
+            if best_idx != -1:
+                field = active_field_map.get(best_idx)
+                if field:
+                    if best_idx == 0 and txt.endswith(".") and txt[:-1].isdigit(): continue
+                    existing = entry.get(field)
+                    entry[field] = f"{existing} {txt}" if existing else txt
+                    row_has_data = True
+        
+        identity = entry.get("activity_name") or entry.get("position_title")
+        if row_has_data and identity and len(str(identity)) > 2:
+            id_lower = str(identity).lower()
+            if id_lower not in ["yes", "no", "n/a", "select", "description", "activity"]:
+                if "?" not in id_lower and "capacity" not in id_lower and len(id_lower) < 200:
+                    all_entries.append(entry)
 
     return {
-        "activity_entries": entries,
+        "activity_entries": all_entries,
+        "preferred_major": preferred_major,
         "confidence_score": confidence
     }

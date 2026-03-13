@@ -36,9 +36,7 @@ def extract_essays(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
                 "essay_identifier": current_identifier[:200],
                 "raw_text": text_to_flush,
                 "word_count": word_count,
-                "character_count": len(text_to_flush),
                 "placeholder_flag": False,
-                "duplication_ratio": 0.0,
                 "short_response_flag": word_count < 50,
                 "confidence_score": confidence
             })

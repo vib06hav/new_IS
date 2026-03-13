@@ -35,7 +35,16 @@ def detect_cross_sections(
         sources.append(("essay", entry["entry_id"], entry.get("raw_text", "")))
         
     for entry in activity_entries:
-        sources.append(("activity", entry["entry_id"], entry.get("activity_name", "") + " " + entry.get("description_raw", "")))
+        # Use all potential text fields for entity detection, safely handling None
+        parts = [
+            entry.get("activity_name"),
+            entry.get("position_title"),
+            entry.get("achievement"),
+            entry.get("roles_and_responsibilities"),
+            entry.get("description_raw")
+        ]
+        text = " ".join([str(p) for p in parts if p])
+        sources.append(("activity", entry["entry_id"], text))
 
     for s_type, s_id, text in sources:
         for token in extract_tokens(text):

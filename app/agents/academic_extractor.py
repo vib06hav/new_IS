@@ -116,7 +116,6 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
                 "score_raw": None,
                 "predicted_score_raw": None,
                 "subject_entries": [],
-                "component_tags": [],
                 "confidence_score": confidence,
             }
 
@@ -162,7 +161,6 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
                     "subject_name": subj_name,
                     "score_raw": obtained,
                     "predicted_score_raw": None,
-                    "component_tag": None,
                 })
             else:
                 # Failed validation — this isn't a real subject row, exit table

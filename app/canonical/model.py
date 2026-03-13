@@ -31,22 +31,14 @@ class Identifiers(BaseModel):
     full_name: Optional[str] = None
     date_of_birth: Optional[str] = None
     family_background: Optional[FamilyBackground] = None
-    declared_preferences: Dict[str, Any] = Field(default_factory=dict)
-    demographic_flags: Dict[str, Any] = Field(default_factory=dict)
+    preferred_major: Optional[str] = None
 
-# --- Profile Meta ---
-class ProfileMeta(BaseModel):
-    source_document_page_count: int
-    extraction_timestamp: str
-    layout_block_count: int
-    detected_section_labels: List[str] = Field(default_factory=list)
 
 # --- Academic Entries ---
 class SubjectEntry(BaseModel):
     subject_name: str
     score_raw: Optional[str] = None
     predicted_score_raw: Optional[str] = None
-    component_tag: Optional[str] = None
 
 class AcademicEntry(BaseModel):
     entry_id: str
@@ -59,7 +51,6 @@ class AcademicEntry(BaseModel):
     score_raw: Optional[str] = None
     predicted_score_raw: Optional[str] = None
     subject_entries: List[SubjectEntry] = Field(default_factory=list)
-    component_tags: List[str] = Field(default_factory=list)
     confidence_score: float = Field(ge=0.0, le=1.0)
 
 # --- Test Entries ---
@@ -84,9 +75,7 @@ class EssayEntry(BaseModel):
     essay_identifier: str
     raw_text: str
     word_count: int
-    character_count: int
     placeholder_flag: bool
-    duplication_ratio: float = Field(ge=0.0, le=1.0)
     short_response_flag: bool
     confidence_score: float = Field(ge=0.0, le=1.0)
 
@@ -94,13 +83,13 @@ class EssayEntry(BaseModel):
 class ActivityEntry(BaseModel):
     entry_id: str
     activity_type: str
-    category: Optional[str] = None
     activity_name: Optional[str] = None
+    position_title: Optional[str] = None
     level: Optional[str] = None
     duration: Optional[str] = None
+    achievement: Optional[str] = None
+    roles_and_responsibilities: Optional[str] = None
     description_raw: Optional[str] = None
-    original_row_content: Optional[str] = None # Safety net
-    upload_flag: bool
     confidence_score: float = Field(ge=0.0, le=1.0)
 
 # --- Timeline Entries ---
@@ -148,15 +137,11 @@ class ExtractionConfidence(BaseModel):
 class CanonicalData(BaseModel):
     canonical_version: str = Field(default=CANONICAL_VERSION)
     identifiers: Identifiers
-    profile_meta: ProfileMeta
     academic_entries: List[AcademicEntry] = Field(default_factory=list)
     schooling_history: List[SchoolingHistoryEntry] = Field(default_factory=list)
     test_entries: List[TestEntry] = Field(default_factory=list)
     essay_entries: List[EssayEntry] = Field(default_factory=list)
     activity_entries: List[ActivityEntry] = Field(default_factory=list)
-    extracurricular_activities: List[ActivityEntry] = Field(default_factory=list)
-    co_curricular_activities: List[ActivityEntry] = Field(default_factory=list)
-    leadership_activities: List[ActivityEntry] = Field(default_factory=list)
     timeline_entries: List[TimelineEntry] = Field(default_factory=list)
     cross_references: CrossReferences
     integrity_report: IntegrityReport

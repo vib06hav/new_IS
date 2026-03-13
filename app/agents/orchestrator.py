@@ -105,36 +105,8 @@ def run_pipeline(application_id: str, pdf_path: str) -> Dict[str, Any]:
     # Agent 7: Activities (Categorized)
     logger.debug("Agent invocation (agent_id: 7, agent_name: Activities Extractor Python Agent)")
     
-    logger.debug(f"Categorizing activity blocks: extra={len(extra_blocks)}, co={len(co_blocks)}, lead={len(leadership_blocks)}")
-    
-    extra_rows = normalize_layout(extra_blocks) if extra_blocks else []
-    co_rows = normalize_layout(co_blocks) if co_blocks else []
-    lead_rows = normalize_layout(leadership_blocks) if leadership_blocks else []
-    
-    logger.debug(f"Normalized activity rows: extra={len(extra_rows)}, co={len(co_rows)}, lead={len(lead_rows)}")
-    
-    extra_res = extract_activities(extra_rows, category_hint="extracurricular")
-    co_res = extract_activities(co_rows, category_hint="co_curricular")
-    lead_res = extract_activities(lead_rows, category_hint="leadership")
-    
-    # Consolidate
-    activity_data = {
-        "extracurricular_activities": extra_res.get("activity_entries", []),
-        "co_curricular_activities": co_res.get("activity_entries", []),
-        "leadership_activities": lead_res.get("activity_entries", []),
-        "activity_entries": [] # Legacy field
-    }
-    # For backward compatibility with agents 8 and 9, we merge them into activity_entries
-    activity_data["activity_entries"] = (
-        activity_data["extracurricular_activities"] + 
-        activity_data["co_curricular_activities"] + 
-        activity_data["leadership_activities"]
-    )
-    activity_data["confidence_score"] = min(
-        extra_res.get("confidence_score", 1.0),
-        co_res.get("confidence_score", 1.0),
-        lead_res.get("confidence_score", 1.0)
-    )
+    # Pass all blocks so it can detect its own section boundaries as per the plan
+    activity_data = extract_activities(layout_data["blocks"], pdf_path)
 
     # Agent 8: Cross-Section Entity Detection
     logger.debug("Agent invocation (agent_id: 8, agent_name: Cross-Section Entity Detector Python Agent)")
@@ -160,7 +132,8 @@ def run_pipeline(application_id: str, pdf_path: str) -> Dict[str, Any]:
     integrity_data = analyze_integrity(
         personal_data.get("identifiers", {}),
         academic_data.get("academic_entries", []),
-        essay_data.get("essay_entries", [])
+        essay_data.get("essay_entries", []),
+        activity_data.get("activity_entries", [])
     )
     logger.debug(f"Agent completion (agent_id: 10, confidence_score: {integrity_data.get('confidence_score', 'N/A')})")
 

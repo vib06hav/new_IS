@@ -21,19 +21,19 @@ def assemble_canonical(
     Merges all extracted collections into the final versioned canonical representation.
     """
     
-    # 1. Profile Meta
-    profile_meta = {
-        "source_document_page_count": layout_meta.get("page_count", 0),
-        "extraction_timestamp": datetime.datetime.utcnow().isoformat() + "Z",
-        "layout_block_count": len(layout_meta.get("blocks", [])),
-        "detected_section_labels": [s.get("label", "unknown") for s in section_meta.get("sections", [])]
-    }
-    
-    # 2. Identifiers
+    # 1. Identifiers
     identifiers = identifiers_data.get("identifiers", {})
     identifiers["application_id"] = application_id
+    # Clean up Identifiers for refined model
+    refined_identifiers = {
+        "application_id": identifiers.get("application_id"),
+        "preferred_major": activity_data.get("preferred_major"),
+        "full_name": identifiers.get("full_name"),
+        "date_of_birth": identifiers.get("date_of_birth"),
+        "family_background": identifiers.get("family_background")
+    }
     
-    # 3. Extraction Confidence
+    # 2. Extraction Confidence
     agent_scores = [
         {"agent_id": 1, "agent_name": "Layout Block Extractor", "confidence_score": layout_meta.get("confidence_score", 0.0)},
         {"agent_id": 2, "agent_name": "Section Boundary Detector", "confidence_score": section_meta.get("confidence_score", 0.0)},
@@ -57,16 +57,12 @@ def assemble_canonical(
     # Build complete raw dictionary mapping to CanonicalData schema
     canonical_dict = {
         "canonical_version": CANONICAL_VERSION,
-        "identifiers": identifiers,
-        "profile_meta": profile_meta,
+        "identifiers": refined_identifiers,
         "academic_entries": academic_data.get("academic_entries", []),
         "schooling_history": academic_data.get("schooling_history", []),
         "test_entries": test_data.get("test_entries", []),
         "essay_entries": essay_data.get("essay_entries", []),
         "activity_entries": activity_data.get("activity_entries", []),
-        "extracurricular_activities": activity_data.get("extracurricular_activities", []),
-        "co_curricular_activities": activity_data.get("co_curricular_activities", []),
-        "leadership_activities": activity_data.get("leadership_activities", []),
         "timeline_entries": timeline_data.get("timeline_entries", []),
         "cross_references": {"entity_map": cross_section_data.get("entity_map", [])},
         "integrity_report": {"anomalies": integrity_data.get("anomalies", [])},
