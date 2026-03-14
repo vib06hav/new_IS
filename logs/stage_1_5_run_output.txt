@@ -1,0 +1,491 @@
+--- Starting Stage 1.5 Pipeline Execution ---
+Registering user: test_user_1773491909@example.com
+Logging in...
+Uploading PDF: tests/pdfs/Dummy App (1)_v8_filled.pdf
+Upload successful. Application ID: 5283e494-f9e1-403e-b7c5-a949e952a8ed
+Waiting for pipeline to complete...
+Current Status: complete
+
+✅ Pipeline Execution SUCCESSFUL!
+
+--- Synthesis Result ---
+{
+  "report_metadata": {
+    "generated_at": "2026-03-14T12:39:21Z",
+    "report_version": "ROS_v1",
+    "canonical_version": "1.1",
+    "application_number": "5283e494-f9e1-403e-b7c5-a949e952a8ed"
+  },
+  "page_1_background_profile": {
+    "identity": {
+      "full_name": "Aarav Jain",
+      "date_of_birth": "2007-06-14",
+      "application_id": "5283e494-f9e1-403e-b7c5-a949e952a8ed",
+      "preferred_major": "Computer Science and Artificial Intelligence",
+      "family_background": {
+        "father": {
+          "name": "Sandeep Jain",
+          "education": "B.Com",
+          "designation": "Founder and Managing Director",
+          "organization": "Jain Tex Exports",
+          "field_of_employment": "Textile Export Business"
+        },
+        "mother": {
+          "name": null,
+          "education": null,
+          "designation": null,
+          "organization": null,
+          "field_of_employment": null
+        }
+      }
+    },
+    "family_background": {
+      "father": {
+        "name": "Sandeep Jain",
+        "education": "B.Com",
+        "designation": "Founder and Managing Director",
+        "organization": "Jain Tex Exports",
+        "field_of_employment": "Textile Export Business"
+      },
+      "mother": {
+        "name": null,
+        "education": null,
+        "designation": null,
+        "organization": null,
+        "field_of_employment": null
+      }
+    },
+    "schooling_history": [
+      {
+        "level": "9TH",
+        "entry_id": "f3956581-0d70-438f-a308-0f4d32c31bf2",
+        "location": null,
+        "entity_id": "SCH-001",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "school_name": "Jayshree Periwal International School",
+        "confidence_score": 0.85
+      },
+      {
+        "level": "10TH",
+        "entry_id": "639922e6-c7e1-4834-9db2-108547fdab27",
+        "location": null,
+        "entity_id": "SCH-002",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "school_name": "Jayshree Periwal International School",
+        "confidence_score": 0.85
+      },
+      {
+        "level": "11TH",
+        "entry_id": "89bd40b9-4d85-4bf3-a137-1ff7ac45b16d",
+        "location": null,
+        "entity_id": "SCH-003",
+        "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+        "school_name": "Jayshree Periwal International School",
+        "confidence_score": 0.85
+      },
+      {
+        "level": "12TH",
+        "entry_id": "98c6f540-e6b9-4e15-a1ac-1170368f9b4c",
+        "location": null,
+        "entity_id": "SCH-004",
+        "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+        "school_name": "Jayshree Periwal International School",
+        "confidence_score": 0.85
+      }
+    ],
+    "academic_orientation": {}
+  },
+  "page_2_academic_and_engagement": {
+    "academic_records": [
+      {
+        "entry_id": "d7ce6ab0-8ff2-48c3-b64d-9fd8da916158",
+        "entity_id": "ACA-001",
+        "score_raw": "81.6",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "school_name": "Jayshree Periwal International School",
+        "grading_mode": "percentage",
+        "academic_year": "2022",
+        "academic_level": "9TH",
+        "subject_entries": [
+          {
+            "score_raw": "95.8",
+            "subject_name": "Mathematics",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "81.8",
+            "subject_name": "English",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "86.6",
+            "subject_name": "Hindi",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "87.4",
+            "subject_name": "Science",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "77.5",
+            "subject_name": "Social Studies",
+            "predicted_score_raw": null
+          }
+        ],
+        "confidence_score": 0.85,
+        "marking_scheme_raw": "Percentage",
+        "predicted_score_raw": null
+      },
+      {
+        "entry_id": "9e81c5a2-90a0-4fe9-ac70-8da7be1636dc",
+        "entity_id": "ACA-002",
+        "score_raw": "96.6",
+        "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+        "school_name": "Jayshree Periwal International School",
+        "grading_mode": "percentage",
+        "academic_year": "2023",
+        "academic_level": "10TH",
+        "subject_entries": [
+          {
+            "score_raw": "98",
+            "subject_name": "Mathematics",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "95",
+            "subject_name": "Science",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "95",
+            "subject_name": "English",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "95",
+            "subject_name": "Hindi",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "100",
+            "subject_name": "Artificial Intelligence",
+            "predicted_score_raw": null
+          }
+        ],
+        "confidence_score": 0.85,
+        "marking_scheme_raw": "Percentage",
+        "predicted_score_raw": null
+      },
+      {
+        "entry_id": "15bf4dc7-06a0-40ce-971d-ef562f7e5e71",
+        "entity_id": "ACA-003",
+        "score_raw": "97.9",
+        "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+        "school_name": "Jayshree Periwal International School",
+        "grading_mode": "percentage",
+        "academic_year": "2024",
+        "academic_level": "11TH",
+        "subject_entries": [
+          {
+            "score_raw": "150",
+            "subject_name": "Mathematics",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "58",
+            "subject_name": "Physics",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "60",
+            "subject_name": "Chemistry",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "95",
+            "subject_name": "Sanskrit",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "97",
+            "subject_name": "English",
+            "predicted_score_raw": null
+          }
+        ],
+        "confidence_score": 0.85,
+        "marking_scheme_raw": "Percentage",
+        "predicted_score_raw": null
+      },
+      {
+        "entry_id": "ed9e6b89-abbd-4df4-a128-8500470f9c36",
+        "entity_id": "ACA-004",
+        "score_raw": "97.4",
+        "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+        "school_name": "Jayshree Periwal International School",
+        "grading_mode": "percentage",
+        "academic_year": "2025",
+        "academic_level": "12TH",
+        "subject_entries": [
+          {
+            "score_raw": "144",
+            "subject_name": "Mathematics",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "52",
+            "subject_name": "Physics",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "56",
+            "subject_name": "Chemistry",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "99",
+            "subject_name": "Sanskrit",
+            "predicted_score_raw": null
+          },
+          {
+            "score_raw": "96",
+            "subject_name": "English",
+            "predicted_score_raw": null
+          }
+        ],
+        "confidence_score": 0.85,
+        "marking_scheme_raw": "Percentage",
+        "predicted_score_raw": null
+      }
+    ],
+    "additional_tests": [],
+    "leadership_roles": [
+      {
+        "level": null,
+        "duration": "1",
+        "entry_id": "c361b95c-33eb-4b47-95db-a3198fe26fed",
+        "entity_id": "LEAD-005",
+        "achievement": null,
+        "activity_name": null,
+        "activity_type": "leadership",
+        "position_title": "School House Captain",
+        "description_raw": null,
+        "confidence_score": 0.95,
+        "roles_and_responsibilities": "Was the School House Captain at"
+      },
+      {
+        "level": null,
+        "duration": "Mobile Number",
+        "entry_id": "864cf55d-d51a-47d1-9980-7c7897d1c3b0",
+        "entity_id": "LEAD-006",
+        "achievement": null,
+        "activity_name": null,
+        "activity_type": "leadership",
+        "position_title": "Organization",
+        "description_raw": null,
+        "confidence_score": 0.95,
+        "roles_and_responsibilities": "In what\ncapacity does\nthis reference\nk"
+      },
+      {
+        "level": null,
+        "duration": "Is there anything else you\nwant to tell us?",
+        "entry_id": "53ed19c2-860c-498c-90cc-fa5205116161",
+        "entity_id": "LEAD-007",
+        "achievement": null,
+        "activity_name": null,
+        "activity_type": "leadership",
+        "position_title": "Friends/Family",
+        "description_raw": null,
+        "confidence_score": 0.95,
+        "roles_and_responsibilities": "No"
+      }
+    ],
+    "standardized_tests": [
+      {
+        "rank": null,
+        "entry_id": "a5e8c406-9a29-4e85-b23a-cc1c409d5c99",
+        "entity_id": "TEST-001",
+        "test_date": null,
+        "test_name": "JEE Mains",
+        "percentile": null,
+        "total_score": "99.33",
+        "result_status": "available",
+        "confidence_score": 0.9,
+        "sectional_scores": [
+          {
+            "label": "Maths Percentile",
+            "raw_score": "96.67"
+          },
+          {
+            "label": "Sectional Rank",
+            "raw_score": "97.69"
+          },
+          {
+            "label": "Chemistry Percentile",
+            "raw_score": "99.01"
+          }
+        ]
+      }
+    ],
+    "co_curricular_activities": [
+      {
+        "level": "District",
+        "duration": "7",
+        "entry_id": "4dd8338d-5909-4189-9e5b-7b53a89b2098",
+        "entity_id": "ACT-003",
+        "achievement": null,
+        "activity_name": "Olympiads",
+        "activity_type": "co_curricular",
+        "position_title": "Has been regularly\nparticipating in Maths,\nScience Olympiads at\nschool",
+        "description_raw": null,
+        "confidence_score": 0.95,
+        "roles_and_responsibilities": null
+      },
+      {
+        "level": "Personal",
+        "duration": "6",
+        "entry_id": "6b7b7208-9b03-4aed-987d-0ac546867e45",
+        "entity_id": "ACT-004",
+        "achievement": null,
+        "activity_name": "Reading",
+        "activity_type": "co_curricular",
+        "position_title": "Is an ardent reader of\nfiction and non fiction\nbooks on personal\ndevelopment etc",
+        "description_raw": null,
+        "confidence_score": 0.95,
+        "roles_and_responsibilities": null
+      }
+    ],
+    "extracurricular_activities": [
+      {
+        "level": "International",
+        "duration": "5",
+        "entry_id": "afccd83c-3a8b-487d-90b6-9a49298dcd06",
+        "entity_id": "ACT-001",
+        "achievement": null,
+        "activity_name": "Music Piano",
+        "activity_type": "extracurricular",
+        "position_title": "Grade 4 Qualified from\nPhilips International\nSchool of Music",
+        "description_raw": null,
+        "confidence_score": 0.95,
+        "roles_and_responsibilities": null
+      },
+      {
+        "level": "Personal",
+        "duration": "2",
+        "entry_id": "16abf9c7-936b-409c-9e32-dc357f4c0ac0",
+        "entity_id": "ACT-002",
+        "achievement": null,
+        "activity_name": "Yoga",
+        "activity_type": "extracurricular",
+        "position_title": "Beginner level\npractitioner of Yoga and\nmindfulness",
+        "description_raw": null,
+        "confidence_score": 0.95,
+        "roles_and_responsibilities": null
+      }
+    ]
+  },
+  "page_3_essays": {
+    "essays": [
+      {
+        "prompt": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+        "entity_id": "ESS-001",
+        "full_text": "From a young age, I’ve been fascinated by how things work—whether it's the logic behind mobile apps, the science in smart devices, or the\ninnovation that powers everyday life. What excites me most about engineering and technology is the ability to solve real-world problems\nusing creativity and logic. It's not just about building machines or writing code—it's about designing solutions that can create meaningful\nimpact. The ever-evolving nature of tech, combined with its potential to transform industries from healthcare to climate, makes this field\nincredibly exciting for me. I believe my curiosity, collaborative mindset, and eagerness to learn make me a strong fit for Plaksha’s B.Tech program. I enjoy working on\nprojects, asking questions, and applying what I learn to practical challenges. I also have a keen interest in interdisciplinary learning—blending\ntech with design, data, and human behavior—which I understand is core to Plaksha’s approach. What draws me most to Plaksha is its focus\non innovation, entrepreneurship, and societal impact. I’m excited by the opportunity to learn from faculty, mentors, and peers who are\npassionate about building a better future through technology. Plaksha’s hands-on curriculum, values-driven mission, and emphasis on\nleadership resonate deeply with my aspirations.",
+        "highlights": [],
+        "word_count": 196
+      },
+      {
+        "prompt": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+        "entity_id": "ESS-002",
+        "full_text": "Having grown up with a pet dog, I’ve developed a deep sense of empathy and care for animals. That personal connection inspired me to take\naction when I noticed several stray dogs in my neighborhood struggling with hunger, injuries, and neglect. I initiated a small project with a\nfew classmates to support these animals by organizing feeding drives, arranging basic medical aid through local NGOs, and spreading\nawareness about responsible and humane treatment of strays. One of the major challenges was addressing concerns from some residents who were initially uncomfortable with our activities. There were\nworries about safety and cleanliness. Instead of giving up, I took the time to understand their perspective and created a small awareness\ncampaign. We shared how caring for strays through sterilization and regular feeding could actually make the community safer. We also made\nsure to clean up after every feeding and involved local animal welfare volunteers to lend credibility to our efforts. This experience taught me that leadership is as much about listening and empathy as it is about action. It showed me how\nperseverance—combined with teamwork and a clear sense of purpose—can gradually change mindsets and make a difference. It also\nreinforced that even small initiatives, when pursued with sincerity, can have a positive and lasting impact.",
+        "highlights": [],
+        "word_count": 213
+      }
+    ]
+  },
+  "page_4_focus_themes": {
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "Academic Performance Patterns",
+        "description": "Discuss your academic performance patterns across different levels and subjects.",
+        "referenced_entity_ids": [
+          "ACA-001",
+          "ACA-002",
+          "ACA-003",
+          "ACA-004"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "title": "Co-Curricular Activities and Leadership Roles",
+        "description": "Describe your co-curricular activities, leadership roles, and the skills you've developed.",
+        "referenced_entity_ids": [
+          "ACT-001",
+          "ACT-002",
+          "ACT-003",
+          "ACT-004",
+          "LEAD-005",
+          "LEAD-006",
+          "LEAD-007"
+        ]
+      },
+      {
+        "theme_id": "THEME-003",
+        "title": "Essays and Writing Skills",
+        "description": "Discuss your essay writing skills, including topics, approaches, and outcomes.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ESS-002"
+        ]
+      },
+      {
+        "theme_id": "THEME-004",
+        "title": "Test Scores and Performance Metrics",
+        "description": "Explain your test scores, performance metrics, and areas of focus.",
+        "referenced_entity_ids": [
+          "TEST-001"
+        ]
+      }
+    ]
+  },
+  "page_5_question_groups": {
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "Academic Performance Patterns",
+        "questions": [
+          "What are your academic performance patterns across different levels and subjects?",
+          "How do you approach learning and retaining information?",
+          "Can you describe a time when you exceeded expectations in an academic setting?"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "group_title": "Co-Curricular Activities and Leadership Roles",
+        "questions": [
+          "What co-curricular activities have you been involved in, and what skills have you developed?",
+          "Can you describe a leadership role you've held, and the responsibilities that came with it?",
+          "How do you balance your academic and extracurricular commitments?"
+        ]
+      },
+      {
+        "theme_id": "THEME-003",
+        "group_title": "Essays and Writing Skills",
+        "questions": [
+          "What topics have you written essays on, and what approaches did you take?",
+          "Can you describe a time when your writing skills helped you achieve a specific outcome?",
+          "How do you approach editing and revising your work?"
+        ]
+      },
+      {
+        "theme_id": "THEME-004",
+        "group_title": "Test Scores and Performance Metrics",
+        "questions": [
+          "What are your test scores, and how do they reflect your performance metrics?",
+          "Can you describe a time when you received feedback on your performance, and what changes did you make as a result?",
+          "How do you approach preparing for tests and assessments?"
+        ]
+      }
+    ]
+  }
+}
