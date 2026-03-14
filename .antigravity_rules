@@ -1,0 +1,14 @@
+SYSTEM MIGRATION RULES — STAGE 1.7
+
+The agent must follow these rules strictly:
+
+1. Phases must be executed strictly in order A → K.
+2. Never modify synthesis_agent.py until Phase K.
+3. Never introduce additional LLM calls.
+4. Each agent may perform only one LLM call.
+5. Never introduce async execution or background workers.
+6. Never implement retry logic in agents.
+7. Canonical data must never be modified downstream of Agent 11.
+8. Projection artifacts must remain pipeline-ephemeral and never persisted.
+9. Validation checkpoints defined in the migration plan must be executed after each phase.
+10. If a phase requires files outside the phase scope, stop execution and ask for review.

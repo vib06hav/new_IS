@@ -60,47 +60,22 @@ def upload_application(
     db.refresh(db_app)
     
     try:
-        # Phase 5-7: Pipeline Orchestration & Synthesis Integration
-        pipeline_results = run_pipeline(str(application_id), file_path)
+        # Phase 5-7: Pipeline Orchestration (Stage 1.7 Two-Stage Signal-Guided Synthesis)
+        # Orchestrator now handles internal persistence (Canonical & Synthesis Records)
+        pipeline_results = run_pipeline(str(application_id), file_path, db)
         
-        canonical_data = pipeline_results["canonical_data"]
         confidence = pipeline_results.get("confidence", 0.0)
         validation_result = pipeline_results["validation_result"]
         ros_document = pipeline_results["ros_v1"]
         
-        # Store canonical record
-        from app.utils.sanitizer import sanitize_for_json
-        db_canonical = CanonicalRecord(
-            application_id=application_id,
-            canonical_version=CANONICAL_VERSION,
-            canonical_data=sanitize_for_json(canonical_data)
-        )
-        db.add(db_canonical)
-        logger.info(f"Canonical persistence completed (application_id: {application_id})")
-        
         if not validation_result.get("passed", False) or not ros_document:
             logger.error(f"Pipeline validation failed (application_id: {application_id})")
-            db.rollback()
-            db_app.pipeline_status = "failed"
-            db.commit()
+            # Orchestrator handles DB status update to 'failed' on policy rejection
             raise HTTPException(status_code=400, detail="Policy validation failed: Output rejected.")
             
-        # Store synthesis record (ROS Document)
-        db_synthesis = SynthesisRecord(
-            application_id=application_id,
-            synthesis_output=sanitize_for_json(ros_document),
-            policy_passed=True,
-            policy_violations_log=None
-        )
-        db.add(db_synthesis)
+        # Retrieve the synthesis record for the response (orchestrator already committed it)
+        db_synthesis = db.query(SynthesisRecord).filter(SynthesisRecord.application_id == application_id).first()
         
-        # Update App state
-        db_app.pipeline_status = "complete"
-        db_app.pipeline_confidence = confidence
-        db.commit()
-        db.refresh(db_app)
-        db.refresh(db_synthesis)
-
         logger.info(f"Pipeline completion (application_id: {application_id}, final status: complete)")
 
         return ApplicationResponse(

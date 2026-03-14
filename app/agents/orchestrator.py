@@ -13,15 +13,31 @@ from app.agents.timeline_builder import build_timeline
 from app.agents.integrity_analyzer import analyze_integrity
 from app.agents.assembler import assemble_canonical
 from app.projection.ros_projector import project_ros
-from app.agents.synthesis_agent import run_synthesis_agent
-from app.policy.guard import validate_synthesis_output
+
+# Stage 1.7 Agents
+from app.agents.signal_detector import detect_signals
+from app.agents.projection_builder import build_projection
+from app.agents.signal_interpreter import interpret_signals
+from app.agents.bundle_constructor import construct_bundle
+from app.agents.interview_generator import generate_interview
+
+# Policy and ROS
+from app.policy.guard import validate_signals, validate_themes
 from app.ros.assembler import assemble_ros_v1
+
+# Models and Utilities
+from app.models.application import Application
+from app.models.canonical_record import CanonicalRecord
+from app.models.synthesis_record import SynthesisRecord
 from app.canonical.version import CANONICAL_VERSION
+from app.utils.sanitizer import sanitize_for_json
+from sqlalchemy.orm import Session
 from datetime import datetime
 import logging
+import uuid
 logger = logging.getLogger(__name__)
 
-def run_pipeline(application_id: str, pdf_path: str) -> Dict[str, Any]:
+def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, Any]:
     """
     Executes the deterministic agent pipeline in fixed order.
     Returns the assembled canonical representation.
@@ -156,52 +172,134 @@ def run_pipeline(application_id: str, pdf_path: str) -> Dict[str, Any]:
     agg_conf = canonical_data.get("extraction_confidence", {}).get("aggregate_confidence", "N/A")
     logger.debug(f"Agent completion (agent_id: 11, confidence_score: {agg_conf})")
 
-    # Agent 0 / ROS Integration: Stage 1.5 Flow
-    logger.info(f"Stage 1.5 - Commencing ROS Projection (application_id: {application_id})")
+    # Agent 0 / ROS Integration: Stage 1.7 Flow
+    logger.info(f"Stage 1.7 - Commencing Pipeline Orchestration (application_id: {application_id})")
     
-    # Deterministic Projection (Pages 1-3)
-    page_1, page_2, page_3, annotated_canonical, entity_map = project_ros(canonical_data)
+    # 2. Deterministic Projection (Pages 1-3 + entity_id_map)
+    page_1, page_2, page_3, annotated_canonical, entity_id_map = project_ros(canonical_data)
     
+    # 3. Agent 12: Signal Detector
+    logger.debug("Agent 12: Signal Detector")
+    deterministic_signals = detect_signals(canonical_data, entity_id_map)
+    
+    # 4. Agent 13: Projection Builder
+    logger.debug("Agent 13: Projection Builder")
+    call_1_projection = build_projection(canonical_data, entity_id_map, deterministic_signals)
+    
+    # 5. Agent 14: Signal Interpreter (LLM Call 1)
+    logger.debug("Agent 14: Signal Interpreter (LLM Call 1)")
+    raw_call_1_output = interpret_signals(call_1_projection)
+    
+    # 6. Policy Guard (Call 1 Validation)
+    logger.debug("Policy Guard: Signal Validation")
+    val_res_1 = validate_signals(raw_call_1_output, entity_id_map, deterministic_signals)
+    
+    # 7. Abort Path 1
+    if not val_res_1["passed"]:
+        logger.error(f"Call 1 Validation Failed for {application_id}")
+        _handle_abort(application_id, val_res_1, db)
+        return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": val_res_1, "confidence": agg_conf}
+
+    # 8. Agent 15: Bundle Constructor
+    logger.debug(f"Agent 15: Bundle Constructor (keys in val_res_1: {list(val_res_1.keys())})")
+    signals_to_bundle = val_res_1["sanitized_output"]["interpreted_signals"]
+    signal_evidence_bundle = construct_bundle(signals_to_bundle, canonical_data, entity_id_map)
+    
+    # 9. Agent 16: Interview Generator (LLM Call 2)
+    logger.debug("Agent 16: Interview Generator (LLM Call 2)")
+    raw_call_2_output = generate_interview(signal_evidence_bundle, entity_id_map)
+    
+    # 10. Policy Guard (Call 2 Validation)
+    logger.debug("Policy Guard: Theme Validation")
+    val_res_2 = validate_themes(raw_call_2_output, entity_id_map)
+    
+    # 11. Abort Path 2
+    if not val_res_2["passed"]:
+        logger.error(f"Call 2 Validation Failed for {application_id}")
+        _handle_abort(application_id, val_res_2, db)
+        return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": val_res_2, "confidence": agg_conf}
+
+    # 12. ROS Assembler
+    logger.debug("ROS Assembler")
+    validated_output = val_res_2["sanitized_output"]
+    
+    report_meta = {
+        "application_number": application_id,
+        "generated_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "canonical_version": CANONICAL_VERSION,
+        "report_version": "ROS_v1"
+    }
+    
+    ros_document = assemble_ros_v1(
+        page_1=page_1,
+        page_2=page_2,
+        page_3=page_3,
+        llm_output=validated_output,
+        report_metadata=report_meta
+    )
+
+    # 13. Final synthesis_output construction
+    synthesis_output = ros_document.copy()
+    synthesis_output["signal_data"] = {
+        "deterministic_signals": deterministic_signals,
+        "interpreted_signals": val_res_1["sanitized_output"]["interpreted_signals"]
+    }
+
+    # 14-16. Persistence and Finalization
     try:
-        # Synthesis Integration (Agent 12)
-        synthesis_output_raw = run_synthesis_agent(annotated_canonical)
+        # Canonical Persistence
+        db_canonical = CanonicalRecord(
+            application_id=uuid.UUID(application_id),
+            canonical_version=CANONICAL_VERSION,
+            canonical_data=sanitize_for_json(canonical_data)
+        )
+        db.add(db_canonical)
         
-        # Validation Filter (Agent 13)
-        validation_result = validate_synthesis_output(synthesis_output_raw, entity_map, sanitize=True)
+        # Synthesis Persistence
+        db_synthesis = SynthesisRecord(
+            application_id=uuid.UUID(application_id),
+            synthesis_output=sanitize_for_json(synthesis_output),
+            policy_passed=True,
+            policy_violations_log=None
+        )
+        db.add(db_synthesis)
         
-        # Determine success state
-        passed = validation_result.get("passed", False)
-        
-        if not passed:
-            logger.error(f"Agent 13 validation failed for {application_id}. Application marked failed. No second LLM call permitted.")
-            ros_document = None
-        else:
-            # ROS Assembly
-            validated_pages = validation_result.get("sanitized_output", synthesis_output_raw)
+        # Update App state
+        db_app = db.query(Application).filter(Application.id == uuid.UUID(application_id)).first()
+        if db_app:
+            db_app.pipeline_status = "complete"
+            db_app.pipeline_confidence = float(agg_conf) if agg_conf != "N/A" else None
             
-            report_meta = {
-                "application_number": application_id,
-                "generated_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "canonical_version": CANONICAL_VERSION,
-                "report_version": "ROS_v1"
-            }
-            
-            ros_document = assemble_ros_v1(
-                page_1=page_1,
-                page_2=page_2,
-                page_3=page_3,
-                llm_output=validated_pages,
-                report_metadata=report_meta
-            )
-            logger.info(f"ROS v1 Assembly complete (application_id: {application_id})")
+        db.commit()
+        logger.info(f"Pipeline complete and persisted for {application_id}")
     except Exception as e:
-        logger.error(f"LLM Synthesis failed with exception: {str(e)}")
-        ros_document = None
-        validation_result = {"passed": False, "error": str(e)}
+        db.rollback()
+        logger.error(f"Persistence failed for {application_id}: {str(e)}")
+        raise
 
     return {
         "canonical_data": canonical_data,
-        "ros_v1": ros_document,
-        "validation_result": validation_result,
+        "ros_v1": synthesis_output,
+        "validation_result": val_res_2,
         "confidence": agg_conf
     }
+
+def _handle_abort(application_id: str, val_result: dict, db: Session):
+    """Internal helper to handle policy validation aborts."""
+    try:
+        app_uuid = uuid.UUID(application_id)
+        db_app = db.query(Application).filter(Application.id == app_uuid).first()
+        if db_app:
+            db_app.pipeline_status = "failed"
+        
+        db_synthesis = SynthesisRecord(
+            application_id=app_uuid,
+            synthesis_output=None,
+            policy_passed=False,
+            policy_violations_log=sanitize_for_json(val_result.get("violations_log", []))
+        )
+        db.add(db_synthesis)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Abort handling failed for {application_id}: {str(e)}")

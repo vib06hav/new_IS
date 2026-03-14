@@ -1,3 +1,4 @@
+import json
 import re
 import uuid
 from typing import Dict, Any, List, Tuple
@@ -28,20 +29,30 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def validate_synthesis_output(synthesis_output: Dict[str, Any], entity_map: Dict[str, str], sanitize: bool = False) -> Dict[str, Any]:
+def validate_themes(raw_text: str, entity_id_map: List[dict]) -> Dict[str, Any]:
     """
-    Agent 13 - Output Validation Filter.
-    Scans LLM output to detect evaluative phasing and structural integrity (themes, entity linking).
-    Returns: passed (bool), sanitized_output, violations_log
+    Agent 15 - Call 2 Validation Layer.
+    Strictly validates LLM Call 2 output (interview themes and questions).
+    Enforces schema, entity grounding, and neutral language.
     """
-    logger.debug("Starting Agent 13 validation filter.")
-    logger.debug(f"Using entity_map with {len(entity_map)} total references.")
+    logger.debug("Starting Agent 15 theme validation.")
     rules = PolicyConfig.get_prohibited_terms()
     violations_log = []
     
     passed = True
     
-    # Validation F.1.1: JSON structure conformance
+    # Validation Stage 1: JSON Integrity
+    try:
+        synthesis_output = json.loads(raw_text)
+    except Exception as e:
+        violations_log.append({
+            "violation_id": str(uuid.uuid4()),
+            "type": "structure_error",
+            "context": f"Malformed JSON: {str(e)}"
+        })
+        return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
+
+    # Validation Stage 2: Structural Integrity
     if not isinstance(synthesis_output, dict):
         violations_log.append({"violation_id": str(uuid.uuid4()), "field": "root", "type": "structure_error", "context": "Root is not a JSON object."})
         return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
@@ -60,27 +71,39 @@ def validate_synthesis_output(synthesis_output: Dict[str, Any], entity_map: Dict
     if not passed:
         return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
 
-    # Prepare the sanitized structure copy
+    # Prepare for grounding validation
+    known_theme_ids = set()
+    valid_entity_ids = {e.get("entity_id") for e in entity_id_map if e.get("entity_id")}
+    
     sanitized_output = {
         "themes": [],
         "question_groups": []
     }
     
-    known_theme_ids = set()
-    valid_entity_ids = set(entity_map.values())
-    
-    # 1. Scan Themes
+    # 3. Scan Themes
     for idx, theme in enumerate(themes):
         if not isinstance(theme, dict): continue
         theme_id = theme.get("theme_id")
         
-        # Validation F.1.2: theme_id uniqueness
-        if theme_id in known_theme_ids:
+        # Theme ID format and uniqueness
+        if not theme_id or not re.match(r"^THEME-\d{3}$", theme_id):
+            violations_log.append({"violation_id": str(uuid.uuid4()), "field": f"themes[{idx}].theme_id", "type": "invalid_format", "context": f"Invalid format: {theme_id}"})
+            passed = False
+        elif theme_id in known_theme_ids:
             violations_log.append({"violation_id": str(uuid.uuid4()), "field": f"themes[{idx}]", "type": "duplicate_theme_id", "context": f"Duplicate theme_id: {theme_id}"})
             passed = False
         elif theme_id:
             known_theme_ids.add(theme_id)
             
+        # Mandatory fields
+        required = ["title", "description", "referenced_entity_ids"]
+        for field in required:
+            if field not in theme or not theme[field]:
+                violations_log.append({"violation_id": str(uuid.uuid4()), "field": f"themes[{idx}].{field}", "type": "missing_field", "context": f"Field '{field}' is missing or empty."})
+                passed = False
+
+        if not passed: continue
+
         sanitized_theme = {
             "theme_id": theme_id,
             "title": theme.get("title", ""),
@@ -88,15 +111,14 @@ def validate_synthesis_output(synthesis_output: Dict[str, Any], entity_map: Dict
             "referenced_entity_ids": theme.get("referenced_entity_ids", [])
         }
         
-        # Validation F.1.3 & F.1.5: referenced_entity_ids existence
+        # Entity Reference Validation
         refs = theme.get("referenced_entity_ids", [])
-        if not isinstance(refs, list): refs = []
         for ref in refs:
             if ref not in valid_entity_ids:
                 violations_log.append({"violation_id": str(uuid.uuid4()), "field": f"themes[{idx}].referenced_entity_ids", "type": "invented_entity_id", "context": f"Invented entity ID: {ref}"})
                 passed = False
                 
-        # Prohibited language detection (title and description)
+        # Neutrality Validation
         for field in ["title", "description"]:
             text = sanitized_theme.get(field, "")
             violations = _scan_text(text, rules)
@@ -108,55 +130,187 @@ def validate_synthesis_output(synthesis_output: Dict[str, Any], entity_map: Dict
                 
         sanitized_output["themes"].append(sanitized_theme)
 
-    # 2. Scan Question Groups
-    for idx, qg in enumerate(question_groups):
-        if not isinstance(qg, dict): continue
-        theme_id = qg.get("theme_id")
-        
-        # Validation F.1.4: question_groups.theme_id linkage
-        if theme_id not in known_theme_ids:
-            violations_log.append({"violation_id": str(uuid.uuid4()), "field": f"question_groups[{idx}].theme_id", "type": "broken_linkage", "context": f"References non-existent theme_id: {theme_id}"})
-            passed = False
+    # 4. Scan Question Groups
+    if passed:
+        for idx, qg in enumerate(question_groups):
+            if not isinstance(qg, dict): continue
+            theme_id = qg.get("theme_id")
             
-        sanitized_qg = {
-            "theme_id": theme_id,
-            "group_title": qg.get("group_title", ""),
-            "questions": qg.get("questions", [])
-        }
-        
-        # Prohibited language in title
-        title_text = sanitized_qg["group_title"]
-        violations = _scan_text(title_text, rules)
-        for v in violations:
-            v["field"] = f"question_groups[{idx}].group_title"
-            v["type"] = "prohibited_language"
-            violations_log.append(v)
-            passed = False
+            # Linkage validation
+            if theme_id not in known_theme_ids:
+                violations_log.append({"violation_id": str(uuid.uuid4()), "field": f"question_groups[{idx}].theme_id", "type": "broken_linkage", "context": f"References non-existent theme_id: {theme_id}"})
+                passed = False
+                
+            # Mandatory fields
+            required = ["group_title", "questions"]
+            for field in required:
+                if field not in qg or not qg[field]:
+                    violations_log.append({"violation_id": str(uuid.uuid4()), "field": f"question_groups[{idx}].{field}", "type": "missing_field", "context": f"Field '{field}' is missing or empty."})
+                    passed = False
+
+            if not passed: continue
+
+            sanitized_qg = {
+                "theme_id": theme_id,
+                "group_title": qg.get("group_title", ""),
+                "questions": qg.get("questions", [])
+            }
             
-        # Prohibited language in questions
-        questions = qg.get("questions", [])
-        if not isinstance(questions, list): questions = []
-        for q_idx, q_text in enumerate(questions):
-            q_violations = _scan_text(q_text, rules)
-            for v in q_violations:
-                v["field"] = f"question_groups[{idx}].questions[{q_idx}]"
+            # Neutrality Validation - Group Title
+            violations = _scan_text(sanitized_qg["group_title"], rules)
+            for v in violations:
+                v["field"] = f"question_groups[{idx}].group_title"
                 v["type"] = "prohibited_language"
                 violations_log.append(v)
                 passed = False
                 
-        sanitized_output["question_groups"].append(sanitized_qg)
-
-    
-    if len(violations_log) > 0:
-        logger.debug(f"Validation failed with {len(violations_log)} violations.")
-        for v in violations_log:
-            logger.debug(f"Violation Trigger: {v}")
-    else:
-        logger.debug("Validation succeeded.")
+            # Neutrality Validation - Questions
+            questions = qg.get("questions", [])
+            if not isinstance(questions, list) or not questions:
+                violations_log.append({"violation_id": str(uuid.uuid4()), "field": f"question_groups[{idx}].questions", "type": "empty_array", "context": "Questions array is empty."})
+                passed = False
+            else:
+                for q_idx, q_text in enumerate(questions):
+                    q_violations = _scan_text(q_text, rules)
+                    for v in q_violations:
+                        v["field"] = f"question_groups[{idx}].questions[{q_idx}]"
+                        v["type"] = "prohibited_language"
+                        violations_log.append(v)
+                        passed = False
+                    
+            sanitized_output["question_groups"].append(sanitized_qg)
 
     return {
         "passed": passed,
         "sanitized_output": sanitized_output if passed else None,
+        "violations_log": violations_log,
+        "policy_version": PolicyConfig.get_version()
+    }
+
+def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_signals: List[dict]) -> dict:
+    """
+    Agent 15 - Signal Validation Layer.
+    Strictly validates LLM Call 1 output (interpreted signals).
+    Enforces schema, entity grounding, and neutral language.
+    """
+    logger.debug("Starting Agent 15 signal validation.")
+    rules = PolicyConfig.get_prohibited_terms()
+    violations_log = []
+    passed = True
+    
+    # Validation Stage 1: JSON Integrity
+    try:
+        data = json.loads(raw_text)
+    except Exception as e:
+        violations_log.append({
+            "violation_id": str(uuid.uuid4()),
+            "type": "structure_error",
+            "context": f"Malformed JSON: {str(e)}"
+        })
+        return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
+
+    # Validation Stage 2: Structural Integrity
+    if not isinstance(data, dict) or "interpreted_signals" not in data:
+        violations_log.append({
+            "violation_id": str(uuid.uuid4()),
+            "type": "structure_error",
+            "context": "Missing 'interpreted_signals' root key."
+        })
+        return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
+
+    signals = data["interpreted_signals"]
+    if not isinstance(signals, list):
+        violations_log.append({
+            "violation_id": str(uuid.uuid4()),
+            "type": "structure_error",
+            "context": "'interpreted_signals' must be an array."
+        })
+        return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
+
+    # Preparation for ID validation
+    valid_entity_ids = {e.get("entity_id") for e in entity_id_map if e.get("entity_id")}
+    valid_det_signal_ids = {s.get("signal_id") for s in deterministic_signals if s.get("signal_id")}
+    known_int_ids = set()
+    
+    sanitized_signals = []
+
+    # Validation Stage 3: Per-Signal Validation
+    for idx, sig in enumerate(signals):
+        sig_passed = True
+        
+        # Mandatory fields
+        required = ["signal_id", "title", "description", "referenced_entity_ids", "supporting_det_signal_ids"]
+        for field in required:
+            if field not in sig or not sig[field]:
+                violations_log.append({
+                    "violation_id": str(uuid.uuid4()),
+                    "field": f"interpreted_signals[{idx}].{field}",
+                    "type": "missing_field",
+                    "context": f"Required field '{field}' is missing or empty."
+                })
+                sig_passed = False
+                passed = False
+
+        if not sig_passed: continue
+
+        # ID Format & Uniqueness
+        sig_id = sig["signal_id"]
+        if not re.match(r"^INT-\d{3}$", sig_id):
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"interpreted_signals[{idx}].signal_id",
+                "type": "invalid_format",
+                "context": f"Invalid ID format: {sig_id}"
+            })
+            passed = False
+        if sig_id in known_int_ids:
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"interpreted_signals[{idx}].signal_id",
+                "type": "duplicate_id",
+                "context": f"Duplicate signal ID: {sig_id}"
+            })
+            passed = False
+        known_int_ids.add(sig_id)
+
+        # Entity Reference Validation
+        for ent_id in sig["referenced_entity_ids"]:
+            if ent_id not in valid_entity_ids:
+                violations_log.append({
+                    "violation_id": str(uuid.uuid4()),
+                    "field": f"interpreted_signals[{idx}].referenced_entity_ids",
+                    "type": "invented_entity_id",
+                    "context": f"Invented Entity ID: {ent_id}"
+                })
+                passed = False
+
+        # Deterministic Signal Reference Validation
+        for det_id in sig["supporting_det_signal_ids"]:
+            if det_id not in valid_det_signal_ids:
+                violations_log.append({
+                    "violation_id": str(uuid.uuid4()),
+                    "field": f"interpreted_signals[{idx}].supporting_det_signal_ids",
+                    "type": "invented_det_signal_id",
+                    "context": f"Invented Deterministic Signal ID: {det_id}"
+                })
+                passed = False
+
+        # Neutrality Validation
+        for field in ["title", "description"]:
+            text = sig[field]
+            violations = _scan_text(text, rules)
+            for v in violations:
+                v["field"] = f"interpreted_signals[{idx}].{field}"
+                v["type"] = "prohibited_language"
+                violations_log.append(v)
+                passed = False
+        
+        if passed:
+            sanitized_signals.append(sig)
+
+    return {
+        "passed": passed,
+        "sanitized_output": {"interpreted_signals": sanitized_signals} if passed else None,
         "violations_log": violations_log,
         "policy_version": PolicyConfig.get_version()
     }
