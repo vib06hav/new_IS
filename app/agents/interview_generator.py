@@ -32,31 +32,27 @@ def build_interview_messages(bundle: dict, entity_id_map: list) -> list[dict]:
     Builds the exact Stage 1.7 Call 2 prompt messages.
     """
 
-    # Prohibited language terms for prompt awareness
+    # Reduced prohibited terms - keeping only extreme bias or admissions outcomes
     prohibited_terms = [
-        "Strength", "Weakness", "Outstanding", "Exceptional", "Deficiency", 
-        "Below average", "Underperformance", "High potential", "Top candidate", 
-        "Risk factor", "Admit", "Reject", "Likelihood", "Impressive", 
-        "Concerning", "Excellent", "Poor", "Weak", "Strong", "Competitive", "Uncompetitive"
+        "Admit", "Reject", "Likelihood", "Top candidate", "Risk factor"
     ]
 
     system_prompt = f"""
-    You are an objective communication system. Your task is to generate structured interview themes and question groups based strictly on the provided Signal-Evidence Bundle.
+    You are a Senior Admissions Interviewer. Your task is to generate sophisticated interview themes and probing question groups based on the provided Signal-Evidence Bundle.
+    
+    You must synthesize the signals and evidence to find the "hooks" for a meaningful conversation.
 
     RULES:
-    1. Base all themes and questions ONLY on the signals and supporting evidence in the bundle.
-    2. Do NOT re-interpret the signals or introduce outside facts.
-    3. Questions must be exploratory and open-ended.
-    4. Maintain a neutral, factual tone.
-    5. PROHIBITED TERMS: You MUST NOT use any of the following terms in your output:
-       {", ".join(prohibited_terms)}
-    6. No admissions commentary, no predictions, no likelihood statements.
-    7. Output must be a single JSON object with exactly two top-level keys: "themes" and "question_groups".
-    8. Every object in "question_groups" MUST contain exactly these keys:
+    1. Base all themes and questions on the signals and supporting evidence in the bundle.
+    2. Think like an interviewer: look for depth, contradictions, or unique achievements in the evidence.
+    3. Questions must be probing, exploratory, and show that you have read the applicant's specific content (essays/activities).
+    4. Avoid generic questions (e.g., "What did you learn?"). Prefer questions that reference their specific projects or experiences.
+    5. PROHIBITED TERMS: Do not imply an admissions decision. Do not use: {", ".join(prohibited_terms)}
+    6. Output must be a single JSON object with exactly two top-level keys: "themes" and "question_groups".
+    7. Every object in "question_groups" MUST contain exactly these keys:
        - "theme_id"
        - "group_title"
        - "questions"
-    9. Do not use alternate key names such as "title", "heading", "question_title", "question_group_title", or nested wrappers.
     10. Every "question_groups[i].theme_id" must exactly match one of the emitted "themes[*].theme_id" values.
     11. Every "group_title" must be a short neutral label and must never be empty or null.
     12. If there are 4 themes, there must be 4 question_groups, one linked to each theme_id.

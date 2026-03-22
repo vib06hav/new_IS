@@ -1,5 +1,0 @@
-﻿Run directory: tests/outputs/stage_1_7_runs/20260319T182458Z_Dummy_App_8_v8_filled
-Upload status: 201
-Application ID: 0e726ae0-8674-4ab5-9db6-94fed00f6e64
-Pipeline status: complete
-Policy passed: True

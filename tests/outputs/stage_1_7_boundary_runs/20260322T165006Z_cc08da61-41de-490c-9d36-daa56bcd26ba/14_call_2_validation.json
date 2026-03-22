@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "sanitized_output": {
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "Domain Concentration in Science and Mathematics",
+        "description": "Academic profile shows concentration of 14 entries in science and mathematics domains.",
+        "referenced_entity_ids": [
+          "ACA-001",
+          "ACA-002",
+          "ACA-003",
+          "ACA-004"
+        ]
+      }
+    ],
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "Exploring Domain Concentration",
+        "questions": [
+          "What subjects did you focus on in your academic profile?",
+          "Can you walk through one project or activity that demonstrates your concentration?"
+        ]
+      }
+    ]
+  },
+  "normalized_output": {
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "Domain Concentration in Science and Mathematics",
+        "description": "Academic profile shows concentration of 14 entries in science and mathematics domains.",
+        "referenced_entity_ids": [
+          "ACA-001",
+          "ACA-002",
+          "ACA-003",
+          "ACA-004"
+        ]
+      }
+    ],
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "Exploring Domain Concentration",
+        "questions": [
+          "What subjects did you focus on in your academic profile?",
+          "Can you walk through one project or activity that demonstrates your concentration?"
+        ]
+      }
+    ]
+  },
+  "violations_log": [],
+  "policy_version": "1.0"
+}

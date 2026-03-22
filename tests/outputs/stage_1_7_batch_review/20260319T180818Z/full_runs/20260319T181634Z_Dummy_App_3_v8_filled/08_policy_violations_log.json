@@ -1,8 +1,0 @@
-[
-  {
-    "type": "transport_error",
-    "field": "llm_call_2",
-    "context": "LLM Transport Failure: timed out",
-    "violation_id": "3237aaa0-ca8a-44f4-8bc1-176720c721d7"
-  }
-]

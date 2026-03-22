@@ -1,0 +1,396 @@
+{
+  "applicant_context": {
+    "preferred_major": "Computer Science and Artificial Intelligence",
+    "full_name": "Raghav Sharma",
+    "family_background": {
+      "father": {
+        "name": "Mahesh Sharma",
+        "education": "B.Tech Civil Engineering",
+        "designation": "Senior Site Engineer",
+        "organization": "Shree Buildcon Pvt Ltd",
+        "field_of_employment": "Civil Engineering and Construction"
+      },
+      "mother": {
+        "name": "Sunita Sharma",
+        "education": "M.Sc Mathematics",
+        "designation": "Mathematics Teacher",
+        "organization": "Government Higher Secondary School",
+        "field_of_employment": "Education"
+      }
+    }
+  },
+  "academic_profile": [
+    {
+      "entity_id": "ACA-001",
+      "level": "9TH",
+      "year": "2022",
+      "grading_mode": "percentage",
+      "overall_score": "98.18",
+      "school_name": "Delhi Public School Indore",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "subjects": [
+        {
+          "subject": "Mathematics",
+          "score": "99.6"
+        },
+        {
+          "subject": "English",
+          "score": "99.2"
+        },
+        {
+          "subject": "Social Science",
+          "score": "98.7"
+        },
+        {
+          "subject": "Science",
+          "score": "96.8"
+        },
+        {
+          "subject": "Sanskrit",
+          "score": "96.6"
+        }
+      ]
+    },
+    {
+      "entity_id": "ACA-002",
+      "level": "10TH",
+      "year": "2023",
+      "grading_mode": "percentage",
+      "overall_score": "97.4",
+      "school_name": "Delhi Public School Indore",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "subjects": [
+        {
+          "subject": "Mathematics",
+          "score": "97"
+        },
+        {
+          "subject": "Science",
+          "score": "97"
+        },
+        {
+          "subject": "Social Science",
+          "score": "100"
+        },
+        {
+          "subject": "English",
+          "score": "96"
+        },
+        {
+          "subject": "Sanskrit",
+          "score": "97"
+        },
+        {
+          "subject": "Elements of Business",
+          "score": "98"
+        },
+        {
+          "subject": "Introduction to Financial Markets",
+          "score": "97"
+        }
+      ]
+    },
+    {
+      "entity_id": "ACA-003",
+      "level": "11TH",
+      "year": "2024",
+      "grading_mode": "percentage",
+      "overall_score": "89.2",
+      "school_name": "Delhi Public School Indore",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "subjects": [
+        {
+          "subject": "Mathematics",
+          "score": "90.6"
+        },
+        {
+          "subject": "Physics",
+          "score": "95.1"
+        },
+        {
+          "subject": "English",
+          "score": "92.8"
+        },
+        {
+          "subject": "Biology",
+          "score": "74.9"
+        },
+        {
+          "subject": "Chemistry",
+          "score": "92.8"
+        }
+      ]
+    },
+    {
+      "entity_id": "ACA-004",
+      "level": "12TH",
+      "year": "2025",
+      "grading_mode": "percentage",
+      "overall_score": "98.6",
+      "school_name": "Delhi Public School Indore",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "subjects": [
+        {
+          "subject": "Mathematics",
+          "score": "99"
+        },
+        {
+          "subject": "Physics",
+          "score": "100"
+        },
+        {
+          "subject": "Biology",
+          "score": "99"
+        },
+        {
+          "subject": "Chemistry",
+          "score": "97"
+        },
+        {
+          "subject": "English",
+          "score": "98"
+        }
+      ]
+    }
+  ],
+  "test_profile": [
+    {
+      "entity_id": "TEST-001",
+      "test_name": "JEE Mains",
+      "total_score": "99.74",
+      "sections": [
+        {
+          "label": "Physics Percentile",
+          "score": "99.45"
+        },
+        {
+          "label": "Maths Percentile",
+          "score": "99.71"
+        },
+        {
+          "label": "Chemistry Percentile",
+          "score": "99.17"
+        }
+      ]
+    }
+  ],
+  "essay_profile": [
+    {
+      "entity_id": "ESS-001",
+      "text": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing complex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research and realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my journey into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal projects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics, participating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and I aim to combine these skills with my attitude of continuous learning, growth & innovation, contributing meaningfully to the technological advancements shaping our future. My problem-solving skills have developed through consistent effort and practice, as reflected in my academic journey and exams like the Math & Physics Olympiads, which require analytical thinking and perseverance. Mathematics and Computer Science have helped me tackle complex problems under time constrain, reinforcing my ability to work under pressure with a solution-oriented mindset. During my high school years, I undertook various projects that enhanced my understanding of programming languages and algorithms. I designed a code that could encrypt and decrypt texts adopting unique algorithms each time (which I now personally use as a brain-teaser). Though rudimentary compared to Jarvis, it has been a motivating step towards my vision of creating impactful technology. Beyond academics, I have actively participated in STEM and leadership activities. As Head Boy of my school, I had the opportunity to contribute to initiatives that combined leadership with technological innovation, such as implementing digital tools to improve project management. These experiences taught me the importance of collaboration and leadership in bringing ideas to life. I have also developed several Science models reflecting my dedication to creating innovative solutions. To broaden my knowledge and skill-set, I undertook an internship at AccelEd, a career counseling firm, where I contributed as a content writer, web-developer, and video editor. This experience helped me gain knowledge of applications of software in the industry. My extracurricular activities have positively affected my personality and work ethic. As an avid guitarist, I've developed creativity and precision, which I apply to my software projects. Representing my school in sports (athletics) at various levels helped me learn discipline, teamwork, and perseverance, all crucial for success in technology. These experiences have given me an all-round perspective, enabling me to approach software development with both, technical and creative approaches. With this holistic approach, I am keen to contribute to and grow within leading universities. In conclusion, my journey from being inspired by Tony Stark's Jarvis to pursuing innovation has been one of continuous learning.",
+      "prompt": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?"
+    },
+    {
+      "entity_id": "ESS-002",
+      "text": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing complex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research and realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my journey into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal projects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics, participating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and I aim to combine these skills with my attitude of continuous learning, growth & innovation, contributing meaningfully to the technological advancements shaping our future. My problem-solving skills have developed through consistent effort and practice, as reflected in my academic journey and exams like the Math & Physics Olympiads, which require analytical thinking and perseverance. Mathematics and Computer Science have helped me tackle complex problems under time constrain, reinforcing my ability to work under pressure with a solution-oriented mindset. During my high school years, I undertook various projects that enhanced my understanding of programming languages and algorithms. I designed a code that could encrypt and decrypt texts adopting unique algorithms each time (which I now personally use as a brain-teaser). Though rudimentary compared to Jarvis, it has been a motivating step towards my vision of creating impactful technology. Beyond academics, I have actively participated in STEM and leadership activities. As Head Boy of my school, I had the opportunity to contribute to initiatives that combined leadership with technological innovation, such as implementing digital tools to improve project management. These experiences taught me the importance of collaboration and leadership in bringing ideas to life. I have also developed several Science models reflecting my dedication to creating innovative solutions. To broaden my knowledge and skill-set, I undertook an internship at AccelEd, a career counseling firm, where I contributed as a content writer, web-developer, and video editor. This experience helped me gain knowledge of applications of software in the industry. My extracurricular activities have positively affected my personality and work ethic. As an avid guitarist, I've developed creativity and precision, which I apply to my software projects. Representing my school in sports (athletics) at various levels helped me learn discipline, teamwork, and perseverance, all crucial for success in technology. These experiences have given me an all-round perspective, enabling me to approach software development with both, technical and creative approaches. With this holistic approach, I am keen to contribute to and grow within leading universities. In conclusion, my journey from being inspired by Tony Stark's Jarvis to pursuing innovation has been one of continuous learning.",
+      "prompt": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?"
+    }
+  ],
+  "activity_profile": [
+    {
+      "entity_id": "ACT-001",
+      "type": "extracurricular",
+      "name": "Kaizen OC Head",
+      "level": "Intra School",
+      "duration_years": "1"
+    },
+    {
+      "entity_id": "ACT-002",
+      "type": "extracurricular",
+      "name": "Web Developing Intern",
+      "level": "National",
+      "duration_years": "1"
+    },
+    {
+      "entity_id": "ACT-003",
+      "type": "extracurricular",
+      "name": "Digital Marketing Intern",
+      "level": "International",
+      "duration_years": "1"
+    },
+    {
+      "entity_id": "ACT-004",
+      "type": "co_curricular",
+      "name": "Freelance Writer",
+      "achievement": "2"
+    }
+  ],
+  "entity_id_map": [
+    {
+      "entity_id": "SCH-001",
+      "collection": "schooling_history",
+      "descriptor": "Delhi Public School Indore"
+    },
+    {
+      "entity_id": "SCH-002",
+      "collection": "schooling_history",
+      "descriptor": "Delhi Public School Indore"
+    },
+    {
+      "entity_id": "SCH-003",
+      "collection": "schooling_history",
+      "descriptor": "Delhi Public School Indore"
+    },
+    {
+      "entity_id": "SCH-004",
+      "collection": "schooling_history",
+      "descriptor": "Delhi Public School Indore"
+    },
+    {
+      "entity_id": "ACA-001",
+      "collection": "academic_entries",
+      "descriptor": "9TH"
+    },
+    {
+      "entity_id": "ACA-002",
+      "collection": "academic_entries",
+      "descriptor": "10TH"
+    },
+    {
+      "entity_id": "ACA-003",
+      "collection": "academic_entries",
+      "descriptor": "11TH"
+    },
+    {
+      "entity_id": "ACA-004",
+      "collection": "academic_entries",
+      "descriptor": "12TH"
+    },
+    {
+      "entity_id": "TEST-001",
+      "collection": "test_entries",
+      "descriptor": "JEE Mains"
+    },
+    {
+      "entity_id": "ESS-001",
+      "collection": "essay_entries",
+      "descriptor": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?"
+    },
+    {
+      "entity_id": "ESS-002",
+      "collection": "essay_entries",
+      "descriptor": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?"
+    },
+    {
+      "entity_id": "ACT-001",
+      "collection": "activity_entries",
+      "descriptor": "Kaizen OC Head"
+    },
+    {
+      "entity_id": "ACT-002",
+      "collection": "activity_entries",
+      "descriptor": "Web Developing Intern"
+    },
+    {
+      "entity_id": "ACT-003",
+      "collection": "activity_entries",
+      "descriptor": "Digital Marketing Intern"
+    },
+    {
+      "entity_id": "ACT-004",
+      "collection": "activity_entries",
+      "descriptor": "Freelance Writer"
+    },
+    {
+      "entity_id": "LEAD-005",
+      "collection": "activity_entries",
+      "descriptor": "Head Boy"
+    },
+    {
+      "entity_id": "LEAD-006",
+      "collection": "activity_entries",
+      "descriptor": "Vice Head Boy"
+    },
+    {
+      "entity_id": "LEAD-007",
+      "collection": "activity_entries",
+      "descriptor": "Vice House Captain"
+    },
+    {
+      "entity_id": "LEAD-008",
+      "collection": "activity_entries",
+      "descriptor": "Organization"
+    }
+  ],
+  "deterministic_signals": [
+    {
+      "signal_id": "DET-001",
+      "signal_type": "domain_concentration",
+      "observation": "Academic profile shows concentration of 14 entries in science and mathematics domains.",
+      "referenced_entity_ids": [
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004"
+      ],
+      "source_collection": "academic_entries"
+    },
+    {
+      "signal_id": "DET-002",
+      "signal_type": "leadership_presence",
+      "observation": "Applicant held leadership positions in 4 activities.",
+      "referenced_entity_ids": [
+        "LEAD-005",
+        "LEAD-006",
+        "LEAD-007",
+        "LEAD-008"
+      ],
+      "source_collection": "activity_entries"
+    },
+    {
+      "signal_id": "DET-003",
+      "signal_type": "essay_characteristic",
+      "observation": "Essay response for What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program? exceeds 300 words.",
+      "referenced_entity_ids": [
+        "ESS-001"
+      ],
+      "source_collection": "essay_entries"
+    },
+    {
+      "signal_id": "DET-004",
+      "signal_type": "essay_characteristic",
+      "observation": "Essay response for Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance? exceeds 300 words.",
+      "referenced_entity_ids": [
+        "ESS-002"
+      ],
+      "source_collection": "essay_entries"
+    },
+    {
+      "signal_id": "DET-005",
+      "signal_type": "activity_volume",
+      "observation": "Applicant has reported 8 distinct activities.",
+      "referenced_entity_ids": [
+        "ACT-001",
+        "ACT-002",
+        "ACT-003",
+        "ACT-004",
+        "LEAD-005",
+        "LEAD-006",
+        "LEAD-007",
+        "LEAD-008"
+      ],
+      "source_collection": "activity_entries"
+    },
+    {
+      "signal_id": "DET-006",
+      "signal_type": "test_performance_pattern",
+      "observation": "Score of 99.74 achieved in JEE Mains.",
+      "referenced_entity_ids": [
+        "TEST-001"
+      ],
+      "source_collection": "test_entries"
+    },
+    {
+      "signal_id": "DET-007",
+      "signal_type": "timeline_characteristic",
+      "observation": "Academic records cover a span of 4 academic years.",
+      "referenced_entity_ids": [
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004"
+      ],
+      "source_collection": "academic_entries"
+    }
+  ]
+}

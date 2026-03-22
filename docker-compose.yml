@@ -6,6 +6,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - .:/app
       - uploads_volume:/app/uploads
     env_file:
       - .env
@@ -17,6 +18,8 @@ services:
 
   db:
     image: postgres:15-alpine
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres_password

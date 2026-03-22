@@ -1,0 +1,68 @@
+{
+  "passed": false,
+  "sanitized_output": null,
+  "normalized_output": {
+    "interpreted_signals": [
+      {
+        "signal_id": "ISP-001",
+        "title": "Domain Concentration in Science and Mathematics",
+        "description": "The applicant's academic profile shows a concentration of entries in science and mathematics domains, a foundation in these subjects.",
+        "referenced_entity_ids": [],
+        "supporting_det_signal_ids": []
+      },
+      {
+        "signal_id": "ISP-002",
+        "title": "Leadership Presence Across Multiple Activities",
+        "description": "The applicant has held leadership positions in four activities, demonstrating their ability to take on responsibilities and lead others.",
+        "referenced_entity_ids": [],
+        "supporting_det_signal_ids": []
+      },
+      {
+        "signal_id": "ISP-003",
+        "title": "recorded results in JEE Mains",
+        "description": "The applicant achieved a score of 99.74 in the JEE Mains test, recorded results in this exam.",
+        "referenced_entity_ids": [],
+        "supporting_det_signal_ids": []
+      }
+    ]
+  },
+  "violations_log": [
+    {
+      "violation_id": "7cbfbdd0-1c53-4bc5-9d34-36c750a66749",
+      "field": "interpreted_signals[0].referenced_entity_ids",
+      "type": "missing_field",
+      "context": "Required field 'referenced_entity_ids' is missing or empty."
+    },
+    {
+      "violation_id": "8a97b34c-9520-4ca6-9607-0caace7bf312",
+      "field": "interpreted_signals[0].supporting_det_signal_ids",
+      "type": "missing_field",
+      "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+    },
+    {
+      "violation_id": "c512d8c8-0c1f-4b4b-830a-44942d6b490e",
+      "field": "interpreted_signals[1].referenced_entity_ids",
+      "type": "missing_field",
+      "context": "Required field 'referenced_entity_ids' is missing or empty."
+    },
+    {
+      "violation_id": "30de7062-4046-4149-afc4-78c3c955efc5",
+      "field": "interpreted_signals[1].supporting_det_signal_ids",
+      "type": "missing_field",
+      "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+    },
+    {
+      "violation_id": "1d90e9df-9a03-4117-9d47-e3e07c4a98b9",
+      "field": "interpreted_signals[2].referenced_entity_ids",
+      "type": "missing_field",
+      "context": "Required field 'referenced_entity_ids' is missing or empty."
+    },
+    {
+      "violation_id": "8bde0a66-262e-4cac-a676-9eb7ee8f3660",
+      "field": "interpreted_signals[2].supporting_det_signal_ids",
+      "type": "missing_field",
+      "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+    }
+  ],
+  "policy_version": "1.0"
+}

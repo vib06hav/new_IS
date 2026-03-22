@@ -1,7 +1,0 @@
-{
-  "started_at": "2026-03-19T18:24:58.210857+00:00",
-  "api_base_url": "http://127.0.0.1:8000",
-  "pdf_path": "tests/pdfs/Dummy App (8)_v8_filled.pdf",
-  "script": "run_stage_1_7_pipeline_debug.py",
-  "note": "Intended to run inside the Docker api container."
-}

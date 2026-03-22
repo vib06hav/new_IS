@@ -1,7 +1,0 @@
-{
-  "upload_status_code": 201,
-  "application_id": "0e726ae0-8674-4ab5-9db6-94fed00f6e64",
-  "pipeline_status": "complete",
-  "policy_passed": true,
-  "run_dir": "tests/outputs/stage_1_7_runs/20260319T182458Z_Dummy_App_8_v8_filled"
-}

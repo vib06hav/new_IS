@@ -1,0 +1,63 @@
+{
+  "interpreted_signals": [
+    {
+      "signal_id": "INT-001",
+      "title": "Media-Inspired Technology Exploration",
+      "description": "Applicant describes that viewing Iron Man at age 10 sparked curiosity about AI, leading to self‑directed projects such as creating an encryption tool that changes algorithms each use, while academic coursework shows sustained focus on mathematics and science subjects.",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-001"
+      ]
+    },
+    {
+      "signal_id": "INT-002",
+      "title": "Leadership Integrated with Technical Projects",
+      "description": "As Head Boy, the applicant led initiatives that introduced digital tools for project management, and held additional leadership roles such as Kaizen OC Head, demonstrating how leadership positions were used to support technical and organizational tasks.",
+      "referenced_entity_ids": [
+        "LEAD-005",
+        "ACT-001",
+        "ESS-001"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-002"
+      ]
+    },
+    {
+      "signal_id": "INT-003",
+      "title": "Interdisciplinary Application of Technical Skills",
+      "description": "Through internships in web development, digital marketing, and freelance writing, the applicant applied programming and design skills to create content and websites, showing an ability to move between technical work and communication-focused roles.",
+      "referenced_entity_ids": [
+        "ACT-002",
+        "ACT-003",
+        "ACT-004",
+        "ESS-001"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-001"
+      ]
+    },
+    {
+      "signal_id": "INT-004",
+      "title": "Analytical Skill Development via Olympiad Preparation",
+      "description": "Preparation for mathematics and physics Olympiads, along with regular participation in math contests from early grades, is linked to the applicant's analytical approach to problem solving, which is reflected in solid performance on school examinations and a percentile score in the upper range on JEE Mains.",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004",
+        "TEST-001"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-001",
+        "DET-003"
+      ]
+    }
+  ]
+}

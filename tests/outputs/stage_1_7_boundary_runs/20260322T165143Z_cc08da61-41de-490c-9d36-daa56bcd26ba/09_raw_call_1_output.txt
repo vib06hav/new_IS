@@ -1,0 +1,22 @@
+{
+"interpreted_signals": [
+{
+"signal_id": "INT-001",
+"signal_type": "academic_concentration",
+"description": "Academic profile shows concentration of 14 entries in science and mathematics domains.",
+"title": "Domain Focus"
+},
+{
+"signal_id": "INT-002",
+"signal_type": "leadership_presence",
+"description": "Applicant held leadership positions in 4 activities.",
+"title": "Leadership Experience"
+},
+{
+"signal_id": "INT-003",
+"signal_type": "test_performance_pattern",
+"description": "Score of 99.74 achieved in JEE Mains.",
+"title": "JEE Mains Performance"
+}
+]
+}

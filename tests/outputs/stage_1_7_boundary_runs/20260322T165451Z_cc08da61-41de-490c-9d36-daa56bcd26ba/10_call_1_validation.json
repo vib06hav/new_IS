@@ -1,0 +1,106 @@
+{
+  "passed": false,
+  "sanitized_output": null,
+  "normalized_output": {
+    "interpreted_signals": [
+      {
+        "signal_id": "INT-001",
+        "title": "Domain Concentration",
+        "description": "Academic profile shows concentration of entries in science and mathematics domains.",
+        "referenced_entity_ids": [],
+        "supporting_det_signal_ids": []
+      },
+      {
+        "signal_id": "INT-002",
+        "title": "Leadership Presence",
+        "description": "Applicant held leadership positions in multiple activities.",
+        "referenced_entity_ids": [],
+        "supporting_det_signal_ids": []
+      },
+      {
+        "signal_id": "INT-003",
+        "title": "Test Performance Pattern",
+        "description": "Score of 99.74 achieved in JEE Mains.",
+        "referenced_entity_ids": [],
+        "supporting_det_signal_ids": []
+      },
+      {
+        "signal_id": "INT-004",
+        "title": "Innovative Thinking",
+        "description": "Applicant's essay highlights innovative thinking and problem-solving skills.",
+        "referenced_entity_ids": [],
+        "supporting_det_signal_ids": []
+      },
+      {
+        "signal_id": "INT-005",
+        "title": "Holistic Approach",
+        "description": "Applicant's extracurricular activities demonstrate a holistic approach to personal growth and development.",
+        "referenced_entity_ids": [],
+        "supporting_det_signal_ids": []
+      }
+    ]
+  },
+  "violations_log": [
+    {
+      "violation_id": "cf6f702f-77f0-492f-ac1f-ea6d1e60836e",
+      "field": "interpreted_signals[0].referenced_entity_ids",
+      "type": "missing_field",
+      "context": "Required field 'referenced_entity_ids' is missing or empty."
+    },
+    {
+      "violation_id": "f038d4b1-c2a6-4e66-8005-fbf7abb31aa4",
+      "field": "interpreted_signals[0].supporting_det_signal_ids",
+      "type": "missing_field",
+      "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+    },
+    {
+      "violation_id": "f10e52f8-b659-4ae3-940c-f506fa987330",
+      "field": "interpreted_signals[1].referenced_entity_ids",
+      "type": "missing_field",
+      "context": "Required field 'referenced_entity_ids' is missing or empty."
+    },
+    {
+      "violation_id": "c0458cde-c0e0-44e2-b58f-083a7eff0a39",
+      "field": "interpreted_signals[1].supporting_det_signal_ids",
+      "type": "missing_field",
+      "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+    },
+    {
+      "violation_id": "cd69a40d-a46b-409b-b681-97f44a2f0849",
+      "field": "interpreted_signals[2].referenced_entity_ids",
+      "type": "missing_field",
+      "context": "Required field 'referenced_entity_ids' is missing or empty."
+    },
+    {
+      "violation_id": "fc8b4594-deef-4809-82d6-a5b21f821b74",
+      "field": "interpreted_signals[2].supporting_det_signal_ids",
+      "type": "missing_field",
+      "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+    },
+    {
+      "violation_id": "5a920266-77b8-4152-a960-a7f6a9c8e9ec",
+      "field": "interpreted_signals[3].referenced_entity_ids",
+      "type": "missing_field",
+      "context": "Required field 'referenced_entity_ids' is missing or empty."
+    },
+    {
+      "violation_id": "59fa73d9-90ce-45cd-8c3f-29e22731656b",
+      "field": "interpreted_signals[3].supporting_det_signal_ids",
+      "type": "missing_field",
+      "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+    },
+    {
+      "violation_id": "9a337c0f-65a0-460d-9c33-5d03d21b988f",
+      "field": "interpreted_signals[4].referenced_entity_ids",
+      "type": "missing_field",
+      "context": "Required field 'referenced_entity_ids' is missing or empty."
+    },
+    {
+      "violation_id": "7422586e-0819-432b-9ebe-c41f775686c6",
+      "field": "interpreted_signals[4].supporting_det_signal_ids",
+      "type": "missing_field",
+      "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+    }
+  ],
+  "policy_version": "1.0"
+}

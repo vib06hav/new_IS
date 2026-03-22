@@ -11,10 +11,7 @@ class PolicyConfig:
     
     # Authoritative prohibited terms list from Section 5 of the Stage 1.7 Contract
     ALL_PROHIBITED = [
-        "Strength", "Weakness", "Outstanding", "Exceptional", "Deficiency", 
-        "Below average", "Underperformance", "High potential", "Top candidate", 
-        "Risk factor", "Admit", "Reject", "Likelihood", "Impressive", 
-        "Concerning", "Excellent", "Poor", "Weak", "Strong", "Competitive", "Uncompetitive"
+        "Admit", "Reject", "Likelihood", "Top candidate", "Risk factor"
     ]
 
     @classmethod

@@ -1,0 +1,35 @@
+[
+  {
+    "signal_id": "DET-001",
+    "signal_type": "domain_concentration",
+    "observation": "Academic profile shows concentration of 14 entries in science and mathematics domains.",
+    "referenced_entity_ids": [
+      "ACA-001",
+      "ACA-002",
+      "ACA-003",
+      "ACA-004"
+    ],
+    "source_collection": "academic_entries"
+  },
+  {
+    "signal_id": "DET-002",
+    "signal_type": "leadership_presence",
+    "observation": "Applicant held leadership positions in 4 activities.",
+    "referenced_entity_ids": [
+      "LEAD-005",
+      "LEAD-006",
+      "LEAD-007",
+      "LEAD-008"
+    ],
+    "source_collection": "activity_entries"
+  },
+  {
+    "signal_id": "DET-003",
+    "signal_type": "test_performance_pattern",
+    "observation": "Score of 99.74 achieved in JEE Mains.",
+    "referenced_entity_ids": [
+      "TEST-001"
+    ],
+    "source_collection": "test_entries"
+  }
+]

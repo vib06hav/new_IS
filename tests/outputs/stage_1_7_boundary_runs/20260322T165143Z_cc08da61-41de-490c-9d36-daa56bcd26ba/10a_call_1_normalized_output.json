@@ -1,0 +1,25 @@
+{
+  "interpreted_signals": [
+    {
+      "signal_id": "INT-001",
+      "title": "Domain Focus",
+      "description": "Academic profile shows concentration of 14 entries in science and mathematics domains.",
+      "referenced_entity_ids": [],
+      "supporting_det_signal_ids": []
+    },
+    {
+      "signal_id": "INT-002",
+      "title": "Leadership Experience",
+      "description": "Applicant held leadership positions in 4 activities.",
+      "referenced_entity_ids": [],
+      "supporting_det_signal_ids": []
+    },
+    {
+      "signal_id": "INT-003",
+      "title": "JEE Mains Performance",
+      "description": "Score of 99.74 achieved in JEE Mains.",
+      "referenced_entity_ids": [],
+      "supporting_det_signal_ids": []
+    }
+  ]
+}

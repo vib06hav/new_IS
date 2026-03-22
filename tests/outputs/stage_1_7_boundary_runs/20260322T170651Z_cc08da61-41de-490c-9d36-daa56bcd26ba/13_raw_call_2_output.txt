@@ -1,0 +1,74 @@
+{
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "Early Inspiration Driving Technology Exploration",
+      "description": "Applicant recounts watching Iron Man in 2017 as catalyst for interest in AI and innovation, which aligns with sustained academic focus on mathematics and science, personal encryption project, and internships in web and digital marketing.",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACT-002",
+        "ACT-003",
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "Consistent Development of Analytical Abilities",
+      "description": "Participation in mathematics contests from early grades, recorded results in mathematics and physics across secondary school, and high percentile in JEE Mains indicate a pattern of analytical skill building.",
+      "referenced_entity_ids": [
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004",
+        "TEST-001",
+        "ESS-001"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "title": "Experience in Organizational and Collaborative Roles",
+      "description": "Holding multiple school positions such as Head Boy, Vice Head Boy, Vice House Captain, and Organization role, combined with extracurricular activities like Kaizen OC Head and internships, demonstrates experience in coordinating groups and contributing to team\u2011based projects.",
+      "referenced_entity_ids": [
+        "LEAD-005",
+        "LEAD-006",
+        "LEAD-007",
+        "LEAD-008",
+        "ACT-001",
+        "ACT-002",
+        "ACT-003"
+      ]
+    }
+  ],
+  "question_groups": [
+    {
+      "theme_id": "THEME-001",
+      "group_title": "Exploring Early Inspiration",
+      "questions": [
+        "What specific aspects of Jarvis in Iron Man captured your imagination and how did that translate into your first technology project?",
+        "Can you walk me through the encryption algorithm you created and what challenges you faced in making it work?",
+        "How did your internships in web development and digital marketing connect to your original vision of creating transformative technology?"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "group_title": "Understanding Analytical Development",
+      "questions": [
+        "Your mathematics scores show consistent excellence - what study approaches or problem-solving strategies have you developed over time?",
+        "The JEE Mains percentile scores are exceptional - can you describe a particularly challenging problem you solved during your preparation?",
+        "How do you approach problems that require both mathematical rigor and creative thinking, like your encryption project?"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "group_title": "Examining Leadership Experience",
+      "questions": [
+        "As Head Boy, what was one initiative you led that combined technology with school improvement, and what was the outcome?",
+        "In your Kaizen OC Head role, how did you coordinate team efforts and what did you learn about managing group dynamics?",
+        "Your internships involved multiple responsibilities - how did you prioritize tasks and collaborate with different teams?"
+      ]
+    }
+  ]
+}

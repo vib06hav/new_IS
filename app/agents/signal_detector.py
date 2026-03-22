@@ -9,9 +9,9 @@ PROHIBITED_TERMS = [
 ]
 
 ALLOWED_SIGNAL_TYPES = [
-    "duration_pattern", "domain_concentration", "leadership_presence",
-    "academic_distribution", "essay_characteristic", "cross_section_pattern",
-    "activity_volume", "test_performance_pattern", "timeline_characteristic"
+    "domain_concentration", "leadership_presence",
+    "academic_distribution", "cross_section_pattern",
+    "test_performance_pattern"
 ]
 
 def detect_signals(canonical: dict, entity_id_map: list) -> list[dict]:
@@ -29,25 +29,6 @@ def detect_signals(canonical: dict, entity_id_map: list) -> list[dict]:
         for term in PROHIBITED_TERMS:
             if re.search(re.escape(term), text, re.IGNORECASE):
                 raise RuntimeError(f"Prohibited language detected: '{term}' in '{text}'")
-
-    # 1. duration_pattern (Activity with duration > 3 years)
-    for act in canonical.get("activity_entries", []):
-        duration_raw = act.get("duration", "")
-        try:
-            # Simple numeric extract for duration - very conservative
-            nums = re.findall(r"\d+\.?\d*", str(duration_raw))
-            if nums and float(nums[0]) >= 3.0:
-                ent_id = next((e["entity_id"] for e in entity_id_map if e.get("collection") == "activity_entries" and e.get("descriptor") == act.get("activity_name")), None)
-                if ent_id:
-                    signals.append({
-                        "signal_id": f"DET-{len(signals)+1:03}",
-                        "signal_type": "duration_pattern",
-                        "observation": f"Applicant has participated in {act.get('activity_name')} for {duration_raw}.",
-                        "referenced_entity_ids": [ent_id],
-                        "source_collection": "activity_entries"
-                    })
-        except (ValueError, TypeError):
-            continue
 
     # 2. domain_concentration (Science/Math focus)
     science_math_keywords = ["physics", "chemistry", "mathematics", "biology", "computer", "science"]
@@ -106,20 +87,6 @@ def detect_signals(canonical: dict, entity_id_map: list) -> list[dict]:
             "source_collection": "academic_entries"
         })
 
-    # 5. essay_characteristic (Long response)
-    for essay in canonical.get("essay_entries", []):
-        text = essay.get("raw_text", "")
-        if len(text.split()) > 300:
-            eid = next((e["entity_id"] for e in entity_id_map if e.get("collection") == "essay_entries" and e.get("descriptor") == essay.get("essay_identifier")), None)
-            if eid:
-                signals.append({
-                    "signal_id": f"DET-{len(signals)+1:03}",
-                    "signal_type": "essay_characteristic",
-                    "observation": f"Essay response for {essay.get('essay_identifier')} exceeds 300 words.",
-                    "referenced_entity_ids": [eid],
-                    "source_collection": "essay_entries"
-                })
-
     # 6. cross_section_pattern (Recursive term "Robotics" - example for Ananya)
     keywords = ["robotics", "debate", "community", "service"]
     for kw in keywords:
@@ -149,17 +116,6 @@ def detect_signals(canonical: dict, entity_id_map: list) -> list[dict]:
                 "source_collection": "multiple"
             })
 
-    # 7. activity_volume
-    if len(canonical.get("activity_entries", [])) >= 5:
-        ent_ids = [e["entity_id"] for e in entity_id_map if e.get("collection") == "activity_entries"]
-        signals.append({
-            "signal_id": f"DET-{len(signals)+1:03}",
-            "signal_type": "activity_volume",
-            "observation": f"Applicant has reported {len(canonical.get('activity_entries', []))} distinct activities.",
-            "referenced_entity_ids": ent_ids,
-            "source_collection": "activity_entries"
-        })
-
     # 8. test_performance_pattern (Consistent test scores)
     for test in canonical.get("test_entries", []):
         score_val = test.get("total_score")
@@ -177,24 +133,6 @@ def detect_signals(canonical: dict, entity_id_map: list) -> list[dict]:
                             "source_collection": "test_entries"
                         })
             except ValueError: continue
-
-    # 9. timeline_characteristic
-    years = []
-    for entry in canonical.get("academic_entries", []):
-        year = entry.get("academic_year")
-        if year:
-            nums = re.findall(r"\d{4}", str(year))
-            if nums: years.append(int(nums[0]))
-    
-    if years and max(years) - min(years) >= 2:
-        aca_ids = [e["entity_id"] for e in entity_id_map if e.get("collection") == "academic_entries"]
-        signals.append({
-            "signal_id": f"DET-{len(signals)+1:03}",
-            "signal_type": "timeline_characteristic",
-            "observation": f"Academic records cover a span of {max(years) - min(years) + 1} academic years.",
-            "referenced_entity_ids": aca_ids,
-            "source_collection": "academic_entries"
-        })
 
     # Final Validation
     for s in signals:

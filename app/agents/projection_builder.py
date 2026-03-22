@@ -325,9 +325,14 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
 
     activity_profile = []
     for entry in canonical.get("activity_entries", []):
-        # Match using name, then type as fallback descriptor
-        desc = entry.get("activity_name") or entry.get("activity_type")
-        ent_id = next((e["entity_id"] for e in entity_id_map if e.get("collection") == "activity_entries" and e.get("descriptor") == desc), None)
+        # Match using name, then position, then type as fallback descriptor
+        desc_candidates = [entry.get("activity_name"), entry.get("position_title"), entry.get("activity_type")]
+        ent_id = None
+        for cand in desc_candidates:
+            if not cand: continue
+            ent_id = next((e["entity_id"] for e in entity_id_map if e.get("collection") == "activity_entries" and e.get("descriptor") == cand), None)
+            if ent_id: break
+            
         if not ent_id:
             continue
             
@@ -368,9 +373,13 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
         resp = entry.get("roles_and_responsibilities")
         if resp and not is_artifact(resp):
             act_entry["responsibilities"] = resp
+
+        desc = entry.get("description_raw")
+        if desc:
+            act_entry["description"] = desc
             
-        # Sparse drop check: must have name, position, or achievement
-        if not any(k in act_entry for k in ["name", "position", "achievement"]):
+        # Sparse drop check: must have name, position, achievement, or responsibilities/description
+        if not any(k in act_entry for k in ["name", "position", "achievement", "responsibilities", "description"]):
             continue
             
         activity_profile.append(act_entry)

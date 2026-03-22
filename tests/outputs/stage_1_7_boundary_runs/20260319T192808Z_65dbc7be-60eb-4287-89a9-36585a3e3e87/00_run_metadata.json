@@ -1,7 +1,0 @@
-{
-  "started_at": "2026-03-19T19:28:08.422721+00:00",
-  "script": "run_stage_1_7_boundary_debug.py",
-  "application_id": "65dbc7be-60eb-4287-89a9-36585a3e3e87",
-  "canonical_record_id": "8cbd98b5-b39f-48a1-9446-ed2b63268503",
-  "application_status": "failed"
-}

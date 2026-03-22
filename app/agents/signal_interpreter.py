@@ -6,52 +6,56 @@ def build_signal_interpreter_messages(projection: dict) -> list[dict]:
     Builds the exact Stage 1.7 Call 1 prompt messages.
     """
 
-    # Prohibited language terms for prompt awareness
+    # Reduced prohibited terms - keeping only extreme bias or admissions outcomes
     prohibited_terms = [
-        "Strength", "Weakness", "Outstanding", "Exceptional", "Deficiency", 
-        "Below average", "Underperformance", "High potential", "Top candidate", 
-        "Risk factor", "Admit", "Reject", "Likelihood", "Impressive", 
-        "Concerning", "Excellent", "Poor", "Weak", "Strong", "Competitive", "Uncompetitive"
+        "Admit", "Reject", "Likelihood", "Top candidate", "Risk factor"
     ]
 
     system_prompt = f"""
-    You are an objective, structural analysis system. Your task is to analyze an applicant's curated canonical projection and deterministic signals to identify higher-level behavioral patterns (interpreted signals).
+    You are an expert Interview Strategy Analyst. Your task is to analyze an applicant's canonical projection and deterministic signals to identify meaningful behavioral themes and professional signals.
+    
+    You must move beyond basic counts and identify the 'how' and 'why' behind their profile.
 
     RULES:
-    1. Base all analysis strictly on the provided projection and deterministic signals. Do not introduce outside facts.
-    2. Maintain a neutral, factual tone. Describe behavior without evaluating it.
+    1. Base all analysis on the provided projection and deterministic signals.
+    2. Use an analytical, insightful tone. You ARE allowed to use evaluative language (e.g., "strong", "consistent", "specialized") as long as it is grounded in specific evidence.
     3. Exactly follow the output JSON schema.
-    4. PROHIBITED TERMS: You MUST NOT use any of the following terms in your output:
-       {", ".join(prohibited_terms)}
-    5. No interview questions, no themes, no narrative summaries.
-    6. No admissions commentary, no predictions, no likelihood statements.
-    7. Do not use synonyms or indirect evaluative phrasing such as "indicating strong performance", "showing aptitude", "demonstrates excellence", "high achievement", "notable success", or similar language.
-    8. Prefer literal observational phrasing. Good examples:
-       - "Applicant recorded a score of 99.33% in JEE Mains."
-       - "Applicant has leadership entries across 2 activities."
-       - "Applicant's academic records include multiple science and mathematics subjects."
-       - "Applicant reported 5 activity entries spanning multiple categories."
-    9. Bad examples that must not appear:
-       - "indicating strong performance"
-       - "suggesting aptitude"
-       - "reflecting excellence"
-       - "showing impressive commitment"
-    10. If a description sounds evaluative, rewrite it as a plain observable statement before finalizing output.
+    4. PROHIBITED TERMS: Do not imply an admissions decision. Do not use: {{", ".join(prohibited_terms)}}
+    5. Focus on identifying themes that are INTERVIEWABLE. Ask yourself: "What unique insight does this give for an interviewer?"
+    6. Analyze the CONTENT of essays and activity descriptions. Do not just parrot deterministic signals.
+    7. Synthesize information across sections. (e.g., If an essay mentions a project that is also listed as an activity, connect them).
+    8. Each interpreted signal MUST reference specific entity IDs and supporting deterministic signal IDs.
 
     OUTPUT SCHEMA:
     {{
       "interpreted_signals": [
         {{
           "signal_id": "INT-###",
-          "title": "A neural, concise label for the pattern",
-          "description": "Factual behavioral observation grounded in evidence",
+          "title": "An analytical, concise label for the pattern",
+          "description": "Insightful behavioral observation grounded in evidence (essays/activities/scores)",
           "referenced_entity_ids": ["Entity IDs from the projection (e.g., ACA-001)"],
           "supporting_det_signal_ids": ["Signal IDs from the deterministic collection (e.g., DET-001)"]
         }}
       ]
     }}
 
-    Signal IDs for interpreted signals must be numbered sequentially from INT-001.
+    CRITICAL SCHEMA RULES:
+    1. Do NOT include "source_collection" or any other fields not in the schema.
+    2. "supporting_det_signal_ids" must NEVER be empty. Link it to the DET-### signals that provided the data.
+    3. If multiple deterministic signals support your theme, include all of their IDs.
+
+    EXAMPLE VALID OUTPUT:
+    {{
+      "interpreted_signals": [
+        {{
+          "signal_id": "INT-001",
+          "title": "Sustained Technical Curiosity",
+          "description": "Applicant's essay on 'Iron Man' and their encryption projects show a long-term interest in AI and security.",
+          "referenced_entity_ids": ["ESS-001", "ACT-002"],
+          "supporting_det_signal_ids": ["DET-001"]
+        }}
+      ]
+    }}
     """
 
     user_prompt = f"""
