@@ -1,0 +1,13 @@
+{
+  "status_code": 200,
+  "headers": {
+    "date": "Thu, 19 Mar 2026 18:24:58 GMT",
+    "server": "uvicorn",
+    "content-length": "226",
+    "content-type": "application/json"
+  },
+  "body": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdGFnZTE3XzE3NzM5NDQ2OThAZXhhbXBsZS5jb20iLCJyb2xlIjoiaW50ZXJ2aWV3ZXIiLCJleHAiOjE3NzQwMzEwOTh9.y-pLAtW6DEMueSL_6w_zc-dOMxISlVTWw6hBrwmFKlI",
+    "token_type": "bearer"
+  }
+}

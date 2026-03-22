@@ -1,0 +1,60 @@
+{
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "Consistent Academic Performance Pattern",
+      "description": "Applicant's academic profile shows consistent performance across different levels.",
+      "referenced_entity_ids": [
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "Domain Concentration in Science and Mathematics",
+      "description": "Applicant's academic profile shows concentration of entries in science and mathematics domains.",
+      "referenced_entity_ids": [
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "title": "Test Performance Pattern",
+      "description": "Score of 99.33 achieved in JEE Mains.",
+      "referenced_entity_ids": [
+        "TEST-001"
+      ]
+    }
+  ],
+  "question_groups": [
+    {
+      "theme_id": "THEME-001",
+      "group_title": "Exploring Academic Performance Patterns",
+      "questions": [
+        "How did your academic performance evolve over time?",
+        "Can you walk through one project or activity in detail?"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "group_title": "Domain Concentration Insights",
+      "questions": [
+        "What drove your interest in science and mathematics domains?",
+        "How did you balance multiple subjects with varying levels of difficulty?"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "group_title": "Test Performance Analysis",
+      "questions": [
+        "What strategies helped you achieve a score of 99.33 in JEE Mains?",
+        "How did you prepare for the test, and what was your approach to tackling challenging questions?"
+      ]
+    }
+  ]
+}

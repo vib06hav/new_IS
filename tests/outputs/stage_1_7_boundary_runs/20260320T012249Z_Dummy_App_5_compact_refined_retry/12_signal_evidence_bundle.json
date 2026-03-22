@@ -1,0 +1,273 @@
+{
+  "application_id": "batch_val_Dummy App (5)_v8_filled.pdf",
+  "signal_evidence_pairs": [
+    {
+      "signal": {
+        "signal_id": "INT-001",
+        "title": "Domain Concentration Pattern",
+        "description": "Applicant's academic profile shows concentration of 14 entries in science and mathematics domains.",
+        "referenced_entity_ids": [
+          "ACA-001",
+          "ACA-002",
+          "ACA-003",
+          "ACA-004"
+        ]
+      },
+      "evidence": [
+        {
+          "entity_id": "ACA-001",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "9TH",
+            "academic_year": "2022",
+            "overall_score": "98.18",
+            "grading_mode": "percentage",
+            "subject_summary": {
+              "highest_subject": "Mathematics",
+              "highest_score": "99.6",
+              "lowest_subject": "Sanskrit",
+              "lowest_score": "96.6"
+            }
+          }
+        },
+        {
+          "entity_id": "ACA-002",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "10TH",
+            "academic_year": "2023",
+            "overall_score": "97.4",
+            "grading_mode": "percentage",
+            "subject_summary": {
+              "highest_subject": "Social Science",
+              "highest_score": "100",
+              "lowest_subject": "English",
+              "lowest_score": "96"
+            }
+          }
+        },
+        {
+          "entity_id": "ACA-003",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "11TH",
+            "academic_year": "2024",
+            "overall_score": "89.2",
+            "grading_mode": "percentage",
+            "subject_summary": {
+              "highest_subject": "Physics",
+              "highest_score": "95.1",
+              "lowest_subject": "Biology",
+              "lowest_score": "74.9"
+            }
+          }
+        },
+        {
+          "entity_id": "ACA-004",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "12TH",
+            "academic_year": "2025",
+            "overall_score": "98.6",
+            "grading_mode": "percentage",
+            "subject_summary": {
+              "highest_subject": "Physics",
+              "highest_score": "100",
+              "lowest_subject": "Chemistry",
+              "lowest_score": "97"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "signal": {
+        "signal_id": "INT-002",
+        "title": "Leadership Presence Pattern",
+        "description": "Applicant held leadership positions in 4 activities.",
+        "referenced_entity_ids": [
+          "LEAD-005",
+          "LEAD-006",
+          "LEAD-007",
+          "LEAD-008"
+        ]
+      },
+      "evidence": []
+    },
+    {
+      "signal": {
+        "signal_id": "INT-003",
+        "title": "Essay Length Pattern",
+        "description": "Essay responses exceed 300 words for both prompts.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ESS-002"
+        ]
+      },
+      "evidence": [
+        {
+          "entity_id": "ESS-001",
+          "collection": "essay_entries",
+          "content": {
+            "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+            "text_excerpt": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing complex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research and realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my journey into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal projects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics, participating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and..."
+          }
+        },
+        {
+          "entity_id": "ESS-002",
+          "collection": "essay_entries",
+          "content": {
+            "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+            "text_excerpt": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing complex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research and realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my journey into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal projects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics, participating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and..."
+          }
+        }
+      ]
+    },
+    {
+      "signal": {
+        "signal_id": "INT-004",
+        "title": "Activity Volume Pattern",
+        "description": "Applicant has reported 8 distinct activities.",
+        "referenced_entity_ids": [
+          "ACT-001",
+          "ACT-002",
+          "ACT-003",
+          "ACT-004",
+          "LEAD-005",
+          "LEAD-006",
+          "LEAD-007",
+          "LEAD-008"
+        ]
+      },
+      "evidence": [
+        {
+          "entity_id": "ACT-001",
+          "collection": "activity_entries",
+          "content": {
+            "summary": "Kaizen OC Head; extracurricular; duration 1; Intra School"
+          }
+        },
+        {
+          "entity_id": "ACT-002",
+          "collection": "activity_entries",
+          "content": {
+            "summary": "Web Developing Intern; extracurricular; duration 1; National"
+          }
+        },
+        {
+          "entity_id": "ACT-003",
+          "collection": "activity_entries",
+          "content": {
+            "summary": "Digital Marketing Intern; extracurricular; duration 1; International"
+          }
+        },
+        {
+          "entity_id": "ACT-004",
+          "collection": "activity_entries",
+          "content": {
+            "summary": "Freelance Writer; co_curricular; 2"
+          }
+        }
+      ]
+    },
+    {
+      "signal": {
+        "signal_id": "INT-005",
+        "title": "Test Performance Pattern",
+        "description": "Score of 99.74 achieved in JEE Mains.",
+        "referenced_entity_ids": [
+          "TEST-001"
+        ]
+      },
+      "evidence": [
+        {
+          "entity_id": "TEST-001",
+          "collection": "test_entries",
+          "content": {
+            "test_name": "JEE Mains",
+            "total_score": "99.74"
+          }
+        }
+      ]
+    },
+    {
+      "signal": {
+        "signal_id": "INT-006",
+        "title": "Timeline Characteristic Pattern",
+        "description": "Academic records cover a span of 4 academic years.",
+        "referenced_entity_ids": [
+          "ACA-001",
+          "ACA-002",
+          "ACA-003",
+          "ACA-004"
+        ]
+      },
+      "evidence": [
+        {
+          "entity_id": "ACA-001",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "9TH",
+            "academic_year": "2022",
+            "overall_score": "98.18",
+            "grading_mode": "percentage",
+            "subject_summary": {
+              "highest_subject": "Mathematics",
+              "highest_score": "99.6",
+              "lowest_subject": "Sanskrit",
+              "lowest_score": "96.6"
+            }
+          }
+        },
+        {
+          "entity_id": "ACA-002",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "10TH",
+            "academic_year": "2023",
+            "overall_score": "97.4",
+            "grading_mode": "percentage",
+            "subject_summary": {
+              "highest_subject": "Social Science",
+              "highest_score": "100",
+              "lowest_subject": "English",
+              "lowest_score": "96"
+            }
+          }
+        },
+        {
+          "entity_id": "ACA-003",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "11TH",
+            "academic_year": "2024",
+            "overall_score": "89.2",
+            "grading_mode": "percentage",
+            "subject_summary": {
+              "highest_subject": "Physics",
+              "highest_score": "95.1",
+              "lowest_subject": "Biology",
+              "lowest_score": "74.9"
+            }
+          }
+        },
+        {
+          "entity_id": "ACA-004",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "12TH",
+            "academic_year": "2025",
+            "overall_score": "98.6",
+            "grading_mode": "percentage",
+            "subject_summary": {
+              "highest_subject": "Physics",
+              "highest_score": "100",
+              "lowest_subject": "Chemistry",
+              "lowest_score": "97"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

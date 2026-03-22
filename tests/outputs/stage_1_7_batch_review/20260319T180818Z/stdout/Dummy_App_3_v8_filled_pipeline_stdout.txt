@@ -1,0 +1,5 @@
+﻿Run directory: tests/outputs/stage_1_7_runs/20260319T181634Z_Dummy_App_3_v8_filled
+Upload status: 400
+Application ID: b4b209e1-372f-46b0-a18a-a1cc577d8263
+Pipeline status: failed
+Policy passed: False

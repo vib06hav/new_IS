@@ -1,0 +1,650 @@
+{
+  "identifiers": {
+    "full_name": "Raghav Sharma",
+    "date_of_birth": "2007-04-11",
+    "application_id": "f50bc3d6-abe1-4b18-83fc-2e908c19ecf6",
+    "preferred_major": "Computer Science and Artificial Intelligence",
+    "family_background": {
+      "father": {
+        "name": "Mahesh Sharma",
+        "education": "B.Tech Civil Engineering",
+        "designation": "Senior Site Engineer",
+        "organization": "Shree Buildcon Pvt Ltd",
+        "field_of_employment": "Civil Engineering and Construction"
+      },
+      "mother": {
+        "name": "Sunita Sharma",
+        "education": "M.Sc Mathematics",
+        "designation": "Mathematics Teacher",
+        "organization": "Government Higher Secondary School",
+        "field_of_employment": "Education"
+      }
+    }
+  },
+  "test_entries": [
+    {
+      "rank": null,
+      "entry_id": "0357c60d-b5be-45b9-aa42-3fc2280d818d",
+      "test_date": null,
+      "test_name": "JEE Mains",
+      "percentile": null,
+      "total_score": "99.74",
+      "result_status": "available",
+      "confidence_score": 0.9,
+      "sectional_scores": [
+        {
+          "label": "Physics Percentile",
+          "raw_score": "99.45"
+        },
+        {
+          "label": "Maths Percentile",
+          "raw_score": "99.71"
+        },
+        {
+          "label": "Chemistry Percentile",
+          "raw_score": "99.17"
+        }
+      ]
+    }
+  ],
+  "essay_entries": [],
+  "academic_entries": [
+    {
+      "entry_id": "f53cd00d-ba85-4479-ace1-f476fc9037d5",
+      "score_raw": "98.18",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "grading_mode": "percentage",
+      "academic_year": "2022",
+      "academic_level": "9TH",
+      "subject_entries": [
+        {
+          "score_raw": "99.6",
+          "subject_name": "Mathematics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "99.2",
+          "subject_name": "English",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "98.7",
+          "subject_name": "Social Science",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "96.8",
+          "subject_name": "Science",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "96.6",
+          "subject_name": "Sanskrit",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85,
+      "marking_scheme_raw": "Percentage",
+      "predicted_score_raw": null
+    },
+    {
+      "entry_id": "5eafafca-8dde-4727-b012-3ba437ee76d4",
+      "score_raw": "97.4",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "grading_mode": "percentage",
+      "academic_year": "2023",
+      "academic_level": "10TH",
+      "subject_entries": [
+        {
+          "score_raw": "97",
+          "subject_name": "Mathematics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "97",
+          "subject_name": "Science",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "100",
+          "subject_name": "Social Science",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "96",
+          "subject_name": "English",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "97",
+          "subject_name": "Sanskrit",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "98",
+          "subject_name": "Elements of Business",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "97",
+          "subject_name": "Introduction to Financial Markets",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85,
+      "marking_scheme_raw": "Percentage",
+      "predicted_score_raw": null
+    },
+    {
+      "entry_id": "5f9c8a1d-5efb-45a5-9535-be5f9b7a9d30",
+      "score_raw": "89.2",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "grading_mode": "percentage",
+      "academic_year": "2024",
+      "academic_level": "11TH",
+      "subject_entries": [
+        {
+          "score_raw": "90.6",
+          "subject_name": "Mathematics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "95.1",
+          "subject_name": "Physics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "92.8",
+          "subject_name": "English",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "74.9",
+          "subject_name": "Biology",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "92.8",
+          "subject_name": "Chemistry",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85,
+      "marking_scheme_raw": "Percentage",
+      "predicted_score_raw": null
+    },
+    {
+      "entry_id": "ef8bff80-cd96-44f6-9b83-18104d83d889",
+      "score_raw": "98.6",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "grading_mode": "percentage",
+      "academic_year": "2025",
+      "academic_level": "12TH",
+      "subject_entries": [
+        {
+          "score_raw": "99",
+          "subject_name": "Mathematics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "100",
+          "subject_name": "Physics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "99",
+          "subject_name": "Biology",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "97",
+          "subject_name": "Chemistry",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "98",
+          "subject_name": "English",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85,
+      "marking_scheme_raw": "Percentage",
+      "predicted_score_raw": null
+    }
+  ],
+  "activity_entries": [
+    {
+      "level": "Intra School",
+      "duration": "1",
+      "entry_id": "75228ac9-d4a3-4d94-96b9-9442af567e58",
+      "achievement": null,
+      "activity_name": "Kaizen OC Head",
+      "activity_type": "extracurricular",
+      "position_title": null,
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null
+    },
+    {
+      "level": "National",
+      "duration": "1",
+      "entry_id": "e679c38d-5a9b-487f-a331-9b02d4adf7ea",
+      "achievement": null,
+      "activity_name": "Web Developing Intern",
+      "activity_type": "extracurricular",
+      "position_title": null,
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null
+    },
+    {
+      "level": "International",
+      "duration": "1",
+      "entry_id": "805a49a7-d2a8-4256-a6c3-689c3f7f47b4",
+      "achievement": null,
+      "activity_name": "Digital Marketing Intern",
+      "activity_type": "extracurricular",
+      "position_title": null,
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null
+    },
+    {
+      "level": null,
+      "duration": "International",
+      "entry_id": "44cbd22d-8df9-415a-9234-cf9e37a29cb0",
+      "achievement": "2",
+      "activity_name": "Freelance Writer",
+      "activity_type": "co_curricular",
+      "position_title": null,
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null
+    },
+    {
+      "level": null,
+      "duration": null,
+      "entry_id": "50400cdb-47e5-4337-8ec5-decf721d60aa",
+      "achievement": null,
+      "activity_name": null,
+      "activity_type": "leadership",
+      "position_title": "Head Boy",
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null
+    },
+    {
+      "level": null,
+      "duration": null,
+      "entry_id": "2df3015b-ef33-431d-826d-f5fdc8c4b883",
+      "achievement": null,
+      "activity_name": null,
+      "activity_type": "leadership",
+      "position_title": "Vice Head Boy",
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null
+    },
+    {
+      "level": null,
+      "duration": null,
+      "entry_id": "1937118e-c7f6-4335-bd4d-d0fd284f524b",
+      "achievement": null,
+      "activity_name": null,
+      "activity_type": "leadership",
+      "position_title": "Vice House Captain",
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null
+    },
+    {
+      "level": null,
+      "duration": "Mobile Number",
+      "entry_id": "2838d4a3-5ad0-4712-9036-2f46f871e3dc",
+      "achievement": null,
+      "activity_name": null,
+      "activity_type": "leadership",
+      "position_title": "Organization",
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": "In what\ncapacity does\nthis reference\nknow you?"
+    }
+  ],
+  "cross_references": {
+    "entity_map": [
+      {
+        "entity_token": "Mathematics",
+        "source_references": [
+          {
+            "entry_id": "f53cd00d-ba85-4479-ace1-f476fc9037d5",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "5eafafca-8dde-4727-b012-3ba437ee76d4",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "5f9c8a1d-5efb-45a5-9535-be5f9b7a9d30",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "ef8bff80-cd96-44f6-9b83-18104d83d889",
+            "source_type": "academic"
+          }
+        ]
+      },
+      {
+        "entity_token": "English",
+        "source_references": [
+          {
+            "entry_id": "f53cd00d-ba85-4479-ace1-f476fc9037d5",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "5eafafca-8dde-4727-b012-3ba437ee76d4",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "5f9c8a1d-5efb-45a5-9535-be5f9b7a9d30",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "ef8bff80-cd96-44f6-9b83-18104d83d889",
+            "source_type": "academic"
+          }
+        ]
+      },
+      {
+        "entity_token": "Social",
+        "source_references": [
+          {
+            "entry_id": "f53cd00d-ba85-4479-ace1-f476fc9037d5",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "5eafafca-8dde-4727-b012-3ba437ee76d4",
+            "source_type": "academic"
+          }
+        ]
+      },
+      {
+        "entity_token": "Science",
+        "source_references": [
+          {
+            "entry_id": "f53cd00d-ba85-4479-ace1-f476fc9037d5",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "5eafafca-8dde-4727-b012-3ba437ee76d4",
+            "source_type": "academic"
+          }
+        ]
+      },
+      {
+        "entity_token": "Sanskrit",
+        "source_references": [
+          {
+            "entry_id": "f53cd00d-ba85-4479-ace1-f476fc9037d5",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "5eafafca-8dde-4727-b012-3ba437ee76d4",
+            "source_type": "academic"
+          }
+        ]
+      },
+      {
+        "entity_token": "Physics",
+        "source_references": [
+          {
+            "entry_id": "5f9c8a1d-5efb-45a5-9535-be5f9b7a9d30",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "ef8bff80-cd96-44f6-9b83-18104d83d889",
+            "source_type": "academic"
+          }
+        ]
+      },
+      {
+        "entity_token": "Biology",
+        "source_references": [
+          {
+            "entry_id": "5f9c8a1d-5efb-45a5-9535-be5f9b7a9d30",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "ef8bff80-cd96-44f6-9b83-18104d83d889",
+            "source_type": "academic"
+          }
+        ]
+      },
+      {
+        "entity_token": "Chemistry",
+        "source_references": [
+          {
+            "entry_id": "5f9c8a1d-5efb-45a5-9535-be5f9b7a9d30",
+            "source_type": "academic"
+          },
+          {
+            "entry_id": "ef8bff80-cd96-44f6-9b83-18104d83d889",
+            "source_type": "academic"
+          }
+        ]
+      },
+      {
+        "entity_token": "Head",
+        "source_references": [
+          {
+            "entry_id": "75228ac9-d4a3-4d94-96b9-9442af567e58",
+            "source_type": "activity"
+          },
+          {
+            "entry_id": "50400cdb-47e5-4337-8ec5-decf721d60aa",
+            "source_type": "activity"
+          },
+          {
+            "entry_id": "2df3015b-ef33-431d-826d-f5fdc8c4b883",
+            "source_type": "activity"
+          }
+        ]
+      },
+      {
+        "entity_token": "Intern",
+        "source_references": [
+          {
+            "entry_id": "e679c38d-5a9b-487f-a331-9b02d4adf7ea",
+            "source_type": "activity"
+          },
+          {
+            "entry_id": "805a49a7-d2a8-4256-a6c3-689c3f7f47b4",
+            "source_type": "activity"
+          }
+        ]
+      },
+      {
+        "entity_token": "Vice",
+        "source_references": [
+          {
+            "entry_id": "2df3015b-ef33-431d-826d-f5fdc8c4b883",
+            "source_type": "activity"
+          },
+          {
+            "entry_id": "1937118e-c7f6-4335-bd4d-d0fd284f524b",
+            "source_type": "activity"
+          }
+        ]
+      }
+    ]
+  },
+  "integrity_report": {
+    "anomalies": [
+      {
+        "anomaly_id": "9d0bc657-a26a-431a-8811-602393c603cc",
+        "description": "Descriptive field contains question marks, suggesting bleed from form labels.",
+        "anomaly_type": "activity_text_bleed",
+        "severity_level": "low",
+        "source_reference": "2838d4a3-5ad0-4712-9036-2f46f871e3dc"
+      }
+    ]
+  },
+  "timeline_entries": [
+    {
+      "year": "Unknown",
+      "entry_id": "9734ad98-1914-4fb2-9a34-f6734789e85b",
+      "event_label": "Activity: Kaizen OC Head",
+      "source_type": "activity",
+      "source_reference": "75228ac9-d4a3-4d94-96b9-9442af567e58"
+    },
+    {
+      "year": "Unknown",
+      "entry_id": "ff7c34f3-9e68-4ba7-b2ca-f818695a8a8b",
+      "event_label": "Activity: Web Developing Intern",
+      "source_type": "activity",
+      "source_reference": "e679c38d-5a9b-487f-a331-9b02d4adf7ea"
+    },
+    {
+      "year": "Unknown",
+      "entry_id": "c189395d-f6c3-445e-aab9-24792ae5c3a5",
+      "event_label": "Activity: Digital Marketing Intern",
+      "source_type": "activity",
+      "source_reference": "805a49a7-d2a8-4256-a6c3-689c3f7f47b4"
+    },
+    {
+      "year": "Mobi",
+      "entry_id": "d8c23907-1160-46f2-bf5f-be809969efc8",
+      "event_label": "Activity: None",
+      "source_type": "activity",
+      "source_reference": "2838d4a3-5ad0-4712-9036-2f46f871e3dc"
+    },
+    {
+      "year": "Inte",
+      "entry_id": "780ef93e-7c1c-4753-834e-1b18ed910fc7",
+      "event_label": "Activity: Freelance Writer",
+      "source_type": "activity",
+      "source_reference": "44cbd22d-8df9-415a-9234-cf9e37a29cb0"
+    },
+    {
+      "year": "2025",
+      "entry_id": "ea75de8f-7003-4361-ad65-d05e3113e641",
+      "event_label": "Academic Record: 12TH",
+      "source_type": "academic",
+      "source_reference": "ef8bff80-cd96-44f6-9b83-18104d83d889"
+    },
+    {
+      "year": "2024",
+      "entry_id": "c6b143e6-d126-4432-b90a-e4f618233636",
+      "event_label": "Academic Record: 11TH",
+      "source_type": "academic",
+      "source_reference": "5f9c8a1d-5efb-45a5-9535-be5f9b7a9d30"
+    },
+    {
+      "year": "2023",
+      "entry_id": "0c4c399c-d931-4804-96b9-d00fe5b59bb0",
+      "event_label": "Academic Record: 10TH",
+      "source_type": "academic",
+      "source_reference": "5eafafca-8dde-4727-b012-3ba437ee76d4"
+    },
+    {
+      "year": "2022",
+      "entry_id": "a6a1ee00-d412-4bd2-bfbe-0a0487cebbc7",
+      "event_label": "Academic Record: 9TH",
+      "source_type": "academic",
+      "source_reference": "f53cd00d-ba85-4479-ace1-f476fc9037d5"
+    }
+  ],
+  "canonical_version": "1.1",
+  "schooling_history": [
+    {
+      "level": "9TH",
+      "entry_id": "a215e676-4aeb-449b-bcaa-c4e022386045",
+      "location": null,
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "confidence_score": 0.85
+    },
+    {
+      "level": "10TH",
+      "entry_id": "557d7efe-f239-4b07-9a13-db225d25b5d5",
+      "location": null,
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "confidence_score": 0.85
+    },
+    {
+      "level": "11TH",
+      "entry_id": "70437c14-66fa-4570-8088-2e482aa8d1c4",
+      "location": null,
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "confidence_score": 0.85
+    },
+    {
+      "level": "12TH",
+      "entry_id": "0f05cdfb-e28b-4e2c-ad24-2f8f30aff865",
+      "location": null,
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "confidence_score": 0.85
+    }
+  ],
+  "extraction_confidence": {
+    "agent_scores": [
+      {
+        "agent_id": 1,
+        "agent_name": "Layout Block Extractor",
+        "confidence_score": 0.95
+      },
+      {
+        "agent_id": 2,
+        "agent_name": "Section Boundary Detector",
+        "confidence_score": 0.9
+      },
+      {
+        "agent_id": 3,
+        "agent_name": "Personal Information Extractor",
+        "confidence_score": 0.85
+      },
+      {
+        "agent_id": 4,
+        "agent_name": "Academic Records Extractor",
+        "confidence_score": 0.85
+      },
+      {
+        "agent_id": 5,
+        "agent_name": "Standardized Test Extractor",
+        "confidence_score": 0.9
+      },
+      {
+        "agent_id": 6,
+        "agent_name": "Essay Extractor",
+        "confidence_score": 0.9
+      },
+      {
+        "agent_id": 7,
+        "agent_name": "Activity Extractor",
+        "confidence_score": 0.9
+      },
+      {
+        "agent_id": 8,
+        "agent_name": "Cross-Section Entity Detector",
+        "confidence_score": 0.95
+      },
+      {
+        "agent_id": 9,
+        "agent_name": "Timeline Builder",
+        "confidence_score": 0.95
+      },
+      {
+        "agent_id": 10,
+        "agent_name": "Completeness & Integrity Analyzer",
+        "confidence_score": 0.95
+      }
+    ],
+    "aggregate_confidence": 0.9099999999999999
+  }
+}

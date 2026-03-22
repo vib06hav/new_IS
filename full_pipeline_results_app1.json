@@ -1,0 +1,1241 @@
+{
+  "metadata": {
+    "pdf_path": "/app/tests/pdfs/Dummy App (1)_v8_filled.pdf",
+    "timestamp": "2026-03-14T18:57:07.218817"
+  },
+  "stages": {
+    "1_canonical_parsing": {
+      "canonical_version": "1.1",
+      "identifiers": {
+        "application_id": "bc77d5f4-4303-4ab4-b36b-ed20127e87f1",
+        "full_name": "Aarav Jain",
+        "date_of_birth": "2007-06-14",
+        "family_background": {
+          "father": {
+            "name": "Sandeep Jain",
+            "education": "B.Com",
+            "field_of_employment": "Textile Export Business",
+            "organization": "Jain Tex Exports",
+            "designation": "Founder and Managing Director"
+          },
+          "mother": {
+            "name": null,
+            "education": null,
+            "field_of_employment": null,
+            "organization": null,
+            "designation": null
+          }
+        },
+        "preferred_major": "Computer Science and Artificial Intelligence"
+      },
+      "academic_entries": [
+        {
+          "entry_id": "e07809df-0044-44f4-ad07-5c3a4310b169",
+          "academic_level": "9TH",
+          "school_name": "Jayshree Periwal International School",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "academic_year": "2022",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "81.6",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "95.8",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "81.8",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Hindi",
+              "score_raw": "86.6",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Science",
+              "score_raw": "87.4",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Social Studies",
+              "score_raw": "77.5",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "cd09c957-3ade-4740-bbf6-667412ed6bf4",
+          "academic_level": "10TH",
+          "school_name": "Jayshree Periwal International School",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "academic_year": "2023",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "96.6",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "98",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Science",
+              "score_raw": "95",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "95",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Hindi",
+              "score_raw": "95",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Artificial Intelligence",
+              "score_raw": "100",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "cca375da-84ad-48eb-83cb-d30c2bfc154a",
+          "academic_level": "11TH",
+          "school_name": "Jayshree Periwal International School",
+          "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+          "academic_year": "2024",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "97.9",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "150",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Physics",
+              "score_raw": "58",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Chemistry",
+              "score_raw": "60",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Sanskrit",
+              "score_raw": "95",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "97",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "f9450eca-fe03-4a6b-a010-563f7ae68cf2",
+          "academic_level": "12TH",
+          "school_name": "Jayshree Periwal International School",
+          "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+          "academic_year": "2025",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "97.4",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "144",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Physics",
+              "score_raw": "52",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Chemistry",
+              "score_raw": "56",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Sanskrit",
+              "score_raw": "99",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "96",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        }
+      ],
+      "schooling_history": [
+        {
+          "entry_id": "7ae04fbd-5559-4922-8242-7b2fa1b95870",
+          "level": "9TH",
+          "school_name": "Jayshree Periwal International School",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "location": null,
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "f0a6567a-3f68-40d4-a3d1-ca5da523d9ec",
+          "level": "10TH",
+          "school_name": "Jayshree Periwal International School",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "location": null,
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "b6ab12da-ddc9-4341-af08-029348c1165a",
+          "level": "11TH",
+          "school_name": "Jayshree Periwal International School",
+          "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+          "location": null,
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "1f58d5cb-ae76-47f0-b98b-e718235d0967",
+          "level": "12TH",
+          "school_name": "Jayshree Periwal International School",
+          "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+          "location": null,
+          "confidence_score": 0.85
+        }
+      ],
+      "test_entries": [
+        {
+          "entry_id": "0c2cfd54-3fa6-4757-af60-9b60bc269e92",
+          "test_name": "JEE Mains",
+          "test_date": null,
+          "total_score": "99.01",
+          "sectional_scores": [
+            {
+              "label": "Physics Percentile",
+              "raw_score": "96.67"
+            },
+            {
+              "label": "Maths Percentile",
+              "raw_score": "99.33"
+            },
+            {
+              "label": "Chemistry Percentile",
+              "raw_score": "97.69"
+            }
+          ],
+          "percentile": null,
+          "rank": null,
+          "result_status": "available",
+          "confidence_score": 0.9
+        }
+      ],
+      "essay_entries": [
+        {
+          "entry_id": "f212db4d-c591-4a8c-a844-bbebf4c38a1b",
+          "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+          "raw_text": "From a young age, I\u2019ve been fascinated by how things work\u2014whether it's the logic behind mobile apps, the science in smart devices, or the\ninnovation that powers everyday life. What excites me most about engineering and technology is the ability to solve real-world problems\nusing creativity and logic. It's not just about building machines or writing code\u2014it's about designing solutions that can create meaningful\nimpact. The ever-evolving nature of tech, combined with its potential to transform industries from healthcare to climate, makes this field\nincredibly exciting for me. I believe my curiosity, collaborative mindset, and eagerness to learn make me a strong fit for Plaksha\u2019s B.Tech program. I enjoy working on\nprojects, asking questions, and applying what I learn to practical challenges. I also have a keen interest in interdisciplinary learning\u2014blending\ntech with design, data, and human behavior\u2014which I understand is core to Plaksha\u2019s approach. What draws me most to Plaksha is its focus\non innovation, entrepreneurship, and societal impact. I\u2019m excited by the opportunity to learn from faculty, mentors, and peers who are\npassionate about building a better future through technology. Plaksha\u2019s hands-on curriculum, values-driven mission, and emphasis on\nleadership resonate deeply with my aspirations.",
+          "word_count": 196,
+          "placeholder_flag": false,
+          "short_response_flag": false,
+          "confidence_score": 0.9
+        },
+        {
+          "entry_id": "f131e93f-99ee-4e08-bd3f-c1ef7509f8e8",
+          "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+          "raw_text": "Having grown up with a pet dog, I\u2019ve developed a deep sense of empathy and care for animals. That personal connection inspired me to take\naction when I noticed several stray dogs in my neighborhood struggling with hunger, injuries, and neglect. I initiated a small project with a\nfew classmates to support these animals by organizing feeding drives, arranging basic medical aid through local NGOs, and spreading\nawareness about responsible and humane treatment of strays. One of the major challenges was addressing concerns from some residents who were initially uncomfortable with our activities. There were\nworries about safety and cleanliness. Instead of giving up, I took the time to understand their perspective and created a small awareness\ncampaign. We shared how caring for strays through sterilization and regular feeding could actually make the community safer. We also made\nsure to clean up after every feeding and involved local animal welfare volunteers to lend credibility to our efforts. This experience taught me that leadership is as much about listening and empathy as it is about action. It showed me how\nperseverance\u2014combined with teamwork and a clear sense of purpose\u2014can gradually change mindsets and make a difference. It also\nreinforced that even small initiatives, when pursued with sincerity, can have a positive and lasting impact.",
+          "word_count": 213,
+          "placeholder_flag": false,
+          "short_response_flag": false,
+          "confidence_score": 0.9
+        },
+        {
+          "entry_id": "4af2d9e2-b9bb-427d-a3fb-55df3a1ea7f2",
+          "essay_identifier": "Have You Ever Had A First Information Report (FIR) Filed Against You Or Been Involved In Any Legal And/Or Criminal\nProceeding?",
+          "raw_text": "Consent By submitting this admissions form, you acknowledge and consent to Plaksha University's data handling practices. Any personal information\nyou provide, including academic records and contact details, will be stored internally, and may be shared with selected offices at Plaksha\nUniversity for administrative and academic purposes.\nIf you are applying for a scholarship, please note that your financial data and supporting documents may also be shared with key\nstakeholders involved in scholarship matters. All data will be handled with utmost confidentiality and in compliance with relevant data\nprotection laws. I Agree Honour Pledge The information provided in this form is true to the best of my knowledge. I pledge that the entire application is a product of my effort and no\npart of it has been taken directly from other sources. If at any time during the course of the admissions process or later after joining the\nprogramme, the information provided by me is found to be false, untrue, or incorrect, then Plaksha University's Office of Admissions may\nexercise the right to rescind the offer of admissions made to me and nullify my enrollment during or after the programme, as applicable to\nme. Applicant Name:",
+          "word_count": 195,
+          "placeholder_flag": false,
+          "short_response_flag": false,
+          "confidence_score": 0.9
+        }
+      ],
+      "activity_entries": [
+        {
+          "entry_id": "1549a6e4-d8dd-4333-9e6d-f39d9c79bd0b",
+          "activity_type": "extracurricular",
+          "activity_name": "Music Piano",
+          "position_title": "Grade 4 Qualified from\nPhilips International\nSchool of Music",
+          "level": "International",
+          "duration": "5",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "3ec289d5-08ff-4661-bc80-d6bcf6dd4b24",
+          "activity_type": "extracurricular",
+          "activity_name": "Yoga",
+          "position_title": "Beginner level\npractitioner of Yoga and\nmindfulness",
+          "level": "Personal",
+          "duration": "2",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "98245086-6235-4f62-a7b7-c236ecfb1dc9",
+          "activity_type": "co_curricular",
+          "activity_name": "Olympiads",
+          "position_title": "Has been regularly\nparticipating in Maths,\nScience Olympiads at\nschool",
+          "level": "District",
+          "duration": "7",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "dc81a0a3-003c-4a55-972c-5befba29fefc",
+          "activity_type": "co_curricular",
+          "activity_name": "Reading",
+          "position_title": "Is an ardent reader of\nfiction and non fiction\nbooks on personal\ndevelopment etc",
+          "level": "Personal",
+          "duration": "6",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "7d8ddc13-3184-4dfc-b6cb-0f03909adde3",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "School House Captain",
+          "level": null,
+          "duration": "1",
+          "achievement": null,
+          "roles_and_responsibilities": "Was the School House Captain at",
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "97e580ab-fb9a-4361-8cd8-77d393a7715d",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Organization",
+          "level": null,
+          "duration": "Mobile Number",
+          "achievement": null,
+          "roles_and_responsibilities": "In what\ncapacity does\nthis reference\nk",
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "938dbb7b-9e04-4a3f-b33c-71675d81b6fb",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Friends/Family",
+          "level": null,
+          "duration": "Is there anything else you\nwant to tell us?",
+          "achievement": null,
+          "roles_and_responsibilities": "No",
+          "description_raw": null,
+          "confidence_score": 0.95
+        }
+      ],
+      "timeline_entries": [
+        {
+          "entry_id": "db291344-b665-47c9-8b81-fb2a7b7c0dee",
+          "year": "Unknown",
+          "event_label": "Activity: Music Piano",
+          "source_type": "activity",
+          "source_reference": "1549a6e4-d8dd-4333-9e6d-f39d9c79bd0b"
+        },
+        {
+          "entry_id": "4bc5a427-9b42-45d3-8d1b-16af685a6c59",
+          "year": "Unknown",
+          "event_label": "Activity: Yoga",
+          "source_type": "activity",
+          "source_reference": "3ec289d5-08ff-4661-bc80-d6bcf6dd4b24"
+        },
+        {
+          "entry_id": "2c6f9237-373d-48d2-8b50-1c4ac9857f5d",
+          "year": "Unknown",
+          "event_label": "Activity: Olympiads",
+          "source_type": "activity",
+          "source_reference": "98245086-6235-4f62-a7b7-c236ecfb1dc9"
+        },
+        {
+          "entry_id": "e06b58e5-d861-4b6a-bc00-b3c3012dd385",
+          "year": "Unknown",
+          "event_label": "Activity: Reading",
+          "source_type": "activity",
+          "source_reference": "dc81a0a3-003c-4a55-972c-5befba29fefc"
+        },
+        {
+          "entry_id": "7bd43112-fe32-4e45-a366-deedb21b92bc",
+          "year": "Unknown",
+          "event_label": "Activity: None",
+          "source_type": "activity",
+          "source_reference": "7d8ddc13-3184-4dfc-b6cb-0f03909adde3"
+        },
+        {
+          "entry_id": "312cff94-e23b-4f9e-bfc0-2f08eb161f27",
+          "year": "Mobi",
+          "event_label": "Activity: None",
+          "source_type": "activity",
+          "source_reference": "97e580ab-fb9a-4361-8cd8-77d393a7715d"
+        },
+        {
+          "entry_id": "f652cda9-fb34-41b6-b3c1-503379ae89ad",
+          "year": "Is t",
+          "event_label": "Activity: None",
+          "source_type": "activity",
+          "source_reference": "938dbb7b-9e04-4a3f-b33c-71675d81b6fb"
+        },
+        {
+          "entry_id": "f026991c-4eca-4fd6-ad25-7abb96227ca4",
+          "year": "2025",
+          "event_label": "Academic Record: 12TH",
+          "source_type": "academic",
+          "source_reference": "f9450eca-fe03-4a6b-a010-563f7ae68cf2"
+        },
+        {
+          "entry_id": "bd32bf16-19f5-430e-9567-c7d4973e71d5",
+          "year": "2024",
+          "event_label": "Academic Record: 11TH",
+          "source_type": "academic",
+          "source_reference": "cca375da-84ad-48eb-83cb-d30c2bfc154a"
+        },
+        {
+          "entry_id": "e1e1ce3b-f5fb-4e9d-b7ce-13d5ff352018",
+          "year": "2023",
+          "event_label": "Academic Record: 10TH",
+          "source_type": "academic",
+          "source_reference": "cd09c957-3ade-4740-bbf6-667412ed6bf4"
+        },
+        {
+          "entry_id": "09a9ddda-8e69-4682-ad4c-eaab9508b931",
+          "year": "2022",
+          "event_label": "Academic Record: 9TH",
+          "source_type": "academic",
+          "source_reference": "e07809df-0044-44f4-ad07-5c3a4310b169"
+        }
+      ],
+      "cross_references": {
+        "entity_map": [
+          {
+            "entity_token": "Mathematics",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "e07809df-0044-44f4-ad07-5c3a4310b169"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "cd09c957-3ade-4740-bbf6-667412ed6bf4"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "cca375da-84ad-48eb-83cb-d30c2bfc154a"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "f9450eca-fe03-4a6b-a010-563f7ae68cf2"
+              }
+            ]
+          },
+          {
+            "entity_token": "English",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "e07809df-0044-44f4-ad07-5c3a4310b169"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "cd09c957-3ade-4740-bbf6-667412ed6bf4"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "cca375da-84ad-48eb-83cb-d30c2bfc154a"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "f9450eca-fe03-4a6b-a010-563f7ae68cf2"
+              }
+            ]
+          },
+          {
+            "entity_token": "Hindi",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "e07809df-0044-44f4-ad07-5c3a4310b169"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "cd09c957-3ade-4740-bbf6-667412ed6bf4"
+              }
+            ]
+          },
+          {
+            "entity_token": "Science",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "e07809df-0044-44f4-ad07-5c3a4310b169"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "cd09c957-3ade-4740-bbf6-667412ed6bf4"
+              },
+              {
+                "source_type": "activity",
+                "entry_id": "98245086-6235-4f62-a7b7-c236ecfb1dc9"
+              }
+            ]
+          },
+          {
+            "entity_token": "Physics",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "cca375da-84ad-48eb-83cb-d30c2bfc154a"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "f9450eca-fe03-4a6b-a010-563f7ae68cf2"
+              }
+            ]
+          },
+          {
+            "entity_token": "Chemistry",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "cca375da-84ad-48eb-83cb-d30c2bfc154a"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "f9450eca-fe03-4a6b-a010-563f7ae68cf2"
+              }
+            ]
+          },
+          {
+            "entity_token": "Sanskrit",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "cca375da-84ad-48eb-83cb-d30c2bfc154a"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "f9450eca-fe03-4a6b-a010-563f7ae68cf2"
+              }
+            ]
+          },
+          {
+            "entity_token": "Plaksha",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "f212db4d-c591-4a8c-a844-bbebf4c38a1b"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "4af2d9e2-b9bb-427d-a3fb-55df3a1ea7f2"
+              }
+            ]
+          },
+          {
+            "entity_token": "School",
+            "source_references": [
+              {
+                "source_type": "activity",
+                "entry_id": "1549a6e4-d8dd-4333-9e6d-f39d9c79bd0b"
+              },
+              {
+                "source_type": "activity",
+                "entry_id": "7d8ddc13-3184-4dfc-b6cb-0f03909adde3"
+              }
+            ]
+          }
+        ]
+      },
+      "integrity_report": {
+        "anomalies": []
+      },
+      "extraction_confidence": {
+        "agent_scores": [
+          {
+            "agent_id": 1,
+            "agent_name": "Layout Block Extractor",
+            "confidence_score": 0.95
+          },
+          {
+            "agent_id": 2,
+            "agent_name": "Section Boundary Detector",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 3,
+            "agent_name": "Personal Information Extractor",
+            "confidence_score": 0.85
+          },
+          {
+            "agent_id": 4,
+            "agent_name": "Academic Records Extractor",
+            "confidence_score": 0.85
+          },
+          {
+            "agent_id": 5,
+            "agent_name": "Standardized Test Extractor",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 6,
+            "agent_name": "Essay Extractor",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 7,
+            "agent_name": "Activity Extractor",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 8,
+            "agent_name": "Cross-Section Entity Detector",
+            "confidence_score": 0.95
+          },
+          {
+            "agent_id": 9,
+            "agent_name": "Timeline Builder",
+            "confidence_score": 0.95
+          },
+          {
+            "agent_id": 10,
+            "agent_name": "Completeness & Integrity Analyzer",
+            "confidence_score": 0.95
+          }
+        ],
+        "aggregate_confidence": 0.9099999999999999
+      }
+    },
+    "2_projection": {
+      "entity_id_map": [
+        {
+          "entity_id": "SCH-001",
+          "collection": "schooling_history",
+          "descriptor": "Jayshree Periwal International School"
+        },
+        {
+          "entity_id": "SCH-002",
+          "collection": "schooling_history",
+          "descriptor": "Jayshree Periwal International School"
+        },
+        {
+          "entity_id": "SCH-003",
+          "collection": "schooling_history",
+          "descriptor": "Jayshree Periwal International School"
+        },
+        {
+          "entity_id": "SCH-004",
+          "collection": "schooling_history",
+          "descriptor": "Jayshree Periwal International School"
+        },
+        {
+          "entity_id": "ACA-001",
+          "collection": "academic_entries",
+          "descriptor": "9TH"
+        },
+        {
+          "entity_id": "ACA-002",
+          "collection": "academic_entries",
+          "descriptor": "10TH"
+        },
+        {
+          "entity_id": "ACA-003",
+          "collection": "academic_entries",
+          "descriptor": "11TH"
+        },
+        {
+          "entity_id": "ACA-004",
+          "collection": "academic_entries",
+          "descriptor": "12TH"
+        },
+        {
+          "entity_id": "TEST-001",
+          "collection": "test_entries",
+          "descriptor": "JEE Mains"
+        },
+        {
+          "entity_id": "ESS-001",
+          "collection": "essay_entries",
+          "descriptor": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?"
+        },
+        {
+          "entity_id": "ESS-002",
+          "collection": "essay_entries",
+          "descriptor": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?"
+        },
+        {
+          "entity_id": "ESS-003",
+          "collection": "essay_entries",
+          "descriptor": "Have You Ever Had A First Information Report (FIR) Filed Against You Or Been Involved In Any Legal And/Or Criminal\nProceeding?"
+        },
+        {
+          "entity_id": "ACT-001",
+          "collection": "activity_entries",
+          "descriptor": "Music Piano"
+        },
+        {
+          "entity_id": "ACT-002",
+          "collection": "activity_entries",
+          "descriptor": "Yoga"
+        },
+        {
+          "entity_id": "ACT-003",
+          "collection": "activity_entries",
+          "descriptor": "Olympiads"
+        },
+        {
+          "entity_id": "ACT-004",
+          "collection": "activity_entries",
+          "descriptor": "Reading"
+        },
+        {
+          "entity_id": "LEAD-005",
+          "collection": "activity_entries",
+          "descriptor": "Unknown"
+        },
+        {
+          "entity_id": "LEAD-006",
+          "collection": "activity_entries",
+          "descriptor": "Unknown"
+        },
+        {
+          "entity_id": "LEAD-007",
+          "collection": "activity_entries",
+          "descriptor": "Unknown"
+        }
+      ],
+      "deterministic_signals": [
+        {
+          "signal_id": "DET-001",
+          "signal_type": "duration_pattern",
+          "observation": "Applicant has participated in Music Piano for 5.",
+          "referenced_entity_ids": [
+            "ACT-001"
+          ],
+          "source_collection": "activity_entries"
+        },
+        {
+          "signal_id": "DET-002",
+          "signal_type": "duration_pattern",
+          "observation": "Applicant has participated in Olympiads for 7.",
+          "referenced_entity_ids": [
+            "ACT-003"
+          ],
+          "source_collection": "activity_entries"
+        },
+        {
+          "signal_id": "DET-003",
+          "signal_type": "duration_pattern",
+          "observation": "Applicant has participated in Reading for 6.",
+          "referenced_entity_ids": [
+            "ACT-004"
+          ],
+          "source_collection": "activity_entries"
+        },
+        {
+          "signal_id": "DET-004",
+          "signal_type": "domain_concentration",
+          "observation": "Academic profile shows concentration of 10 entries in science and mathematics domains.",
+          "referenced_entity_ids": [
+            "ACA-001",
+            "ACA-002",
+            "ACA-003",
+            "ACA-004"
+          ],
+          "source_collection": "academic_entries"
+        },
+        {
+          "signal_id": "DET-005",
+          "signal_type": "activity_volume",
+          "observation": "Applicant has reported 7 distinct activities.",
+          "referenced_entity_ids": [
+            "ACT-001",
+            "ACT-002",
+            "ACT-003",
+            "ACT-004",
+            "LEAD-005",
+            "LEAD-006",
+            "LEAD-007"
+          ],
+          "source_collection": "activity_entries"
+        },
+        {
+          "signal_id": "DET-006",
+          "signal_type": "test_performance_pattern",
+          "observation": "Score of 99.01 achieved in JEE Mains.",
+          "referenced_entity_ids": [
+            "TEST-001"
+          ],
+          "source_collection": "test_entries"
+        },
+        {
+          "signal_id": "DET-007",
+          "signal_type": "timeline_characteristic",
+          "observation": "Academic records cover a span of 4 academic years.",
+          "referenced_entity_ids": [
+            "ACA-001",
+            "ACA-002",
+            "ACA-003",
+            "ACA-004"
+          ],
+          "source_collection": "academic_entries"
+        }
+      ],
+      "call_1_projection": {
+        "applicant_context": {
+          "full_name": "Aarav Jain",
+          "preferred_major": "Computer Science and Artificial Intelligence",
+          "family_background": {
+            "father": {
+              "name": "Sandeep Jain",
+              "education": "B.Com",
+              "field_of_employment": "Textile Export Business",
+              "organization": "Jain Tex Exports",
+              "designation": "Founder and Managing Director"
+            }
+          }
+        },
+        "academic_profile": [
+          {
+            "entity_id": "ACA-001",
+            "level": "9TH",
+            "school_name": "Jayshree Periwal International School",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "year": "2022",
+            "grading_mode": "percentage",
+            "overall_score": "81.6",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "95.8"
+              },
+              {
+                "subject": "English",
+                "score": "81.8"
+              },
+              {
+                "subject": "Hindi",
+                "score": "86.6"
+              },
+              {
+                "subject": "Science",
+                "score": "87.4"
+              },
+              {
+                "subject": "Social Studies",
+                "score": "77.5"
+              }
+            ]
+          },
+          {
+            "entity_id": "ACA-002",
+            "level": "10TH",
+            "school_name": "Jayshree Periwal International School",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "year": "2023",
+            "grading_mode": "percentage",
+            "overall_score": "96.6",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "98"
+              },
+              {
+                "subject": "Science",
+                "score": "95"
+              },
+              {
+                "subject": "English",
+                "score": "95"
+              },
+              {
+                "subject": "Hindi",
+                "score": "95"
+              },
+              {
+                "subject": "Artificial Intelligence",
+                "score": "100"
+              }
+            ]
+          },
+          {
+            "entity_id": "ACA-003",
+            "level": "11TH",
+            "school_name": "Jayshree Periwal International School",
+            "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+            "year": "2024",
+            "grading_mode": "percentage",
+            "overall_score": "97.9",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "150"
+              },
+              {
+                "subject": "Physics",
+                "score": "58"
+              },
+              {
+                "subject": "Chemistry",
+                "score": "60"
+              },
+              {
+                "subject": "Sanskrit",
+                "score": "95"
+              },
+              {
+                "subject": "English",
+                "score": "97"
+              }
+            ]
+          },
+          {
+            "entity_id": "ACA-004",
+            "level": "12TH",
+            "school_name": "Jayshree Periwal International School",
+            "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+            "year": "2025",
+            "grading_mode": "percentage",
+            "overall_score": "97.4",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "144"
+              },
+              {
+                "subject": "Physics",
+                "score": "52"
+              },
+              {
+                "subject": "Chemistry",
+                "score": "56"
+              },
+              {
+                "subject": "Sanskrit",
+                "score": "99"
+              },
+              {
+                "subject": "English",
+                "score": "96"
+              }
+            ]
+          }
+        ],
+        "test_profile": [
+          {
+            "entity_id": "TEST-001",
+            "test_name": "JEE Mains",
+            "total_score": "99.01",
+            "sections": [
+              {
+                "label": "Physics Percentile",
+                "score": "96.67"
+              },
+              {
+                "label": "Maths Percentile",
+                "score": "99.33"
+              },
+              {
+                "label": "Chemistry Percentile",
+                "score": "97.69"
+              }
+            ]
+          }
+        ],
+        "essay_profile": [
+          {
+            "entity_id": "ESS-001",
+            "prompt": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+            "text": "From a young age, I\u2019ve been fascinated by how things work\u2014whether it's the logic behind mobile apps, the science in smart devices, or the\ninnovation that powers everyday life. What excites me most about engineering and technology is the ability to solve real-world problems\nusing creativity and logic. It's not just about building machines or writing code\u2014it's about designing solutions that can create meaningful\nimpact. The ever-evolving nature of tech, combined with its potential to transform industries from healthcare to climate, makes this field\nincredibly exciting for me. I believe my curiosity, collaborative mindset, and eagerness to learn make me a strong fit for Plaksha\u2019s B.Tech program. I enjoy working on\nprojects, asking questions, and applying what I learn to practical challenges. I also have a keen interest in interdisciplinary learning\u2014blending\ntech with design, data, and human behavior\u2014which I understand is core to Plaksha\u2019s approach. What draws me most to Plaksha is its focus\non innovation, entrepreneurship, and societal impact. I\u2019m excited by the opportunity to learn from faculty, mentors, and peers who are\npassionate about building a better future through technology. Plaksha\u2019s hands-on curriculum, values-driven mission, and emphasis on\nleadership resonate deeply with my aspirations."
+          },
+          {
+            "entity_id": "ESS-002",
+            "prompt": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+            "text": "Having grown up with a pet dog, I\u2019ve developed a deep sense of empathy and care for animals. That personal connection inspired me to take\naction when I noticed several stray dogs in my neighborhood struggling with hunger, injuries, and neglect. I initiated a small project with a\nfew classmates to support these animals by organizing feeding drives, arranging basic medical aid through local NGOs, and spreading\nawareness about responsible and humane treatment of strays. One of the major challenges was addressing concerns from some residents who were initially uncomfortable with our activities. There were\nworries about safety and cleanliness. Instead of giving up, I took the time to understand their perspective and created a small awareness\ncampaign. We shared how caring for strays through sterilization and regular feeding could actually make the community safer. We also made\nsure to clean up after every feeding and involved local animal welfare volunteers to lend credibility to our efforts. This experience taught me that leadership is as much about listening and empathy as it is about action. It showed me how\nperseverance\u2014combined with teamwork and a clear sense of purpose\u2014can gradually change mindsets and make a difference. It also\nreinforced that even small initiatives, when pursued with sincerity, can have a positive and lasting impact."
+          },
+          {
+            "entity_id": "ESS-003",
+            "prompt": "Have You Ever Had A First Information Report (FIR) Filed Against You Or Been Involved In Any Legal And/Or Criminal\nProceeding?",
+            "text": "Consent By submitting this admissions form, you acknowledge and consent to Plaksha University's data handling practices. Any personal information\nyou provide, including academic records and contact details, will be stored internally, and may be shared with selected offices at Plaksha\nUniversity for administrative and academic purposes.\nIf you are applying for a scholarship, please note that your financial data and supporting documents may also be shared with key\nstakeholders involved in scholarship matters. All data will be handled with utmost confidentiality and in compliance with relevant data\nprotection laws. I Agree Honour Pledge The information provided in this form is true to the best of my knowledge. I pledge that the entire application is a product of my effort and no\npart of it has been taken directly from other sources. If at any time during the course of the admissions process or later after joining the\nprogramme, the information provided by me is found to be false, untrue, or incorrect, then Plaksha University's Office of Admissions may\nexercise the right to rescind the offer of admissions made to me and nullify my enrollment during or after the programme, as applicable to\nme. Applicant Name:"
+          }
+        ],
+        "activity_profile": [
+          {
+            "entity_id": "ACT-001",
+            "type": "extracurricular",
+            "name": "Music Piano",
+            "position": "Grade 4 Qualified from\nPhilips International\nSchool of Music",
+            "level": "International",
+            "duration_years": "5"
+          },
+          {
+            "entity_id": "ACT-002",
+            "type": "extracurricular",
+            "name": "Yoga",
+            "position": "Beginner level\npractitioner of Yoga and\nmindfulness",
+            "level": "Personal",
+            "duration_years": "2"
+          },
+          {
+            "entity_id": "ACT-003",
+            "type": "co_curricular",
+            "name": "Olympiads",
+            "position": "Has been regularly\nparticipating in Maths,\nScience Olympiads at\nschool",
+            "level": "District",
+            "duration_years": "7"
+          },
+          {
+            "entity_id": "ACT-004",
+            "type": "co_curricular",
+            "name": "Reading",
+            "position": "Is an ardent reader of\nfiction and non fiction\nbooks on personal\ndevelopment etc",
+            "level": "Personal",
+            "duration_years": "6"
+          }
+        ],
+        "entity_id_map": [
+          {
+            "entity_id": "SCH-001",
+            "collection": "schooling_history",
+            "descriptor": "Jayshree Periwal International School"
+          },
+          {
+            "entity_id": "SCH-002",
+            "collection": "schooling_history",
+            "descriptor": "Jayshree Periwal International School"
+          },
+          {
+            "entity_id": "SCH-003",
+            "collection": "schooling_history",
+            "descriptor": "Jayshree Periwal International School"
+          },
+          {
+            "entity_id": "SCH-004",
+            "collection": "schooling_history",
+            "descriptor": "Jayshree Periwal International School"
+          },
+          {
+            "entity_id": "ACA-001",
+            "collection": "academic_entries",
+            "descriptor": "9TH"
+          },
+          {
+            "entity_id": "ACA-002",
+            "collection": "academic_entries",
+            "descriptor": "10TH"
+          },
+          {
+            "entity_id": "ACA-003",
+            "collection": "academic_entries",
+            "descriptor": "11TH"
+          },
+          {
+            "entity_id": "ACA-004",
+            "collection": "academic_entries",
+            "descriptor": "12TH"
+          },
+          {
+            "entity_id": "TEST-001",
+            "collection": "test_entries",
+            "descriptor": "JEE Mains"
+          },
+          {
+            "entity_id": "ESS-001",
+            "collection": "essay_entries",
+            "descriptor": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?"
+          },
+          {
+            "entity_id": "ESS-002",
+            "collection": "essay_entries",
+            "descriptor": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?"
+          },
+          {
+            "entity_id": "ESS-003",
+            "collection": "essay_entries",
+            "descriptor": "Have You Ever Had A First Information Report (FIR) Filed Against You Or Been Involved In Any Legal And/Or Criminal\nProceeding?"
+          },
+          {
+            "entity_id": "ACT-001",
+            "collection": "activity_entries",
+            "descriptor": "Music Piano"
+          },
+          {
+            "entity_id": "ACT-002",
+            "collection": "activity_entries",
+            "descriptor": "Yoga"
+          },
+          {
+            "entity_id": "ACT-003",
+            "collection": "activity_entries",
+            "descriptor": "Olympiads"
+          },
+          {
+            "entity_id": "ACT-004",
+            "collection": "activity_entries",
+            "descriptor": "Reading"
+          },
+          {
+            "entity_id": "LEAD-005",
+            "collection": "activity_entries",
+            "descriptor": "Unknown"
+          },
+          {
+            "entity_id": "LEAD-006",
+            "collection": "activity_entries",
+            "descriptor": "Unknown"
+          },
+          {
+            "entity_id": "LEAD-007",
+            "collection": "activity_entries",
+            "descriptor": "Unknown"
+          }
+        ],
+        "deterministic_signals": [
+          {
+            "signal_id": "DET-001",
+            "signal_type": "duration_pattern",
+            "observation": "Applicant has participated in Music Piano for 5.",
+            "referenced_entity_ids": [
+              "ACT-001"
+            ],
+            "source_collection": "activity_entries"
+          },
+          {
+            "signal_id": "DET-002",
+            "signal_type": "duration_pattern",
+            "observation": "Applicant has participated in Olympiads for 7.",
+            "referenced_entity_ids": [
+              "ACT-003"
+            ],
+            "source_collection": "activity_entries"
+          },
+          {
+            "signal_id": "DET-003",
+            "signal_type": "duration_pattern",
+            "observation": "Applicant has participated in Reading for 6.",
+            "referenced_entity_ids": [
+              "ACT-004"
+            ],
+            "source_collection": "activity_entries"
+          },
+          {
+            "signal_id": "DET-004",
+            "signal_type": "domain_concentration",
+            "observation": "Academic profile shows concentration of 10 entries in science and mathematics domains.",
+            "referenced_entity_ids": [
+              "ACA-001",
+              "ACA-002",
+              "ACA-003",
+              "ACA-004"
+            ],
+            "source_collection": "academic_entries"
+          },
+          {
+            "signal_id": "DET-005",
+            "signal_type": "activity_volume",
+            "observation": "Applicant has reported 7 distinct activities.",
+            "referenced_entity_ids": [
+              "ACT-001",
+              "ACT-002",
+              "ACT-003",
+              "ACT-004",
+              "LEAD-005",
+              "LEAD-006",
+              "LEAD-007"
+            ],
+            "source_collection": "activity_entries"
+          },
+          {
+            "signal_id": "DET-006",
+            "signal_type": "test_performance_pattern",
+            "observation": "Score of 99.01 achieved in JEE Mains.",
+            "referenced_entity_ids": [
+              "TEST-001"
+            ],
+            "source_collection": "test_entries"
+          },
+          {
+            "signal_id": "DET-007",
+            "signal_type": "timeline_characteristic",
+            "observation": "Academic records cover a span of 4 academic years.",
+            "referenced_entity_ids": [
+              "ACA-001",
+              "ACA-002",
+              "ACA-003",
+              "ACA-004"
+            ],
+            "source_collection": "academic_entries"
+          }
+        ]
+      }
+    },
+    "3_llm_call_1_raw": "{\n\"interpreted_signals\": [\n{\n\"signal_id\": \"INT-001\",\n\"title\": \"Domain Concentration in Academics\",\n\"description\": \"The applicant's academic profile shows a concentration of entries in science and mathematics domains, indicating a strong focus on these subjects.\",\n\"referenced_entity_ids\": [\"ACA-001\", \"ACA-002\", \"ACA-003\", \"ACA-004\"],\n\"supporting_det_signal_ids\": [\"DET-004\"]\n},\n{\n\"signal_id\": \"INT-002\",\n\"title\": \"Consistency in Academic Performance\",\n\"description\": \"The applicant's academic performance has been consistently strong, with a high overall score and scores above 95% in most subjects.\",\n\"referenced_entity_ids\": [\"ACA-001\", \"ACA-002\", \"ACA-003\", \"ACA-004\"],\n\"supporting_det_signal_ids\": [\"DET-007\"]\n},\n{\n\"signal_id\": \"INT-003\",\n\"title\": \"Interest in Engineering and Technology\",\n\"description\": \"The applicant's essay responses indicate a strong interest in engineering and technology, with a desire to apply their skills to real-world problems.\",\n\"referenced_entity_ids\": [\"ESS-001\", \"ESS-002\"],\n\"supporting_det_signal_ids\": []\n},\n{\n\"signal_id\": \"INT-004\",\n\"title\": \"Leadership and Perseverance\",\n\"description\": \"The applicant's essay responses highlight their experiences with leadership and perseverance, demonstrating a capacity for overcoming challenges.\",\n\"referenced_entity_ids\": [\"ESS-002\"],\n\"supporting_det_signal_ids\": []\n},\n{\n\"signal_id\": \"INT-005\",\n\"title\": \"Duration of Extracurricular Activities\",\n\"description\": \"The applicant has participated in extracurricular activities such as Music Piano, Olympiads, and Reading for a significant duration.\",\n\"referenced_entity_ids\": [\"ACT-001\", \"ACT-002\", \"ACT-003\", \"ACT-004\"],\n\"supporting_det_signal_ids\": [\"DET-001\", \"DET-002\", \"DET-003\"]\n}\n]\n}",
+    "4_call_1_validation": {
+      "passed": false,
+      "sanitized_output": null,
+      "violations_log": [
+        {
+          "violation_id": "97625f40-6346-496a-8ec1-9765efd29352",
+          "phrase_matched": "Strong",
+          "context": "The applicant's academic profile shows a concentration of entries in science and mathematics domains...",
+          "field": "interpreted_signals[0].description",
+          "type": "prohibited_language"
+        },
+        {
+          "violation_id": "0109b24a-90e1-40de-8ca5-d47982abfe46",
+          "phrase_matched": "Strong",
+          "context": "The applicant's academic performance has been consistently strong, with a high overall score and sco...",
+          "field": "interpreted_signals[1].description",
+          "type": "prohibited_language"
+        },
+        {
+          "violation_id": "c39a3797-3786-4949-a4db-3dc7b5d7c1c6",
+          "field": "interpreted_signals[2].supporting_det_signal_ids",
+          "type": "missing_field",
+          "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+        },
+        {
+          "violation_id": "0a29aad8-2a1e-4850-a7db-a8e08c83d650",
+          "field": "interpreted_signals[3].supporting_det_signal_ids",
+          "type": "missing_field",
+          "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+        }
+      ],
+      "policy_version": "1.0"
+    }
+  }
+}

@@ -1,0 +1,312 @@
+{
+  "academic_records": [
+    {
+      "entry_id": "36caed2b-7c06-4970-8528-724b592174f4",
+      "score_raw": "98.18",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "grading_mode": "percentage",
+      "academic_year": "2022",
+      "academic_level": "9TH",
+      "subject_entries": [
+        {
+          "score_raw": "99.6",
+          "subject_name": "Mathematics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "99.2",
+          "subject_name": "English",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "98.7",
+          "subject_name": "Social Science",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "96.8",
+          "subject_name": "Science",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "96.6",
+          "subject_name": "Sanskrit",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85,
+      "marking_scheme_raw": "Percentage",
+      "predicted_score_raw": null,
+      "entity_id": "ACA-001"
+    },
+    {
+      "entry_id": "df3fd86f-1312-4c26-b8ed-855a6630f9a3",
+      "score_raw": "97.4",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "grading_mode": "percentage",
+      "academic_year": "2023",
+      "academic_level": "10TH",
+      "subject_entries": [
+        {
+          "score_raw": "97",
+          "subject_name": "Mathematics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "97",
+          "subject_name": "Science",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "100",
+          "subject_name": "Social Science",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "96",
+          "subject_name": "English",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "97",
+          "subject_name": "Sanskrit",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "98",
+          "subject_name": "Elements of Business",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "97",
+          "subject_name": "Introduction to Financial Markets",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85,
+      "marking_scheme_raw": "Percentage",
+      "predicted_score_raw": null,
+      "entity_id": "ACA-002"
+    },
+    {
+      "entry_id": "5a035839-c45f-439e-beb6-097f5bd21c50",
+      "score_raw": "89.2",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "grading_mode": "percentage",
+      "academic_year": "2024",
+      "academic_level": "11TH",
+      "subject_entries": [
+        {
+          "score_raw": "90.6",
+          "subject_name": "Mathematics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "95.1",
+          "subject_name": "Physics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "92.8",
+          "subject_name": "English",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "74.9",
+          "subject_name": "Biology",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "92.8",
+          "subject_name": "Chemistry",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85,
+      "marking_scheme_raw": "Percentage",
+      "predicted_score_raw": null,
+      "entity_id": "ACA-003"
+    },
+    {
+      "entry_id": "fe7be79a-453e-4599-999a-674e2f872ece",
+      "score_raw": "98.6",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "school_name": "Delhi Public School Indore",
+      "grading_mode": "percentage",
+      "academic_year": "2025",
+      "academic_level": "12TH",
+      "subject_entries": [
+        {
+          "score_raw": "99",
+          "subject_name": "Mathematics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "100",
+          "subject_name": "Physics",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "99",
+          "subject_name": "Biology",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "97",
+          "subject_name": "Chemistry",
+          "predicted_score_raw": null
+        },
+        {
+          "score_raw": "98",
+          "subject_name": "English",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85,
+      "marking_scheme_raw": "Percentage",
+      "predicted_score_raw": null,
+      "entity_id": "ACA-004"
+    }
+  ],
+  "standardized_tests": [
+    {
+      "rank": null,
+      "entry_id": "ceef6479-08f4-4f9b-a292-ec901dd1d3a0",
+      "test_date": null,
+      "test_name": "JEE Mains",
+      "percentile": null,
+      "total_score": "99.74",
+      "result_status": "available",
+      "confidence_score": 0.9,
+      "sectional_scores": [
+        {
+          "label": "Physics Percentile",
+          "raw_score": "99.45"
+        },
+        {
+          "label": "Maths Percentile",
+          "raw_score": "99.71"
+        },
+        {
+          "label": "Chemistry Percentile",
+          "raw_score": "99.17"
+        }
+      ],
+      "entity_id": "TEST-001"
+    }
+  ],
+  "additional_tests": [],
+  "extracurricular_activities": [
+    {
+      "level": "Intra School",
+      "duration": "1",
+      "entry_id": "735e7312-0d9d-4bb3-9f06-baeed158b6eb",
+      "achievement": null,
+      "activity_name": "Kaizen OC Head",
+      "activity_type": "extracurricular",
+      "position_title": null,
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null,
+      "entity_id": "ACT-001"
+    },
+    {
+      "level": "National",
+      "duration": "1",
+      "entry_id": "1f576521-d78a-4f4a-9824-31e92e9a37f7",
+      "achievement": null,
+      "activity_name": "Web Developing Intern",
+      "activity_type": "extracurricular",
+      "position_title": null,
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null,
+      "entity_id": "ACT-002"
+    },
+    {
+      "level": "International",
+      "duration": "1",
+      "entry_id": "f7a0adca-1a1f-44c3-bea5-07a0532aaa89",
+      "achievement": null,
+      "activity_name": "Digital Marketing Intern",
+      "activity_type": "extracurricular",
+      "position_title": null,
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null,
+      "entity_id": "ACT-003"
+    }
+  ],
+  "co_curricular_activities": [
+    {
+      "level": null,
+      "duration": "International",
+      "entry_id": "2851a791-94d3-45cd-9ca6-8f08d7a7eae5",
+      "achievement": "2",
+      "activity_name": "Freelance Writer",
+      "activity_type": "co_curricular",
+      "position_title": null,
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null,
+      "entity_id": "ACT-004"
+    }
+  ],
+  "leadership_roles": [
+    {
+      "level": null,
+      "duration": null,
+      "entry_id": "d389ac26-ab42-48ad-93b6-043c807fae0a",
+      "achievement": null,
+      "activity_name": null,
+      "activity_type": "leadership",
+      "position_title": "Head Boy",
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null,
+      "entity_id": "LEAD-005"
+    },
+    {
+      "level": null,
+      "duration": null,
+      "entry_id": "ac9861b0-6d8d-42bd-8ab0-ebae1b3e3035",
+      "achievement": null,
+      "activity_name": null,
+      "activity_type": "leadership",
+      "position_title": "Vice Head Boy",
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null,
+      "entity_id": "LEAD-006"
+    },
+    {
+      "level": null,
+      "duration": null,
+      "entry_id": "c22d815c-d6ff-477b-98e5-43d737e77b68",
+      "achievement": null,
+      "activity_name": null,
+      "activity_type": "leadership",
+      "position_title": "Vice House Captain",
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": null,
+      "entity_id": "LEAD-007"
+    },
+    {
+      "level": null,
+      "duration": "Mobile Number",
+      "entry_id": "0ab9f07c-9acb-4ac9-9e82-8a6668420c66",
+      "achievement": null,
+      "activity_name": null,
+      "activity_type": "leadership",
+      "position_title": "Organization",
+      "description_raw": null,
+      "confidence_score": 0.95,
+      "roles_and_responsibilities": "In what\ncapacity does\nthis reference\nknow you?",
+      "entity_id": "LEAD-008"
+    }
+  ]
+}

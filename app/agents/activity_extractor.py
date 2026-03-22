@@ -181,7 +181,7 @@ def extract_activities(section_blocks: List[Dict[str, Any]], pdf_path: str = "")
             bx_center = (float(b["bbox"][0]) + float(b["bbox"][2])) / 2
             txt = str(b.get("text", "")).strip()
             
-            best_gap_idx, min_dist = -1, 9999.0
+            best_idx, min_dist = -1, 9999.0
             for idx, g in enumerate(gaps):
                 if g["x0"] - 15 <= bx_center <= g["x1"] + 15:
                     dist = abs(bx_center - g["center"])

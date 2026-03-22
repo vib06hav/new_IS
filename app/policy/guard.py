@@ -4,6 +4,18 @@ import uuid
 from typing import Dict, Any, List, Tuple
 from app.policy.config import PolicyConfig
 
+PROHIBITED_TERM_REWRITES = {
+    "strong performance": "recorded results",
+    "high performance": "recorded results",
+    "excellent performance": "recorded results",
+    "impressive commitment": "documented engagement",
+    "showing aptitude": "",
+    "indicating aptitude": "",
+    "showing strong performance": "",
+    "indicating strong performance": "",
+}
+
+
 def _scan_text(text: str, rules: List[str]) -> List[Dict[str, Any]]:
     """
     Scans a block of text against a list of prohibited phrases.
@@ -11,6 +23,8 @@ def _scan_text(text: str, rules: List[str]) -> List[Dict[str, Any]]:
     """
     violations = []
     if not text:
+        return violations
+    if not isinstance(text, str):
         return violations
         
     lower_text = text.lower()
@@ -25,11 +39,178 @@ def _scan_text(text: str, rules: List[str]) -> List[Dict[str, Any]]:
             })
     return violations
 
+
+def _normalize_whitespace(text: str) -> str:
+    text = re.sub(r"\s+", " ", text or "").strip()
+    text = re.sub(r"\s+([,.;:])", r"\1", text)
+    return text
+
+
+def _rewrite_prohibited_phrasing(text: Any, rules: List[str]) -> Any:
+    if not isinstance(text, str):
+        return text
+
+    rewritten = text
+    for phrase, replacement in PROHIBITED_TERM_REWRITES.items():
+        rewritten = re.sub(re.escape(phrase), replacement, rewritten, flags=re.IGNORECASE)
+
+    for rule in rules:
+        rewritten = re.sub(re.escape(rule), "", rewritten, flags=re.IGNORECASE)
+
+    rewritten = re.sub(r"\b(indicating|suggesting|showing|reflecting)\b\s*(,)?", "", rewritten, flags=re.IGNORECASE)
+    rewritten = _normalize_whitespace(rewritten)
+    rewritten = rewritten.strip(" -,:;")
+    return rewritten
+
+
+def _first_present(source: dict, keys: List[str], default=None):
+    for key in keys:
+        value = source.get(key)
+        if value is not None:
+            return value
+    return default
+
+
+def _normalize_signal_output(data: Any, rules: List[str]) -> Any:
+    if not isinstance(data, dict):
+        return data
+
+    raw_signals = data.get("interpreted_signals", [])
+    normalized_signals = []
+    if isinstance(raw_signals, list):
+        for sig in raw_signals:
+            if not isinstance(sig, dict):
+                continue
+            normalized_signals.append({
+                "signal_id": _first_present(sig, ["signal_id", "id"]),
+                "title": _rewrite_prohibited_phrasing(_first_present(sig, ["title", "name", "label"], ""), rules),
+                "description": _rewrite_prohibited_phrasing(_first_present(sig, ["description", "summary", "details"], ""), rules),
+                "referenced_entity_ids": _first_present(sig, ["referenced_entity_ids", "entity_ids", "references"], []),
+                "supporting_det_signal_ids": _first_present(sig, ["supporting_det_signal_ids", "det_signal_ids", "deterministic_signal_ids"], []),
+            })
+    return {"interpreted_signals": normalized_signals}
+
+
+def _backfill_signal_references(normalized_output: Any, deterministic_signals: List[dict]) -> Any:
+    if not isinstance(normalized_output, dict):
+        return normalized_output
+
+    signals = normalized_output.get("interpreted_signals")
+    if not isinstance(signals, list):
+        return normalized_output
+
+    det_lookup = {}
+    for det_signal in deterministic_signals:
+        if not isinstance(det_signal, dict):
+            continue
+        det_id = det_signal.get("signal_id")
+        refs = det_signal.get("referenced_entity_ids", [])
+        if det_id:
+            det_lookup[det_id] = [ref for ref in refs if ref]
+
+    for signal in signals:
+        if not isinstance(signal, dict):
+            continue
+        referenced_ids = signal.get("referenced_entity_ids")
+        if referenced_ids:
+            continue
+        recovered_refs = []
+        for det_id in signal.get("supporting_det_signal_ids", []) or []:
+            for ref in det_lookup.get(det_id, []):
+                if ref not in recovered_refs:
+                    recovered_refs.append(ref)
+        if recovered_refs:
+            signal["referenced_entity_ids"] = recovered_refs
+
+    return normalized_output
+
+
+def _normalize_question_item(item: Any) -> Any:
+    if isinstance(item, str):
+        return _normalize_whitespace(item)
+    if isinstance(item, dict):
+        candidate = _first_present(item, ["question", "text", "prompt", "content"])
+        if isinstance(candidate, str):
+            return _normalize_whitespace(candidate)
+    return item
+
+
+def _normalize_theme_output(data: Any, rules: List[str], bundle: dict | None = None) -> Any:
+    if not isinstance(data, dict):
+        return data
+
+    raw_themes = data.get("themes", [])
+    raw_question_groups = data.get("question_groups", [])
+    signal_pairs = []
+    if isinstance(bundle, dict):
+        raw_pairs = bundle.get("signal_evidence_pairs", [])
+        if isinstance(raw_pairs, list):
+            signal_pairs = raw_pairs
+
+    normalized_themes = []
+    if isinstance(raw_themes, list):
+        for idx, theme in enumerate(raw_themes):
+            if not isinstance(theme, dict):
+                continue
+            signal = {}
+            if idx < len(signal_pairs) and isinstance(signal_pairs[idx], dict):
+                signal = signal_pairs[idx].get("signal", {}) or {}
+            title = _rewrite_prohibited_phrasing(
+                _first_present(
+                    theme,
+                    ["title", "theme_name", "name", "heading", "theme_title"],
+                    ""
+                ),
+                rules
+            )
+            if not title:
+                title = _rewrite_prohibited_phrasing(_first_present(signal, ["title"], ""), rules)
+            description = _rewrite_prohibited_phrasing(
+                _first_present(theme, ["description", "summary", "details", "theme_description"], ""),
+                rules
+            )
+            if not description:
+                description = _rewrite_prohibited_phrasing(_first_present(signal, ["description"], ""), rules)
+            referenced_entity_ids = _first_present(
+                theme,
+                ["referenced_entity_ids", "entity_ids", "references", "entities"],
+                []
+            )
+            if not referenced_entity_ids:
+                referenced_entity_ids = _first_present(signal, ["referenced_entity_ids"], [])
+            normalized_themes.append({
+                "theme_id": _first_present(theme, ["theme_id", "id"]),
+                "title": title,
+                "description": description,
+                "referenced_entity_ids": referenced_entity_ids,
+            })
+
+    normalized_question_groups = []
+    if isinstance(raw_question_groups, list):
+        for qg in raw_question_groups:
+            if not isinstance(qg, dict):
+                continue
+            raw_questions = _first_present(qg, ["questions", "items", "question_list"], [])
+            questions = []
+            if isinstance(raw_questions, list):
+                for item in raw_questions:
+                    questions.append(_normalize_question_item(item))
+            normalized_question_groups.append({
+                "theme_id": _first_present(qg, ["theme_id", "theme", "theme_ref"]),
+                "group_title": _rewrite_prohibited_phrasing(_first_present(qg, ["group_title", "title", "heading", "name"], ""), rules),
+                "questions": questions,
+            })
+
+    return {
+        "themes": normalized_themes,
+        "question_groups": normalized_question_groups,
+    }
+
 import logging
 
 logger = logging.getLogger(__name__)
 
-def validate_themes(raw_text: str, entity_id_map: List[dict]) -> Dict[str, Any]:
+def validate_themes(raw_text: str, entity_id_map: List[dict], bundle: dict | None = None) -> Dict[str, Any]:
     """
     Agent 15 - Call 2 Validation Layer.
     Strictly validates LLM Call 2 output (interview themes and questions).
@@ -52,13 +233,15 @@ def validate_themes(raw_text: str, entity_id_map: List[dict]) -> Dict[str, Any]:
         })
         return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
 
+    normalized_output = _normalize_theme_output(synthesis_output, rules, bundle)
+
     # Validation Stage 2: Structural Integrity
-    if not isinstance(synthesis_output, dict):
+    if not isinstance(normalized_output, dict):
         violations_log.append({"violation_id": str(uuid.uuid4()), "field": "root", "type": "structure_error", "context": "Root is not a JSON object."})
-        return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
+        return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
         
-    themes = synthesis_output.get("themes")
-    question_groups = synthesis_output.get("question_groups")
+    themes = normalized_output.get("themes")
+    question_groups = normalized_output.get("question_groups")
     
     if themes is None or not isinstance(themes, list):
         violations_log.append({"violation_id": str(uuid.uuid4()), "field": "themes", "type": "structure_error", "context": "Missing or invalid 'themes' array."})
@@ -69,7 +252,7 @@ def validate_themes(raw_text: str, entity_id_map: List[dict]) -> Dict[str, Any]:
         passed = False
         
     if not passed:
-        return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
+        return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
 
     # Prepare for grounding validation
     known_theme_ids = set()
@@ -171,6 +354,15 @@ def validate_themes(raw_text: str, entity_id_map: List[dict]) -> Dict[str, Any]:
                 passed = False
             else:
                 for q_idx, q_text in enumerate(questions):
+                    if not isinstance(q_text, str) or not q_text.strip():
+                        violations_log.append({
+                            "violation_id": str(uuid.uuid4()),
+                            "field": f"question_groups[{idx}].questions[{q_idx}]",
+                            "type": "invalid_question_item",
+                            "context": "Each question must be a non-empty string."
+                        })
+                        passed = False
+                        continue
                     q_violations = _scan_text(q_text, rules)
                     for v in q_violations:
                         v["field"] = f"question_groups[{idx}].questions[{q_idx}]"
@@ -183,6 +375,7 @@ def validate_themes(raw_text: str, entity_id_map: List[dict]) -> Dict[str, Any]:
     return {
         "passed": passed,
         "sanitized_output": sanitized_output if passed else None,
+        "normalized_output": normalized_output,
         "violations_log": violations_log,
         "policy_version": PolicyConfig.get_version()
     }
@@ -207,25 +400,28 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
             "type": "structure_error",
             "context": f"Malformed JSON: {str(e)}"
         })
-        return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
+        return {"passed": False, "sanitized_output": None, "normalized_output": None, "violations_log": violations_log}
+
+    normalized_output = _normalize_signal_output(data, rules)
+    normalized_output = _backfill_signal_references(normalized_output, deterministic_signals)
 
     # Validation Stage 2: Structural Integrity
-    if not isinstance(data, dict) or "interpreted_signals" not in data:
+    if not isinstance(normalized_output, dict) or "interpreted_signals" not in normalized_output:
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
             "type": "structure_error",
             "context": "Missing 'interpreted_signals' root key."
         })
-        return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
+        return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
 
-    signals = data["interpreted_signals"]
+    signals = normalized_output["interpreted_signals"]
     if not isinstance(signals, list):
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
             "type": "structure_error",
             "context": "'interpreted_signals' must be an array."
         })
-        return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
+        return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
 
     # Preparation for ID validation
     valid_entity_ids = {e.get("entity_id") for e in entity_id_map if e.get("entity_id")}
@@ -311,6 +507,7 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
     return {
         "passed": passed,
         "sanitized_output": {"interpreted_signals": sanitized_signals} if passed else None,
+        "normalized_output": normalized_output,
         "violations_log": violations_log,
         "policy_version": PolicyConfig.get_version()
     }

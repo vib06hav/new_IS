@@ -1,0 +1,460 @@
+{
+  "status_code": 200,
+  "headers": {
+    "date": "Thu, 19 Mar 2026 18:12:11 GMT",
+    "server": "uvicorn",
+    "content-length": "10019",
+    "content-type": "application/json"
+  },
+  "body": {
+    "id": "2b95dd1c-17e4-4235-8a3d-ad28b1cae708",
+    "status": "complete",
+    "confidence_score": 0.91,
+    "created_at": "2026-03-19T18:08:20.279964Z",
+    "synthesis": {
+      "report_metadata": {
+        "generated_at": "2026-03-19T18:12:12Z",
+        "report_version": "ROS_v1",
+        "canonical_version": "1.1",
+        "application_number": "2b95dd1c-17e4-4235-8a3d-ad28b1cae708"
+      },
+      "page_1_background_profile": {
+        "identity": {
+          "full_name": "Aarav Jain",
+          "date_of_birth": "2007-06-14",
+          "application_id": "2b95dd1c-17e4-4235-8a3d-ad28b1cae708",
+          "preferred_major": "Computer Science and Artificial Intelligence",
+          "family_background": {
+            "father": {
+              "name": "Sandeep Jain",
+              "education": "B.Com",
+              "designation": "Founder and Managing Director",
+              "organization": "Jain Tex Exports",
+              "field_of_employment": "Textile Export Business"
+            },
+            "mother": {
+              "name": null,
+              "education": null,
+              "designation": null,
+              "organization": null,
+              "field_of_employment": null
+            }
+          }
+        },
+        "family_background": {
+          "father": {
+            "name": "Sandeep Jain",
+            "education": "B.Com",
+            "designation": "Founder and Managing Director",
+            "organization": "Jain Tex Exports",
+            "field_of_employment": "Textile Export Business"
+          },
+          "mother": {
+            "name": null,
+            "education": null,
+            "designation": null,
+            "organization": null,
+            "field_of_employment": null
+          }
+        },
+        "schooling_history": [
+          {
+            "level": "9TH",
+            "entry_id": "96d8e374-0f8a-48a6-b516-855ff3b236f9",
+            "location": null,
+            "entity_id": "SCH-001",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Jayshree Periwal International School",
+            "confidence_score": 0.85
+          },
+          {
+            "level": "10TH",
+            "entry_id": "01315c9e-7c72-482c-a226-84463226523b",
+            "location": null,
+            "entity_id": "SCH-002",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Jayshree Periwal International School",
+            "confidence_score": 0.85
+          },
+          {
+            "level": "11TH",
+            "entry_id": "5fc7d7d5-61cd-4258-bc4a-6a4e078ef6d6",
+            "location": null,
+            "entity_id": "SCH-003",
+            "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+            "school_name": "Jayshree Periwal International School",
+            "confidence_score": 0.85
+          },
+          {
+            "level": "12TH",
+            "entry_id": "a073a1f0-ca16-473e-a669-65b4aafc8c00",
+            "location": null,
+            "entity_id": "SCH-004",
+            "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+            "school_name": "Jayshree Periwal International School",
+            "confidence_score": 0.85
+          }
+        ],
+        "academic_orientation": {}
+      },
+      "page_2_academic_and_engagement": {
+        "academic_records": [
+          {
+            "entry_id": "7a4b02ad-d111-4f6f-9f20-0ad240fee16e",
+            "entity_id": "ACA-001",
+            "score_raw": "81.6",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Jayshree Periwal International School",
+            "grading_mode": "percentage",
+            "academic_year": "2022",
+            "academic_level": "9TH",
+            "subject_entries": [
+              {
+                "score_raw": "95.8",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "81.8",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "86.6",
+                "subject_name": "Hindi",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "87.4",
+                "subject_name": "Science",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "77.5",
+                "subject_name": "Social Studies",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          },
+          {
+            "entry_id": "ae627679-d6fd-429d-ae98-501135af0ac6",
+            "entity_id": "ACA-002",
+            "score_raw": "96.6",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Jayshree Periwal International School",
+            "grading_mode": "percentage",
+            "academic_year": "2023",
+            "academic_level": "10TH",
+            "subject_entries": [
+              {
+                "score_raw": "98",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "95",
+                "subject_name": "Science",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "95",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "95",
+                "subject_name": "Hindi",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "100",
+                "subject_name": "Artificial Intelligence",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          },
+          {
+            "entry_id": "cf46f04e-1ec6-4fd0-983a-a5c6670fd563",
+            "entity_id": "ACA-003",
+            "score_raw": "97.9",
+            "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+            "school_name": "Jayshree Periwal International School",
+            "grading_mode": "percentage",
+            "academic_year": "2024",
+            "academic_level": "11TH",
+            "subject_entries": [
+              {
+                "score_raw": "150",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "58",
+                "subject_name": "Physics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "60",
+                "subject_name": "Chemistry",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "95",
+                "subject_name": "Sanskrit",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "97",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          },
+          {
+            "entry_id": "6a4f27d7-33d3-4130-8c82-7f35c634461f",
+            "entity_id": "ACA-004",
+            "score_raw": "97.4",
+            "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+            "school_name": "Jayshree Periwal International School",
+            "grading_mode": "percentage",
+            "academic_year": "2025",
+            "academic_level": "12TH",
+            "subject_entries": [
+              {
+                "score_raw": "144",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "52",
+                "subject_name": "Physics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "56",
+                "subject_name": "Chemistry",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "99",
+                "subject_name": "Sanskrit",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "96",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          }
+        ],
+        "additional_tests": [],
+        "leadership_roles": [
+          {
+            "level": null,
+            "duration": "1",
+            "entry_id": "a5f33fde-0794-4729-a0e8-6245ecf794fb",
+            "entity_id": "LEAD-005",
+            "achievement": null,
+            "activity_name": null,
+            "activity_type": "leadership",
+            "position_title": "School House Captain",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": "Was the School House Captain at"
+          },
+          {
+            "level": null,
+            "duration": "Mobile Number",
+            "entry_id": "4c57c46e-3a60-4539-a243-853ee43127f7",
+            "entity_id": "LEAD-006",
+            "achievement": null,
+            "activity_name": null,
+            "activity_type": "leadership",
+            "position_title": "Organization",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": "In what\ncapacity does\nthis reference\nk"
+          },
+          {
+            "level": null,
+            "duration": "Is there anything else you\nwant to tell us?",
+            "entry_id": "0f304052-c583-4019-bd75-59e083f58759",
+            "entity_id": "LEAD-007",
+            "achievement": null,
+            "activity_name": null,
+            "activity_type": "leadership",
+            "position_title": "Friends/Family",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": "No"
+          }
+        ],
+        "standardized_tests": [
+          {
+            "rank": null,
+            "entry_id": "29323df0-6656-4b6a-862a-821b00d3f964",
+            "entity_id": "TEST-001",
+            "test_date": null,
+            "test_name": "JEE Mains",
+            "percentile": null,
+            "total_score": "99.33",
+            "result_status": "available",
+            "confidence_score": 0.9,
+            "sectional_scores": [
+              {
+                "label": "Maths Percentile",
+                "raw_score": "96.67"
+              },
+              {
+                "label": "Sectional Rank",
+                "raw_score": "97.69"
+              },
+              {
+                "label": "Chemistry Percentile",
+                "raw_score": "99.01"
+              }
+            ]
+          }
+        ],
+        "co_curricular_activities": [
+          {
+            "level": "District",
+            "duration": "7",
+            "entry_id": "3ea0c626-c7af-4ff8-b49d-fd69b203c145",
+            "entity_id": "ACT-003",
+            "achievement": null,
+            "activity_name": "Olympiads",
+            "activity_type": "co_curricular",
+            "position_title": "Has been regularly\nparticipating in Maths,\nScience Olympiads at\nschool",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          },
+          {
+            "level": "Personal",
+            "duration": "6",
+            "entry_id": "1816c1ed-5023-4939-981b-8a8119a0df49",
+            "entity_id": "ACT-004",
+            "achievement": null,
+            "activity_name": "Reading",
+            "activity_type": "co_curricular",
+            "position_title": "Is an ardent reader of\nfiction and non fiction\nbooks on personal\ndevelopment etc",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          }
+        ],
+        "extracurricular_activities": [
+          {
+            "level": "International",
+            "duration": "5",
+            "entry_id": "25b80439-2140-44a6-8bd8-1c1e5e45f409",
+            "entity_id": "ACT-001",
+            "achievement": null,
+            "activity_name": "Music Piano",
+            "activity_type": "extracurricular",
+            "position_title": "Grade 4 Qualified from\nPhilips International\nSchool of Music",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          },
+          {
+            "level": "Personal",
+            "duration": "2",
+            "entry_id": "3140a0d3-f333-4336-a024-367c108697b4",
+            "entity_id": "ACT-002",
+            "achievement": null,
+            "activity_name": "Yoga",
+            "activity_type": "extracurricular",
+            "position_title": "Beginner level\npractitioner of Yoga and\nmindfulness",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          }
+        ]
+      },
+      "page_3_essays": {
+        "essays": []
+      },
+      "page_4_focus_themes": {
+        "themes": [
+          {
+            "theme_id": "THEME-001",
+            "title": "Consistency in Academic Performance",
+            "description": "The applicant has consistently performed well academically throughout their schooling years.",
+            "referenced_entity_ids": [
+              "ACA-001",
+              "ACA-002",
+              "ACA-003",
+              "ACA-004"
+            ]
+          },
+          {
+            "theme_id": "THEME-002",
+            "title": "Participation in Extracurricular Activities",
+            "description": "The applicant has participated in various extracurricular activities, showcasing their interests and skills outside of academics.",
+            "referenced_entity_ids": [
+              "ACA-001",
+              "ACA-002",
+              "ACA-003",
+              "ACA-004"
+            ]
+          },
+          {
+            "theme_id": "THEME-003",
+            "title": "Leadership Presence",
+            "description": "The applicant has demonstrated leadership presence through holding positions in different activities.",
+            "referenced_entity_ids": [
+              "ACT-001",
+              "ACT-002"
+            ]
+          }
+        ]
+      },
+      "page_5_question_groups": {
+        "question_groups": [
+          {
+            "theme_id": "THEME-001",
+            "group_title": "Consistency in Academic Performance",
+            "questions": [
+              "What factors contribute to your consistent academic performance?",
+              "How do you balance your academic responsibilities with extracurricular activities?",
+              "Can you describe a time when you overcame an academic challenge?"
+            ]
+          },
+          {
+            "theme_id": "THEME-002",
+            "group_title": "Participation in Extracurricular Activities",
+            "questions": [
+              "What motivates you to participate in extracurricular activities?",
+              "Can you describe a time when your participation in an activity had a positive impact on others?",
+              "How do you prioritize your time between academics and extracurricular activities?"
+            ]
+          },
+          {
+            "theme_id": "THEME-003",
+            "group_title": "Leadership Presence",
+            "questions": [
+              "What qualities do you think are essential for a leader, and how do you embody them?",
+              "Can you describe a time when you took on a leadership role and what you accomplished?",
+              "How do you handle conflicts or disagreements within a team?"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

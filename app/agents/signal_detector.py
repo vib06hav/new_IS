@@ -53,7 +53,7 @@ def detect_signals(canonical: dict, entity_id_map: list) -> list[dict]:
     science_math_keywords = ["physics", "chemistry", "mathematics", "biology", "computer", "science"]
     all_subjects = []
     for entry in canonical.get("academic_entries", []):
-        for sub in entry.get("subjects", []):
+        for sub in entry.get("subject_entries", []):
             all_subjects.append(sub.get("subject_name", "").lower())
     
     concentration_count = sum(1 for s in all_subjects if any(kw in s for kw in science_math_keywords))
@@ -73,7 +73,8 @@ def detect_signals(canonical: dict, entity_id_map: list) -> list[dict]:
     if leadership_acts:
         ent_ids = []
         for lact in leadership_acts:
-            eid = next((e["entity_id"] for e in entity_id_map if e.get("collection") == "activity_entries" and e.get("descriptor") == lact.get("activity_name")), None)
+            descriptor = lact.get("activity_name") or lact.get("position_title")
+            eid = next((e["entity_id"] for e in entity_id_map if e.get("collection") == "activity_entries" and e.get("descriptor") == descriptor), None)
             if eid: ent_ids.append(eid)
         
         if ent_ids:

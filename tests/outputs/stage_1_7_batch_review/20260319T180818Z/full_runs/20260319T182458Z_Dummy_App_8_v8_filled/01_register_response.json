@@ -1,0 +1,14 @@
+{
+  "status_code": 201,
+  "headers": {
+    "date": "Thu, 19 Mar 2026 18:24:58 GMT",
+    "server": "uvicorn",
+    "content-length": "107",
+    "content-type": "application/json"
+  },
+  "body": {
+    "id": "c2ff802f-1eb6-400e-9395-d1afa5998923",
+    "email": "stage17_1773944698@example.com",
+    "role": "interviewer"
+  }
+}

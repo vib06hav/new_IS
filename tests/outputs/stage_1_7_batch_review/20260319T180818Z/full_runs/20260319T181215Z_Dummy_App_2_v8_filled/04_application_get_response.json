@@ -1,0 +1,397 @@
+{
+  "status_code": 200,
+  "headers": {
+    "date": "Thu, 19 Mar 2026 18:16:33 GMT",
+    "server": "uvicorn",
+    "content-length": "8027",
+    "content-type": "application/json"
+  },
+  "body": {
+    "id": "226df5ff-c37c-46a9-91ca-0445dc04489b",
+    "status": "complete",
+    "confidence_score": 0.91,
+    "created_at": "2026-03-19T18:12:16.084042Z",
+    "synthesis": {
+      "report_metadata": {
+        "generated_at": "2026-03-19T18:16:33Z",
+        "report_version": "ROS_v1",
+        "canonical_version": "1.1",
+        "application_number": "226df5ff-c37c-46a9-91ca-0445dc04489b"
+      },
+      "page_1_background_profile": {
+        "identity": {
+          "full_name": "Ananya Kapoor",
+          "date_of_birth": "2007-02-18",
+          "application_id": "226df5ff-c37c-46a9-91ca-0445dc04489b",
+          "preferred_major": "Computer Science and Artificial Intelligence",
+          "family_background": {
+            "father": {
+              "name": "Rohit Kapoor",
+              "education": "MBA",
+              "designation": "Partner",
+              "organization": "KPMG India",
+              "field_of_employment": "Finance and Consulting"
+            },
+            "mother": {
+              "name": null,
+              "education": null,
+              "designation": null,
+              "organization": null,
+              "field_of_employment": null
+            }
+          }
+        },
+        "family_background": {
+          "father": {
+            "name": "Rohit Kapoor",
+            "education": "MBA",
+            "designation": "Partner",
+            "organization": "KPMG India",
+            "field_of_employment": "Finance and Consulting"
+          },
+          "mother": {
+            "name": null,
+            "education": null,
+            "designation": null,
+            "organization": null,
+            "field_of_employment": null
+          }
+        },
+        "schooling_history": [
+          {
+            "level": "9TH",
+            "entry_id": "97316ba9-1cee-4496-8606-51af75c1a89f",
+            "location": null,
+            "entity_id": "SCH-001",
+            "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ISC)",
+            "school_name": "The Shri Ram School, Vasant Vihar",
+            "confidence_score": 0.85
+          },
+          {
+            "level": "10TH",
+            "entry_id": "5c50b0ff-103d-487e-b737-9da9b23406a6",
+            "location": null,
+            "entity_id": "SCH-002",
+            "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ICSE)",
+            "school_name": "The Shri Ram School, Vasant Vihar",
+            "confidence_score": 0.85
+          },
+          {
+            "level": "11TH",
+            "entry_id": "c7832614-43ac-4c64-9494-bf7e1f6ee757",
+            "location": null,
+            "entity_id": "SCH-003",
+            "board_name": "Indian School Certificate (ISC)",
+            "school_name": "The Shri Ram School, Vasant Vihar",
+            "confidence_score": 0.85
+          },
+          {
+            "level": "12TH",
+            "entry_id": "8191c264-6e62-4eda-a2e9-3a983e3e62a3",
+            "location": null,
+            "entity_id": "SCH-004",
+            "board_name": "Indian School Certificate (ISC)",
+            "school_name": "The Shri Ram School, Vasant Vihar",
+            "confidence_score": 0.85
+          }
+        ],
+        "academic_orientation": {}
+      },
+      "page_2_academic_and_engagement": {
+        "academic_records": [
+          {
+            "entry_id": "079793c4-85f8-4cdb-94e3-b97ffda2129b",
+            "entity_id": "ACA-001",
+            "score_raw": "91",
+            "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ISC)",
+            "school_name": "The Shri Ram School, Vasant Vihar",
+            "grading_mode": "percentage",
+            "academic_year": "2022",
+            "academic_level": "9TH",
+            "subject_entries": [
+              {
+                "score_raw": "92",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "89",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "94",
+                "subject_name": "Science",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "95",
+                "subject_name": "Computer Applications",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "97",
+                "subject_name": "Social Studies",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "81",
+                "subject_name": "Hindi",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          },
+          {
+            "entry_id": "ac77553b-36e5-416c-aec5-2d3cf5b154ca",
+            "entity_id": "ACA-002",
+            "score_raw": "99",
+            "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ICSE)",
+            "school_name": "The Shri Ram School, Vasant Vihar",
+            "grading_mode": "percentage",
+            "academic_year": "2023",
+            "academic_level": "10TH",
+            "subject_entries": [
+              {
+                "score_raw": "100",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "99",
+                "subject_name": "Science",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "100",
+                "subject_name": "Computer Applications",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "100",
+                "subject_name": "Social Studies",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "97",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "96",
+                "subject_name": "Hindi",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          },
+          {
+            "entry_id": "6cde0232-f8ae-4aa6-bbe7-0daa0feaf4f5",
+            "entity_id": "ACA-003",
+            "score_raw": "90",
+            "board_name": "Indian School Certificate (ISC)",
+            "school_name": "The Shri Ram School, Vasant Vihar",
+            "grading_mode": "percentage",
+            "academic_year": "2024",
+            "academic_level": "11TH",
+            "subject_entries": [
+              {
+                "score_raw": "95",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "88",
+                "subject_name": "Physics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "94",
+                "subject_name": "Chemistry",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "96",
+                "subject_name": "Computer Science",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "84",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          },
+          {
+            "entry_id": "78f5bca9-6fcc-4b1f-b525-39aec50544bd",
+            "entity_id": "ACA-004",
+            "score_raw": "96",
+            "board_name": "Indian School Certificate (ISC)",
+            "school_name": "The Shri Ram School, Vasant Vihar",
+            "grading_mode": "percentage",
+            "academic_year": "2025",
+            "academic_level": "12TH",
+            "subject_entries": [
+              {
+                "score_raw": "97",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "95",
+                "subject_name": "Physics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "97",
+                "subject_name": "Chemistry",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "99",
+                "subject_name": "Computer Science",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "95",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          }
+        ],
+        "additional_tests": [],
+        "leadership_roles": [
+          {
+            "level": null,
+            "duration": null,
+            "entry_id": "8bed2484-0e7f-48c1-a11b-acdff95dfd19",
+            "entity_id": "LEAD-005",
+            "achievement": null,
+            "activity_name": null,
+            "activity_type": "leadership",
+            "position_title": "School Prefect",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          },
+          {
+            "level": null,
+            "duration": "Mobile Number",
+            "entry_id": "c96972a6-1951-421d-b859-5324103456be",
+            "entity_id": "LEAD-006",
+            "achievement": null,
+            "activity_name": null,
+            "activity_type": "leadership",
+            "position_title": "Organization",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": "In what\ncapacity does\nthis reference"
+          }
+        ],
+        "standardized_tests": [
+          {
+            "rank": null,
+            "entry_id": "c4d2da71-cf00-44b3-8735-cb1300bd186f",
+            "entity_id": "TEST-001",
+            "test_date": null,
+            "test_name": "JEE Mains",
+            "percentile": null,
+            "total_score": "98.4",
+            "result_status": "available",
+            "confidence_score": 0.9,
+            "sectional_scores": [
+              {
+                "label": "Physics Percentile",
+                "raw_score": "96.9"
+              },
+              {
+                "label": "Maths Percentile",
+                "raw_score": "98.4"
+              },
+              {
+                "label": "Chemistry Percentile",
+                "raw_score": "97.0"
+              }
+            ]
+          }
+        ],
+        "co_curricular_activities": [
+          {
+            "level": "National",
+            "duration": "10",
+            "entry_id": "d230e9a2-75cd-46ef-b0aa-a26a8dd8da17",
+            "entity_id": "ACT-004",
+            "achievement": null,
+            "activity_name": "Participation in maths\ncompetitions like IPM\nMental Maths NSEJS",
+            "activity_type": "co_curricular",
+            "position_title": null,
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          }
+        ],
+        "extracurricular_activities": [
+          {
+            "level": "District",
+            "duration": "4",
+            "entry_id": "8cf5b0eb-b18d-40a8-b924-99fcdd6d9ee2",
+            "entity_id": "ACT-001",
+            "achievement": null,
+            "activity_name": "Chess",
+            "activity_type": "extracurricular",
+            "position_title": "Ranked 3rd in School and\ntop 10 in 2023 event",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          },
+          {
+            "level": "Personal",
+            "duration": "7",
+            "entry_id": "2d96d67d-14ef-40e2-869a-65289c706dde",
+            "entity_id": "ACT-002",
+            "achievement": null,
+            "activity_name": "Trinity College London",
+            "activity_type": "extracurricular",
+            "position_title": "Cleared level 7 in speech\nand drama",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          },
+          {
+            "level": "Personal",
+            "duration": "10",
+            "entry_id": "2a6b7e36-4a65-4eaa-bffd-72b6190b403a",
+            "entity_id": "ACT-003",
+            "achievement": null,
+            "activity_name": "School Events\nOrganization and Social\nImpaact",
+            "activity_type": "extracurricular",
+            "position_title": "Perseverentia, Scottish\nModel United Nations in\nSchool and Signbee for\nvisually impaired children",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          }
+        ]
+      },
+      "page_3_essays": {
+        "essays": []
+      },
+      "page_4_focus_themes": {
+        "themes": []
+      },
+      "page_5_question_groups": {
+        "question_groups": []
+      }
+    }
+  }
+}

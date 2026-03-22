@@ -92,6 +92,8 @@ def upload_application(
         db.commit()
         logger.error(f"Pipeline failure (application_id: {application_id}, reason: {str(e)})")
         raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
     except Exception as e:
         import traceback
         tb = traceback.format_exc()
@@ -118,7 +120,7 @@ def get_application(
     db_synthesis = db.query(SynthesisRecord).filter(SynthesisRecord.application_id == application_id).first()
     
     synthesis_output = None
-    if db_synthesis:
+    if db_synthesis and db_synthesis.policy_passed and db_synthesis.synthesis_output:
         synthesis_output = SynthesisOutput(**db_synthesis.synthesis_output)
         
     return ApplicationResponse(

@@ -1,0 +1,530 @@
+{
+  "status_code": 200,
+  "headers": {
+    "date": "Sun, 22 Mar 2026 13:40:34 GMT",
+    "server": "uvicorn",
+    "content-length": "18063",
+    "content-type": "application/json"
+  },
+  "body": {
+    "id": "cc08da61-41de-490c-9d36-daa56bcd26ba",
+    "status": "complete",
+    "confidence_score": 0.91,
+    "created_at": "2026-03-22T13:38:55.836156Z",
+    "synthesis": {
+      "report_metadata": {
+        "generated_at": "2026-03-22T13:40:35Z",
+        "report_version": "ROS_v1",
+        "canonical_version": "1.1",
+        "application_number": "cc08da61-41de-490c-9d36-daa56bcd26ba"
+      },
+      "page_1_background_profile": {
+        "identity": {
+          "full_name": "Raghav Sharma",
+          "date_of_birth": "2007-04-11",
+          "application_id": "cc08da61-41de-490c-9d36-daa56bcd26ba",
+          "preferred_major": "Computer Science and Artificial Intelligence",
+          "family_background": {
+            "father": {
+              "name": "Mahesh Sharma",
+              "education": "B.Tech Civil Engineering",
+              "designation": "Senior Site Engineer",
+              "organization": "Shree Buildcon Pvt Ltd",
+              "field_of_employment": "Civil Engineering and Construction"
+            },
+            "mother": {
+              "name": "Sunita Sharma",
+              "education": "M.Sc Mathematics",
+              "designation": "Mathematics Teacher",
+              "organization": "Government Higher Secondary School",
+              "field_of_employment": "Education"
+            }
+          }
+        },
+        "family_background": {
+          "father": {
+            "name": "Mahesh Sharma",
+            "education": "B.Tech Civil Engineering",
+            "designation": "Senior Site Engineer",
+            "organization": "Shree Buildcon Pvt Ltd",
+            "field_of_employment": "Civil Engineering and Construction"
+          },
+          "mother": {
+            "name": "Sunita Sharma",
+            "education": "M.Sc Mathematics",
+            "designation": "Mathematics Teacher",
+            "organization": "Government Higher Secondary School",
+            "field_of_employment": "Education"
+          }
+        },
+        "schooling_history": [
+          {
+            "level": "9TH",
+            "entry_id": "92a4cf60-9a01-4246-b7e0-fabb36f2bab0",
+            "location": null,
+            "entity_id": "SCH-001",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Delhi Public School Indore",
+            "confidence_score": 0.85
+          },
+          {
+            "level": "10TH",
+            "entry_id": "dae10562-e66a-4e0e-bdb9-879882ab40f2",
+            "location": null,
+            "entity_id": "SCH-002",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Delhi Public School Indore",
+            "confidence_score": 0.85
+          },
+          {
+            "level": "11TH",
+            "entry_id": "550d8698-4039-44e5-8d32-ec4e889d8fd8",
+            "location": null,
+            "entity_id": "SCH-003",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Delhi Public School Indore",
+            "confidence_score": 0.85
+          },
+          {
+            "level": "12TH",
+            "entry_id": "9e354415-fce2-48f5-ae6f-2cfdca6a8748",
+            "location": null,
+            "entity_id": "SCH-004",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Delhi Public School Indore",
+            "confidence_score": 0.85
+          }
+        ],
+        "academic_orientation": {}
+      },
+      "page_2_academic_and_engagement": {
+        "academic_records": [
+          {
+            "entry_id": "3fcf2ae8-6437-4bd8-a72a-148203d6e87d",
+            "entity_id": "ACA-001",
+            "score_raw": "98.18",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Delhi Public School Indore",
+            "grading_mode": "percentage",
+            "academic_year": "2022",
+            "academic_level": "9TH",
+            "subject_entries": [
+              {
+                "score_raw": "99.6",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "99.2",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "98.7",
+                "subject_name": "Social Science",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "96.8",
+                "subject_name": "Science",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "96.6",
+                "subject_name": "Sanskrit",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          },
+          {
+            "entry_id": "50e2a5ff-2ba5-4fe6-9bc7-fd32bdd435cc",
+            "entity_id": "ACA-002",
+            "score_raw": "97.4",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Delhi Public School Indore",
+            "grading_mode": "percentage",
+            "academic_year": "2023",
+            "academic_level": "10TH",
+            "subject_entries": [
+              {
+                "score_raw": "97",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "97",
+                "subject_name": "Science",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "100",
+                "subject_name": "Social Science",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "96",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "97",
+                "subject_name": "Sanskrit",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "98",
+                "subject_name": "Elements of Business",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "97",
+                "subject_name": "Introduction to Financial Markets",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          },
+          {
+            "entry_id": "c080dee9-4772-409f-bebb-c13e727b7bca",
+            "entity_id": "ACA-003",
+            "score_raw": "89.2",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Delhi Public School Indore",
+            "grading_mode": "percentage",
+            "academic_year": "2024",
+            "academic_level": "11TH",
+            "subject_entries": [
+              {
+                "score_raw": "90.6",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "95.1",
+                "subject_name": "Physics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "92.8",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "74.9",
+                "subject_name": "Biology",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "92.8",
+                "subject_name": "Chemistry",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          },
+          {
+            "entry_id": "cd6aca71-3d93-46ae-aad8-f3e49788850c",
+            "entity_id": "ACA-004",
+            "score_raw": "98.6",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "school_name": "Delhi Public School Indore",
+            "grading_mode": "percentage",
+            "academic_year": "2025",
+            "academic_level": "12TH",
+            "subject_entries": [
+              {
+                "score_raw": "99",
+                "subject_name": "Mathematics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "100",
+                "subject_name": "Physics",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "99",
+                "subject_name": "Biology",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "97",
+                "subject_name": "Chemistry",
+                "predicted_score_raw": null
+              },
+              {
+                "score_raw": "98",
+                "subject_name": "English",
+                "predicted_score_raw": null
+              }
+            ],
+            "confidence_score": 0.85,
+            "marking_scheme_raw": "Percentage",
+            "predicted_score_raw": null
+          }
+        ],
+        "additional_tests": [],
+        "leadership_roles": [
+          {
+            "level": null,
+            "duration": null,
+            "entry_id": "5f2a67c2-2a4d-42a5-8dbe-2de155876415",
+            "entity_id": "LEAD-005",
+            "achievement": null,
+            "activity_name": null,
+            "activity_type": "leadership",
+            "position_title": "Head Boy",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          },
+          {
+            "level": null,
+            "duration": null,
+            "entry_id": "4b004221-2bc5-4c5d-8cab-e6c00a6e1744",
+            "entity_id": "LEAD-006",
+            "achievement": null,
+            "activity_name": null,
+            "activity_type": "leadership",
+            "position_title": "Vice Head Boy",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          },
+          {
+            "level": null,
+            "duration": null,
+            "entry_id": "561405b9-dfc8-41af-9841-6aa62b48babc",
+            "entity_id": "LEAD-007",
+            "achievement": null,
+            "activity_name": null,
+            "activity_type": "leadership",
+            "position_title": "Vice House Captain",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          },
+          {
+            "level": null,
+            "duration": "Mobile Number",
+            "entry_id": "395dbe2c-7a3a-4904-a948-60e27502c175",
+            "entity_id": "LEAD-008",
+            "achievement": null,
+            "activity_name": null,
+            "activity_type": "leadership",
+            "position_title": "Organization",
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": "In what\ncapacity does\nthis reference\nknow you?"
+          }
+        ],
+        "standardized_tests": [
+          {
+            "rank": null,
+            "entry_id": "feb2d6f0-5964-4d87-bd0a-22e6aba46d0d",
+            "entity_id": "TEST-001",
+            "test_date": null,
+            "test_name": "JEE Mains",
+            "percentile": null,
+            "total_score": "99.74",
+            "result_status": "available",
+            "confidence_score": 0.9,
+            "sectional_scores": [
+              {
+                "label": "Physics Percentile",
+                "raw_score": "99.45"
+              },
+              {
+                "label": "Maths Percentile",
+                "raw_score": "99.71"
+              },
+              {
+                "label": "Chemistry Percentile",
+                "raw_score": "99.17"
+              }
+            ]
+          }
+        ],
+        "co_curricular_activities": [
+          {
+            "level": null,
+            "duration": "International",
+            "entry_id": "fc83fda4-d252-4bc8-953b-d4b0170fd2fe",
+            "entity_id": "ACT-004",
+            "achievement": "2",
+            "activity_name": "Freelance Writer",
+            "activity_type": "co_curricular",
+            "position_title": null,
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          }
+        ],
+        "extracurricular_activities": [
+          {
+            "level": "Intra School",
+            "duration": "1",
+            "entry_id": "68d0a3be-6465-4035-b39f-3cf1d9907c95",
+            "entity_id": "ACT-001",
+            "achievement": null,
+            "activity_name": "Kaizen OC Head",
+            "activity_type": "extracurricular",
+            "position_title": null,
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          },
+          {
+            "level": "National",
+            "duration": "1",
+            "entry_id": "fbe8b51a-50eb-4df5-bc04-fd3f8bb72fec",
+            "entity_id": "ACT-002",
+            "achievement": null,
+            "activity_name": "Web Developing Intern",
+            "activity_type": "extracurricular",
+            "position_title": null,
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          },
+          {
+            "level": "International",
+            "duration": "1",
+            "entry_id": "9b75f51f-1ae4-4247-a0db-1e24df358835",
+            "entity_id": "ACT-003",
+            "achievement": null,
+            "activity_name": "Digital Marketing Intern",
+            "activity_type": "extracurricular",
+            "position_title": null,
+            "description_raw": null,
+            "confidence_score": 0.95,
+            "roles_and_responsibilities": null
+          }
+        ]
+      },
+      "page_3_essays": {
+        "essays": [
+          {
+            "prompt": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+            "entity_id": "ESS-001",
+            "full_text": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing\ncomplex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research\nand realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my\njourney into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal\nprojects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics,\nparticipating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and I aim to\ncombine these skills with my attitude of continuous learning, growth & innovation, contributing meaningfully to the technological\nadvancements shaping our future. My problem-solving skills have developed through consistent effort and practice, as reflected in my\nacademic journey and exams like the Math & Physics Olympiads, which require analytical thinking and perseverance. Mathematics and\nComputer Science have helped me tackle complex problems under time constrain, reinforcing my ability to work under pressure with a\nsolution-oriented mindset. During my high school years, I undertook various projects that enhanced my understanding of programming\nlanguages and algorithms. I designed a code that could encrypt and decrypt texts adopting unique algorithms each time (which I now\npersonally use as a brain-teaser). Though rudimentary compared to Jarvis, it has been a motivating step towards my vision of creating\nimpactful technology. Beyond academics, I have actively participated in STEM and leadership activities. As Head Boy of my school, I had the\nopportunity to contribute to initiatives that combined leadership with technological innovation, such as implementing digital tools to improve\nproject management. These experiences taught me the importance of collaboration and leadership in bringing ideas to life. I have also\ndeveloped several Science models reflecting my dedication to creating innovative solutions. To broaden my knowledge and skill-set, I\nundertook an internship at AccelEd, a career counseling firm, where I contributed as a content writer, web-developer, and video editor. This\nexperience helped me gain knowledge of applications of software in the industry. My extracurricular activities have positively affected my\npersonality and work ethic. As an avid guitarist, I've developed creativity and precision, which I apply to my software projects. Representing\nmy school in sports (athletics) at various levels helped me learn discipline, teamwork, and perseverance, all crucial for success in technology.\nThese experiences have given me an all-round perspective, enabling me to approach software development with both, technical and creative\napproaches. With this holistic approach, I am keen to contribute to and grow within leading universities. In conclusion, my journey from being\ninspired by Tony Stark's Jarvis to pursuing innovation has been one of continuous learning.",
+            "highlights": [],
+            "word_count": 470
+          },
+          {
+            "prompt": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+            "entity_id": "ESS-002",
+            "full_text": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing\ncomplex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research\nand realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my\njourney into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal\nprojects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics,\nparticipating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and I aim to\ncombine these skills with my attitude of continuous learning, growth & innovation, contributing meaningfully to the technological\nadvancements shaping our future. My problem-solving skills have developed through consistent effort and practice, as reflected in my\nacademic journey and exams like the Math & Physics Olympiads, which require analytical thinking and perseverance. Mathematics and\nComputer Science have helped me tackle complex problems under time constrain, reinforcing my ability to work under pressure with a\nsolution-oriented mindset. During my high school years, I undertook various projects that enhanced my understanding of programming\nlanguages and algorithms. I designed a code that could encrypt and decrypt texts adopting unique algorithms each time (which I now\npersonally use as a brain-teaser). Though rudimentary compared to Jarvis, it has been a motivating step towards my vision of creating\nimpactful technology. Beyond academics, I have actively participated in STEM and leadership activities. As Head Boy of my school, I had the\nopportunity to contribute to initiatives that combined leadership with technological innovation, such as implementing digital tools to improve\nproject management. These experiences taught me the importance of collaboration and leadership in bringing ideas to life. I have also\ndeveloped several Science models reflecting my dedication to creating innovative solutions. To broaden my knowledge and skill-set, I\nundertook an internship at AccelEd, a career counseling firm, where I contributed as a content writer, web-developer, and video editor. This\nexperience helped me gain knowledge of applications of software in the industry. My extracurricular activities have positively affected my\npersonality and work ethic. As an avid guitarist, I've developed creativity and precision, which I apply to my software projects. Representing\nmy school in sports (athletics) at various levels helped me learn discipline, teamwork, and perseverance, all crucial for success in technology.\nThese experiences have given me an all-round perspective, enabling me to approach software development with both, technical and creative\napproaches. With this holistic approach, I am keen to contribute to and grow within leading universities. In conclusion, my journey from being\ninspired by Tony Stark's Jarvis to pursuing innovation has been one of continuous learning.",
+            "highlights": [],
+            "word_count": 470
+          }
+        ]
+      },
+      "page_4_focus_themes": {
+        "themes": [
+          {
+            "theme_id": "THEME-001",
+            "title": "Domain Concentration Pattern Analysis",
+            "description": "The applicant's academic profile shows concentration of entries in science and mathematics domains.",
+            "referenced_entity_ids": [
+              "ACA-001",
+              "ACA-002",
+              "ACA-003",
+              "ACA-004"
+            ]
+          },
+          {
+            "theme_id": "THEME-002",
+            "title": "Leadership Presence Pattern Exploration",
+            "description": "The applicant has reported holding leadership positions in various activities.",
+            "referenced_entity_ids": [
+              "LEAD-005",
+              "LEAD-006",
+              "LEAD-007",
+              "LEAD-008"
+            ]
+          },
+          {
+            "theme_id": "THEME-003",
+            "title": "Essay Length Pattern Analysis",
+            "description": "The applicant's essay responses exceed 300 words for both prompts.",
+            "referenced_entity_ids": [
+              "ESS-001",
+              "ESS-002"
+            ]
+          },
+          {
+            "theme_id": "THEME-004",
+            "title": "Activity Volume Pattern Exploration",
+            "description": "The applicant has reported participating in 8 distinct activities.",
+            "referenced_entity_ids": [
+              "ACT-001",
+              "ACT-002",
+              "ACT-003",
+              "ACT-004"
+            ]
+          },
+          {
+            "theme_id": "THEME-005",
+            "title": "Test Performance Pattern Analysis",
+            "description": "The applicant achieved a score of 99.74 in JEE Mains.",
+            "referenced_entity_ids": [
+              "TEST-001"
+            ]
+          }
+        ]
+      },
+      "page_5_question_groups": {
+        "question_groups": [
+          {
+            "theme_id": "THEME-001",
+            "group_title": "Domain Concentration Pattern Analysis",
+            "questions": [
+              "How did the applicant's interest in science and mathematics domains develop over time?",
+              "Can you walk through one project or activity that demonstrates their concentration in these domains?"
+            ]
+          },
+          {
+            "theme_id": "THEME-002",
+            "group_title": "Leadership Presence Pattern Exploration",
+            "questions": [
+              "What responsibilities did the applicant hold in each leadership position?",
+              "How did they contribute to the success of each activity or project?"
+            ]
+          },
+          {
+            "theme_id": "THEME-003",
+            "group_title": "Essay Length Pattern Analysis",
+            "questions": [
+              "What insights can be gained from the applicant's essay responses exceeding 300 words for both prompts?",
+              "How do their writing styles and approaches differ between the two essays?"
+            ]
+          },
+          {
+            "theme_id": "THEME-004",
+            "group_title": "Activity Volume Pattern Exploration",
+            "questions": [
+              "What common themes or patterns can be identified across the applicant's 8 distinct activities?",
+              "How do their experiences and skills gained from these activities contribute to their overall profile?"
+            ]
+          },
+          {
+            "theme_id": "THEME-005",
+            "group_title": "Test Performance Pattern Analysis",
+            "questions": [
+              "What factors contributed to the applicant's high score in JEE Mains?",
+              "How do their test-taking strategies and approaches differ from those used in other assessments?"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

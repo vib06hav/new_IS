@@ -1,11 +1,15 @@
 import re
 
+from app.config import settings
+
 def construct_bundle(validated_signals: list, canonical: dict, entity_id_map: list) -> dict:
     """
     Agent 15: Signal–evidence bundle constructor.
     Pairs validated interpreted signals with their canonical evidence.
     Includes only non-null relevant fields, omitting internal metadata or artifacts.
     """
+
+    compact_mode = settings.LLM_PAYLOAD_MODE == "compact"
 
     def is_artifact(text, is_duration=False, is_position=False):
         if not text: return True
@@ -26,6 +30,115 @@ def construct_bundle(validated_signals: list, canonical: dict, entity_id_map: li
         if "?" in s_text:
             return True
         return False
+
+    def clean_text(value):
+        if value is None:
+            return None
+        cleaned = re.sub(r"\s+", " ", str(value)).strip()
+        return cleaned or None
+
+    def truncate_text(value, max_words=40):
+        cleaned = clean_text(value)
+        if not cleaned:
+            return None
+        words = cleaned.split()
+        if len(words) <= max_words:
+            return cleaned
+        return " ".join(words[:max_words]) + "..."
+
+    def safe_float(value):
+        if value is None:
+            return None
+        match = re.search(r"-?\d+\.?\d*", str(value))
+        if not match:
+            return None
+        try:
+            return float(match.group(0))
+        except ValueError:
+            return None
+
+    def compact_content(entry, collection):
+        if collection == "activity_entries":
+            parts = []
+            for value in [
+                clean_text(entry.get("activity_name")),
+                clean_text(entry.get("position_title")),
+                clean_text(entry.get("activity_type")),
+            ]:
+                if value and value not in parts:
+                    parts.append(value)
+            duration = clean_text(entry.get("duration"))
+            if duration and not is_artifact(duration, is_duration=True):
+                parts.append(f"duration {duration}")
+            level = clean_text(entry.get("level"))
+            if level:
+                parts.append(level)
+            detail = (
+                truncate_text(entry.get("achievement"), max_words=16)
+                or truncate_text(entry.get("roles_and_responsibilities"), max_words=16)
+                or truncate_text(entry.get("description_raw"), max_words=16)
+            )
+            if detail:
+                parts.append(detail)
+            return {"summary": "; ".join(parts)} if parts else {}
+
+        if collection == "academic_entries":
+            content = {
+                "academic_level": entry.get("academic_level"),
+                "academic_year": entry.get("academic_year"),
+                "overall_score": entry.get("score_raw"),
+                "grading_mode": entry.get("grading_mode"),
+            }
+            subjects = []
+            for sub in entry.get("subject_entries", []) or []:
+                score = safe_float(sub.get("score_raw"))
+                subject_name = clean_text(sub.get("subject_name"))
+                if score is None or not subject_name:
+                    continue
+                subjects.append((score, subject_name))
+            if subjects:
+                high_score, high_subject = max(subjects, key=lambda item: item[0])
+                low_score, low_subject = min(subjects, key=lambda item: item[0])
+                content["subject_summary"] = {
+                    "highest_subject": high_subject,
+                    "highest_score": f"{high_score:.2f}".rstrip("0").rstrip("."),
+                    "lowest_subject": low_subject,
+                    "lowest_score": f"{low_score:.2f}".rstrip("0").rstrip(".")
+                }
+            return {k: v for k, v in content.items() if v is not None}
+
+        if collection == "test_entries":
+            content = {
+                "test_name": entry.get("test_name"),
+                "total_score": entry.get("total_score"),
+                "percentile": entry.get("percentile"),
+                "rank": entry.get("rank"),
+            }
+            sections = []
+            scores = []
+            for section in entry.get("sectional_scores", []) or []:
+                score = safe_float(section.get("raw_score"))
+                label = clean_text(section.get("label"))
+                if score is None or not label:
+                    continue
+                scores.append((score, label))
+            if scores:
+                highest = max(score for score, _ in scores)
+                lowest, lowest_label = min(scores, key=lambda item: item[0])
+                if highest - lowest >= 8:
+                    sections.append({"label": lowest_label, "score": f"{lowest:.2f}".rstrip("0").rstrip(".")})
+            if sections:
+                content["sections"] = sections
+            return {k: v for k, v in content.items() if v is not None}
+
+        if collection == "essay_entries":
+            content = {
+                "essay_identifier": entry.get("essay_identifier"),
+                "text_excerpt": truncate_text(entry.get("raw_text"), max_words=120)
+            }
+            return {k: v for k, v in content.items() if v is not None}
+
+        return clean_entry(entry, collection)
 
     def clean_entry(entry, collection):
         """Applies field hygiene and null omission to a canonical entry."""
@@ -91,7 +204,7 @@ def construct_bundle(validated_signals: list, canonical: dict, entity_id_map: li
                 entity_cache[eid] = {
                     "entity_id": eid,
                     "collection": coll,
-                    "content": clean_entry(entry, coll)
+                    "content": compact_content(entry, coll) if compact_mode else clean_entry(entry, coll)
                 }
                 break
 

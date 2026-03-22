@@ -34,10 +34,18 @@ class Settings:
         self.JWT_SECRET = os.environ.get("JWT_SECRET")
         self.JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM")
         self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get("JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
+        self.LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "ollama")
         self.LLM_ENDPOINT = os.environ.get("LLM_ENDPOINT")
         self.LLM_MODEL_NAME = os.environ.get("LLM_MODEL_NAME")
         self.LLM_API_KEY = os.environ.get("LLM_API_KEY")
         self.LLM_TIMEOUT_SECONDS = os.environ.get("LLM_TIMEOUT_SECONDS")
+        self.LLM_OLLAMA_TIMEOUT_SECONDS = os.environ.get("LLM_OLLAMA_TIMEOUT_SECONDS", "180")
+        self.LLM_TEMPERATURE = os.environ.get("LLM_TEMPERATURE", "0.0")
+        self.LLM_JSON_MODE = os.environ.get("LLM_JSON_MODE", "true")
+        self.LLM_PAYLOAD_MODE = os.environ.get("LLM_PAYLOAD_MODE", "full")
+        self.LLM_KEEP_ALIVE = os.environ.get("LLM_KEEP_ALIVE", "10m")
+        self.LLM_LOAD_WAIT_TIMEOUT_SECONDS = os.environ.get("LLM_LOAD_WAIT_TIMEOUT_SECONDS", "120")
+        self.LLM_LOAD_POLL_INTERVAL_SECONDS = os.environ.get("LLM_LOAD_POLL_INTERVAL_SECONDS", "5")
         self.UPLOAD_DIRECTORY = os.environ.get("UPLOAD_DIRECTORY")
         self.MAX_UPLOAD_SIZE_MB = os.environ.get("MAX_UPLOAD_SIZE_MB")
         self.APP_ENV = os.environ.get("APP_ENV")
@@ -48,7 +56,7 @@ class Settings:
             ("DATABASE_URL", self.DATABASE_URL), ("JWT_SECRET", self.JWT_SECRET),
             ("JWT_ALGORITHM", self.JWT_ALGORITHM), ("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
             ("LLM_ENDPOINT", self.LLM_ENDPOINT), ("LLM_MODEL_NAME", self.LLM_MODEL_NAME),
-            ("LLM_API_KEY", self.LLM_API_KEY), ("LLM_TIMEOUT_SECONDS", self.LLM_TIMEOUT_SECONDS),
+            ("LLM_TIMEOUT_SECONDS", self.LLM_TIMEOUT_SECONDS),
             ("UPLOAD_DIRECTORY", self.UPLOAD_DIRECTORY), ("MAX_UPLOAD_SIZE_MB", self.MAX_UPLOAD_SIZE_MB),
             ("APP_ENV", self.APP_ENV), ("LOG_LEVEL", self.LOG_LEVEL)
         ]
@@ -56,6 +64,10 @@ class Settings:
         for name, val in required_vars:
             if val is None or val.strip() == "":
                 errors.append(f"Missing required environment variable: {name}")
+
+        if self.LLM_PROVIDER in {"openai", "openrouter", "openai_compatible"}:
+            if self.LLM_API_KEY is None or self.LLM_API_KEY.strip() == "":
+                errors.append("Missing required environment variable: LLM_API_KEY")
 
         # OPTIONAL VARIABLES
         raw_db_pool = os.environ.get("DB_POOL_SIZE")
@@ -83,6 +95,12 @@ class Settings:
         if self.JWT_ALGORITHM and self.JWT_ALGORITHM not in {"HS256", "HS384", "HS512"}:
             errors.append("JWT_ALGORITHM must be one of {HS256, HS384, HS512}")
 
+        if self.LLM_PROVIDER not in {"ollama", "openai", "openrouter", "openai_compatible"}:
+            errors.append("LLM_PROVIDER must be one of {ollama, openai, openrouter, openai_compatible}")
+
+        if self.LLM_PAYLOAD_MODE not in {"full", "compact"}:
+            errors.append("LLM_PAYLOAD_MODE must be one of {full, compact}")
+
         if self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES:
             try:
                 self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -104,6 +122,34 @@ class Settings:
                     errors.append("LLM_TIMEOUT_SECONDS must be > 0")
             except ValueError:
                 errors.append("LLM_TIMEOUT_SECONDS must be an integer")
+
+        try:
+            self.LLM_OLLAMA_TIMEOUT_SECONDS = int(self.LLM_OLLAMA_TIMEOUT_SECONDS)
+            if self.LLM_OLLAMA_TIMEOUT_SECONDS <= 0:
+                errors.append("LLM_OLLAMA_TIMEOUT_SECONDS must be > 0")
+        except ValueError:
+            errors.append("LLM_OLLAMA_TIMEOUT_SECONDS must be an integer")
+
+        try:
+            self.LLM_TEMPERATURE = float(self.LLM_TEMPERATURE)
+        except ValueError:
+            errors.append("LLM_TEMPERATURE must be a float")
+
+        self.LLM_JSON_MODE = str(self.LLM_JSON_MODE).strip().lower() in {"1", "true", "yes", "on"}
+
+        try:
+            self.LLM_LOAD_WAIT_TIMEOUT_SECONDS = int(self.LLM_LOAD_WAIT_TIMEOUT_SECONDS)
+            if self.LLM_LOAD_WAIT_TIMEOUT_SECONDS <= 0:
+                errors.append("LLM_LOAD_WAIT_TIMEOUT_SECONDS must be > 0")
+        except ValueError:
+            errors.append("LLM_LOAD_WAIT_TIMEOUT_SECONDS must be an integer")
+
+        try:
+            self.LLM_LOAD_POLL_INTERVAL_SECONDS = int(self.LLM_LOAD_POLL_INTERVAL_SECONDS)
+            if self.LLM_LOAD_POLL_INTERVAL_SECONDS <= 0:
+                errors.append("LLM_LOAD_POLL_INTERVAL_SECONDS must be > 0")
+        except ValueError:
+            errors.append("LLM_LOAD_POLL_INTERVAL_SECONDS must be an integer")
 
         if self.MAX_UPLOAD_SIZE_MB:
             try:
@@ -135,7 +181,10 @@ class Settings:
         logger.info("DATABASE_URL: ***[REDACTED]***")
         logger.info("JWT_SECRET: ***[REDACTED]***")
         logger.info(f"JWT_ALGORITHM: {self.JWT_ALGORITHM}")
+        logger.info(f"LLM_PROVIDER: {self.LLM_PROVIDER}")
+        logger.info(f"LLM_PAYLOAD_MODE: {self.LLM_PAYLOAD_MODE}")
         logger.info(f"LLM_ENDPOINT: {self.LLM_ENDPOINT}")
+        logger.info(f"LLM_MODEL_NAME: {self.LLM_MODEL_NAME}")
         logger.info("LLM_API_KEY: ***[REDACTED]***")
 
 settings = Settings()

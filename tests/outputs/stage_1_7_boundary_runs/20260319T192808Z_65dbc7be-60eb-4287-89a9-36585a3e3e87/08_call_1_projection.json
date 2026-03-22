@@ -1,0 +1,277 @@
+{
+  "applicant_context": {
+    "preferred_major": "Computer Science and Artificial Intelligence",
+    "family_background": {
+      "father": {
+        "education": "B.Com",
+        "field_of_employment": "Textile Export Business",
+        "designation": "Founder and Managing Director",
+        "organization": "Jain Tex Exports"
+      }
+    }
+  },
+  "academic_profile": [
+    {
+      "entity_id": "ACA-001",
+      "level": "9TH",
+      "year": "2022",
+      "grading_mode": "percentage",
+      "overall_score": "81.6",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "subject_summary": {
+        "highest_subject": "Mathematics",
+        "highest_score": "95.8",
+        "lowest_subject": "Social Studies",
+        "lowest_score": "77.5"
+      }
+    },
+    {
+      "entity_id": "ACA-002",
+      "level": "10TH",
+      "year": "2023",
+      "grading_mode": "percentage",
+      "overall_score": "96.6",
+      "subject_summary": {
+        "highest_subject": "Artificial Intelligence",
+        "highest_score": "100",
+        "lowest_subject": "Science",
+        "lowest_score": "95"
+      }
+    },
+    {
+      "entity_id": "ACA-003",
+      "level": "11TH",
+      "year": "2024",
+      "grading_mode": "percentage",
+      "overall_score": "97.9",
+      "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+      "subject_summary": {
+        "highest_subject": "Mathematics",
+        "highest_score": "150",
+        "lowest_subject": "Physics",
+        "lowest_score": "58"
+      }
+    },
+    {
+      "entity_id": "ACA-004",
+      "level": "12TH",
+      "year": "2025",
+      "grading_mode": "percentage",
+      "overall_score": "97.4",
+      "subject_summary": {
+        "highest_subject": "Mathematics",
+        "highest_score": "144",
+        "lowest_subject": "Physics",
+        "lowest_score": "52"
+      }
+    }
+  ],
+  "test_profile": [
+    {
+      "entity_id": "TEST-001",
+      "test_name": "JEE Mains",
+      "total_score": "99.33"
+    }
+  ],
+  "essay_profile": [],
+  "activity_profile": [
+    {
+      "entity_id": "ACT-001",
+      "type": "extracurricular",
+      "summary": "Music Piano; Grade 4 Qualified from Philips International School of Music; extracurricular; duration 5; International"
+    },
+    {
+      "entity_id": "ACT-002",
+      "type": "extracurricular",
+      "summary": "Yoga; Beginner level practitioner of Yoga and mindfulness; extracurricular; duration 2; Personal"
+    },
+    {
+      "entity_id": "ACT-003",
+      "type": "co_curricular",
+      "summary": "Olympiads; Has been regularly participating in Maths, Science Olympiads at school; co_curricular; duration 7; District"
+    },
+    {
+      "entity_id": "ACT-004",
+      "type": "co_curricular",
+      "summary": "Reading; Is an ardent reader of fiction and non fiction books on personal development etc; co_curricular; duration 6; Personal"
+    }
+  ],
+  "entity_id_map": [
+    {
+      "entity_id": "SCH-001",
+      "collection": "schooling_history",
+      "descriptor": "Jayshree Periwal International School"
+    },
+    {
+      "entity_id": "SCH-002",
+      "collection": "schooling_history",
+      "descriptor": "Jayshree Periwal International School"
+    },
+    {
+      "entity_id": "SCH-003",
+      "collection": "schooling_history",
+      "descriptor": "Jayshree Periwal International School"
+    },
+    {
+      "entity_id": "SCH-004",
+      "collection": "schooling_history",
+      "descriptor": "Jayshree Periwal International School"
+    },
+    {
+      "entity_id": "ACA-001",
+      "collection": "academic_entries",
+      "descriptor": "9TH"
+    },
+    {
+      "entity_id": "ACA-002",
+      "collection": "academic_entries",
+      "descriptor": "10TH"
+    },
+    {
+      "entity_id": "ACA-003",
+      "collection": "academic_entries",
+      "descriptor": "11TH"
+    },
+    {
+      "entity_id": "ACA-004",
+      "collection": "academic_entries",
+      "descriptor": "12TH"
+    },
+    {
+      "entity_id": "TEST-001",
+      "collection": "test_entries",
+      "descriptor": "JEE Mains"
+    },
+    {
+      "entity_id": "ACT-001",
+      "collection": "activity_entries",
+      "descriptor": "Music Piano"
+    },
+    {
+      "entity_id": "ACT-002",
+      "collection": "activity_entries",
+      "descriptor": "Yoga"
+    },
+    {
+      "entity_id": "ACT-003",
+      "collection": "activity_entries",
+      "descriptor": "Olympiads"
+    },
+    {
+      "entity_id": "ACT-004",
+      "collection": "activity_entries",
+      "descriptor": "Reading"
+    },
+    {
+      "entity_id": "LEAD-005",
+      "collection": "activity_entries",
+      "descriptor": "School House Captain"
+    },
+    {
+      "entity_id": "LEAD-006",
+      "collection": "activity_entries",
+      "descriptor": "Organization"
+    },
+    {
+      "entity_id": "LEAD-007",
+      "collection": "activity_entries",
+      "descriptor": "Friends/Family"
+    }
+  ],
+  "deterministic_signals": [
+    {
+      "signal_id": "DET-001",
+      "signal_type": "duration_pattern",
+      "observation": "Applicant has participated in Music Piano for 5.",
+      "referenced_entity_ids": [
+        "ACT-001"
+      ],
+      "source_collection": "activity_entries"
+    },
+    {
+      "signal_id": "DET-002",
+      "signal_type": "duration_pattern",
+      "observation": "Applicant has participated in Olympiads for 7.",
+      "referenced_entity_ids": [
+        "ACT-003"
+      ],
+      "source_collection": "activity_entries"
+    },
+    {
+      "signal_id": "DET-003",
+      "signal_type": "duration_pattern",
+      "observation": "Applicant has participated in Reading for 6.",
+      "referenced_entity_ids": [
+        "ACT-004"
+      ],
+      "source_collection": "activity_entries"
+    },
+    {
+      "signal_id": "DET-004",
+      "signal_type": "domain_concentration",
+      "observation": "Academic profile shows concentration of 10 entries in science and mathematics domains.",
+      "referenced_entity_ids": [
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004"
+      ],
+      "source_collection": "academic_entries"
+    },
+    {
+      "signal_id": "DET-005",
+      "signal_type": "leadership_presence",
+      "observation": "Applicant held leadership positions in 3 activities.",
+      "referenced_entity_ids": [
+        "LEAD-005",
+        "LEAD-006",
+        "LEAD-007"
+      ],
+      "source_collection": "activity_entries"
+    },
+    {
+      "signal_id": "DET-006",
+      "signal_type": "activity_volume",
+      "observation": "Applicant has reported 7 distinct activities.",
+      "referenced_entity_ids": [
+        "ACT-001",
+        "ACT-002",
+        "ACT-003",
+        "ACT-004",
+        "LEAD-005",
+        "LEAD-006",
+        "LEAD-007"
+      ],
+      "source_collection": "activity_entries"
+    },
+    {
+      "signal_id": "DET-007",
+      "signal_type": "test_performance_pattern",
+      "observation": "Score of 99.33 achieved in JEE Mains.",
+      "referenced_entity_ids": [
+        "TEST-001"
+      ],
+      "source_collection": "test_entries"
+    },
+    {
+      "signal_id": "DET-008",
+      "signal_type": "timeline_characteristic",
+      "observation": "Academic records cover a span of 4 academic years.",
+      "referenced_entity_ids": [
+        "ACA-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004"
+      ],
+      "source_collection": "academic_entries"
+    }
+  ],
+  "academic_summary": [
+    "9TH includes a lower subject score in Social Studies (77.5)",
+    "Performance improved from 9TH to 10TH by 15.0 points",
+    "Board changed from CENTRAL BOARD OF SECONDARY EDUCATION(CBSE) to TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION between 10TH and 11TH",
+    "11TH includes a lower subject score in Physics (58.0)",
+    "12TH includes a lower subject score in Physics (52.0)"
+  ]
+}

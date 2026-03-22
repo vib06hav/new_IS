@@ -28,6 +28,7 @@ def _assign_entity_ids(canonical_data: Dict[str, Any]) -> Tuple[Dict[str, Any], 
             # Extract descriptor
             descriptor = (
                 item.get("activity_name") or 
+                item.get("position_title") or 
                 item.get("academic_level") or 
                 item.get("test_name") or 
                 item.get("essay_identifier") or 

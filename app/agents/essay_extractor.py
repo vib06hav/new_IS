@@ -1,5 +1,8 @@
 from typing import List, Dict, Any
 import uuid
+import logging
+
+logger = logging.getLogger(__name__)
 
 def extract_essays(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
@@ -7,7 +10,17 @@ def extract_essays(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     entries = []
     confidence = 0.90
-    
+
+    # If this extractor is called with essay-section-scoped blocks, the "Essays"
+    # header may already have been removed by the section detector. In that case
+    # we should begin parsing immediately rather than waiting for a gate token
+    # that will never arrive.
+    contains_explicit_essay_header = any(
+        str(block.get("text", "")).strip().lower() == "essays"
+        for block in section_blocks
+    )
+    is_gate_open = not contains_explicit_essay_header
+    pending_prompt = ""
     current_identifier = "Essay"
     current_text = ""
     
@@ -20,17 +33,27 @@ def extract_essays(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
         "declaration",
         "extra- curricular activities",
         "leadership role at school",
-        "co- curricular activities"
+        "co- curricular activities",
+        "description",
+        "consent",
+        "honour pledge",
+        "applicant name",
+        "is there anything else you want to tell us"
     ]
     
     # Function to flush current essay
     def flush_essay():
-        nonlocal current_text, current_identifier
+        nonlocal current_text, current_identifier, pending_prompt
         text_to_flush = current_text.strip()
         word_count = len(text_to_flush.split())
         
-        # Only flush if there's substantial text
-        if text_to_flush and word_count > 30:
+        # If we have a pending prompt from fragmentation, use it as identifier
+        if pending_prompt.strip():
+            current_identifier = pending_prompt.strip()
+            pending_prompt = ""
+        
+        # Only flush if there's substantial text and gate is open
+        if is_gate_open and text_to_flush and word_count > 30:
             entries.append({
                 "entry_id": str(uuid.uuid4()),
                 "essay_identifier": current_identifier[:200],
@@ -40,42 +63,59 @@ def extract_essays(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
                 "short_response_flag": word_count < 50,
                 "confidence_score": confidence
             })
+            logger.debug(
+                "Essay extracted: identifier='%s', words=%s",
+                current_identifier[:80],
+                word_count
+            )
         current_text = ""
         current_identifier = "Unidentified Section"
 
     for block in section_blocks:
         text = block.get("text", "").strip()
         lower_text = text.lower()
-        if not text or lower_text == "essays": continue
+        if not text: continue
+
+        # 0. Gate Check
+        if not is_gate_open:
+            if lower_text == "essays":
+                is_gate_open = True
+                logger.info("Essay Gate OPENED.")
+            continue
         
         # 1. Detect and Switch Context for specific headers
         if any(exc in lower_text for exc in EXCLUDED_PROMPTS):
             flush_essay()
-            # If it's a known header, we might want to skip subsequent text
             current_identifier = "Excluded: " + text
             continue
         
         # 2. Skip short boilerplate
-        if len(text.split()) < 3 and text.lower() in ["no", "yes", "description", "1.", "2.", "3."]:
+        if len(text.split()) < 3 and text.lower() in ["no", "yes", "1.", "2.", "3."]:
             continue
 
-        # 3. Detect Essay Prompt
-        is_prompt = (text.endswith("?") and len(text.split()) < 60) or \
-                    "prompt:" in lower_text or \
-                    lower_text.startswith("what excites you") or \
-                    lower_text.startswith("share a time")
+        # 3. Detect Essay Prompt (Improved for multi-block)
+        is_prompt_end = text.endswith("?") and len(text.split()) < 60
+        is_prompt_start = "prompt:" in lower_text or \
+                          lower_text.startswith("what excites you") or \
+                          lower_text.startswith("share a time")
 
-        if is_prompt:
-            # If we were in an 'Excluded' zone, reset ID
-            if "Excluded:" in current_identifier or "Unidentified" in current_identifier:
-                current_text = ""
-            
+        if is_prompt_start or is_prompt_end:
             flush_essay()
-            current_identifier = text
-        else:
-            # Only append if we have a valid identifier (not in excluded zone)
-            if not current_identifier.startswith("Excluded:"):
-                current_text += text + " "
+            if is_prompt_start and not is_prompt_end:
+                pending_prompt = text + " "
+            else:
+                current_identifier = (pending_prompt + text).strip()
+                pending_prompt = ""
+            continue
+        
+        # If we have a pending prompt fragment, keep accumulating
+        if pending_prompt and len(text.split()) < 20:
+            pending_prompt += text + " "
+            continue
+
+        # 4. Text Accumulation
+        if not current_identifier.startswith("Excluded:"):
+            current_text += text + " "
             
     # Final flush
     flush_essay()

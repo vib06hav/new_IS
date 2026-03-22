@@ -1,0 +1,1821 @@
+{
+  "metadata": {
+    "pdf_path": "/app/tests/pdfs/Dummy App (5)_v8_filled.pdf",
+    "timestamp": "2026-03-14T18:03:52.724901"
+  },
+  "stages": {
+    "1_canonical_parsing": {
+      "canonical_version": "1.1",
+      "identifiers": {
+        "application_id": "9957316a-51c8-40a8-898f-3e84098cbdf0",
+        "full_name": "Raghav Sharma",
+        "date_of_birth": "2007-04-11",
+        "family_background": {
+          "father": {
+            "name": "Mahesh Sharma",
+            "education": "B.Tech Civil Engineering",
+            "field_of_employment": "Civil Engineering and Construction",
+            "organization": "Shree Buildcon Pvt Ltd",
+            "designation": "Senior Site Engineer"
+          },
+          "mother": {
+            "name": "Sunita Sharma",
+            "education": "M.Sc Mathematics",
+            "field_of_employment": "Education",
+            "organization": "Government Higher Secondary School",
+            "designation": "Mathematics Teacher"
+          }
+        },
+        "preferred_major": "Computer Science and Artificial Intelligence"
+      },
+      "academic_entries": [
+        {
+          "entry_id": "fafe1fa5-f411-453d-b1ff-6e2bb5e67906",
+          "academic_level": "9TH",
+          "school_name": "Delhi Public School Indore",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "academic_year": "2022",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "98.18",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "99.6",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "99.2",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Social Science",
+              "score_raw": "98.7",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Science",
+              "score_raw": "96.8",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Sanskrit",
+              "score_raw": "96.6",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754",
+          "academic_level": "10TH",
+          "school_name": "Delhi Public School Indore",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "academic_year": "2023",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "97.4",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "97",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Science",
+              "score_raw": "97",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Social Science",
+              "score_raw": "100",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "96",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Sanskrit",
+              "score_raw": "97",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Elements of Business",
+              "score_raw": "98",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Introduction to Financial Markets",
+              "score_raw": "97",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "6cc67b71-db7f-4069-97fd-66499dd8bc1a",
+          "academic_level": "11TH",
+          "school_name": "Delhi Public School Indore",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "academic_year": "2024",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "89.2",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "90.6",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Physics",
+              "score_raw": "95.1",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "92.8",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Biology",
+              "score_raw": "74.9",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Chemistry",
+              "score_raw": "92.8",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "1d1fe7b5-c15f-4e04-bb82-a6cbe056583f",
+          "academic_level": "12TH",
+          "school_name": "Delhi Public School Indore",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "academic_year": "2025",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "98.6",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "99",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Physics",
+              "score_raw": "100",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Biology",
+              "score_raw": "99",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Chemistry",
+              "score_raw": "97",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "98",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        }
+      ],
+      "schooling_history": [
+        {
+          "entry_id": "8cbe3d35-09a0-4cf6-a655-2c4825606c47",
+          "level": "9TH",
+          "school_name": "Delhi Public School Indore",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "location": null,
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "48ef6a07-b1db-4aa0-89a6-8dcb95d3854c",
+          "level": "10TH",
+          "school_name": "Delhi Public School Indore",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "location": null,
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "1ecb9b6b-fcda-4f0a-9853-608342c5b07e",
+          "level": "11TH",
+          "school_name": "Delhi Public School Indore",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "location": null,
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "033bb61a-8aca-44a0-b72e-b395003a976e",
+          "level": "12TH",
+          "school_name": "Delhi Public School Indore",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "location": null,
+          "confidence_score": 0.85
+        }
+      ],
+      "test_entries": [
+        {
+          "entry_id": "742e7650-3163-4fee-ab48-16a576832ec9",
+          "test_name": "JEE Mains",
+          "test_date": null,
+          "total_score": "99.74",
+          "sectional_scores": [
+            {
+              "label": "Physics Percentile",
+              "raw_score": "99.45"
+            },
+            {
+              "label": "Maths Percentile",
+              "raw_score": "99.71"
+            },
+            {
+              "label": "Chemistry Percentile",
+              "raw_score": "99.17"
+            }
+          ],
+          "percentile": null,
+          "rank": null,
+          "result_status": "available",
+          "confidence_score": 0.9
+        }
+      ],
+      "essay_entries": [
+        {
+          "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0",
+          "essay_identifier": "Do you hold a Punjab Domicile status?",
+          "raw_text": "Proof of Identity Upload your punjab domicile certificate ABC/NAD ID Number Upload your PAN Card Upload your Aadhaar Card Upload your Voter ID Card Upload your Driving License Proof of Identity Raghav Sharma 9827315462 raghav.sharma17@gmail.com 2007-04-11 18 A+ Male Indian General Aadhaar Card ABC572819034 FQUPS7284M 4382 6721 5194 Aadhaar Card Languages Known Language Name Speak English Read Write Parent Details Please provide the details for at least one of the following. : Father Details Name Date of Birth Mobile Number Mahesh Sharma 1976-01-19 9827211034 Email Address Field of Employment Nationality Highest Degree Attained mahesh.sharma76@gmail.com Civil Engineering and Construction Indian B.Tech Civil Engineering Educational Institute (Last Attended) Government Engineering College Ujjain Organization Designation Mother Details Name Date of Birth Mobile Number Email Address Field of Employment Nationality Highest Degree Attained Educational Institute (Last Attended) Organization - Designation- Sibling Details Do you have a sibling ? : Yes Shree Buildcon Pvt Ltd Senior Site Engineer Sunita Sharma 1979-08-03 9827361128 sunitasharma.maths@gmail.com Education Indian M.Sc Mathematics Devi Ahilya Vishwavidyalaya Government Higher Secondary School Mathematics Teacher First Name Last Name Age Name of High\nSchool\nAttended Name of\nUnder\nGraduate Name of Post\nGraduate\nInstitute Name of\nCurrent\nEmployer Aman Sharma 20 Delhi Public School Indore Indian Institute of Technology Gandhinagar Address Details: Is permanent address same as communication address?: Yes Communication Address Address Town/City District State Country Name Pin Code Class 9th / Equivalent 54 Shalimar Township Indore Indore Madhya Pradesh India 452010 Country: India State Madhya Pradesh District: Indore Cit Indore School Name Board Year of\nPassing Marking Scheme Obtained\nPercentage/CGPA 9th Delhi Public School Indore CENTRAL BOARD OF SECONDARY\nEDUCATION(CBSE) 2022 Percentage 98.18 Upload Your Transcript: Yes Upload Conversion Scale (In Case Of Letter Grades): NO Subject Wise Marks/Grades Subject Mathematics English Social Science Science Sanskrit 4. 5. Class 10th / Equivalent Maximum Marks/Grade Obtained Marks/Grade 100 100 100 100 100 99.6 99.2 98.7 96.8 96.6 Country: India State: India District Indore City: Indore Upload Your Transcript: Yes Upload Conversion Scale (In Case Of Letter Grades): NO Institute Name Board Year of Passing Marking Scheme Obtained\nPercentage/CGPA 10th Delhi Public School Indore Subject Wise Marks/Grades Subject Mathematics Science Social Science English Sanskrit Elements of Business Introduction to Financial Markets 4. 5. 6. 7. Class 11th / Equivalent CENTRAL BOARD OF\nSECONDARY\nEDUCATION(CBSE) 2023 Percentage 97.4 Maximum Marks/Grade Obtained Marks/Grade 100 100 100 100 100 100 100 97 97 100 96 97 98 97 Country: India State: Madhya Pradesh District: Indore City Indore Upload Your Transcript: Yes Upload Conversion Scale (In Case Of\nLetter Grades): NO 11th Mathematics Course: Select your subject category for class : Mathematics and Physics School Name Board Year of Passing Marking Scheme Obtained\nPercentage/CGPA 11th Delhi Public School Indore CENTRAL BOARD OF\nSECONDARY\nEDUCATION(CBSE) 2024 Percentage 89.2 Subject Wise Marks/Grades Subject Mathematics Physics English Biology Chemistry 4. 5. Class 12th Details Maximum Marks/Grade Obtained Marks/Grade 100 100 100 100 100 90.6 95.1 92.8 74.9 92.8 Country: India State Madhya Pradesh District Indore City: Indore Upload Your Transcript: Yes Upload Conversion Scale (In Case Of Letter Grades): NO Select your subject category for class 12:Mathematics and\nPhysics 12th Mathematics Course: School Name Board Year of\nPassing Result Status Marking\nScheme Obtained\nPercentage/CGP\nA Predicted\nMarks/Grades 12th Delhi Public School Indore CENTRAL BOARD\nOF SECONDARY\nEDUCATION(CBSE) Predicted Marks/Grades 2025 Appearing Percentage 98.6 4. 5. Subject Mathematics Physics Biology Chemistry English Maximum Marks/Grade Predicted Marks/Grade 100 100 100 100 100 99 100 99 97 98",
+          "word_count": 574,
+          "placeholder_flag": false,
+          "short_response_flag": false,
+          "confidence_score": 0.9
+        },
+        {
+          "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba",
+          "essay_identifier": "Have you taken any gap after class 12th?",
+          "raw_text": "Standardized Test Scores Please select the standardized tests which you may have given and share your results\nwith us. Joint Entrance Examination (JEE) Mains Please select the option that is applicable to you with respect to the jee main examination Attempted the examination. Joint Entrance Examination (JEE) Main Details JEE Mains Upload Your JEE Mains Score Card : Yes Test Date Roll Number Physics\nPercentile Maths\nPercentile Chemistry\nPercentile Total Score Common\nRank/Percent\nile 99.45 99.71 99.17 99.74",
+          "word_count": 78,
+          "placeholder_flag": false,
+          "short_response_flag": false,
+          "confidence_score": 0.9
+        },
+        {
+          "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17",
+          "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+          "raw_text": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing\ncomplex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research\nand realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my\njourney into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal\nprojects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics,\nparticipating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and I aim to\ncombine these skills with my attitude of continuous learning, growth & innovation, contributing meaningfully to the technological\nadvancements shaping our future. My problem-solving skills have developed through consistent effort and practice, as reflected in my\nacademic journey and exams like the Math & Physics Olympiads, which require analytical thinking and perseverance. Mathematics and\nComputer Science have helped me tackle complex problems under time constrain, reinforcing my ability to work under pressure with a\nsolution-oriented mindset. During my high school years, I undertook various projects that enhanced my understanding of programming\nlanguages and algorithms. I designed a code that could encrypt and decrypt texts adopting unique algorithms each time (which I now\npersonally use as a brain-teaser). Though rudimentary compared to Jarvis, it has been a motivating step towards my vision of creating\nimpactful technology. Beyond academics, I have actively participated in STEM and leadership activities. As Head Boy of my school, I had the\nopportunity to contribute to initiatives that combined leadership with technological innovation, such as implementing digital tools to improve\nproject management. These experiences taught me the importance of collaboration and leadership in bringing ideas to life. I have also\ndeveloped several Science models reflecting my dedication to creating innovative solutions. To broaden my knowledge and skill-set, I\nundertook an internship at AccelEd, a career counseling firm, where I contributed as a content writer, web-developer, and video editor. This\nexperience helped me gain knowledge of applications of software in the industry. My extracurricular activities have positively affected my\npersonality and work ethic. As an avid guitarist, I've developed creativity and precision, which I apply to my software projects. Representing\nmy school in sports (athletics) at various levels helped me learn discipline, teamwork, and perseverance, all crucial for success in technology.\nThese experiences have given me an all-round perspective, enabling me to approach software development with both, technical and creative\napproaches. With this holistic approach, I am keen to contribute to and grow within leading universities. In conclusion, my journey from being\ninspired by Tony Stark's Jarvis to pursuing innovation has been one of continuous learning.",
+          "word_count": 470,
+          "placeholder_flag": false,
+          "short_response_flag": false,
+          "confidence_score": 0.9
+        },
+        {
+          "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30",
+          "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+          "raw_text": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing\ncomplex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research\nand realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my\njourney into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal\nprojects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics,\nparticipating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and I aim to\ncombine these skills with my attitude of continuous learning, growth & innovation, contributing meaningfully to the technological\nadvancements shaping our future. My problem-solving skills have developed through consistent effort and practice, as reflected in my\nacademic journey and exams like the Math & Physics Olympiads, which require analytical thinking and perseverance. Mathematics and\nComputer Science have helped me tackle complex problems under time constrain, reinforcing my ability to work under pressure with a\nsolution-oriented mindset. During my high school years, I undertook various projects that enhanced my understanding of programming\nlanguages and algorithms. I designed a code that could encrypt and decrypt texts adopting unique algorithms each time (which I now\npersonally use as a brain-teaser). Though rudimentary compared to Jarvis, it has been a motivating step towards my vision of creating\nimpactful technology. Beyond academics, I have actively participated in STEM and leadership activities. As Head Boy of my school, I had the\nopportunity to contribute to initiatives that combined leadership with technological innovation, such as implementing digital tools to improve\nproject management. These experiences taught me the importance of collaboration and leadership in bringing ideas to life. I have also\ndeveloped several Science models reflecting my dedication to creating innovative solutions. To broaden my knowledge and skill-set, I\nundertook an internship at AccelEd, a career counseling firm, where I contributed as a content writer, web-developer, and video editor. This\nexperience helped me gain knowledge of applications of software in the industry. My extracurricular activities have positively affected my\npersonality and work ethic. As an avid guitarist, I've developed creativity and precision, which I apply to my software projects. Representing\nmy school in sports (athletics) at various levels helped me learn discipline, teamwork, and perseverance, all crucial for success in technology.\nThese experiences have given me an all-round perspective, enabling me to approach software development with both, technical and creative\napproaches. With this holistic approach, I am keen to contribute to and grow within leading universities. In conclusion, my journey from being\ninspired by Tony Stark's Jarvis to pursuing innovation has been one of continuous learning.",
+          "word_count": 470,
+          "placeholder_flag": false,
+          "short_response_flag": false,
+          "confidence_score": 0.9
+        },
+        {
+          "entry_id": "2c930b0b-7dd0-4b77-af22-57071a529f0b",
+          "essay_identifier": "Have You Ever Had A First Information Report (FIR) Filed Against You Or Been Involved In Any Legal And/Or Criminal\nProceeding?",
+          "raw_text": "Consent By submitting this admissions form, you acknowledge and consent to Plaksha University's data handling practices. Any personal information\nyou provide, including academic records and contact details, will be stored internally, and may be shared with selected offices at Plaksha\nUniversity for administrative and academic purposes.\nIf you are applying for a scholarship, please note that your financial data and supporting documents may also be shared with key\nstakeholders involved in scholarship matters. All data will be handled with utmost confidentiality and in compliance with relevant data\nprotection laws. I Agree Honour Pledge The information provided in this form is true to the best of my knowledge. I pledge that the entire application is a product of my effort and no\npart of it has been taken directly from other sources. If at any time during the course of the admissions process or later after joining the\nprogramme, the information provided by me is found to be false, untrue, or incorrect, then Plaksha University's Office of Admissions may\nexercise the right to rescind the offer of admissions made to me and nullify my enrollment during or after the programme, as applicable to\nme. Applicant Name:",
+          "word_count": 195,
+          "placeholder_flag": false,
+          "short_response_flag": false,
+          "confidence_score": 0.9
+        }
+      ],
+      "activity_entries": [
+        {
+          "entry_id": "3a54ae1a-f03b-436c-8d8f-107353e6e16d",
+          "activity_type": "extracurricular",
+          "activity_name": "Kaizen OC Head",
+          "position_title": null,
+          "level": "Intra School",
+          "duration": "1",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "54a3eba8-a21b-4278-a0a2-f242d9cc8b7c",
+          "activity_type": "extracurricular",
+          "activity_name": "Web Developing Intern",
+          "position_title": null,
+          "level": "National",
+          "duration": "1",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "ec1baaed-9908-414b-9f5c-73c1e07aabdd",
+          "activity_type": "extracurricular",
+          "activity_name": "Digital Marketing Intern",
+          "position_title": null,
+          "level": "International",
+          "duration": "1",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "2ef63789-ab23-416a-bca3-c42ea30b3f96",
+          "activity_type": "co_curricular",
+          "activity_name": "Freelance Writer",
+          "position_title": null,
+          "level": null,
+          "duration": "International",
+          "achievement": "2",
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "248f42da-d79b-42ba-af8d-b5c78aed79a4",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Head Boy",
+          "level": null,
+          "duration": null,
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "8a0b3ca0-0500-48a9-94c0-4ff4ba3d62c1",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Vice Head Boy",
+          "level": null,
+          "duration": null,
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "111aaaef-23e8-40dd-b040-a8617b62274f",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Vice House Captain",
+          "level": null,
+          "duration": null,
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "bced3d88-53a1-4fe1-b0ba-29af3ad051de",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Organization",
+          "level": null,
+          "duration": "Mobile Number",
+          "achievement": null,
+          "roles_and_responsibilities": "In what\ncapacity does\nthis reference\nknow you?",
+          "description_raw": null,
+          "confidence_score": 0.95
+        }
+      ],
+      "timeline_entries": [
+        {
+          "entry_id": "ce2f25aa-f55c-40e2-900e-3f0d6e7debac",
+          "year": "Unknown",
+          "event_label": "Activity: Kaizen OC Head",
+          "source_type": "activity",
+          "source_reference": "3a54ae1a-f03b-436c-8d8f-107353e6e16d"
+        },
+        {
+          "entry_id": "e1df168e-3076-4f34-9d9f-7bcaa48b4ddd",
+          "year": "Unknown",
+          "event_label": "Activity: Web Developing Intern",
+          "source_type": "activity",
+          "source_reference": "54a3eba8-a21b-4278-a0a2-f242d9cc8b7c"
+        },
+        {
+          "entry_id": "119cd493-f018-43c7-b441-ae55edd0dd62",
+          "year": "Unknown",
+          "event_label": "Activity: Digital Marketing Intern",
+          "source_type": "activity",
+          "source_reference": "ec1baaed-9908-414b-9f5c-73c1e07aabdd"
+        },
+        {
+          "entry_id": "74999f39-cb93-4f37-980f-62fb10e31625",
+          "year": "Mobi",
+          "event_label": "Activity: None",
+          "source_type": "activity",
+          "source_reference": "bced3d88-53a1-4fe1-b0ba-29af3ad051de"
+        },
+        {
+          "entry_id": "809f964c-8911-4cb0-a20b-59b7cdcf5396",
+          "year": "Inte",
+          "event_label": "Activity: Freelance Writer",
+          "source_type": "activity",
+          "source_reference": "2ef63789-ab23-416a-bca3-c42ea30b3f96"
+        },
+        {
+          "entry_id": "efb87663-aac8-4573-b6f6-d36e1424a570",
+          "year": "2025",
+          "event_label": "Academic Record: 12TH",
+          "source_type": "academic",
+          "source_reference": "1d1fe7b5-c15f-4e04-bb82-a6cbe056583f"
+        },
+        {
+          "entry_id": "d9b8f81f-351a-47bb-b64f-6f035c220dc3",
+          "year": "2024",
+          "event_label": "Academic Record: 11TH",
+          "source_type": "academic",
+          "source_reference": "6cc67b71-db7f-4069-97fd-66499dd8bc1a"
+        },
+        {
+          "entry_id": "270fa749-83c8-466a-b84e-10ded81dc06b",
+          "year": "2023",
+          "event_label": "Academic Record: 10TH",
+          "source_type": "academic",
+          "source_reference": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+        },
+        {
+          "entry_id": "0adf57cb-9eaa-410f-9206-d6c6c074a8f7",
+          "year": "2022",
+          "event_label": "Academic Record: 9TH",
+          "source_type": "academic",
+          "source_reference": "fafe1fa5-f411-453d-b1ff-6e2bb5e67906"
+        }
+      ],
+      "cross_references": {
+        "entity_map": [
+          {
+            "entity_token": "Mathematics",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "fafe1fa5-f411-453d-b1ff-6e2bb5e67906"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "6cc67b71-db7f-4069-97fd-66499dd8bc1a"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "1d1fe7b5-c15f-4e04-bb82-a6cbe056583f"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "English",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "fafe1fa5-f411-453d-b1ff-6e2bb5e67906"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "6cc67b71-db7f-4069-97fd-66499dd8bc1a"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "1d1fe7b5-c15f-4e04-bb82-a6cbe056583f"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              }
+            ]
+          },
+          {
+            "entity_token": "Science",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "fafe1fa5-f411-453d-b1ff-6e2bb5e67906"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Social",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "fafe1fa5-f411-453d-b1ff-6e2bb5e67906"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              }
+            ]
+          },
+          {
+            "entity_token": "Sanskrit",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "fafe1fa5-f411-453d-b1ff-6e2bb5e67906"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              }
+            ]
+          },
+          {
+            "entity_token": "Elements",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              }
+            ]
+          },
+          {
+            "entity_token": "Business",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              }
+            ]
+          },
+          {
+            "entity_token": "Introduction",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              }
+            ]
+          },
+          {
+            "entity_token": "Financial",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              }
+            ]
+          },
+          {
+            "entity_token": "Markets",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "52b079f6-13b0-47fa-8d8d-62b98524e754"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              }
+            ]
+          },
+          {
+            "entity_token": "Physics",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "6cc67b71-db7f-4069-97fd-66499dd8bc1a"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "1d1fe7b5-c15f-4e04-bb82-a6cbe056583f"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Biology",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "6cc67b71-db7f-4069-97fd-66499dd8bc1a"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "1d1fe7b5-c15f-4e04-bb82-a6cbe056583f"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              }
+            ]
+          },
+          {
+            "entity_token": "Chemistry",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "6cc67b71-db7f-4069-97fd-66499dd8bc1a"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "1d1fe7b5-c15f-4e04-bb82-a6cbe056583f"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba"
+              }
+            ]
+          },
+          {
+            "entity_token": "Mains",
+            "source_references": [
+              {
+                "source_type": "test",
+                "entry_id": "742e7650-3163-4fee-ab48-16a576832ec9"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba"
+              }
+            ]
+          },
+          {
+            "entity_token": "Name",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "2c930b0b-7dd0-4b77-af22-57071a529f0b"
+              }
+            ]
+          },
+          {
+            "entity_token": "Please",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba"
+              }
+            ]
+          },
+          {
+            "entity_token": "Card",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba"
+              }
+            ]
+          },
+          {
+            "entity_token": "Upload",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba"
+              }
+            ]
+          },
+          {
+            "entity_token": "Details",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba"
+              }
+            ]
+          },
+          {
+            "entity_token": "Organization",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "activity",
+                "entry_id": "bced3d88-53a1-4fe1-b0ba-29af3ad051de"
+              }
+            ]
+          },
+          {
+            "entity_token": "Date",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba"
+              }
+            ]
+          },
+          {
+            "entity_token": "Number",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba"
+              }
+            ]
+          },
+          {
+            "entity_token": "Your",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "a9ffadc4-8ce4-46b2-b9e6-2cfd9471e4c0"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "5ce0a186-83e3-4d8e-a1fa-e152582943ba"
+              }
+            ]
+          },
+          {
+            "entity_token": "Math",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Olympiads",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Studios",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Stark",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Marvel",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "With",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "During",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Tony",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Iron",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Beyond",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "These",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Though",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "February",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Representing",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Head",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              },
+              {
+                "source_type": "activity",
+                "entry_id": "3a54ae1a-f03b-436c-8d8f-107353e6e16d"
+              },
+              {
+                "source_type": "activity",
+                "entry_id": "248f42da-d79b-42ba-af8d-b5c78aed79a4"
+              },
+              {
+                "source_type": "activity",
+                "entry_id": "8a0b3ca0-0500-48a9-94c0-4ff4ba3d62c1"
+              }
+            ]
+          },
+          {
+            "entity_token": "Jarvis",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Witnessing",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "From",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Computer",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "This",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "23d5b3c8-3a66-4257-9b70-f119e71c3c17"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "6af919eb-d42f-42ed-b562-0c0debb34f30"
+              }
+            ]
+          },
+          {
+            "entity_token": "Intern",
+            "source_references": [
+              {
+                "source_type": "activity",
+                "entry_id": "54a3eba8-a21b-4278-a0a2-f242d9cc8b7c"
+              },
+              {
+                "source_type": "activity",
+                "entry_id": "ec1baaed-9908-414b-9f5c-73c1e07aabdd"
+              }
+            ]
+          },
+          {
+            "entity_token": "Vice",
+            "source_references": [
+              {
+                "source_type": "activity",
+                "entry_id": "8a0b3ca0-0500-48a9-94c0-4ff4ba3d62c1"
+              },
+              {
+                "source_type": "activity",
+                "entry_id": "111aaaef-23e8-40dd-b040-a8617b62274f"
+              }
+            ]
+          }
+        ]
+      },
+      "integrity_report": {
+        "anomalies": [
+          {
+            "anomaly_id": "78f6a84e-677c-4ee8-af68-9e0c5013eedf",
+            "anomaly_type": "activity_text_bleed",
+            "severity_level": "low",
+            "source_reference": "bced3d88-53a1-4fe1-b0ba-29af3ad051de",
+            "description": "Descriptive field contains question marks, suggesting bleed from form labels."
+          }
+        ]
+      },
+      "extraction_confidence": {
+        "agent_scores": [
+          {
+            "agent_id": 1,
+            "agent_name": "Layout Block Extractor",
+            "confidence_score": 0.95
+          },
+          {
+            "agent_id": 2,
+            "agent_name": "Section Boundary Detector",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 3,
+            "agent_name": "Personal Information Extractor",
+            "confidence_score": 0.85
+          },
+          {
+            "agent_id": 4,
+            "agent_name": "Academic Records Extractor",
+            "confidence_score": 0.85
+          },
+          {
+            "agent_id": 5,
+            "agent_name": "Standardized Test Extractor",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 6,
+            "agent_name": "Essay Extractor",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 7,
+            "agent_name": "Activity Extractor",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 8,
+            "agent_name": "Cross-Section Entity Detector",
+            "confidence_score": 0.95
+          },
+          {
+            "agent_id": 9,
+            "agent_name": "Timeline Builder",
+            "confidence_score": 0.95
+          },
+          {
+            "agent_id": 10,
+            "agent_name": "Completeness & Integrity Analyzer",
+            "confidence_score": 0.95
+          }
+        ],
+        "aggregate_confidence": 0.9099999999999999
+      }
+    },
+    "2_projection": {
+      "entity_id_map": [
+        {
+          "entity_id": "SCH-001",
+          "collection": "schooling_history",
+          "descriptor": "Delhi Public School Indore"
+        },
+        {
+          "entity_id": "SCH-002",
+          "collection": "schooling_history",
+          "descriptor": "Delhi Public School Indore"
+        },
+        {
+          "entity_id": "SCH-003",
+          "collection": "schooling_history",
+          "descriptor": "Delhi Public School Indore"
+        },
+        {
+          "entity_id": "SCH-004",
+          "collection": "schooling_history",
+          "descriptor": "Delhi Public School Indore"
+        },
+        {
+          "entity_id": "ACA-001",
+          "collection": "academic_entries",
+          "descriptor": "9TH"
+        },
+        {
+          "entity_id": "ACA-002",
+          "collection": "academic_entries",
+          "descriptor": "10TH"
+        },
+        {
+          "entity_id": "ACA-003",
+          "collection": "academic_entries",
+          "descriptor": "11TH"
+        },
+        {
+          "entity_id": "ACA-004",
+          "collection": "academic_entries",
+          "descriptor": "12TH"
+        },
+        {
+          "entity_id": "TEST-001",
+          "collection": "test_entries",
+          "descriptor": "JEE Mains"
+        },
+        {
+          "entity_id": "ESS-001",
+          "collection": "essay_entries",
+          "descriptor": "Do you hold a Punjab Domicile status?"
+        },
+        {
+          "entity_id": "ESS-002",
+          "collection": "essay_entries",
+          "descriptor": "Have you taken any gap after class 12th?"
+        },
+        {
+          "entity_id": "ESS-003",
+          "collection": "essay_entries",
+          "descriptor": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?"
+        },
+        {
+          "entity_id": "ESS-004",
+          "collection": "essay_entries",
+          "descriptor": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?"
+        },
+        {
+          "entity_id": "ESS-005",
+          "collection": "essay_entries",
+          "descriptor": "Have You Ever Had A First Information Report (FIR) Filed Against You Or Been Involved In Any Legal And/Or Criminal\nProceeding?"
+        },
+        {
+          "entity_id": "ACT-001",
+          "collection": "activity_entries",
+          "descriptor": "Kaizen OC Head"
+        },
+        {
+          "entity_id": "ACT-002",
+          "collection": "activity_entries",
+          "descriptor": "Web Developing Intern"
+        },
+        {
+          "entity_id": "ACT-003",
+          "collection": "activity_entries",
+          "descriptor": "Digital Marketing Intern"
+        },
+        {
+          "entity_id": "ACT-004",
+          "collection": "activity_entries",
+          "descriptor": "Freelance Writer"
+        },
+        {
+          "entity_id": "LEAD-005",
+          "collection": "activity_entries",
+          "descriptor": "Unknown"
+        },
+        {
+          "entity_id": "LEAD-006",
+          "collection": "activity_entries",
+          "descriptor": "Unknown"
+        },
+        {
+          "entity_id": "LEAD-007",
+          "collection": "activity_entries",
+          "descriptor": "Unknown"
+        },
+        {
+          "entity_id": "LEAD-008",
+          "collection": "activity_entries",
+          "descriptor": "Unknown"
+        }
+      ],
+      "deterministic_signals": [
+        {
+          "signal_id": "DET-001",
+          "signal_type": "essay_characteristic",
+          "observation": "Essay response for Do you hold a Punjab Domicile status? exceeds 300 words.",
+          "referenced_entity_ids": [
+            "ESS-001"
+          ],
+          "source_collection": "essay_entries"
+        },
+        {
+          "signal_id": "DET-002",
+          "signal_type": "essay_characteristic",
+          "observation": "Essay response for What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program? exceeds 300 words.",
+          "referenced_entity_ids": [
+            "ESS-003"
+          ],
+          "source_collection": "essay_entries"
+        },
+        {
+          "signal_id": "DET-003",
+          "signal_type": "essay_characteristic",
+          "observation": "Essay response for Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance? exceeds 300 words.",
+          "referenced_entity_ids": [
+            "ESS-004"
+          ],
+          "source_collection": "essay_entries"
+        },
+        {
+          "signal_id": "DET-004",
+          "signal_type": "activity_volume",
+          "observation": "Applicant has reported 8 distinct activities.",
+          "referenced_entity_ids": [
+            "ACT-001",
+            "ACT-002",
+            "ACT-003",
+            "ACT-004",
+            "LEAD-005",
+            "LEAD-006",
+            "LEAD-007",
+            "LEAD-008"
+          ],
+          "source_collection": "activity_entries"
+        },
+        {
+          "signal_id": "DET-005",
+          "signal_type": "test_performance_pattern",
+          "observation": "Score of 99.74 achieved in JEE Mains.",
+          "referenced_entity_ids": [
+            "TEST-001"
+          ],
+          "source_collection": "test_entries"
+        },
+        {
+          "signal_id": "DET-006",
+          "signal_type": "timeline_characteristic",
+          "observation": "Academic records cover a span of 4 academic years.",
+          "referenced_entity_ids": [
+            "ACA-001",
+            "ACA-002",
+            "ACA-003",
+            "ACA-004"
+          ],
+          "source_collection": "academic_entries"
+        }
+      ],
+      "call_1_projection": {
+        "applicant_context": {
+          "full_name": "Raghav Sharma",
+          "preferred_major": "Computer Science and Artificial Intelligence",
+          "family_background": {
+            "father": {
+              "name": "Mahesh Sharma",
+              "education": "B.Tech Civil Engineering",
+              "field_of_employment": "Civil Engineering and Construction",
+              "organization": "Shree Buildcon Pvt Ltd",
+              "designation": "Senior Site Engineer"
+            },
+            "mother": {
+              "name": "Sunita Sharma",
+              "education": "M.Sc Mathematics",
+              "field_of_employment": "Education",
+              "organization": "Government Higher Secondary School",
+              "designation": "Mathematics Teacher"
+            }
+          }
+        },
+        "academic_profile": [
+          {
+            "entity_id": "ACA-001",
+            "level": "9TH",
+            "school_name": "Delhi Public School Indore",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "year": "2022",
+            "grading_mode": "percentage",
+            "overall_score": "98.18",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "99.6"
+              },
+              {
+                "subject": "English",
+                "score": "99.2"
+              },
+              {
+                "subject": "Social Science",
+                "score": "98.7"
+              },
+              {
+                "subject": "Science",
+                "score": "96.8"
+              },
+              {
+                "subject": "Sanskrit",
+                "score": "96.6"
+              }
+            ]
+          },
+          {
+            "entity_id": "ACA-002",
+            "level": "10TH",
+            "school_name": "Delhi Public School Indore",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "year": "2023",
+            "grading_mode": "percentage",
+            "overall_score": "97.4",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "97"
+              },
+              {
+                "subject": "Science",
+                "score": "97"
+              },
+              {
+                "subject": "Social Science",
+                "score": "100"
+              },
+              {
+                "subject": "English",
+                "score": "96"
+              },
+              {
+                "subject": "Sanskrit",
+                "score": "97"
+              },
+              {
+                "subject": "Elements of Business",
+                "score": "98"
+              },
+              {
+                "subject": "Introduction to Financial Markets",
+                "score": "97"
+              }
+            ]
+          },
+          {
+            "entity_id": "ACA-003",
+            "level": "11TH",
+            "school_name": "Delhi Public School Indore",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "year": "2024",
+            "grading_mode": "percentage",
+            "overall_score": "89.2",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "90.6"
+              },
+              {
+                "subject": "Physics",
+                "score": "95.1"
+              },
+              {
+                "subject": "English",
+                "score": "92.8"
+              },
+              {
+                "subject": "Biology",
+                "score": "74.9"
+              },
+              {
+                "subject": "Chemistry",
+                "score": "92.8"
+              }
+            ]
+          },
+          {
+            "entity_id": "ACA-004",
+            "level": "12TH",
+            "school_name": "Delhi Public School Indore",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "year": "2025",
+            "grading_mode": "percentage",
+            "overall_score": "98.6",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "99"
+              },
+              {
+                "subject": "Physics",
+                "score": "100"
+              },
+              {
+                "subject": "Biology",
+                "score": "99"
+              },
+              {
+                "subject": "Chemistry",
+                "score": "97"
+              },
+              {
+                "subject": "English",
+                "score": "98"
+              }
+            ]
+          }
+        ],
+        "test_profile": [
+          {
+            "entity_id": "TEST-001",
+            "test_name": "JEE Mains",
+            "total_score": "99.74",
+            "sections": [
+              {
+                "label": "Physics Percentile",
+                "score": "99.45"
+              },
+              {
+                "label": "Maths Percentile",
+                "score": "99.71"
+              },
+              {
+                "label": "Chemistry Percentile",
+                "score": "99.17"
+              }
+            ]
+          }
+        ],
+        "essay_profile": [
+          {
+            "entity_id": "ESS-001",
+            "prompt": "Do you hold a Punjab Domicile status?",
+            "text": "Proof of Identity Upload your punjab domicile certificate ABC/NAD ID Number Upload your PAN Card Upload your Aadhaar Card Upload your Voter ID Card Upload your Driving License Proof of Identity Raghav Sharma 9827315462 raghav.sharma17@gmail.com 2007-04-11 18 A+ Male Indian General Aadhaar Card ABC572819034 FQUPS7284M 4382 6721 5194 Aadhaar Card Languages Known Language Name Speak English Read Write Parent Details Please provide the details for at least one of the following. : Father Details Name Date of Birth Mobile Number Mahesh Sharma 1976-01-19 9827211034 Email Address Field of Employment Nationality Highest Degree Attained mahesh.sharma76@gmail.com Civil Engineering and Construction Indian B.Tech Civil Engineering Educational Institute (Last Attended) Government Engineering College Ujjain Organization Designation Mother Details Name Date of Birth Mobile Number Email Address Field of Employment Nationality Highest Degree Attained Educational Institute (Last Attended) Organization - Designation- Sibling Details Do you have a sibling ? : Yes Shree Buildcon Pvt Ltd Senior Site Engineer Sunita Sharma 1979-08-03 9827361128 sunitasharma.maths@gmail.com Education Indian M.Sc Mathematics Devi Ahilya Vishwavidyalaya Government Higher Secondary School Mathematics Teacher First Name Last Name Age Name of High\nSchool\nAttended Name of\nUnder\nGraduate Name of Post\nGraduate\nInstitute Name of\nCurrent\nEmployer Aman Sharma 20 Delhi Public School Indore Indian Institute of Technology Gandhinagar Address Details: Is permanent address same as communication address?: Yes Communication Address Address Town/City District State Country Name Pin Code Class 9th / Equivalent 54 Shalimar Township Indore Indore Madhya Pradesh India 452010 Country: India State Madhya Pradesh District: Indore Cit Indore School Name Board Year of\nPassing Marking Scheme Obtained\nPercentage/CGPA 9th Delhi Public School Indore CENTRAL BOARD OF SECONDARY\nEDUCATION(CBSE) 2022 Percentage 98.18 Upload Your Transcript: Yes Upload Conversion Scale (In Case Of Letter Grades): NO Subject Wise Marks/Grades Subject Mathematics English Social Science Science Sanskrit 4. 5. Class 10th / Equivalent Maximum Marks/Grade Obtained Marks/Grade 100 100 100 100 100 99.6 99.2 98.7 96.8 96.6 Country: India State: India District Indore City: Indore Upload Your Transcript: Yes Upload Conversion Scale (In Case Of Letter Grades): NO Institute Name Board Year of Passing Marking Scheme Obtained\nPercentage/CGPA 10th Delhi Public School Indore Subject Wise Marks/Grades Subject Mathematics Science Social Science English Sanskrit Elements of Business Introduction to Financial Markets 4. 5. 6. 7. Class 11th / Equivalent CENTRAL BOARD OF\nSECONDARY\nEDUCATION(CBSE) 2023 Percentage 97.4 Maximum Marks/Grade Obtained Marks/Grade 100 100 100 100 100 100 100 97 97 100 96 97 98 97 Country: India State: Madhya Pradesh District: Indore City Indore Upload Your Transcript: Yes Upload Conversion Scale (In Case Of\nLetter Grades): NO 11th Mathematics Course: Select your subject category for class : Mathematics and Physics School Name Board Year of Passing Marking Scheme Obtained\nPercentage/CGPA 11th Delhi Public School Indore CENTRAL BOARD OF\nSECONDARY\nEDUCATION(CBSE) 2024 Percentage 89.2 Subject Wise Marks/Grades Subject Mathematics Physics English Biology Chemistry 4. 5. Class 12th Details Maximum Marks/Grade Obtained Marks/Grade 100 100 100 100 100 90.6 95.1 92.8 74.9 92.8 Country: India State Madhya Pradesh District Indore City: Indore Upload Your Transcript: Yes Upload Conversion Scale (In Case Of Letter Grades): NO Select your subject category for class 12:Mathematics and\nPhysics 12th Mathematics Course: School Name Board Year of\nPassing Result Status Marking\nScheme Obtained\nPercentage/CGP\nA Predicted\nMarks/Grades 12th Delhi Public School Indore CENTRAL BOARD\nOF SECONDARY\nEDUCATION(CBSE) Predicted Marks/Grades 2025 Appearing Percentage 98.6 4. 5. Subject Mathematics Physics Biology Chemistry English Maximum Marks/Grade Predicted Marks/Grade 100 100 100 100 100 99 100 99 97 98"
+          },
+          {
+            "entity_id": "ESS-002",
+            "prompt": "Have you taken any gap after class 12th?",
+            "text": "Standardized Test Scores Please select the standardized tests which you may have given and share your results\nwith us. Joint Entrance Examination (JEE) Mains Please select the option that is applicable to you with respect to the jee main examination Attempted the examination. Joint Entrance Examination (JEE) Main Details JEE Mains Upload Your JEE Mains Score Card : Yes Test Date Roll Number Physics\nPercentile Maths\nPercentile Chemistry\nPercentile Total Score Common\nRank/Percent\nile 99.45 99.71 99.17 99.74"
+          },
+          {
+            "entity_id": "ESS-003",
+            "prompt": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+            "text": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing\ncomplex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research\nand realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my\njourney into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal\nprojects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics,\nparticipating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and I aim to\ncombine these skills with my attitude of continuous learning, growth & innovation, contributing meaningfully to the technological\nadvancements shaping our future. My problem-solving skills have developed through consistent effort and practice, as reflected in my\nacademic journey and exams like the Math & Physics Olympiads, which require analytical thinking and perseverance. Mathematics and\nComputer Science have helped me tackle complex problems under time constrain, reinforcing my ability to work under pressure with a\nsolution-oriented mindset. During my high school years, I undertook various projects that enhanced my understanding of programming\nlanguages and algorithms. I designed a code that could encrypt and decrypt texts adopting unique algorithms each time (which I now\npersonally use as a brain-teaser). Though rudimentary compared to Jarvis, it has been a motivating step towards my vision of creating\nimpactful technology. Beyond academics, I have actively participated in STEM and leadership activities. As Head Boy of my school, I had the\nopportunity to contribute to initiatives that combined leadership with technological innovation, such as implementing digital tools to improve\nproject management. These experiences taught me the importance of collaboration and leadership in bringing ideas to life. I have also\ndeveloped several Science models reflecting my dedication to creating innovative solutions. To broaden my knowledge and skill-set, I\nundertook an internship at AccelEd, a career counseling firm, where I contributed as a content writer, web-developer, and video editor. This\nexperience helped me gain knowledge of applications of software in the industry. My extracurricular activities have positively affected my\npersonality and work ethic. As an avid guitarist, I've developed creativity and precision, which I apply to my software projects. Representing\nmy school in sports (athletics) at various levels helped me learn discipline, teamwork, and perseverance, all crucial for success in technology.\nThese experiences have given me an all-round perspective, enabling me to approach software development with both, technical and creative\napproaches. With this holistic approach, I am keen to contribute to and grow within leading universities. In conclusion, my journey from being\ninspired by Tony Stark's Jarvis to pursuing innovation has been one of continuous learning."
+          },
+          {
+            "entity_id": "ESS-004",
+            "prompt": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+            "text": "On 25th February 2017, I watched Marvel Studios' Iron Man for the first time. Witnessing Jarvis, Tony Stark's AI assistant capable of executing\ncomplex tasks through voice commands, sparked my curiosity and determination to create something game-changing. I went on to research\nand realized humanity is still far from achieving transformative technologies that could redefine our reality. This realization sparked my\njourney into technology and innovation. My academic pursuits have focused on the theoretical applications of these fields, while my personal\nprojects reflect my passion for bridging technology with everyday life. From a young age, I've been passionate about Mathematics,\nparticipating in interschool Math contests as early as grade 5. This journey has helped me cultivate strong logical thinking, and I aim to\ncombine these skills with my attitude of continuous learning, growth & innovation, contributing meaningfully to the technological\nadvancements shaping our future. My problem-solving skills have developed through consistent effort and practice, as reflected in my\nacademic journey and exams like the Math & Physics Olympiads, which require analytical thinking and perseverance. Mathematics and\nComputer Science have helped me tackle complex problems under time constrain, reinforcing my ability to work under pressure with a\nsolution-oriented mindset. During my high school years, I undertook various projects that enhanced my understanding of programming\nlanguages and algorithms. I designed a code that could encrypt and decrypt texts adopting unique algorithms each time (which I now\npersonally use as a brain-teaser). Though rudimentary compared to Jarvis, it has been a motivating step towards my vision of creating\nimpactful technology. Beyond academics, I have actively participated in STEM and leadership activities. As Head Boy of my school, I had the\nopportunity to contribute to initiatives that combined leadership with technological innovation, such as implementing digital tools to improve\nproject management. These experiences taught me the importance of collaboration and leadership in bringing ideas to life. I have also\ndeveloped several Science models reflecting my dedication to creating innovative solutions. To broaden my knowledge and skill-set, I\nundertook an internship at AccelEd, a career counseling firm, where I contributed as a content writer, web-developer, and video editor. This\nexperience helped me gain knowledge of applications of software in the industry. My extracurricular activities have positively affected my\npersonality and work ethic. As an avid guitarist, I've developed creativity and precision, which I apply to my software projects. Representing\nmy school in sports (athletics) at various levels helped me learn discipline, teamwork, and perseverance, all crucial for success in technology.\nThese experiences have given me an all-round perspective, enabling me to approach software development with both, technical and creative\napproaches. With this holistic approach, I am keen to contribute to and grow within leading universities. In conclusion, my journey from being\ninspired by Tony Stark's Jarvis to pursuing innovation has been one of continuous learning."
+          },
+          {
+            "entity_id": "ESS-005",
+            "prompt": "Have You Ever Had A First Information Report (FIR) Filed Against You Or Been Involved In Any Legal And/Or Criminal\nProceeding?",
+            "text": "Consent By submitting this admissions form, you acknowledge and consent to Plaksha University's data handling practices. Any personal information\nyou provide, including academic records and contact details, will be stored internally, and may be shared with selected offices at Plaksha\nUniversity for administrative and academic purposes.\nIf you are applying for a scholarship, please note that your financial data and supporting documents may also be shared with key\nstakeholders involved in scholarship matters. All data will be handled with utmost confidentiality and in compliance with relevant data\nprotection laws. I Agree Honour Pledge The information provided in this form is true to the best of my knowledge. I pledge that the entire application is a product of my effort and no\npart of it has been taken directly from other sources. If at any time during the course of the admissions process or later after joining the\nprogramme, the information provided by me is found to be false, untrue, or incorrect, then Plaksha University's Office of Admissions may\nexercise the right to rescind the offer of admissions made to me and nullify my enrollment during or after the programme, as applicable to\nme. Applicant Name:"
+          }
+        ],
+        "activity_profile": [
+          {
+            "entity_id": "ACT-001",
+            "type": "extracurricular",
+            "name": "Kaizen OC Head",
+            "level": "Intra School",
+            "duration_years": "1"
+          },
+          {
+            "entity_id": "ACT-002",
+            "type": "extracurricular",
+            "name": "Web Developing Intern",
+            "level": "National",
+            "duration_years": "1"
+          },
+          {
+            "entity_id": "ACT-003",
+            "type": "extracurricular",
+            "name": "Digital Marketing Intern",
+            "level": "International",
+            "duration_years": "1"
+          },
+          {
+            "entity_id": "ACT-004",
+            "type": "co_curricular",
+            "name": "Freelance Writer",
+            "achievement": "2"
+          }
+        ],
+        "entity_id_map": [
+          {
+            "entity_id": "SCH-001",
+            "collection": "schooling_history",
+            "descriptor": "Delhi Public School Indore"
+          },
+          {
+            "entity_id": "SCH-002",
+            "collection": "schooling_history",
+            "descriptor": "Delhi Public School Indore"
+          },
+          {
+            "entity_id": "SCH-003",
+            "collection": "schooling_history",
+            "descriptor": "Delhi Public School Indore"
+          },
+          {
+            "entity_id": "SCH-004",
+            "collection": "schooling_history",
+            "descriptor": "Delhi Public School Indore"
+          },
+          {
+            "entity_id": "ACA-001",
+            "collection": "academic_entries",
+            "descriptor": "9TH"
+          },
+          {
+            "entity_id": "ACA-002",
+            "collection": "academic_entries",
+            "descriptor": "10TH"
+          },
+          {
+            "entity_id": "ACA-003",
+            "collection": "academic_entries",
+            "descriptor": "11TH"
+          },
+          {
+            "entity_id": "ACA-004",
+            "collection": "academic_entries",
+            "descriptor": "12TH"
+          },
+          {
+            "entity_id": "TEST-001",
+            "collection": "test_entries",
+            "descriptor": "JEE Mains"
+          },
+          {
+            "entity_id": "ESS-001",
+            "collection": "essay_entries",
+            "descriptor": "Do you hold a Punjab Domicile status?"
+          },
+          {
+            "entity_id": "ESS-002",
+            "collection": "essay_entries",
+            "descriptor": "Have you taken any gap after class 12th?"
+          },
+          {
+            "entity_id": "ESS-003",
+            "collection": "essay_entries",
+            "descriptor": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?"
+          },
+          {
+            "entity_id": "ESS-004",
+            "collection": "essay_entries",
+            "descriptor": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?"
+          },
+          {
+            "entity_id": "ESS-005",
+            "collection": "essay_entries",
+            "descriptor": "Have You Ever Had A First Information Report (FIR) Filed Against You Or Been Involved In Any Legal And/Or Criminal\nProceeding?"
+          },
+          {
+            "entity_id": "ACT-001",
+            "collection": "activity_entries",
+            "descriptor": "Kaizen OC Head"
+          },
+          {
+            "entity_id": "ACT-002",
+            "collection": "activity_entries",
+            "descriptor": "Web Developing Intern"
+          },
+          {
+            "entity_id": "ACT-003",
+            "collection": "activity_entries",
+            "descriptor": "Digital Marketing Intern"
+          },
+          {
+            "entity_id": "ACT-004",
+            "collection": "activity_entries",
+            "descriptor": "Freelance Writer"
+          },
+          {
+            "entity_id": "LEAD-005",
+            "collection": "activity_entries",
+            "descriptor": "Unknown"
+          },
+          {
+            "entity_id": "LEAD-006",
+            "collection": "activity_entries",
+            "descriptor": "Unknown"
+          },
+          {
+            "entity_id": "LEAD-007",
+            "collection": "activity_entries",
+            "descriptor": "Unknown"
+          },
+          {
+            "entity_id": "LEAD-008",
+            "collection": "activity_entries",
+            "descriptor": "Unknown"
+          }
+        ],
+        "deterministic_signals": [
+          {
+            "signal_id": "DET-001",
+            "signal_type": "essay_characteristic",
+            "observation": "Essay response for Do you hold a Punjab Domicile status? exceeds 300 words.",
+            "referenced_entity_ids": [
+              "ESS-001"
+            ],
+            "source_collection": "essay_entries"
+          },
+          {
+            "signal_id": "DET-002",
+            "signal_type": "essay_characteristic",
+            "observation": "Essay response for What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program? exceeds 300 words.",
+            "referenced_entity_ids": [
+              "ESS-003"
+            ],
+            "source_collection": "essay_entries"
+          },
+          {
+            "signal_id": "DET-003",
+            "signal_type": "essay_characteristic",
+            "observation": "Essay response for Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance? exceeds 300 words.",
+            "referenced_entity_ids": [
+              "ESS-004"
+            ],
+            "source_collection": "essay_entries"
+          },
+          {
+            "signal_id": "DET-004",
+            "signal_type": "activity_volume",
+            "observation": "Applicant has reported 8 distinct activities.",
+            "referenced_entity_ids": [
+              "ACT-001",
+              "ACT-002",
+              "ACT-003",
+              "ACT-004",
+              "LEAD-005",
+              "LEAD-006",
+              "LEAD-007",
+              "LEAD-008"
+            ],
+            "source_collection": "activity_entries"
+          },
+          {
+            "signal_id": "DET-005",
+            "signal_type": "test_performance_pattern",
+            "observation": "Score of 99.74 achieved in JEE Mains.",
+            "referenced_entity_ids": [
+              "TEST-001"
+            ],
+            "source_collection": "test_entries"
+          },
+          {
+            "signal_id": "DET-006",
+            "signal_type": "timeline_characteristic",
+            "observation": "Academic records cover a span of 4 academic years.",
+            "referenced_entity_ids": [
+              "ACA-001",
+              "ACA-002",
+              "ACA-003",
+              "ACA-004"
+            ],
+            "source_collection": "academic_entries"
+          }
+        ]
+      }
+    },
+    "3_llm_call_1_raw": "{\n  \"deterministic_signals\": [\n    {\n      \"signal_id\": \"DET-001\",\n      \"signal_type\": \"essay_characteristic\",\n      \"observation\": \"Essay response for Do you hold a Punjab Domicile status? exceeds 300 words.\",\n      \"referenced_entity_ids\": [\"ESS-001\"],\n      \"source_collection\": \"essay_entries\"\n    },\n    {\n      \"signal_id\": \"DET-002\",\n      \"signal_type\": \"essay_characteristic\",\n      \"observation\": \"Essay response for What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\\nPlaksha's B.Tech program? exceeds 300 words.\",\n      \"referenced_entity_ids\": [\"ESS-003\"],\n      \"source_collection\": \"essay_entries\"\n    },\n    {\n      \"signal_id\": \"DET-003\",\n      \"signal_type\": \"essay_characteristic\",\n      \"observation\": \"Essay response for Share a time when you contributed to a project or activity that positively affected your school or community. What\\nchallenges did you face, and what did you learn about leadership and perseverance? exceeds 300 words.\",\n      \"referenced_entity_ids\": [\"ESS-004\"],\n      \"source_collection\": \"essay_entries\"\n    },\n    {\n      \"signal_id\": \"DET-004\",\n      \"signal_type\": \"activity_volume\",\n      \"observation\": \"Applicant has reported 8 distinct activities.\",\n      \"referenced_entity_ids\": [\"ACT-001\", \"ACT-002\", \"ACT-003\", \"ACT-004\"],\n      \"source_collection\": \"activity_entries\"\n    },\n    {\n      \"signal_id\": \"DET-005\",\n      \"signal_type\": \"test_performance_pattern\",\n      \"observation\": \"Score of 99.74 achieved in JEE Mains.\",\n      \"referenced_entity_ids\": [\"TEST-001\"],\n      \"source_collection\": \"test_entries\"\n    }\n  ]\n}",
+    "4_call_1_validation": {
+      "passed": false,
+      "sanitized_output": null,
+      "violations_log": [
+        {
+          "violation_id": "1f625763-bf18-472a-90d1-08c5629b257b",
+          "type": "structure_error",
+          "context": "Missing 'interpreted_signals' root key."
+        }
+      ]
+    }
+  }
+}

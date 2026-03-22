@@ -1,0 +1,1558 @@
+{
+  "metadata": {
+    "pdf_path": "/app/tests/pdfs/Dummy App (8)_v8_filled.pdf",
+    "timestamp": "2026-03-14T19:01:45.981230"
+  },
+  "stages": {
+    "1_canonical_parsing": {
+      "canonical_version": "1.1",
+      "identifiers": {
+        "application_id": "750ab991-c4d5-4cb7-a3b6-cc671d61f983",
+        "full_name": "Arjun Mehta",
+        "date_of_birth": "2007-03-12",
+        "family_background": {
+          "father": {
+            "name": "Rajiv Mehta",
+            "education": "MBA",
+            "field_of_employment": "Information Technology",
+            "organization": "Infosys Ltd",
+            "designation": "Senior Vice President"
+          },
+          "mother": {
+            "name": null,
+            "education": null,
+            "field_of_employment": null,
+            "organization": null,
+            "designation": null
+          }
+        },
+        "preferred_major": "Computer Science and Artificial Intelligence"
+      },
+      "academic_entries": [
+        {
+          "entry_id": "d34a9989-73ae-4637-bd64-db22fe079c43",
+          "academic_level": "9TH",
+          "school_name": "Delhi Public School Mathura Road",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "academic_year": "2022",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "98.45",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "100",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Science",
+              "score_raw": "99",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Social science",
+              "score_raw": "100",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Artificial intelligence",
+              "score_raw": "98.75",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "94",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "2nd Language",
+              "score_raw": "99",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "a248be96-3703-41e3-bbef-d743c9614071",
+          "academic_level": "10TH",
+          "school_name": "Delhi Public School Mathura Road",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "academic_year": "2023",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "98",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "98",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Science",
+              "score_raw": "100",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Social Science",
+              "score_raw": "100",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Artificial Intelligence",
+              "score_raw": "100",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "95",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Hindi",
+              "score_raw": "95",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "019a3537-4ab9-4272-9346-bec31623d8c1",
+          "academic_level": "11TH",
+          "school_name": "Delhi Public School Mathura Road",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "academic_year": "2024",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "74.75",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "68.25",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Physics",
+              "score_raw": "54.85",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Chemistry",
+              "score_raw": "74.75",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "85.37",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "PE",
+              "score_raw": "90.50",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "cc8be573-9822-49d6-825d-0fe9de74660f",
+          "academic_level": "12TH",
+          "school_name": "Delhi Public School Mathura Road",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "academic_year": "2025",
+          "marking_scheme_raw": "Percentage",
+          "grading_mode": "percentage",
+          "score_raw": "NA",
+          "predicted_score_raw": null,
+          "subject_entries": [
+            {
+              "subject_name": "Mathematics",
+              "score_raw": "96",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Physics",
+              "score_raw": "95",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Chemistry",
+              "score_raw": "96",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "Physical Education",
+              "score_raw": "95",
+              "predicted_score_raw": null
+            },
+            {
+              "subject_name": "English",
+              "score_raw": "95",
+              "predicted_score_raw": null
+            }
+          ],
+          "confidence_score": 0.85
+        }
+      ],
+      "schooling_history": [
+        {
+          "entry_id": "8bda2155-1141-4cbf-81c1-d5824d168bfc",
+          "level": "9TH",
+          "school_name": "Delhi Public School Mathura Road",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "location": null,
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "fd33e809-7397-4ced-949f-61bd4743664f",
+          "level": "10TH",
+          "school_name": "Delhi Public School Mathura Road",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "location": null,
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "3789ac66-f031-4be2-9320-90b4b5c8c162",
+          "level": "11TH",
+          "school_name": "Delhi Public School Mathura Road",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "location": null,
+          "confidence_score": 0.85
+        },
+        {
+          "entry_id": "57f810e2-b88d-421a-8ec3-ad3596463ab7",
+          "level": "12TH",
+          "school_name": "Delhi Public School Mathura Road",
+          "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+          "location": null,
+          "confidence_score": 0.85
+        }
+      ],
+      "test_entries": [
+        {
+          "entry_id": "62a84e9a-fc7b-4077-adaa-3e856846654f",
+          "test_name": "SAT",
+          "test_date": null,
+          "total_score": "1510",
+          "sectional_scores": [
+            {
+              "label": "Reading/Writing",
+              "raw_score": "730"
+            },
+            {
+              "label": "Maths Percentile",
+              "raw_score": "780"
+            }
+          ],
+          "percentile": null,
+          "rank": null,
+          "result_status": "available",
+          "confidence_score": 0.9
+        },
+        {
+          "entry_id": "7da210c1-ce1b-475e-8084-a397d7bf23e4",
+          "test_name": "JEE Mains",
+          "test_date": null,
+          "total_score": "99.39",
+          "sectional_scores": [
+            {
+              "label": "Physics Percentile",
+              "raw_score": "98.97"
+            },
+            {
+              "label": "Maths Percentile",
+              "raw_score": "98.1"
+            },
+            {
+              "label": "Chemistry Percentile",
+              "raw_score": "99.7"
+            },
+            {
+              "label": "Sectional Rank",
+              "raw_score": "4"
+            }
+          ],
+          "percentile": null,
+          "rank": null,
+          "result_status": "available",
+          "confidence_score": 0.9
+        }
+      ],
+      "essay_entries": [
+        {
+          "entry_id": "b457edd7-9bb0-45ba-8185-a456a9726424",
+          "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+          "raw_text": "It is my firm belief that the strength of my abilities and skills makes me an ideal candidate for the BTech program at Plaksha University. I am\nhighly self-motivated and hardworking, and possess a strong interest in technology and its applications, which gives me a firm confidence\nthat I would be able to perform well in the fast-paced and challenging setting of Plaksha University. My consistent performance in\nmathematics and science as evidenced in my grades further cements my capability of succeeding in a technocentric field. For instance, my\naggregate performance at high school of 98.6%, inclusive of 99% in Physics, Chemistry and Maths, as well as a perfect 100% performance in\nArtificial Intelligence, are a testament to my devotion to academics as well as problem solving. These accomplishments are a testament not\nonly to my academic accomplishments but also to my mindset that values seeking new information. Outside of school, I do my best to seek\nout projects that implement my knowledge and transform it into reality. Projects of this nature correspond to the ideal of Plaksha in terms of\nbeing hands-on and innovative in terms of turning ideas into reality. For example, during one of the group-based Smart City projects, we\naimed to design one which is fully powered by renewable sources with no use of fossil fuels. This project integrated my interest in\nengineering with my aim to solve real-world problems in an environmentally friendly way. I also built a personal web page with HTML and\nCSS, built a text game in Python that demonstrated basic game design, and did data scraping and analysis with Python using Pandas and\nMatplotlib. The idea of Plaksha\u2019s education being focused on real practical projects is in line with my approach to learning. I will be looking for\nlearning opportunities provided by Plaksha to improve my abilities and make use of my knowledge in the undertakings that will be of great\nimportance. The multidisciplinary and cooperative environment at Plaksha will not only assist me with the improvement of my engineering\nabilities, but also enable me to search for new ways of solving pressing problems in the world. I also participated in some hackathons and\ncompetitions such as Zenith 2022, Codex, and Robotronics 2022 where I also got the chance to advance my teamwork and leadership skills.\nAlso, placing second in the ION 2022 Rising Entrepreneurs contest evidences my ability to remember the significance of working together\ntoward reaching targets in a competitive environment. What I find most appealing in pursuing a career path as an engineer or in the\ntechnology field is the prospect of impacting the world utilizing my various capabilities. The opportunities of interacting with different\nstudents and professors at Plaksha will definitely Give me the latitude to open my eyes better and to other ideas. Being engaged with such\npeople both in and outside the class will enable me to get a better grasp of education and effective practice to enable me to prepare for the\nfuture.",
+          "word_count": 499,
+          "placeholder_flag": false,
+          "short_response_flag": false,
+          "confidence_score": 0.9
+        },
+        {
+          "entry_id": "685dec75-af78-4fec-87cf-e4cb870c36e6",
+          "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+          "raw_text": "In a recent project names Tenelach organized by DPS School Mathura Road, I led a team of four members to design a smart city powered\nentirely by clean energy, utilizing solar power, wind energy, geothermal energy, and other sustainable sources to eliminate the use of fossil\nfuels. Over the course of four weeks, I took responsibility for coordinating the team\u2019s efforts and ensuring the smooth execution of the\nproject. I demonstrated Innovation by leading the team in creating a novel solution for a sustainable smart city that relied entirely on clean energy,\nshowcasing a forward-thinking approach to environmental challenges. When faced with technical difficulties and tight timelines, I remained\nResilient, working tirelessly to troubleshoot issues and keeping the team focused on our goal despite setbacks. This helped maintain our\nmomentum and ensured that we could deliver the project successfully. My commitment to Excellence was evident in my dedication to high-quality work. I carefully managed the project\u2019s progress, ensuring every\nelement of the design was meticulously planned and executed, striving for the highest standards in every aspect of the project. I also showed Respect by honoring the contributions of each team member. I fostered a collaborative environment, listening to everyone\u2019s\nideas and ensuring that everyone\u2019s voice was heard. This respect extended to the core concept of our project itself, as we aimed to create a\nmodel that prioritizes sustainability and environmental respect by eliminating the use of fossil fuels. Finally, I upheld Integrity by being honest and reliable throughout the process. I ensured that communication within the team remained\ntransparent, and I took accountability for my tasks while supporting my teammates in their roles. I remained ethical and committed to our\nshared goal of creating a clean-energy solution.",
+          "word_count": 287,
+          "placeholder_flag": false,
+          "short_response_flag": false,
+          "confidence_score": 0.9
+        }
+      ],
+      "activity_entries": [
+        {
+          "entry_id": "c1503c83-b806-446e-bdbb-4fd07a6ef5ff",
+          "activity_type": "extracurricular",
+          "activity_name": "Chess",
+          "position_title": "District Champion (Gold)",
+          "level": "District",
+          "duration": "1",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "bd071964-9cc9-4cc1-958a-cb39c4e5ee8d",
+          "activity_type": "extracurricular",
+          "activity_name": "Electronic Keyboard\n(Music)",
+          "position_title": "Grade 2 Trinity College\nLondon",
+          "level": "National",
+          "duration": "2",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "63973730-f6cd-42f4-b71a-bf31c9b73b49",
+          "activity_type": "extracurricular",
+          "activity_name": "Badminton",
+          "position_title": "Local club tournament",
+          "level": "Personal",
+          "duration": "1",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "e3911398-561d-4d0f-aba9-d159d62cfc53",
+          "activity_type": "co_curricular",
+          "activity_name": "SHISMUN 22",
+          "position_title": "Best Delegate",
+          "level": "National",
+          "duration": "1",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "bf4546d8-1e03-40bf-8391-fc69764f21d3",
+          "activity_type": "co_curricular",
+          "activity_name": "SOFIEO",
+          "position_title": "Rank 4",
+          "level": "International",
+          "duration": "1",
+          "achievement": null,
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "d8f1fe7f-4205-4184-9dff-50e33fa12c98",
+          "activity_type": "co_curricular",
+          "activity_name": "Mindquest quiz",
+          "position_title": null,
+          "level": null,
+          "duration": "Intra School",
+          "achievement": "1",
+          "roles_and_responsibilities": null,
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "ece2019e-1311-4de8-9797-d3b5de214827",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Project leader",
+          "level": null,
+          "duration": "2",
+          "achievement": null,
+          "roles_and_responsibilities": "Ogan Donation drive Plantation\ndrive Education of poor Blood\ndonation drive",
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "34ab0d7e-a6df-45d3-87cc-14898c1d66ec",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Team Leader",
+          "level": null,
+          "duration": "1",
+          "achievement": null,
+          "roles_and_responsibilities": "design a smart city powered\nentirely by clean energy, utilizing\nsolar power, wind energy,\ngeothermal energy, and other\nsustainable sources to eliminate\nthe use of fossil fuels.",
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "5a113506-2eea-484c-b3d3-956e855b65f6",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Lead",
+          "level": null,
+          "duration": "1",
+          "achievement": null,
+          "roles_and_responsibilities": "iON 2022 Rising entrepreneur\n2nd prize",
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "79e3b5d2-97bd-48f5-b9ff-38e248479eb7",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Organization Designation",
+          "level": null,
+          "duration": "Mobile Number Email ID",
+          "achievement": null,
+          "roles_and_responsibilities": "In what\ncapacity does\nthis reference\nknow you?",
+          "description_raw": null,
+          "confidence_score": 0.95
+        },
+        {
+          "entry_id": "43e3037d-dbfc-4a6f-8e9c-345eb13e36cf",
+          "activity_type": "leadership",
+          "activity_name": null,
+          "position_title": "Friends/Family",
+          "level": null,
+          "duration": "Is there anything else you\nwant to tell us?",
+          "achievement": null,
+          "roles_and_responsibilities": "No",
+          "description_raw": null,
+          "confidence_score": 0.95
+        }
+      ],
+      "timeline_entries": [
+        {
+          "entry_id": "8b66f74e-9dfd-4fc5-942d-9f586ef47e39",
+          "year": "Unknown",
+          "event_label": "Activity: Chess",
+          "source_type": "activity",
+          "source_reference": "c1503c83-b806-446e-bdbb-4fd07a6ef5ff"
+        },
+        {
+          "entry_id": "eb5cb344-7aff-4d6e-a498-227b09db8c78",
+          "year": "Unknown",
+          "event_label": "Activity: Electronic Keyboard\n(Music)",
+          "source_type": "activity",
+          "source_reference": "bd071964-9cc9-4cc1-958a-cb39c4e5ee8d"
+        },
+        {
+          "entry_id": "b9d53ee3-f8d4-403c-9528-759a9deba0e0",
+          "year": "Unknown",
+          "event_label": "Activity: Badminton",
+          "source_type": "activity",
+          "source_reference": "63973730-f6cd-42f4-b71a-bf31c9b73b49"
+        },
+        {
+          "entry_id": "33a66b5b-eeb6-43fd-888f-9c190bb5e23d",
+          "year": "Unknown",
+          "event_label": "Activity: SHISMUN 22",
+          "source_type": "activity",
+          "source_reference": "e3911398-561d-4d0f-aba9-d159d62cfc53"
+        },
+        {
+          "entry_id": "ef4640bb-20fd-4c1a-a1a5-49aa69b60bda",
+          "year": "Unknown",
+          "event_label": "Activity: SOFIEO",
+          "source_type": "activity",
+          "source_reference": "bf4546d8-1e03-40bf-8391-fc69764f21d3"
+        },
+        {
+          "entry_id": "4cfda5bd-7de8-4f09-bf51-4cfcd44be3ba",
+          "year": "Unknown",
+          "event_label": "Activity: None",
+          "source_type": "activity",
+          "source_reference": "ece2019e-1311-4de8-9797-d3b5de214827"
+        },
+        {
+          "entry_id": "6611297a-43dd-4977-bcef-554660d2394f",
+          "year": "Unknown",
+          "event_label": "Activity: None",
+          "source_type": "activity",
+          "source_reference": "34ab0d7e-a6df-45d3-87cc-14898c1d66ec"
+        },
+        {
+          "entry_id": "d2fdd71c-4226-4ef0-8cda-55f1a2f0f514",
+          "year": "Unknown",
+          "event_label": "Activity: None",
+          "source_type": "activity",
+          "source_reference": "5a113506-2eea-484c-b3d3-956e855b65f6"
+        },
+        {
+          "entry_id": "d2f06d65-31c2-4f87-b286-bf2476eafc6a",
+          "year": "Mobi",
+          "event_label": "Activity: None",
+          "source_type": "activity",
+          "source_reference": "79e3b5d2-97bd-48f5-b9ff-38e248479eb7"
+        },
+        {
+          "entry_id": "bcedf041-cda2-4d72-8253-dc9eb2d84a20",
+          "year": "Is t",
+          "event_label": "Activity: None",
+          "source_type": "activity",
+          "source_reference": "43e3037d-dbfc-4a6f-8e9c-345eb13e36cf"
+        },
+        {
+          "entry_id": "3f8b203f-0c1c-42ed-9974-04d4204b8316",
+          "year": "Intr",
+          "event_label": "Activity: Mindquest quiz",
+          "source_type": "activity",
+          "source_reference": "d8f1fe7f-4205-4184-9dff-50e33fa12c98"
+        },
+        {
+          "entry_id": "57b60859-4779-4e3b-b345-a37516b83a74",
+          "year": "2025",
+          "event_label": "Academic Record: 12TH",
+          "source_type": "academic",
+          "source_reference": "cc8be573-9822-49d6-825d-0fe9de74660f"
+        },
+        {
+          "entry_id": "bb46f465-642f-42df-9f71-d25c9c603086",
+          "year": "2024",
+          "event_label": "Academic Record: 11TH",
+          "source_type": "academic",
+          "source_reference": "019a3537-4ab9-4272-9346-bec31623d8c1"
+        },
+        {
+          "entry_id": "4dff7a43-c8e0-4d5a-a6b6-408597e009b7",
+          "year": "2023",
+          "event_label": "Academic Record: 10TH",
+          "source_type": "academic",
+          "source_reference": "a248be96-3703-41e3-bbef-d743c9614071"
+        },
+        {
+          "entry_id": "f7382699-dc92-491b-81ba-d3a7e15e1c9e",
+          "year": "2022",
+          "event_label": "Academic Record: 9TH",
+          "source_type": "academic",
+          "source_reference": "d34a9989-73ae-4637-bd64-db22fe079c43"
+        }
+      ],
+      "cross_references": {
+        "entity_map": [
+          {
+            "entity_token": "Mathematics",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "d34a9989-73ae-4637-bd64-db22fe079c43"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "a248be96-3703-41e3-bbef-d743c9614071"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "019a3537-4ab9-4272-9346-bec31623d8c1"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "cc8be573-9822-49d6-825d-0fe9de74660f"
+              }
+            ]
+          },
+          {
+            "entity_token": "Science",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "d34a9989-73ae-4637-bd64-db22fe079c43"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "a248be96-3703-41e3-bbef-d743c9614071"
+              }
+            ]
+          },
+          {
+            "entity_token": "Social",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "d34a9989-73ae-4637-bd64-db22fe079c43"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "a248be96-3703-41e3-bbef-d743c9614071"
+              }
+            ]
+          },
+          {
+            "entity_token": "Artificial",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "d34a9989-73ae-4637-bd64-db22fe079c43"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "a248be96-3703-41e3-bbef-d743c9614071"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "b457edd7-9bb0-45ba-8185-a456a9726424"
+              }
+            ]
+          },
+          {
+            "entity_token": "English",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "d34a9989-73ae-4637-bd64-db22fe079c43"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "a248be96-3703-41e3-bbef-d743c9614071"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "019a3537-4ab9-4272-9346-bec31623d8c1"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "cc8be573-9822-49d6-825d-0fe9de74660f"
+              }
+            ]
+          },
+          {
+            "entity_token": "Intelligence",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "a248be96-3703-41e3-bbef-d743c9614071"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "b457edd7-9bb0-45ba-8185-a456a9726424"
+              }
+            ]
+          },
+          {
+            "entity_token": "Physics",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "019a3537-4ab9-4272-9346-bec31623d8c1"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "cc8be573-9822-49d6-825d-0fe9de74660f"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "b457edd7-9bb0-45ba-8185-a456a9726424"
+              }
+            ]
+          },
+          {
+            "entity_token": "Chemistry",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "019a3537-4ab9-4272-9346-bec31623d8c1"
+              },
+              {
+                "source_type": "academic",
+                "entry_id": "cc8be573-9822-49d6-825d-0fe9de74660f"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "b457edd7-9bb0-45ba-8185-a456a9726424"
+              }
+            ]
+          },
+          {
+            "entity_token": "Education",
+            "source_references": [
+              {
+                "source_type": "academic",
+                "entry_id": "cc8be573-9822-49d6-825d-0fe9de74660f"
+              },
+              {
+                "source_type": "activity",
+                "entry_id": "ece2019e-1311-4de8-9797-d3b5de214827"
+              }
+            ]
+          },
+          {
+            "entity_token": "Rising",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "b457edd7-9bb0-45ba-8185-a456a9726424"
+              },
+              {
+                "source_type": "activity",
+                "entry_id": "5a113506-2eea-484c-b3d3-956e855b65f6"
+              }
+            ]
+          },
+          {
+            "entity_token": "This",
+            "source_references": [
+              {
+                "source_type": "essay",
+                "entry_id": "b457edd7-9bb0-45ba-8185-a456a9726424"
+              },
+              {
+                "source_type": "essay",
+                "entry_id": "685dec75-af78-4fec-87cf-e4cb870c36e6"
+              }
+            ]
+          }
+        ]
+      },
+      "integrity_report": {
+        "anomalies": [
+          {
+            "anomaly_id": "9d4991bf-e5ea-4139-b78b-ea3cc7abd30b",
+            "anomaly_type": "activity_text_bleed",
+            "severity_level": "low",
+            "source_reference": "79e3b5d2-97bd-48f5-b9ff-38e248479eb7",
+            "description": "Descriptive field contains question marks, suggesting bleed from form labels."
+          }
+        ]
+      },
+      "extraction_confidence": {
+        "agent_scores": [
+          {
+            "agent_id": 1,
+            "agent_name": "Layout Block Extractor",
+            "confidence_score": 0.95
+          },
+          {
+            "agent_id": 2,
+            "agent_name": "Section Boundary Detector",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 3,
+            "agent_name": "Personal Information Extractor",
+            "confidence_score": 0.85
+          },
+          {
+            "agent_id": 4,
+            "agent_name": "Academic Records Extractor",
+            "confidence_score": 0.85
+          },
+          {
+            "agent_id": 5,
+            "agent_name": "Standardized Test Extractor",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 6,
+            "agent_name": "Essay Extractor",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 7,
+            "agent_name": "Activity Extractor",
+            "confidence_score": 0.9
+          },
+          {
+            "agent_id": 8,
+            "agent_name": "Cross-Section Entity Detector",
+            "confidence_score": 0.95
+          },
+          {
+            "agent_id": 9,
+            "agent_name": "Timeline Builder",
+            "confidence_score": 0.95
+          },
+          {
+            "agent_id": 10,
+            "agent_name": "Completeness & Integrity Analyzer",
+            "confidence_score": 0.95
+          }
+        ],
+        "aggregate_confidence": 0.9099999999999999
+      }
+    },
+    "2_projection": {
+      "entity_id_map": [
+        {
+          "entity_id": "SCH-001",
+          "collection": "schooling_history",
+          "descriptor": "Delhi Public School Mathura Road"
+        },
+        {
+          "entity_id": "SCH-002",
+          "collection": "schooling_history",
+          "descriptor": "Delhi Public School Mathura Road"
+        },
+        {
+          "entity_id": "SCH-003",
+          "collection": "schooling_history",
+          "descriptor": "Delhi Public School Mathura Road"
+        },
+        {
+          "entity_id": "SCH-004",
+          "collection": "schooling_history",
+          "descriptor": "Delhi Public School Mathura Road"
+        },
+        {
+          "entity_id": "ACA-001",
+          "collection": "academic_entries",
+          "descriptor": "9TH"
+        },
+        {
+          "entity_id": "ACA-002",
+          "collection": "academic_entries",
+          "descriptor": "10TH"
+        },
+        {
+          "entity_id": "ACA-003",
+          "collection": "academic_entries",
+          "descriptor": "11TH"
+        },
+        {
+          "entity_id": "ACA-004",
+          "collection": "academic_entries",
+          "descriptor": "12TH"
+        },
+        {
+          "entity_id": "TEST-001",
+          "collection": "test_entries",
+          "descriptor": "SAT"
+        },
+        {
+          "entity_id": "TEST-002",
+          "collection": "test_entries",
+          "descriptor": "JEE Mains"
+        },
+        {
+          "entity_id": "ESS-001",
+          "collection": "essay_entries",
+          "descriptor": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?"
+        },
+        {
+          "entity_id": "ESS-002",
+          "collection": "essay_entries",
+          "descriptor": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?"
+        },
+        {
+          "entity_id": "ACT-001",
+          "collection": "activity_entries",
+          "descriptor": "Chess"
+        },
+        {
+          "entity_id": "ACT-002",
+          "collection": "activity_entries",
+          "descriptor": "Electronic Keyboard\n(Music)"
+        },
+        {
+          "entity_id": "ACT-003",
+          "collection": "activity_entries",
+          "descriptor": "Badminton"
+        },
+        {
+          "entity_id": "ACT-004",
+          "collection": "activity_entries",
+          "descriptor": "SHISMUN 22"
+        },
+        {
+          "entity_id": "ACT-005",
+          "collection": "activity_entries",
+          "descriptor": "SOFIEO"
+        },
+        {
+          "entity_id": "ACT-006",
+          "collection": "activity_entries",
+          "descriptor": "Mindquest quiz"
+        },
+        {
+          "entity_id": "LEAD-007",
+          "collection": "activity_entries",
+          "descriptor": "Project leader"
+        },
+        {
+          "entity_id": "LEAD-008",
+          "collection": "activity_entries",
+          "descriptor": "Team Leader"
+        },
+        {
+          "entity_id": "LEAD-009",
+          "collection": "activity_entries",
+          "descriptor": "Lead"
+        },
+        {
+          "entity_id": "LEAD-010",
+          "collection": "activity_entries",
+          "descriptor": "Organization Designation"
+        },
+        {
+          "entity_id": "LEAD-011",
+          "collection": "activity_entries",
+          "descriptor": "Friends/Family"
+        }
+      ],
+      "deterministic_signals": [
+        {
+          "signal_id": "DET-001",
+          "signal_type": "domain_concentration",
+          "observation": "Academic profile shows concentration of 12 entries in science and mathematics domains.",
+          "referenced_entity_ids": [
+            "ACA-001",
+            "ACA-002",
+            "ACA-003",
+            "ACA-004"
+          ],
+          "source_collection": "academic_entries"
+        },
+        {
+          "signal_id": "DET-002",
+          "signal_type": "leadership_presence",
+          "observation": "Applicant held leadership positions in 5 activities.",
+          "referenced_entity_ids": [
+            "LEAD-007",
+            "LEAD-008",
+            "LEAD-009",
+            "LEAD-010",
+            "LEAD-011"
+          ],
+          "source_collection": "activity_entries"
+        },
+        {
+          "signal_id": "DET-003",
+          "signal_type": "essay_characteristic",
+          "observation": "Essay response for What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program? exceeds 300 words.",
+          "referenced_entity_ids": [
+            "ESS-001"
+          ],
+          "source_collection": "essay_entries"
+        },
+        {
+          "signal_id": "DET-004",
+          "signal_type": "activity_volume",
+          "observation": "Applicant has reported 11 distinct activities.",
+          "referenced_entity_ids": [
+            "ACT-001",
+            "ACT-002",
+            "ACT-003",
+            "ACT-004",
+            "ACT-005",
+            "ACT-006",
+            "LEAD-007",
+            "LEAD-008",
+            "LEAD-009",
+            "LEAD-010",
+            "LEAD-011"
+          ],
+          "source_collection": "activity_entries"
+        },
+        {
+          "signal_id": "DET-005",
+          "signal_type": "test_performance_pattern",
+          "observation": "Score of 1510 achieved in SAT.",
+          "referenced_entity_ids": [
+            "TEST-001"
+          ],
+          "source_collection": "test_entries"
+        },
+        {
+          "signal_id": "DET-006",
+          "signal_type": "test_performance_pattern",
+          "observation": "Score of 99.39 achieved in JEE Mains.",
+          "referenced_entity_ids": [
+            "TEST-002"
+          ],
+          "source_collection": "test_entries"
+        },
+        {
+          "signal_id": "DET-007",
+          "signal_type": "timeline_characteristic",
+          "observation": "Academic records cover a span of 4 academic years.",
+          "referenced_entity_ids": [
+            "ACA-001",
+            "ACA-002",
+            "ACA-003",
+            "ACA-004"
+          ],
+          "source_collection": "academic_entries"
+        }
+      ],
+      "call_1_projection": {
+        "applicant_context": {
+          "full_name": "Arjun Mehta",
+          "preferred_major": "Computer Science and Artificial Intelligence",
+          "family_background": {
+            "father": {
+              "name": "Rajiv Mehta",
+              "education": "MBA",
+              "field_of_employment": "Information Technology",
+              "organization": "Infosys Ltd",
+              "designation": "Senior Vice President"
+            }
+          }
+        },
+        "academic_profile": [
+          {
+            "entity_id": "ACA-001",
+            "level": "9TH",
+            "school_name": "Delhi Public School Mathura Road",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "year": "2022",
+            "grading_mode": "percentage",
+            "overall_score": "98.45",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "100"
+              },
+              {
+                "subject": "Science",
+                "score": "99"
+              },
+              {
+                "subject": "Social science",
+                "score": "100"
+              },
+              {
+                "subject": "Artificial intelligence",
+                "score": "98.75"
+              },
+              {
+                "subject": "English",
+                "score": "94"
+              },
+              {
+                "subject": "2nd Language",
+                "score": "99"
+              }
+            ]
+          },
+          {
+            "entity_id": "ACA-002",
+            "level": "10TH",
+            "school_name": "Delhi Public School Mathura Road",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "year": "2023",
+            "grading_mode": "percentage",
+            "overall_score": "98",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "98"
+              },
+              {
+                "subject": "Science",
+                "score": "100"
+              },
+              {
+                "subject": "Social Science",
+                "score": "100"
+              },
+              {
+                "subject": "Artificial Intelligence",
+                "score": "100"
+              },
+              {
+                "subject": "English",
+                "score": "95"
+              },
+              {
+                "subject": "Hindi",
+                "score": "95"
+              }
+            ]
+          },
+          {
+            "entity_id": "ACA-003",
+            "level": "11TH",
+            "school_name": "Delhi Public School Mathura Road",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "year": "2024",
+            "grading_mode": "percentage",
+            "overall_score": "74.75",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "68.25"
+              },
+              {
+                "subject": "Physics",
+                "score": "54.85"
+              },
+              {
+                "subject": "Chemistry",
+                "score": "74.75"
+              },
+              {
+                "subject": "English",
+                "score": "85.37"
+              },
+              {
+                "subject": "PE",
+                "score": "90.50"
+              }
+            ]
+          },
+          {
+            "entity_id": "ACA-004",
+            "level": "12TH",
+            "school_name": "Delhi Public School Mathura Road",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "year": "2025",
+            "grading_mode": "percentage",
+            "overall_score": "NA",
+            "subjects": [
+              {
+                "subject": "Mathematics",
+                "score": "96"
+              },
+              {
+                "subject": "Physics",
+                "score": "95"
+              },
+              {
+                "subject": "Chemistry",
+                "score": "96"
+              },
+              {
+                "subject": "Physical Education",
+                "score": "95"
+              },
+              {
+                "subject": "English",
+                "score": "95"
+              }
+            ]
+          }
+        ],
+        "test_profile": [
+          {
+            "entity_id": "TEST-001",
+            "test_name": "SAT",
+            "total_score": "1510",
+            "sections": [
+              {
+                "label": "Reading/Writing",
+                "score": "730"
+              },
+              {
+                "label": "Maths Percentile",
+                "score": "780"
+              }
+            ]
+          },
+          {
+            "entity_id": "TEST-002",
+            "test_name": "JEE Mains",
+            "total_score": "99.39",
+            "sections": [
+              {
+                "label": "Physics Percentile",
+                "score": "98.97"
+              },
+              {
+                "label": "Maths Percentile",
+                "score": "98.1"
+              },
+              {
+                "label": "Chemistry Percentile",
+                "score": "99.7"
+              },
+              {
+                "label": "Sectional Rank",
+                "score": "4"
+              }
+            ]
+          }
+        ],
+        "essay_profile": [
+          {
+            "entity_id": "ESS-001",
+            "prompt": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+            "text": "It is my firm belief that the strength of my abilities and skills makes me an ideal candidate for the BTech program at Plaksha University. I am\nhighly self-motivated and hardworking, and possess a strong interest in technology and its applications, which gives me a firm confidence\nthat I would be able to perform well in the fast-paced and challenging setting of Plaksha University. My consistent performance in\nmathematics and science as evidenced in my grades further cements my capability of succeeding in a technocentric field. For instance, my\naggregate performance at high school of 98.6%, inclusive of 99% in Physics, Chemistry and Maths, as well as a perfect 100% performance in\nArtificial Intelligence, are a testament to my devotion to academics as well as problem solving. These accomplishments are a testament not\nonly to my academic accomplishments but also to my mindset that values seeking new information. Outside of school, I do my best to seek\nout projects that implement my knowledge and transform it into reality. Projects of this nature correspond to the ideal of Plaksha in terms of\nbeing hands-on and innovative in terms of turning ideas into reality. For example, during one of the group-based Smart City projects, we\naimed to design one which is fully powered by renewable sources with no use of fossil fuels. This project integrated my interest in\nengineering with my aim to solve real-world problems in an environmentally friendly way. I also built a personal web page with HTML and\nCSS, built a text game in Python that demonstrated basic game design, and did data scraping and analysis with Python using Pandas and\nMatplotlib. The idea of Plaksha\u2019s education being focused on real practical projects is in line with my approach to learning. I will be looking for\nlearning opportunities provided by Plaksha to improve my abilities and make use of my knowledge in the undertakings that will be of great\nimportance. The multidisciplinary and cooperative environment at Plaksha will not only assist me with the improvement of my engineering\nabilities, but also enable me to search for new ways of solving pressing problems in the world. I also participated in some hackathons and\ncompetitions such as Zenith 2022, Codex, and Robotronics 2022 where I also got the chance to advance my teamwork and leadership skills.\nAlso, placing second in the ION 2022 Rising Entrepreneurs contest evidences my ability to remember the significance of working together\ntoward reaching targets in a competitive environment. What I find most appealing in pursuing a career path as an engineer or in the\ntechnology field is the prospect of impacting the world utilizing my various capabilities. The opportunities of interacting with different\nstudents and professors at Plaksha will definitely Give me the latitude to open my eyes better and to other ideas. Being engaged with such\npeople both in and outside the class will enable me to get a better grasp of education and effective practice to enable me to prepare for the\nfuture."
+          },
+          {
+            "entity_id": "ESS-002",
+            "prompt": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+            "text": "In a recent project names Tenelach organized by DPS School Mathura Road, I led a team of four members to design a smart city powered\nentirely by clean energy, utilizing solar power, wind energy, geothermal energy, and other sustainable sources to eliminate the use of fossil\nfuels. Over the course of four weeks, I took responsibility for coordinating the team\u2019s efforts and ensuring the smooth execution of the\nproject. I demonstrated Innovation by leading the team in creating a novel solution for a sustainable smart city that relied entirely on clean energy,\nshowcasing a forward-thinking approach to environmental challenges. When faced with technical difficulties and tight timelines, I remained\nResilient, working tirelessly to troubleshoot issues and keeping the team focused on our goal despite setbacks. This helped maintain our\nmomentum and ensured that we could deliver the project successfully. My commitment to Excellence was evident in my dedication to high-quality work. I carefully managed the project\u2019s progress, ensuring every\nelement of the design was meticulously planned and executed, striving for the highest standards in every aspect of the project. I also showed Respect by honoring the contributions of each team member. I fostered a collaborative environment, listening to everyone\u2019s\nideas and ensuring that everyone\u2019s voice was heard. This respect extended to the core concept of our project itself, as we aimed to create a\nmodel that prioritizes sustainability and environmental respect by eliminating the use of fossil fuels. Finally, I upheld Integrity by being honest and reliable throughout the process. I ensured that communication within the team remained\ntransparent, and I took accountability for my tasks while supporting my teammates in their roles. I remained ethical and committed to our\nshared goal of creating a clean-energy solution."
+          }
+        ],
+        "activity_profile": [
+          {
+            "entity_id": "ACT-001",
+            "type": "extracurricular",
+            "name": "Chess",
+            "position": "District Champion (Gold)",
+            "level": "District",
+            "duration_years": "1"
+          },
+          {
+            "entity_id": "ACT-002",
+            "type": "extracurricular",
+            "name": "Electronic Keyboard\n(Music)",
+            "position": "Grade 2 Trinity College\nLondon",
+            "level": "National",
+            "duration_years": "2"
+          },
+          {
+            "entity_id": "ACT-003",
+            "type": "extracurricular",
+            "name": "Badminton",
+            "position": "Local club tournament",
+            "level": "Personal",
+            "duration_years": "1"
+          },
+          {
+            "entity_id": "ACT-004",
+            "type": "co_curricular",
+            "name": "SHISMUN 22",
+            "position": "Best Delegate",
+            "level": "National",
+            "duration_years": "1"
+          },
+          {
+            "entity_id": "ACT-005",
+            "type": "co_curricular",
+            "name": "SOFIEO",
+            "position": "Rank 4",
+            "level": "International",
+            "duration_years": "1"
+          },
+          {
+            "entity_id": "ACT-006",
+            "type": "co_curricular",
+            "name": "Mindquest quiz",
+            "achievement": "1"
+          }
+        ],
+        "entity_id_map": [
+          {
+            "entity_id": "SCH-001",
+            "collection": "schooling_history",
+            "descriptor": "Delhi Public School Mathura Road"
+          },
+          {
+            "entity_id": "SCH-002",
+            "collection": "schooling_history",
+            "descriptor": "Delhi Public School Mathura Road"
+          },
+          {
+            "entity_id": "SCH-003",
+            "collection": "schooling_history",
+            "descriptor": "Delhi Public School Mathura Road"
+          },
+          {
+            "entity_id": "SCH-004",
+            "collection": "schooling_history",
+            "descriptor": "Delhi Public School Mathura Road"
+          },
+          {
+            "entity_id": "ACA-001",
+            "collection": "academic_entries",
+            "descriptor": "9TH"
+          },
+          {
+            "entity_id": "ACA-002",
+            "collection": "academic_entries",
+            "descriptor": "10TH"
+          },
+          {
+            "entity_id": "ACA-003",
+            "collection": "academic_entries",
+            "descriptor": "11TH"
+          },
+          {
+            "entity_id": "ACA-004",
+            "collection": "academic_entries",
+            "descriptor": "12TH"
+          },
+          {
+            "entity_id": "TEST-001",
+            "collection": "test_entries",
+            "descriptor": "SAT"
+          },
+          {
+            "entity_id": "TEST-002",
+            "collection": "test_entries",
+            "descriptor": "JEE Mains"
+          },
+          {
+            "entity_id": "ESS-001",
+            "collection": "essay_entries",
+            "descriptor": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?"
+          },
+          {
+            "entity_id": "ESS-002",
+            "collection": "essay_entries",
+            "descriptor": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?"
+          },
+          {
+            "entity_id": "ACT-001",
+            "collection": "activity_entries",
+            "descriptor": "Chess"
+          },
+          {
+            "entity_id": "ACT-002",
+            "collection": "activity_entries",
+            "descriptor": "Electronic Keyboard\n(Music)"
+          },
+          {
+            "entity_id": "ACT-003",
+            "collection": "activity_entries",
+            "descriptor": "Badminton"
+          },
+          {
+            "entity_id": "ACT-004",
+            "collection": "activity_entries",
+            "descriptor": "SHISMUN 22"
+          },
+          {
+            "entity_id": "ACT-005",
+            "collection": "activity_entries",
+            "descriptor": "SOFIEO"
+          },
+          {
+            "entity_id": "ACT-006",
+            "collection": "activity_entries",
+            "descriptor": "Mindquest quiz"
+          },
+          {
+            "entity_id": "LEAD-007",
+            "collection": "activity_entries",
+            "descriptor": "Project leader"
+          },
+          {
+            "entity_id": "LEAD-008",
+            "collection": "activity_entries",
+            "descriptor": "Team Leader"
+          },
+          {
+            "entity_id": "LEAD-009",
+            "collection": "activity_entries",
+            "descriptor": "Lead"
+          },
+          {
+            "entity_id": "LEAD-010",
+            "collection": "activity_entries",
+            "descriptor": "Organization Designation"
+          },
+          {
+            "entity_id": "LEAD-011",
+            "collection": "activity_entries",
+            "descriptor": "Friends/Family"
+          }
+        ],
+        "deterministic_signals": [
+          {
+            "signal_id": "DET-001",
+            "signal_type": "domain_concentration",
+            "observation": "Academic profile shows concentration of 12 entries in science and mathematics domains.",
+            "referenced_entity_ids": [
+              "ACA-001",
+              "ACA-002",
+              "ACA-003",
+              "ACA-004"
+            ],
+            "source_collection": "academic_entries"
+          },
+          {
+            "signal_id": "DET-002",
+            "signal_type": "leadership_presence",
+            "observation": "Applicant held leadership positions in 5 activities.",
+            "referenced_entity_ids": [
+              "LEAD-007",
+              "LEAD-008",
+              "LEAD-009",
+              "LEAD-010",
+              "LEAD-011"
+            ],
+            "source_collection": "activity_entries"
+          },
+          {
+            "signal_id": "DET-003",
+            "signal_type": "essay_characteristic",
+            "observation": "Essay response for What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program? exceeds 300 words.",
+            "referenced_entity_ids": [
+              "ESS-001"
+            ],
+            "source_collection": "essay_entries"
+          },
+          {
+            "signal_id": "DET-004",
+            "signal_type": "activity_volume",
+            "observation": "Applicant has reported 11 distinct activities.",
+            "referenced_entity_ids": [
+              "ACT-001",
+              "ACT-002",
+              "ACT-003",
+              "ACT-004",
+              "ACT-005",
+              "ACT-006",
+              "LEAD-007",
+              "LEAD-008",
+              "LEAD-009",
+              "LEAD-010",
+              "LEAD-011"
+            ],
+            "source_collection": "activity_entries"
+          },
+          {
+            "signal_id": "DET-005",
+            "signal_type": "test_performance_pattern",
+            "observation": "Score of 1510 achieved in SAT.",
+            "referenced_entity_ids": [
+              "TEST-001"
+            ],
+            "source_collection": "test_entries"
+          },
+          {
+            "signal_id": "DET-006",
+            "signal_type": "test_performance_pattern",
+            "observation": "Score of 99.39 achieved in JEE Mains.",
+            "referenced_entity_ids": [
+              "TEST-002"
+            ],
+            "source_collection": "test_entries"
+          },
+          {
+            "signal_id": "DET-007",
+            "signal_type": "timeline_characteristic",
+            "observation": "Academic records cover a span of 4 academic years.",
+            "referenced_entity_ids": [
+              "ACA-001",
+              "ACA-002",
+              "ACA-003",
+              "ACA-004"
+            ],
+            "source_collection": "academic_entries"
+          }
+        ]
+      }
+    },
+    "3_llm_call_1_raw": "{\n\"interpreted_signals\": [\n  {\n    \"signal_id\": \"INT-001\",\n    \"signal_type\": \"domain_concentration\",\n    \"observation\": \"Academic profile shows concentration of 12 entries in science and mathematics domains.\",\n    \"referenced_entity_ids\": [\n      \"ACA-001\",\n      \"ACA-002\",\n      \"ACA-003\",\n      \"ACA-004\"\n    ],\n    \"source_collection\": \"academic_entries\"\n  },\n  {\n    \"signal_id\": \"INT-002\",\n    \"signal_type\": \"leadership_presence\",\n    \"observation\": \"Applicant held leadership positions in 5 activities.\",\n    \"referenced_entity_ids\": [\n      \"LEAD-007\",\n      \"LEAD-008\",\n      \"LEAD-009\",\n      \"LEAD-010\",\n      \"LEAD-011\"\n    ],\n    \"source_collection\": \"activity_entries\"\n  },\n  {\n    \"signal_id\": \"INT-003\",\n    \"signal_type\": \"essay_characteristic\",\n    \"observation\": \"Essay response for What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\\nPlaksha's B.Tech program? exceeds 300 words.\",\n    \"referenced_entity_ids\": [\n      \"ESS-001\"\n    ],\n    \"source_collection\": \"essay_entries\"\n  },\n  {\n    \"signal_id\": \"INT-004\",\n    \"signal_type\": \"activity_volume\",\n    \"observation\": \"Applicant has reported 11 distinct activities.\",\n    \"referenced_entity_ids\": [\n      \"ACT-001\",\n      \"ACT-002\",\n      \"ACT-003\",\n      \"ACT-004\",\n      \"ACT-005\",\n      \"ACT-006\",\n      \"LEAD-007\",\n      \"LEAD-008\",\n      \"LEAD-009\",\n      \"LEAD-010\",\n      \"LEAD-011\"\n    ],\n    \"source_collection\": \"activity_entries\"\n  },\n  {\n    \"signal_id\": \"INT-005\",\n    \"signal_type\": \"test_performance_pattern\",\n    \"observation\": \"Score of 1510 achieved in SAT.\",\n    \"referenced_entity_ids\": [\n      \"TEST-001\"\n    ],\n    \"source_collection\": \"test_entries\"\n  },\n  {\n    \"signal_id\": \"INT-006\",\n    \"signal_type\": \"test_performance_pattern\",\n    \"observation\": \"Score of 99.39 achieved in JEE Mains.\",\n    \"referenced_entity_ids\": [\n      \"TEST-002\"\n    ],\n    \"source_collection\": \"test_entries\"\n  }\n]\n}",
+    "4_call_1_validation": {
+      "passed": false,
+      "sanitized_output": null,
+      "violations_log": [
+        {
+          "violation_id": "1859ac91-32d2-4124-b800-b2f8ad8b6a07",
+          "field": "interpreted_signals[0].title",
+          "type": "missing_field",
+          "context": "Required field 'title' is missing or empty."
+        },
+        {
+          "violation_id": "ae9089c5-530b-48b7-b16c-edd790b7a074",
+          "field": "interpreted_signals[0].description",
+          "type": "missing_field",
+          "context": "Required field 'description' is missing or empty."
+        },
+        {
+          "violation_id": "2ed9a5eb-b979-487d-a43c-3d6e5aa48306",
+          "field": "interpreted_signals[0].supporting_det_signal_ids",
+          "type": "missing_field",
+          "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+        },
+        {
+          "violation_id": "e1b5f1d3-7b37-4734-986f-977711226009",
+          "field": "interpreted_signals[1].title",
+          "type": "missing_field",
+          "context": "Required field 'title' is missing or empty."
+        },
+        {
+          "violation_id": "fecd01f6-7942-4429-a27e-68e2d6ce871b",
+          "field": "interpreted_signals[1].description",
+          "type": "missing_field",
+          "context": "Required field 'description' is missing or empty."
+        },
+        {
+          "violation_id": "6cc39949-0bc6-4fe4-9857-91cc7524a8de",
+          "field": "interpreted_signals[1].supporting_det_signal_ids",
+          "type": "missing_field",
+          "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+        },
+        {
+          "violation_id": "40afd709-fc11-4324-9c74-9e0d2f8fa7a5",
+          "field": "interpreted_signals[2].title",
+          "type": "missing_field",
+          "context": "Required field 'title' is missing or empty."
+        },
+        {
+          "violation_id": "0eb1d30b-b70c-42fa-87ac-809313fa9201",
+          "field": "interpreted_signals[2].description",
+          "type": "missing_field",
+          "context": "Required field 'description' is missing or empty."
+        },
+        {
+          "violation_id": "2df204e7-cf79-4f0d-8e6a-b36458403457",
+          "field": "interpreted_signals[2].supporting_det_signal_ids",
+          "type": "missing_field",
+          "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+        },
+        {
+          "violation_id": "4adbf92c-1a21-4ce0-af4e-6dc30be162d4",
+          "field": "interpreted_signals[3].title",
+          "type": "missing_field",
+          "context": "Required field 'title' is missing or empty."
+        },
+        {
+          "violation_id": "2caabc41-19da-4ba3-8b18-272fbe6d95b7",
+          "field": "interpreted_signals[3].description",
+          "type": "missing_field",
+          "context": "Required field 'description' is missing or empty."
+        },
+        {
+          "violation_id": "95005450-2ee4-4f4e-820f-9579e62efca6",
+          "field": "interpreted_signals[3].supporting_det_signal_ids",
+          "type": "missing_field",
+          "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+        },
+        {
+          "violation_id": "d5c1d3cf-c72d-4509-b226-64501f8b736e",
+          "field": "interpreted_signals[4].title",
+          "type": "missing_field",
+          "context": "Required field 'title' is missing or empty."
+        },
+        {
+          "violation_id": "3bd71bf3-da73-4b4e-83c9-901c65f02de7",
+          "field": "interpreted_signals[4].description",
+          "type": "missing_field",
+          "context": "Required field 'description' is missing or empty."
+        },
+        {
+          "violation_id": "c7c536a0-ce40-4029-91aa-cffd49cbf4bd",
+          "field": "interpreted_signals[4].supporting_det_signal_ids",
+          "type": "missing_field",
+          "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+        },
+        {
+          "violation_id": "10dce494-0f55-4b7c-9df7-33b95b64c144",
+          "field": "interpreted_signals[5].title",
+          "type": "missing_field",
+          "context": "Required field 'title' is missing or empty."
+        },
+        {
+          "violation_id": "e5951f27-81c7-4914-aebf-07a974ff5423",
+          "field": "interpreted_signals[5].description",
+          "type": "missing_field",
+          "context": "Required field 'description' is missing or empty."
+        },
+        {
+          "violation_id": "3960248d-b76e-4e47-969a-ec8db6a455cc",
+          "field": "interpreted_signals[5].supporting_det_signal_ids",
+          "type": "missing_field",
+          "context": "Required field 'supporting_det_signal_ids' is missing or empty."
+        }
+      ],
+      "policy_version": "1.0"
+    }
+  }
+}
