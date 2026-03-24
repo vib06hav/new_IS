@@ -18,7 +18,6 @@ def extract_academic_records(
     state-machine approach with spatial column mapping for tables.
     """
     entries = []
-    schooling_history = []
     confidence = 0.85
 
     # ─── Step 1: Cluster blocks into horizontal rows ───
@@ -175,14 +174,7 @@ def extract_academic_records(
             merged[lvl] = e
 
     final_entries = list(merged.values())
-    for ent in final_entries:
-        schooling_history.append({
-            "entry_id": str(uuid.uuid4()), "level": ent["academic_level"],
-            "school_name": ent.get("school_name"), "board_name": ent.get("board_name"),
-            "location": None, "confidence_score": ent.get("confidence_score", 0.9)
-        })
-
-    return {"academic_entries": final_entries, "schooling_history": schooling_history, "confidence_score": confidence}
+    return {"academic_entries": final_entries, "confidence_score": confidence}
 
 def _apply_spatial_metadata(entry: dict, anchor_map: dict, row_blocks: list):
     """Aligns metadata blocks to anchors using distance-ranked pairing."""

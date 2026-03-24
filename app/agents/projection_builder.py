@@ -142,6 +142,12 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
     
     if context_family:
         context["family_background"] = context_family
+
+    geo = identifiers.get("geographic_context", {})
+    if isinstance(geo, dict):
+        cleaned_geo = {k: v for k, v in geo.items() if v is not None}
+        if cleaned_geo:
+            context["geographic_context"] = cleaned_geo
     
     # 2. Academic Profile
     academic_profile = []
@@ -322,15 +328,13 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
         activity_profile.append(act_entry)
 
     # 6. Construct final projection
-    llm_entity_id_map = [e for e in entity_id_map if e.get("collection") != "schooling_history"]
-
     projection = {
         "applicant_context": {k: v for k, v in context.items() if v is not None},
         "academic_profile": academic_profile,
         "test_profile": test_profile,
         "essay_profile": essay_profile,
         "activity_profile": activity_profile,
-        "entity_id_map": llm_entity_id_map,
+        "entity_id_map": entity_id_map,
         "deterministic_signals": deterministic_signals
     }
     if academic_summary:

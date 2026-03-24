@@ -16,14 +16,11 @@ class FamilyBackground(BaseModel):
     father: FamilyMember
     mother: FamilyMember
 
-# --- Schooling History ---
-class SchoolingHistoryEntry(BaseModel):
-    entry_id: UUID
-    level: str
-    school_name: Optional[str] = None
-    board_name: Optional[str] = None
-    location: Optional[str] = None
-    confidence_score: float
+# --- Geographic Context ---
+class GeographicContext(BaseModel):
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
 
 # --- Identifiers ---
 class Identifiers(BaseModel):
@@ -31,6 +28,7 @@ class Identifiers(BaseModel):
     full_name: Optional[str] = None
     date_of_birth: Optional[str] = None
     family_background: Optional[FamilyBackground] = None
+    geographic_context: Optional[GeographicContext] = None
     preferred_major: Optional[str] = None
 
 
@@ -94,18 +92,6 @@ class ActivityEntry(BaseModel):
     description_raw: Optional[str] = None
     confidence_score: float = Field(ge=0.0, le=1.0)
 
-# --- Cross References ---
-class SourceReference(BaseModel):
-    source_type: str
-    entry_id: str
-
-class EntityTokenMatch(BaseModel):
-    entity_token: str
-    source_references: List[SourceReference] = Field(default_factory=list)
-
-class CrossReferences(BaseModel):
-    entity_map: List[EntityTokenMatch] = Field(default_factory=list)
-
 # --- Integrity Report ---
 class Anomaly(BaseModel):
     anomaly_id: str
@@ -132,10 +118,8 @@ class CanonicalData(BaseModel):
     canonical_version: str = Field(default=CANONICAL_VERSION)
     identifiers: Identifiers
     academic_entries: List[AcademicEntry] = Field(default_factory=list)
-    schooling_history: List[SchoolingHistoryEntry] = Field(default_factory=list)
     test_entries: List[TestEntry] = Field(default_factory=list)
     essay_entries: List[EssayEntry] = Field(default_factory=list)
     activity_entries: List[ActivityEntry] = Field(default_factory=list)
-    cross_references: CrossReferences
     integrity_report: IntegrityReport
     extraction_confidence: ExtractionConfidence

@@ -1,14 +1,14 @@
 {
-  "application_id": "092afed7-9e78-46e9-b205-b9757c8cdc4a",
+  "application_id": "dummy_app_1",
   "signal_evidence_pairs": [
     {
       "signal": {
-        "signal_id": "DET-001",
-        "title": null,
-        "essay_claim": null,
-        "evidence_observation": null,
-        "tension_or_coherence": null,
-        "interview_hook": null,
+        "signal_id": "INT-001",
+        "title": "Placeholder signal for fixture regeneration",
+        "essay_claim": "Placeholder essay claim",
+        "evidence_observation": "Placeholder evidence observation",
+        "tension_or_coherence": "COHERENCE - Placeholder relationship.",
+        "interview_hook": "Placeholder interview hook.",
         "referenced_entity_ids": [
           "ACA-001",
           "ACA-002",
@@ -53,8 +53,7 @@
                 "score_raw": "77.5",
                 "max_score_raw": "100"
               }
-            ],
-            "entity_id": "ACA-001"
+            ]
           }
         },
         {
@@ -93,8 +92,7 @@
                 "score_raw": "100",
                 "max_score_raw": "100"
               }
-            ],
-            "entity_id": "ACA-002"
+            ]
           }
         },
         {
@@ -133,8 +131,7 @@
                 "score_raw": "97",
                 "max_score_raw": "100"
               }
-            ],
-            "entity_id": "ACA-003"
+            ]
           }
         },
         {
@@ -173,72 +170,7 @@
                 "score_raw": "96",
                 "max_score_raw": "100"
               }
-            ],
-            "entity_id": "ACA-004"
-          }
-        }
-      ]
-    },
-    {
-      "signal": {
-        "signal_id": "DET-002",
-        "title": null,
-        "essay_claim": null,
-        "evidence_observation": null,
-        "tension_or_coherence": null,
-        "interview_hook": null,
-        "referenced_entity_ids": [
-          "LEAD-005"
-        ]
-      },
-      "evidence": [
-        {
-          "entity_id": "LEAD-005",
-          "collection": "activity_entries",
-          "content": {
-            "activity_type": "leadership",
-            "position_title": "School House Captain",
-            "duration": "1",
-            "roles_and_responsibilities": "Was the School House Captain at",
-            "entity_id": "LEAD-005"
-          }
-        }
-      ]
-    },
-    {
-      "signal": {
-        "signal_id": "DET-003",
-        "title": null,
-        "essay_claim": null,
-        "evidence_observation": null,
-        "tension_or_coherence": null,
-        "interview_hook": null,
-        "referenced_entity_ids": [
-          "TEST-001"
-        ]
-      },
-      "evidence": [
-        {
-          "entity_id": "TEST-001",
-          "collection": "test_entries",
-          "content": {
-            "test_name": "JEE Mains",
-            "total_score": "99.01",
-            "sectional_scores": [
-              {
-                "label": "Physics Percentile",
-                "raw_score": "96.67"
-              },
-              {
-                "label": "Maths Percentile",
-                "raw_score": "99.33"
-              },
-              {
-                "label": "Chemistry Percentile",
-                "raw_score": "97.69"
-              }
-            ],
-            "entity_id": "TEST-001"
+            ]
           }
         }
       ]

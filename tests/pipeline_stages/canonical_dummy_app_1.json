@@ -1,7 +1,7 @@
 {
   "canonical_version": "1.1",
   "identifiers": {
-    "application_id": "Dummy App (1)_v8_filled",
+    "application_id": "dummy_app_1",
     "full_name": "Aarav Jain",
     "date_of_birth": "2007-06-14",
     "family_background": {
@@ -20,11 +20,16 @@
         "designation": null
       }
     },
+    "geographic_context": {
+      "city": "Jaipur",
+      "state": "Rajasthan",
+      "country": "India"
+    },
     "preferred_major": "Computer Science and Artificial Intelligence"
   },
   "academic_entries": [
     {
-      "entry_id": "c22bf800-1a44-4688-97dd-b38900aafe7a",
+      "entry_id": "c2e364f3-f6a8-4df3-92a2-df78751ddd2d",
       "academic_level": "9TH",
       "school_name": "Jayshree Periwal International School",
       "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
@@ -69,7 +74,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "9ef8a127-6d9a-4d77-871d-0087bbb43f96",
+      "entry_id": "c197de2a-368e-4fb7-a25a-aaa61c755ab8",
       "academic_level": "10TH",
       "school_name": "Jayshree Periwal International School",
       "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
@@ -114,7 +119,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "6663335e-3a12-40a7-a652-4947a421164c",
+      "entry_id": "eb3e7d03-fb79-4f10-bafb-a8c1f1d12dfa",
       "academic_level": "11TH",
       "school_name": "Jayshree Periwal International School",
       "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
@@ -159,7 +164,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "116e5cde-cec7-48c0-b2d1-3c28697b7504",
+      "entry_id": "e9ab931e-9cef-4717-9ae3-a4080ee09095",
       "academic_level": "12TH",
       "school_name": "Jayshree Periwal International School",
       "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
@@ -204,43 +209,9 @@
       "confidence_score": 0.85
     }
   ],
-  "schooling_history": [
-    {
-      "entry_id": "bb4bab68-133b-483c-80c3-8ecf72f3dd95",
-      "level": "9TH",
-      "school_name": "Jayshree Periwal International School",
-      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
-      "location": null,
-      "confidence_score": 0.85
-    },
-    {
-      "entry_id": "81f239c6-2fb1-489a-bcff-f488208159d1",
-      "level": "10TH",
-      "school_name": "Jayshree Periwal International School",
-      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
-      "location": null,
-      "confidence_score": 0.85
-    },
-    {
-      "entry_id": "0c38544c-c1cd-42fa-bcd6-410dd13812f0",
-      "level": "11TH",
-      "school_name": "Jayshree Periwal International School",
-      "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
-      "location": null,
-      "confidence_score": 0.85
-    },
-    {
-      "entry_id": "bbe599c1-08e4-45a6-a410-29b5cdca19de",
-      "level": "12TH",
-      "school_name": "Jayshree Periwal International School",
-      "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
-      "location": null,
-      "confidence_score": 0.85
-    }
-  ],
   "test_entries": [
     {
-      "entry_id": "c3598fa9-28f7-4ad7-b2e0-66e74b98a8bd",
+      "entry_id": "d5ff4767-5f3a-4fb7-94c8-eebee59967ee",
       "test_name": "JEE Mains",
       "test_date": null,
       "total_score": "99.01",
@@ -266,7 +237,7 @@
   ],
   "essay_entries": [
     {
-      "entry_id": "474b9139-f2a2-4534-8fc2-f9629d33d8c7",
+      "entry_id": "ffcd5873-a2dd-43c4-a504-80a5014b6d91",
       "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
       "raw_text": "From a young age, I've been fascinated by how things work-whether it's the logic behind mobile apps, the science in smart devices, or the\ninnovation that powers everyday life. What excites me most about engineering and technology is the ability to solve real-world problems\nusing creativity and logic. It's not just about building machines or writing code-it's about designing solutions that can create meaningful\nimpact. The ever-evolving nature of tech, combined with its potential to transform industries from healthcare to climate, makes this field\nincredibly exciting for me. I believe my curiosity, collaborative mindset, and eagerness to learn make me a strong fit for Plaksha's B.Tech program. I enjoy working on\nprojects, asking questions, and applying what I learn to practical challenges. I also have a keen interest in interdisciplinary learning-blending\ntech with design, data, and human behavior-which I understand is core to Plaksha's approach. What draws me most to Plaksha is its focus\non innovation, entrepreneurship, and societal impact. I'm excited by the opportunity to learn from faculty, mentors, and peers who are\npassionate about building a better future through technology. Plaksha's hands-on curriculum, values-driven mission, and emphasis on\nleadership resonate deeply with my aspirations.",
       "word_count": 196,
@@ -275,7 +246,7 @@
       "confidence_score": 0.9
     },
     {
-      "entry_id": "ade6c764-685e-4957-89bf-c98714a7b111",
+      "entry_id": "a8bc161e-8de2-4ea1-b94b-75e6b6dcbee1",
       "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
       "raw_text": "Having grown up with a pet dog, I've developed a deep sense of empathy and care for animals. That personal connection inspired me to take\naction when I noticed several stray dogs in my neighborhood struggling with hunger, injuries, and neglect. I initiated a small project with a\nfew classmates to support these animals by organizing feeding drives, arranging basic medical aid through local NGOs, and spreading\nawareness about responsible and humane treatment of strays. One of the major challenges was addressing concerns from some residents who were initially uncomfortable with our activities. There were\nworries about safety and cleanliness. Instead of giving up, I took the time to understand their perspective and created a small awareness\ncampaign. We shared how caring for strays through sterilization and regular feeding could actually make the community safer. We also made\nsure to clean up after every feeding and involved local animal welfare volunteers to lend credibility to our efforts. This experience taught me that leadership is as much about listening and empathy as it is about action. It showed me how\nperseverance-combined with teamwork and a clear sense of purpose-can gradually change mindsets and make a difference. It also\nreinforced that even small initiatives, when pursued with sincerity, can have a positive and lasting impact.",
       "word_count": 213,
@@ -286,7 +257,7 @@
   ],
   "activity_entries": [
     {
-      "entry_id": "5e241efe-0875-4467-968d-f62a847f6a4f",
+      "entry_id": "0369abbe-554f-47d7-8923-5bfc0e41e7c3",
       "activity_type": "extracurricular",
       "activity_name": "Music Piano",
       "position_title": null,
@@ -298,7 +269,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "508006f0-2e3a-40ed-99cc-a5f9248888ec",
+      "entry_id": "9bef6738-e609-4040-a420-929451f9c6fb",
       "activity_type": "extracurricular",
       "activity_name": "Yoga",
       "position_title": null,
@@ -310,7 +281,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "bf761858-af54-4aa8-8fcc-d57554bc623f",
+      "entry_id": "a33b3e43-3111-4251-9209-6195f93f745b",
       "activity_type": "co_curricular",
       "activity_name": "Olympiads",
       "position_title": null,
@@ -322,7 +293,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "f1a2a8e9-4389-49e9-b694-e6550d48c95e",
+      "entry_id": "10b8d01a-5669-4dcf-99bb-a20e60787bd1",
       "activity_type": "co_curricular",
       "activity_name": "Reading",
       "position_title": null,
@@ -334,7 +305,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "8dcd50d0-7932-4a31-95cd-8e54cd6a6e4d",
+      "entry_id": "1650088c-9b26-47fe-8678-d10240e4d35d",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "School House Captain",
@@ -346,27 +317,6 @@
       "confidence_score": 0.95
     }
   ],
-  "cross_references": {
-    "entity_map": [
-      {
-        "entity_token": "Science",
-        "source_references": [
-          {
-            "source_type": "academic",
-            "entry_id": "c22bf800-1a44-4688-97dd-b38900aafe7a"
-          },
-          {
-            "source_type": "academic",
-            "entry_id": "9ef8a127-6d9a-4d77-871d-0087bbb43f96"
-          },
-          {
-            "source_type": "activity",
-            "entry_id": "bf761858-af54-4aa8-8fcc-d57554bc623f"
-          }
-        ]
-      }
-    ]
-  },
   "integrity_report": {
     "anomalies": []
   },

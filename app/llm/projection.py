@@ -23,7 +23,7 @@ def build_synthesis_projection(canonical_data: Dict[str, Any]) -> str:
     # 1 = Truncate Activity descriptions
     # 2 = Truncate Essay raw_text
     # 3 = Truncate Timeline entries
-    # 4 = Remove Cross-reference details
+    # 4 = Reserved for additional structural-note truncation
     # 5 = Remove Subject-level granularity
     # 6 = Remove predicted_score_raw
     # 7 = Remove percentile
@@ -149,24 +149,9 @@ def _render_projection(data: Dict[str, Any], truncation_level: int) -> str:
             lines.append(f"  {tl.get('year', 'Unknown')}: {tl.get('event_label', 'Unknown')} ({tl.get('source_type', 'Unknown')})")
         lines.append("")
     
-    # 7. STRUCTURAL NOTES (Integrity + Cross References)
+    # 7. STRUCTURAL NOTES
     lines.append("STRUCTURAL NOTES")
-    
-    if truncation_level < 4:
-        cross_refs = working_data.get("cross_references", {})
-        entity_map = cross_refs.get("entity_map", []) if isinstance(cross_refs, dict) else []
-        if entity_map:
-            lines.append("  Cross References:")
-            for xr in entity_map:
-                if isinstance(xr, dict):
-                    src_refs = xr.get('source_references', [])
-                    if isinstance(src_refs, list) and src_refs:
-                        stypes = [r.get('source_type', 'Unknown') for r in src_refs if isinstance(r, dict)]
-                        stype_str = ", ".join(stypes) if stypes else "Unknown"
-                    else:
-                        stype_str = "Unknown"
-                    lines.append(f"  - Entity: {xr.get('entity_token', 'Unknown')} (Source: {stype_str})")
-                
+
     integrity = working_data.get("integrity_report", {})
     anomalies = integrity.get("anomalies", [])
     if anomalies:

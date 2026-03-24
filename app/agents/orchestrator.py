@@ -4,6 +4,7 @@ import re
 from app.agents.layout_extractor import extract_layout_blocks
 from app.agents.section_detector import detect_sections
 from app.agents.personal_extractor import extract_personal_info
+from app.agents.geographic_extractor import extract_geographic_context
 from app.agents.additional_info_extractor import extract_additional_info
 from app.agents.academic_extractor import extract_academic_records
 from app.agents.test_extractor import extract_test_records
@@ -153,10 +154,12 @@ def _collect_parent_sections(section_data: Dict[str, Any], parser_engine_version
 
         if parser_engine_version == "v1":
             is_parent_section = any(kw in label for kw in ["parent", "father", "mother"])
+            is_address_section = "address" in label
         else:
             is_parent_section = section_type == "parent_details"
+            is_address_section = section_type == "address_details"
 
-        if not is_parent_section:
+        if not is_parent_section and not is_address_section:
             continue
 
         section_rows = _rows_for_section(section, layout_rows)
@@ -171,6 +174,34 @@ def _collect_parent_sections(section_data: Dict[str, Any], parser_engine_version
         })
 
     return parent_sections
+
+
+def _collect_address_sections(section_data: Dict[str, Any], parser_engine_version: str, layout_rows: Any) -> list:
+    address_sections = []
+    for section in section_data.get("sections", []):
+        label = section.get("label", "").lower()
+        section_type = section.get("section_type")
+
+        if parser_engine_version == "v1":
+            is_address_section = "address" in label
+        else:
+            is_address_section = section_type == "address_details"
+
+        if not is_address_section:
+            continue
+
+        section_rows = _rows_for_section(section, layout_rows)
+        row_blocks = []
+        for row in section_rows:
+            row_blocks.extend(row.get("blocks", []))
+
+        address_sections.append({
+            "label": section.get("label"),
+            "normalized_label": normalize_label(section.get("label", "")),
+            "blocks": row_blocks or section.get("blocks", []),
+        })
+
+    return address_sections
 
 
 def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, Any]:
@@ -199,6 +230,7 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
     logger.info(f"Parser engine version: {parser_engine_version}")
     section_buckets = _collect_section_blocks(section_data, parser_engine_version)
     parent_sections = _collect_parent_sections(section_data, parser_engine_version, layout_data.get("rows"))
+    address_sections = _collect_address_sections(section_data, parser_engine_version, layout_data.get("rows"))
     academic_rows = []
     test_rows = []
     for section in section_data.get("sections", []):
@@ -235,6 +267,13 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
         personal_scope,
         parent_sections=parent_sections,
     )
+    geographic_data = extract_geographic_context(address_sections)
+    if geographic_data.get("geographic_context"):
+        personal_data.setdefault("identifiers", {})["geographic_context"] = geographic_data["geographic_context"]
+        personal_data["confidence_score"] = max(
+            personal_data.get("confidence_score", 0.0),
+            geographic_data.get("confidence_score", 0.0),
+        )
     logger.debug(f"Agent completion (agent_id: 3, confidence_score: {personal_data.get('confidence_score', 'N/A')})")
 
     if additional_info_blocks:

@@ -1,7 +1,7 @@
 {
   "canonical_version": "1.1",
   "identifiers": {
-    "application_id": "Dummy App (3)_v8_filled",
+    "application_id": "dummy_app_3",
     "full_name": "Sai Kiran Reddy",
     "date_of_birth": "2007-03-05",
     "family_background": {
@@ -20,11 +20,16 @@
         "designation": "Teacher"
       }
     },
+    "geographic_context": {
+      "city": "Hanamkonda",
+      "state": "Telangana",
+      "country": "India"
+    },
     "preferred_major": "Computer Science and Artificial Intelligence"
   },
   "academic_entries": [
     {
-      "entry_id": "7b66e3cf-4bcc-49ea-a8bf-fc7f5975059c",
+      "entry_id": "7514df4d-b132-4d3d-ac84-88c7d34ecbd0",
       "academic_level": "9TH",
       "school_name": null,
       "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
@@ -69,7 +74,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "ae6c7e76-4b02-430c-bbb7-a547ab5944a2",
+      "entry_id": "484f6ec1-6fc8-4f5f-8379-fc3c23ee5d42",
       "academic_level": "10TH",
       "school_name": "SR Prime School",
       "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
@@ -114,7 +119,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "815d9341-73e6-498b-90c4-a6614977e421",
+      "entry_id": "5d3687c0-d07d-48d0-a552-0af89c0e47fd",
       "academic_level": "11TH",
       "school_name": "SR Junior College",
       "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
@@ -159,7 +164,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "3c98149d-0df6-46c1-97c3-1da71007fbab",
+      "entry_id": "40ded9f2-5cf6-4e28-a399-411f6175f0e4",
       "academic_level": "12TH",
       "school_name": "SR Junior College",
       "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
@@ -204,43 +209,9 @@
       "confidence_score": 0.85
     }
   ],
-  "schooling_history": [
-    {
-      "entry_id": "add085fc-f8a5-4866-92de-54706068bb51",
-      "level": "9TH",
-      "school_name": null,
-      "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
-      "location": null,
-      "confidence_score": 0.85
-    },
-    {
-      "entry_id": "7258cc7e-06e2-4c78-b03e-d2d745300023",
-      "level": "10TH",
-      "school_name": "SR Prime School",
-      "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
-      "location": null,
-      "confidence_score": 0.85
-    },
-    {
-      "entry_id": "53b25150-4099-4b95-93cb-9cab6b05fffc",
-      "level": "11TH",
-      "school_name": "SR Junior College",
-      "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
-      "location": null,
-      "confidence_score": 0.85
-    },
-    {
-      "entry_id": "bf5cc016-a51d-4d2e-ac55-f86f6af39b56",
-      "level": "12TH",
-      "school_name": "SR Junior College",
-      "board_name": "TELANGANA BOARD OF SECONDARY EDUCATION",
-      "location": null,
-      "confidence_score": 0.85
-    }
-  ],
   "test_entries": [
     {
-      "entry_id": "6a562ca9-bf0b-4961-91de-eeaa430cd601",
+      "entry_id": "2fe06f7b-d138-4aec-8a4b-78123d2ccf50",
       "test_name": "JEE Mains",
       "test_date": null,
       "total_score": "97.38",
@@ -266,7 +237,7 @@
   ],
   "essay_entries": [
     {
-      "entry_id": "60353f8b-3c65-438a-a3cc-bcd5a4727ca3",
+      "entry_id": "71b72ef6-5ff3-4018-b726-b6445c3a7c6e",
       "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
       "raw_text": "I always wanted to do engineering as i always loved experimenting with computer, mobile devices.The current trend is moving towards new\ntechnology and improvements to the existing hardware and software at a rapid pace.I as a student need to be ahead of my competition by\nchoosing a good institute like plaksha which not only offers great teacher student ratio but also regular hackathons, labs and research\nfacilities , students of plaksha winning the hackathon organised by yale is also a great achievement which i suppose would only be possible\nwith the right guidance by faculty and also the efforts of students .I as a tech enthusiast would love being under the guidance of such\nesteemed faculty , i have already learnt basics of java and published a few games in google play store , thus possesing a good foundation\nwhich could be polished under the faculty of plaksha.The b.tech program at plaksha is going to be very useful for someone like me who is\nintrested in tech , plaksha has a huge number of clubs which would also be great for overall development,I personally like chess a lot and\nalso have won a few state tournaments when i was younger, i would definitely love reviving that hobby of mine at plaksha which has a huge\nnumber of clubs and option for new clubs.Maths being my favourite subject and also my strongest with the exception of mechanics in physics\nas it requires visualisation would be very helpful in my competitive programs.The best part of technology is that it can go on forever meaning\ni would have the oportunity to learn forever and explore many of the untouched , yet to be discovered parts of it.Plaksha having a vast\nnumber of reaserch labs and other things to support students would support me learn new things about technology and other things that i\nwould need to know about engineering.",
       "word_count": 316,
@@ -275,7 +246,7 @@
       "confidence_score": 0.9
     },
     {
-      "entry_id": "de77214f-50b7-473d-93fd-41938b751574",
+      "entry_id": "187ead23-339e-4a56-a215-babf9c273e1d",
       "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
       "raw_text": "I was almost always the head of the group when we were doing a science project / science fair.There were many times when the intitial idea\nwas good but many improvements could have been made later on.One such incident was us designing a alarm for water tank the initial\nprototype had a basic wire with a metal strip at the bottom of the tank and then another at the top of it , the alarm would go off when the\ncircuit was complete i.e water is completely filled, there were a few reasons why this prototype was good but not the best way.The first was\nthe risk of corrosion at the metal plate especially the bottom one, we simply fixed that by moving both the metal strips to the top. another\nproblem was this wasnt universal i.e didnot work for pure , distilled water which couldve been a limitation , we fixed this by having a closed\nenclosure with the bottom open and the insides having a earbud which had a thin lining of metal on top and a metal strip on top of the\nenclousure , the earbud being light and with less density would float up and hit the metal strip completing the circuit this eliminated the\nfactor of conductance of water , this new setup now could be used in many places with a liquid system or even pressure chambers when\nbuild with enough resistance for the movement of earbud. outside of the setup was a simple 9v battery and a buzzer which would normally\nwork and the setup acting as our switch. similar setup (initial prototype) was also used as a alarm mechanism for doors with an addition of a\nspring at the hinge which would make buzzer go off even at slight opening of door and also let the door be completely open, the metal strips\nare attached at the hinge and wall , the strip on the wall had spring to complete circuit at the slightest opening.We used a switch in the\nsecond system as we didnt want it to ring when we our clasroom doors were open while teaching.",
       "word_count": 356,
@@ -286,7 +257,7 @@
   ],
   "activity_entries": [
     {
-      "entry_id": "b5efb046-9ac0-45d6-8ccb-03bfc4337aa9",
+      "entry_id": "a5ee9ef3-1071-40e6-88fd-d7041b5f6829",
       "activity_type": "extracurricular",
       "activity_name": "chess",
       "position_title": null,
@@ -298,7 +269,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "3bd73dc6-0b74-4292-a8a0-e0f59ed2ec0f",
+      "entry_id": "80c4a5fc-0ad7-472f-8f91-d76ee1790cca",
       "activity_type": "extracurricular",
       "activity_name": "cricket",
       "position_title": null,
@@ -310,7 +281,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "79b0e2da-6819-4acf-8cb0-c77dd9e684c3",
+      "entry_id": "2a002afe-a051-44cf-bc90-3c84399c3d57",
       "activity_type": "extracurricular",
       "activity_name": "table tennis",
       "position_title": null,
@@ -322,7 +293,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "d6cd09db-711b-4e1b-837a-2c3a411592e8",
+      "entry_id": "dd418a88-2290-4141-aaae-da8c65e7a4ff",
       "activity_type": "co_curricular",
       "activity_name": "science fair",
       "position_title": null,
@@ -334,7 +305,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "ff375c42-4b88-46a6-8d75-1b11644d7c58",
+      "entry_id": "dd1748c1-be93-43b3-8788-a9e4e9c60188",
       "activity_type": "co_curricular",
       "activity_name": "made a game on teachers\nday",
       "position_title": null,
@@ -346,7 +317,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "c2680304-7c68-4942-8f51-9b8c92404f45",
+      "entry_id": "36ba2065-38a2-4a9d-bc15-60df961d2b1d",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "state 4th ranked",
@@ -358,7 +329,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "6a455a0b-469a-4a7c-a388-63ed7e1058ce",
+      "entry_id": "81d3feca-41ad-4bb7-adc7-290db9ec7c31",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "vice captain",
@@ -370,7 +341,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "c1cf2267-9516-4d36-b45b-6a6def11946f",
+      "entry_id": "d233d10c-f9ae-4934-a067-b905edf81da2",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "captain (always) , won\ntwice",
@@ -382,7 +353,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "7926dd35-ec62-41b0-89f6-fe5193a35285",
+      "entry_id": "6b2c321b-b006-4b44-a053-e16fb9bded07",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "selected as best project\non teachers day",
@@ -394,7 +365,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "1a3ec0c2-85e8-44f8-9257-16d58d021caf",
+      "entry_id": "0ccfda98-82e0-4e3f-b554-c5e5ad41197b",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "class monitor",
@@ -406,9 +377,6 @@
       "confidence_score": 0.95
     }
   ],
-  "cross_references": {
-    "entity_map": []
-  },
   "integrity_report": {
     "anomalies": []
   },

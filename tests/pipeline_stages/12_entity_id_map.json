@@ -1,25 +1,5 @@
 [
   {
-    "entity_id": "SCH-001",
-    "collection": "schooling_history",
-    "descriptor": "Jayshree Periwal International School"
-  },
-  {
-    "entity_id": "SCH-002",
-    "collection": "schooling_history",
-    "descriptor": "Jayshree Periwal International School"
-  },
-  {
-    "entity_id": "SCH-003",
-    "collection": "schooling_history",
-    "descriptor": "Jayshree Periwal International School"
-  },
-  {
-    "entity_id": "SCH-004",
-    "collection": "schooling_history",
-    "descriptor": "Jayshree Periwal International School"
-  },
-  {
     "entity_id": "ACA-001",
     "collection": "academic_entries",
     "descriptor": "9TH"

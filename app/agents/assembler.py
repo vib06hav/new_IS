@@ -33,7 +33,8 @@ def assemble_canonical(
         ),
         "full_name": identifiers.get("full_name"),
         "date_of_birth": identifiers.get("date_of_birth"),
-        "family_background": identifiers.get("family_background")
+        "family_background": identifiers.get("family_background"),
+        "geographic_context": identifiers.get("geographic_context"),
     }
     
     # 2. Extraction Confidence
@@ -91,11 +92,9 @@ def assemble_canonical(
         "canonical_version": CANONICAL_VERSION,
         "identifiers": refined_identifiers,
         "academic_entries": academic_data.get("academic_entries", []),
-        "schooling_history": academic_data.get("schooling_history", []),
         "test_entries": test_data.get("test_entries", []),
         "essay_entries": essay_data.get("essay_entries", []),
         "activity_entries": activity_data.get("activity_entries", []),
-        "cross_references": {"entity_map": cross_section_data.get("entity_map", [])},
         "integrity_report": {"anomalies": integrity_data.get("anomalies", [])},
         "extraction_confidence": extraction_confidence
     }

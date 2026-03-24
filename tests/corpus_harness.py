@@ -12,6 +12,7 @@ from app.agents.essay_extractor import extract_essays
 from app.agents.integrity_analyzer import analyze_integrity
 from app.agents.layout_extractor import extract_layout_blocks
 from app.agents.personal_extractor import extract_personal_info
+from app.agents.geographic_extractor import extract_geographic_context
 from app.agents.section_detector import detect_sections
 from app.agents.test_extractor import extract_test_records
 from app.utils.layout_normalizer import normalize_layout
@@ -119,6 +120,37 @@ def _collect_parent_sections(
     return parent_sections
 
 
+def _collect_address_sections(
+    section_data: Dict[str, Any],
+    parser_engine_version: str,
+    layout_rows: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    address_sections: List[Dict[str, Any]] = []
+    for section in section_data.get("sections", []):
+        section_type = section.get("section_type")
+        label = section.get("label", "").lower()
+        if parser_engine_version == "v1":
+            is_address_section = "address" in label
+        else:
+            is_address_section = section_type == "address_details"
+
+        if not is_address_section:
+            continue
+
+        section_rows = _rows_for_section(section, layout_rows)
+        row_blocks: List[Dict[str, Any]] = []
+        for row in section_rows:
+            row_blocks.extend(row.get("blocks", []))
+
+        address_sections.append({
+            "label": section.get("label"),
+            "normalized_label": normalize_label(section.get("label", "")),
+            "blocks": row_blocks or section.get("blocks", []),
+        })
+
+    return address_sections
+
+
 def _rows_for_section(section: Dict[str, Any], layout_rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     if not layout_rows:
         return []
@@ -137,6 +169,11 @@ def _run_deterministic_pipeline_stages(pdf_path: Path, parser_engine_version: st
     section_data = detect_sections(layout_data["blocks"], rows=layout_data.get("rows"))
     section_map = _collect_section_map(section_data, parser_engine_version)
     parent_sections = _collect_parent_sections(
+        section_data,
+        parser_engine_version,
+        layout_data.get("rows", []),
+    )
+    address_sections = _collect_address_sections(
         section_data,
         parser_engine_version,
         layout_data.get("rows", []),
@@ -162,6 +199,13 @@ def _run_deterministic_pipeline_stages(pdf_path: Path, parser_engine_version: st
 
     personal_scope = section_map.get("personal_details", []) or layout_data["blocks"]
     personal_data = extract_personal_info(personal_scope, parent_sections=parent_sections)
+    geographic_data = extract_geographic_context(address_sections)
+    if geographic_data.get("geographic_context"):
+        personal_data.setdefault("identifiers", {})["geographic_context"] = geographic_data["geographic_context"]
+        personal_data["confidence_score"] = max(
+            personal_data.get("confidence_score", 0.0),
+            geographic_data.get("confidence_score", 0.0),
+        )
 
     if section_map.get("additional_information"):
         additional_info_data = extract_additional_info(section_map["additional_information"], all_blocks=layout_data["blocks"])

@@ -1,7 +1,7 @@
 {
   "canonical_version": "1.1",
   "identifiers": {
-    "application_id": "Dummy App (2)_v8_filled",
+    "application_id": "dummy_app_2",
     "full_name": "Ananya Kapoor",
     "date_of_birth": "2007-02-18",
     "family_background": {
@@ -20,11 +20,16 @@
         "designation": null
       }
     },
+    "geographic_context": {
+      "city": "New Delhi",
+      "state": "Delhi",
+      "country": "India"
+    },
     "preferred_major": "Computer Science and Artificial Intelligence"
   },
   "academic_entries": [
     {
-      "entry_id": "1b43560b-e4ae-4783-b6d4-7ec3e59bbb2f",
+      "entry_id": "42c54c93-b3bb-4aed-94ca-66f6be4af00a",
       "academic_level": "9TH",
       "school_name": "The Shri Ram School, Vasant Vihar",
       "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ISC)",
@@ -75,7 +80,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "89896819-e09c-4d1d-892b-009e0f703084",
+      "entry_id": "2a8a41fe-b3d9-410d-8cb3-bf67ce26bada",
       "academic_level": "10TH",
       "school_name": "The Shri Ram School, Vasant Vihar",
       "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ICSE)",
@@ -126,7 +131,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "1a5fe359-6dac-4808-bf68-6a3b8ba83dba",
+      "entry_id": "79291873-26c9-4ecf-8b2f-50f5ac0f1f3a",
       "academic_level": "11TH",
       "school_name": "The Shri Ram School, Vasant Vihar",
       "board_name": "Indian School Certificate (ISC)",
@@ -171,7 +176,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "6eb00b2f-6ec1-4b8f-ae54-0f7b38f4085d",
+      "entry_id": "cdd0dfb3-495d-47f7-8c6a-1720de57b419",
       "academic_level": "12TH",
       "school_name": "The Shri Ram School, Vasant Vihar",
       "board_name": "Indian School Certificate (ISC)",
@@ -216,43 +221,9 @@
       "confidence_score": 0.85
     }
   ],
-  "schooling_history": [
-    {
-      "entry_id": "3231c0fb-cc62-4abd-a3e9-f179589014b3",
-      "level": "9TH",
-      "school_name": "The Shri Ram School, Vasant Vihar",
-      "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ISC)",
-      "location": null,
-      "confidence_score": 0.85
-    },
-    {
-      "entry_id": "5441a4bc-732b-4af2-9fbf-5cbd5d6a5eed",
-      "level": "10TH",
-      "school_name": "The Shri Ram School, Vasant Vihar",
-      "board_name": "COUNCIL FOR THE INDIAN SCHOOL CERTIFICATE EXAMINATIONS (ICSE)",
-      "location": null,
-      "confidence_score": 0.85
-    },
-    {
-      "entry_id": "738c7181-1d95-4d8e-99ae-033a55942a92",
-      "level": "11TH",
-      "school_name": "The Shri Ram School, Vasant Vihar",
-      "board_name": "Indian School Certificate (ISC)",
-      "location": null,
-      "confidence_score": 0.85
-    },
-    {
-      "entry_id": "0405d3aa-ede1-41d5-8fbd-cf16d52bb0a7",
-      "level": "12TH",
-      "school_name": "The Shri Ram School, Vasant Vihar",
-      "board_name": "Indian School Certificate (ISC)",
-      "location": null,
-      "confidence_score": 0.85
-    }
-  ],
   "test_entries": [
     {
-      "entry_id": "754a942d-0cb2-47ed-ac1e-e4a22949bca5",
+      "entry_id": "d45f9930-03da-40e5-b348-6d7d2d9ae48e",
       "test_name": "JEE Mains",
       "test_date": null,
       "total_score": "98.4",
@@ -278,7 +249,7 @@
   ],
   "essay_entries": [
     {
-      "entry_id": "b883b02b-9b22-44cd-b6ee-efb2ebfd8eb5",
+      "entry_id": "b6655796-2eeb-4797-a107-dfcb7a09b9d9",
       "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
       "raw_text": "My interest in technology has grown over the years. My first tryst with computers was probably in Grade 4 when it was introduced in our\nschool curriculum. This curriculum, entailing foundational coding languages like QBasic and Scratch, piqued my interest and I tried to develop\na simple arithmetic calculator. This interest was further strengthened when my chess coach told me that computer programs could outsmart\nhumans. Intrigued by this notion, I spent months trying to comprehend algorithms behind these programs. My penchant for mathematics\nfrom my formative days was another factor that drew me towards this futuristic domain. Apart from being my top-scoring subject, I enjoyed\nthe challenge of participating and excelling in competitions like the SOF Olympiad and UNSW. My exposure expanded through participation in national competitions like IJSO, international trips (NASA, Silicon Valley, and the Hadron\nCollider at CERN), and industry internships. Multiple internships helped me understand Indian IT landscape, and reinforced the importance of\nsophisticated computing technologies for continued innovation and exploration. These experiences reinforced my desire to pursue graduation\nin the field of computers. Driven by a strong desire to develop academic rigour, I embarked on the preparation for one of the most challenging examinations in the\nworld- the JEE Advanced. This examination tests not only mathematical prowess but also analytical capabilities. Over the past two years, I\nhave dedicated myself to an intensive study regimen, solving intricate problems and tackling baffling concepts from calculus to mechanics.\nThe journey has been demanding, yet it has equipped me with invaluable skills that are beneficial in understanding algorithms, data\nstructures, and software development. Additionally, I have enhanced my technical acumen by studying Java and Html and also secured Rank\n2 in Grade 11 at my school.\nFocusing on personality and leadership development, I have participated in the student council and various inter-school events over the last\nfour years. My interest in Speech and Drama enabled me to complete Grade 7 at Trinity College, London. I have also actively engaged in\nmany non-profit activities such as waste collection drives and beach clean-ups.\nCumulatively, my journey has crystallised my desire to pursue graduation in computer science. I intend to follow-up with higher education\nand industry experience at leading global firms to contribute meaningfully to the society and field of science. I believe that studying at a modern and state-of-the-art university like Plaksha would help me realize my ambitions.",
       "word_count": 398,
@@ -287,7 +258,7 @@
       "confidence_score": 0.9
     },
     {
-      "entry_id": "31d2e576-3b3b-48ba-9280-4ccd5095e8fb",
+      "entry_id": "44687cf4-c45a-4847-aa1c-d94c54bf7207",
       "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
       "raw_text": "The importance of social responsibility and community involvement had been emphasized time and again in my school since early days.\nHowever, initially I was oblivious to its true meaning till I undertook the SignBee project by V-shesh Foundation. I came to know about V-\nshesh from my classmates in the 10th grade. This project entailed learning Sign Language which is imperative for communicating with the\ndifferently-abled and creating awareness about the same in society. The initial phase of this project was interesting and informative as I imbibed a plethora of symbols and understood the intricacies of the\nlanguage. As we moved to the practical phase, we were required to perform a short story for the differently-abled kids. This was an eye-\nopener for me in terms of real challenges involved in converting theory to practice and taught me various lessons like empathy, gratitude,\ncompassion and responsibility. Towards the end of the project, I made an online presentation to educate people of my locality about the sign\nlanguage and this helped me implement by learnings on wider scope. I organized workshops and sessions in my society to sensitize people on this topic and make people understand that how simple uses of sign\nlanguage can help the differently-abled people feel more inclusive in our society. Reception to this idea was lukewarm at first as most people\nseemed unwilling to make an effort to learn the language. I had to go through several iterations like organizing personalized sessions over\nweekends and using different pneumonic tools to make sign language easy to learn and assimilate. To my surprise, the younger generation\nwas more enthusiastic about learning. This required me to involve my family who could put forth the ideas in a better way than I could\nenvisage.\nI was extremely satisfied that I was able to contribute in a small yet meaningful way towards the society over a span of two months.\nPredominantly, I learnt about leadership and how it requires one to approach a situation from different avenues and emerge with new ideas\nand have the passion to keep going through tough times. It also required motivating my colleagues several times who helped me during\nexecution. Today, I look back at the Signbee experience as one that made a better human being with a new perspective of the world and society.",
       "word_count": 388,
@@ -298,7 +269,7 @@
   ],
   "activity_entries": [
     {
-      "entry_id": "8ec6628a-51f5-4448-bb2b-be472b1b3047",
+      "entry_id": "987f7209-19df-401e-8aec-bb241511d663",
       "activity_type": "extracurricular",
       "activity_name": "Chess",
       "position_title": null,
@@ -310,7 +281,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "9e025117-b26a-450b-a271-ed39b19a9e10",
+      "entry_id": "0d7a8a1f-c59f-4fa7-a4da-3c7bef0ddc4e",
       "activity_type": "extracurricular",
       "activity_name": "Trinity College London",
       "position_title": null,
@@ -322,7 +293,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "903e08c1-345b-43e9-822c-8173d02c5ba4",
+      "entry_id": "813dc79c-30dd-4b13-82c4-ee98f1094233",
       "activity_type": "extracurricular",
       "activity_name": "School Events\nOrganization and Social\nImpaact",
       "position_title": null,
@@ -334,7 +305,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "ef9ce270-5c66-483b-8a87-141b76209a03",
+      "entry_id": "e5cfdc82-1132-4727-89fa-f2a4242a68ad",
       "activity_type": "co_curricular",
       "activity_name": "Participation in maths\ncompetitions like IPM\nMental Maths NSEJS",
       "position_title": null,
@@ -346,7 +317,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "533e6829-ce17-4385-91ae-deebbd481b5f",
+      "entry_id": "f0f1fd3e-bbd1-4f0c-8fd3-b5c754ee78ca",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "School Prefect",
@@ -358,66 +329,6 @@
       "confidence_score": 0.95
     }
   ],
-  "cross_references": {
-    "entity_map": [
-      {
-        "entity_token": "Social",
-        "source_references": [
-          {
-            "source_type": "academic",
-            "entry_id": "1b43560b-e4ae-4783-b6d4-7ec3e59bbb2f"
-          },
-          {
-            "source_type": "academic",
-            "entry_id": "89896819-e09c-4d1d-892b-009e0f703084"
-          },
-          {
-            "source_type": "activity",
-            "entry_id": "903e08c1-345b-43e9-822c-8173d02c5ba4"
-          }
-        ]
-      },
-      {
-        "entity_token": "London",
-        "source_references": [
-          {
-            "source_type": "essay",
-            "entry_id": "b883b02b-9b22-44cd-b6ee-efb2ebfd8eb5"
-          },
-          {
-            "source_type": "activity",
-            "entry_id": "9e025117-b26a-450b-a271-ed39b19a9e10"
-          }
-        ]
-      },
-      {
-        "entity_token": "Trinity",
-        "source_references": [
-          {
-            "source_type": "essay",
-            "entry_id": "b883b02b-9b22-44cd-b6ee-efb2ebfd8eb5"
-          },
-          {
-            "source_type": "activity",
-            "entry_id": "9e025117-b26a-450b-a271-ed39b19a9e10"
-          }
-        ]
-      },
-      {
-        "entity_token": "College",
-        "source_references": [
-          {
-            "source_type": "essay",
-            "entry_id": "b883b02b-9b22-44cd-b6ee-efb2ebfd8eb5"
-          },
-          {
-            "source_type": "activity",
-            "entry_id": "9e025117-b26a-450b-a271-ed39b19a9e10"
-          }
-        ]
-      }
-    ]
-  },
   "integrity_report": {
     "anomalies": []
   },

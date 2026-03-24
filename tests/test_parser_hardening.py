@@ -5,6 +5,7 @@ from app.agents.academic_extractor import extract_academic_records
 from app.agents.cross_section_detector import detect_cross_sections
 from app.agents.integrity_analyzer import analyze_integrity
 from app.agents.layout_extractor import _build_block_ir, _build_header_candidates, _build_issue_ir, _build_layout_issues, _build_page_stats
+from app.agents.geographic_extractor import extract_geographic_context
 from app.agents.personal_extractor import extract_personal_info
 from app.agents.section_detector import detect_sections
 from app.agents.test_extractor import extract_test_records
@@ -276,6 +277,66 @@ def test_personal_extractor_ignores_generic_parent_grouping_section():
     assert result["identifiers"]["family_background"]["mother"]["name"] is None
 
 
+def test_geographic_extractor_prefers_permanent_address_when_available():
+    address_sections = [
+        {
+            "label": "Communication Address",
+            "blocks": [
+                {"page": 1, "text": "Town/City", "bbox": (20, 650, 80, 665)},
+                {"page": 1, "text": "Gurugram", "bbox": (180, 650, 240, 665)},
+                {"page": 1, "text": "State", "bbox": (20, 630, 60, 645)},
+                {"page": 1, "text": "Haryana", "bbox": (180, 630, 235, 645)},
+                {"page": 1, "text": "Country Name", "bbox": (20, 610, 100, 625)},
+                {"page": 1, "text": "India", "bbox": (180, 610, 215, 625)},
+            ],
+        },
+        {
+            "label": "Permanent Address",
+            "blocks": [
+                {"page": 1, "text": "Town/City", "bbox": (20, 580, 80, 595)},
+                {"page": 1, "text": "Jaipur", "bbox": (180, 580, 220, 595)},
+                {"page": 1, "text": "State", "bbox": (20, 560, 60, 575)},
+                {"page": 1, "text": "Rajasthan", "bbox": (180, 560, 250, 575)},
+                {"page": 1, "text": "Country Name", "bbox": (20, 540, 100, 555)},
+                {"page": 1, "text": "India", "bbox": (180, 540, 215, 555)},
+            ],
+        },
+    ]
+
+    result = extract_geographic_context(address_sections)
+
+    assert result["geographic_context"] == {
+        "city": "Jaipur",
+        "state": "Rajasthan",
+        "country": "India",
+    }
+
+
+def test_geographic_extractor_skips_neighboring_address_labels_when_extracting_state():
+    address_sections = [
+        {
+            "label": "Communication Address",
+            "blocks": [
+                {"page": 1, "text": "State", "bbox": (20, 650, 55, 665)},
+                {"page": 1, "text": "District:", "bbox": (140, 650, 190, 665)},
+                {"page": 1, "text": "Delhi", "bbox": (210, 650, 245, 665)},
+                {"page": 1, "text": "Town/City", "bbox": (20, 630, 80, 645)},
+                {"page": 1, "text": "New Delhi", "bbox": (210, 630, 270, 645)},
+                {"page": 1, "text": "Country Name", "bbox": (20, 610, 100, 625)},
+                {"page": 1, "text": "India", "bbox": (210, 610, 245, 625)},
+            ],
+        }
+    ]
+
+    result = extract_geographic_context(address_sections)
+
+    assert result["geographic_context"] == {
+        "city": "New Delhi",
+        "state": "Delhi",
+        "country": "India",
+    }
+
+
 def test_academic_extractor_can_use_shared_rows_without_regrouping():
     row_blocks = [
         {"page": 1, "text": "School Name", "bbox": (20, 700, 110, 715)},
@@ -495,7 +556,7 @@ def test_assembler_aggregate_confidence_penalizes_layout_and_section_quality():
             "sections": [{"label": "Unknown Header", "section_type": None}],
         },
         identifiers_data={"confidence_score": 0.85, "identifiers": {"full_name": "Aarav Jain", "family_background": None}},
-        academic_data={"confidence_score": 0.85, "academic_entries": [], "schooling_history": []},
+        academic_data={"confidence_score": 0.85, "academic_entries": []},
         test_data={"confidence_score": 0.90, "test_entries": []},
         essay_data={"confidence_score": 0.90, "essay_entries": []},
         activity_data={"confidence_score": 0.90, "activity_entries": [], "preferred_major": None},

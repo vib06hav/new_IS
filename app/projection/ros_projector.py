@@ -42,7 +42,6 @@ def _assign_entity_ids(canonical_data: Dict[str, Any]) -> Tuple[Dict[str, Any], 
                 "descriptor": descriptor
             })
                 
-    annotate("schooling_history", "SCH")
     annotate("academic_entries", "ACA")
     annotate("test_entries", "TEST")
     annotate("essay_entries", "ESS")
@@ -55,15 +54,21 @@ def _project_page_1(annotated: Dict[str, Any]) -> Dict[str, Any]:
     identifiers = annotated.get("identifiers", {})
     _strip_keys = {"entry_id", "confidence_score"}
     schooling_history = [
-        {k: v for k, v in entry.items() if k not in _strip_keys}
-        for entry in annotated.get("schooling_history", [])
+        {
+            "level": entry.get("academic_level"),
+            "school_name": entry.get("school_name"),
+            "board_name": entry.get("board_name"),
+            "entity_id": entry.get("entity_id"),
+        }
+        for entry in annotated.get("academic_entries", [])
     ]
     page_1 = {
         "identity": {
             "application_id": identifiers.get("application_id"),
             "full_name": identifiers.get("full_name"),
             "date_of_birth": identifiers.get("date_of_birth"),
-            "preferred_major": identifiers.get("preferred_major")
+            "preferred_major": identifiers.get("preferred_major"),
+            "geographic_context": identifiers.get("geographic_context"),
         },
         "family_background": identifiers.get("family_background", None),
         "schooling_history": schooling_history,
@@ -114,8 +119,8 @@ def _compute_highlights(essay: Dict[str, Any], annotated: Dict[str, Any]) -> Lis
         if a.get("test_name") and a["test_name"] in text:
             keyword_map[a["test_name"]] = a["entity_id"]
             
-    # schooling
-    for a in annotated.get("schooling_history", []):
+    # schooling names are derived from academic entries
+    for a in annotated.get("academic_entries", []):
         if a.get("school_name") and a["school_name"] in text:
             keyword_map[a["school_name"]] = a["entity_id"]
             
