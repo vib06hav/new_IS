@@ -54,8 +54,8 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
     current_entry = None
     in_subject_table = False
     
-    # Header state for metadata (School, Board, etc.)
-    metadata_header_cols = []
+    # Header state for Metadata (School, Board, etc.) — maps canonical key to X-anchor
+    metadata_column_map = {}
     
     # Header state for Subject Table (Subject, Max, Obtained)
     subject_column_map = {}
@@ -70,10 +70,15 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
             continue
 
         # ── A. Metadata header row? (School Name | Board | ...) ──
-        lower_cells = {t.lower() for t in texts}
+        lower_cells = {t.lower().replace("\n", " ") for t in texts}
         header_hits = lower_cells & HEADER_LABELS
         if len(header_hits) >= 2:
-            metadata_header_cols = [t.lower() for t in texts]
+            metadata_column_map = {}
+            for b in row_blocks:
+                hdr_norm = b["text"].lower().strip().replace("\n", " ")
+                canonical = ACADEMIC_COLUMN_MAP.get(hdr_norm)
+                if canonical:
+                    metadata_column_map[canonical] = b["bbox"][0]
             # If it's pure header, skip the rest
             if not LEVEL_RE.search(lower_full) and "subject" not in lower_full:
                 continue
@@ -103,17 +108,10 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
 
             # If we already have an active entry for this level, don't restart!
             if current_entry and current_entry["academic_level"] == clean_level:
-                # Map inline data bits
-                if len(texts) == len(metadata_header_cols) and len(texts) > 1:
-                    _apply_header_data(current_entry, metadata_header_cols[1:], texts[1:])
-                elif len(texts) == len(metadata_header_cols) + 1:
-                    _apply_header_data(current_entry, metadata_header_cols, texts[1:])
-                else:
-                    _apply_header_data(current_entry, metadata_header_cols, texts[1:])
+                # Map inline metadata spatially
+                _apply_spatial_metadata(current_entry, metadata_column_map, row_blocks)
                 continue
 
-            # If we were in a subject table for a PREVIOUS level, and now a new level starts
-            # AND this row isn't the header for the *new* table, reset.
             if "subject" not in lower_full:
                 in_subject_table = False
                 subject_column_map = {}
@@ -136,13 +134,8 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
                 "confidence_score": confidence,
             }
 
-            # Map inline data bits
-            if len(texts) == len(metadata_header_cols) and len(texts) > 1:
-                _apply_header_data(current_entry, metadata_header_cols[1:], texts[1:])
-            elif len(texts) == len(metadata_header_cols) + 1:
-                _apply_header_data(current_entry, metadata_header_cols, texts[1:])
-            else:
-                 _apply_header_data(current_entry, metadata_header_cols, texts[1:])
+            # Map inline metadata spatially
+            _apply_spatial_metadata(current_entry, metadata_column_map, row_blocks)
             continue
 
         # ── D. Subject Table Data (Use Spatial Column Map) ──
@@ -203,12 +196,44 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
 
     return {"academic_entries": final_entries, "schooling_history": schooling_history, "confidence_score": confidence}
 
-def _apply_header_data(entry: dict, header_columns: list, data_vals: list):
-    for idx, hdr in enumerate(header_columns):
-        val = data_vals[idx] if idx < len(data_vals) else None
-        if not val: continue
-        canonical_key = ACADEMIC_COLUMN_MAP.get(hdr.strip().lower())
-        if canonical_key:
-            entry[canonical_key] = val
-            if canonical_key == "marking_scheme_raw":
+def _apply_spatial_metadata(entry: dict, anchor_map: dict, row_blocks: list):
+    """Aligns metadata blocks to anchors using distance-ranked pairing."""
+    if not anchor_map: return
+    
+    # 1. Create candidates for all (key, block_idx) pairs
+    candidates = []
+    for key, anchor_x in anchor_map.items():
+        for i, b in enumerate(row_blocks):
+            t_cleaned = b["text"].strip().replace("\n", " ")
+            if not t_cleaned: continue
+            
+            # Skip Level Identifiers
+            if re.search(r'\b(9th|10th|11th|12th|class)\b', t_cleaned, re.I):
+                continue
+            # Skip Boilerplate (Labels)
+            if is_stop_word(t_cleaned) or (b["bbox"][2] - b["bbox"][0]) > 350:
+                continue
+                
+            dist = abs(b["bbox"][0] - anchor_x)
+            if dist < 120:  # Broader threshold for metadata drift
+                candidates.append((dist, key, i))
+    
+    # 2. Sort candidates by distance (best matches first)
+    candidates.sort(key=lambda x: x[0])
+    
+    # 3. Satisfy pairings
+    used_keys = set()
+    used_indices = set()
+    for dist, key, idx in candidates:
+        if key not in used_keys and idx not in used_indices:
+            val = row_blocks[idx]["text"].strip().replace("\n", " ")
+            entry[key] = val
+            used_keys.add(key)
+            used_indices.add(idx)
+            
+            if key == "marking_scheme_raw":
                 entry["grading_mode"] = "percentage" if "percent" in val.lower() else "cgpa" if "cgpa" in val.lower() else "unknown"
+
+def _apply_header_data(entry: dict, header_columns: list, data_vals: list):
+    # LEGACY - removed in Phase 3.0
+    pass

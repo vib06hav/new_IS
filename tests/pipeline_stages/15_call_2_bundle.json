@@ -1,5 +1,5 @@
 {
-  "application_id": "4b5f3709-958b-4ed6-99cf-2fc7d04fb5ef",
+  "application_id": "092afed7-9e78-46e9-b205-b9757c8cdc4a",
   "signal_evidence_pairs": [
     {
       "signal": {
@@ -107,7 +107,6 @@
             "academic_year": "2024",
             "grading_mode": "percentage",
             "score_raw": "97.9",
-            "max_score_raw": "Upload Conversion Scale (In Case Of Letter Grades): NO",
             "subject_entries": [
               {
                 "subject_name": "Mathematics",

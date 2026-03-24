@@ -61,7 +61,6 @@
       "year": "2024",
       "grading_mode": "percentage",
       "overall_score": "97.9",
-      "max_score": "Upload Conversion Scale (In Case Of Letter Grades): NO",
       "school_name": "Jayshree Periwal International School",
       "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
       "subjects_concise": [
@@ -133,10 +132,6 @@
           "score": "97.69"
         }
       ]
-    },
-    {
-      "entity_id": "TEST-002",
-      "test_name": "SAT"
     }
   ],
   "essay_profile": [
@@ -216,11 +211,6 @@
       "entity_id": "TEST-001",
       "collection": "test_entries",
       "descriptor": "JEE Mains"
-    },
-    {
-      "entity_id": "TEST-002",
-      "collection": "test_entries",
-      "descriptor": "SAT"
     },
     {
       "entity_id": "ESS-001",

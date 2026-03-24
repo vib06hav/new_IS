@@ -45,11 +45,6 @@
     "descriptor": "JEE Mains"
   },
   {
-    "entity_id": "TEST-002",
-    "collection": "test_entries",
-    "descriptor": "SAT"
-  },
-  {
     "entity_id": "ESS-001",
     "collection": "essay_entries",
     "descriptor": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?"

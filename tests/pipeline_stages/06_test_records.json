@@ -1,7 +1,7 @@
 {
   "test_entries": [
     {
-      "entry_id": "78f28923-c356-462c-ae1d-868236ef3dba",
+      "entry_id": "467d1836-7bfc-439b-902f-23935806bd7c",
       "test_name": "JEE Mains",
       "test_date": null,
       "total_score": "99.01",
@@ -17,22 +17,6 @@
         {
           "label": "Chemistry Percentile",
           "raw_score": "97.69"
-        }
-      ],
-      "percentile": null,
-      "rank": null,
-      "result_status": "available",
-      "confidence_score": 0.9
-    },
-    {
-      "entry_id": "61ae65d2-7393-4632-92be-b3dabde038ee",
-      "test_name": "SAT",
-      "test_date": null,
-      "total_score": null,
-      "sectional_scores": [
-        {
-          "label": "Reading/Writing",
-          "raw_score": "."
         }
       ],
       "percentile": null,

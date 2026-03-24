@@ -26,7 +26,8 @@ def _split_cell(text: str) -> Tuple[str, str]:
     """Splits a cell into potential label and value."""
     clean = text.strip()
     # 1. Joined case: 'Physics Percentile 96.67'
-    match = re.search(r"^(.*?)\s*[:\-–]?\s*([\d\.]+)%?$", clean)
+    # Use lookahead to ensure at least one digit is present (avoids capturing just ".")
+    match = re.search(r"^(.*?)\s*[:\-–]?\s*((?=.*\d)[\d\.]+)%?$", clean)
     if match:
         return match.group(1).strip(), match.group(2).strip()
     return clean, None
