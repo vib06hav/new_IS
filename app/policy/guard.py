@@ -84,7 +84,10 @@ def _normalize_signal_output(data: Any, rules: List[str]) -> Any:
             normalized_signals.append({
                 "signal_id": _first_present(sig, ["signal_id", "id"]),
                 "title": _rewrite_prohibited_phrasing(_first_present(sig, ["title", "name", "label"], ""), rules),
-                "description": _rewrite_prohibited_phrasing(_first_present(sig, ["description", "summary", "details"], ""), rules),
+                "essay_claim": _first_present(sig, ["essay_claim"], ""),
+                "evidence_observation": _first_present(sig, ["evidence_observation"], ""),
+                "tension_or_coherence": _first_present(sig, ["tension_or_coherence"], ""),
+                "interview_hook": _first_present(sig, ["interview_hook"], ""),
                 "referenced_entity_ids": _first_present(sig, ["referenced_entity_ids", "entity_ids", "references"], []),
                 "supporting_det_signal_ids": _first_present(sig, ["supporting_det_signal_ids", "det_signal_ids", "deterministic_signal_ids"], []),
             })
@@ -435,9 +438,9 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
         sig_passed = True
         
         # Mandatory fields
-        required = ["signal_id", "title", "description", "referenced_entity_ids", "supporting_det_signal_ids"]
+        required = ["signal_id", "title", "essay_claim", "evidence_observation", "tension_or_coherence", "interview_hook", "referenced_entity_ids", "supporting_det_signal_ids"]
         for field in required:
-            if field not in sig or not sig[field]:
+            if field not in sig or sig[field] is None:
                 violations_log.append({
                     "violation_id": str(uuid.uuid4()),
                     "field": f"interpreted_signals[{idx}].{field}",
@@ -492,7 +495,7 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
                 passed = False
 
         # Neutrality Validation
-        for field in ["title", "description"]:
+        for field in ["title", "essay_claim", "evidence_observation", "tension_or_coherence", "interview_hook"]:
             text = sig[field]
             violations = _scan_text(text, rules)
             for v in violations:
@@ -502,7 +505,16 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
                 passed = False
         
         if passed:
-            sanitized_signals.append(sig)
+            sanitized_signals.append({
+                "signal_id": sig.get("signal_id"),
+                "title": sig.get("title"),
+                "essay_claim": sig.get("essay_claim"),
+                "evidence_observation": sig.get("evidence_observation"),
+                "tension_or_coherence": sig.get("tension_or_coherence"),
+                "interview_hook": sig.get("interview_hook"),
+                "referenced_entity_ids": sig.get("referenced_entity_ids"),
+                "supporting_det_signal_ids": sig.get("supporting_det_signal_ids"),
+            })
 
     return {
         "passed": passed,

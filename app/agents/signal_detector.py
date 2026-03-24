@@ -71,11 +71,16 @@ def detect_signals(canonical: dict, entity_id_map: list) -> list[dict]:
     scores = []
     for entry in canonical.get("academic_entries", []):
         score_val = entry.get("score_raw")
+        max_val = entry.get("max_score_raw") or "100"
         if score_val:
             try:
-                nums = re.findall(r"\d+\.?\d*", str(score_val))
-                if nums: scores.append(float(nums[0]))
-            except ValueError: continue
+                nums_s = re.findall(r"\d+\.?\d*", str(score_val))
+                nums_m = re.findall(r"\d+\.?\d*", str(max_val))
+                if nums_s and nums_m:
+                    s_float = float(nums_s[0])
+                    m_float = float(nums_m[0])
+                    scores.append((s_float / m_float) * 100)
+            except (ValueError, ZeroDivisionError): continue
     
     if scores and all(s >= 90 for s in scores):
         aca_ids = [e["entity_id"] for e in entity_id_map if e.get("collection") == "academic_entries"]

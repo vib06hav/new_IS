@@ -1,4 +1,0 @@
-Run directory: tests/outputs/stage_1_7_boundary_runs/20260322T170651Z_cc08da61-41de-490c-9d36-daa56bcd26ba
-Application ID: cc08da61-41de-490c-9d36-daa56bcd26ba
-Call 1 validation: passed
-Call 2 validation: False

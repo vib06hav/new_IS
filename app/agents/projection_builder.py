@@ -1,6 +1,7 @@
 import re
 
 from app.config import settings
+from app.utils.form_vocab import is_stop_word
 
 def build_projection(canonical: dict, entity_id_map: list, deterministic_signals: list) -> dict:
     """
@@ -8,8 +9,6 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
     Constructs a cleaned view of the canonical representation.
     Applies null omission, parse artifact detection, and field inclusion rules.
     """
-    compact_mode = settings.LLM_PAYLOAD_MODE == "compact"
-
     def _safe_float(value):
         if value is None:
             return None
@@ -35,44 +34,6 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
         if len(words) <= max_words:
             return cleaned
         return " ".join(words[:max_words]) + "..."
-
-    def _compact_parent(parent_data):
-        compact_parent = {}
-        for field in ["education", "field_of_employment", "designation", "organization"]:
-            value = _clean_text(parent_data.get(field))
-            if value:
-                compact_parent[field] = value
-        return compact_parent
-
-    def _build_activity_summary(entry):
-        parts = []
-        for value in [
-            _clean_text(entry.get("activity_name")),
-            _clean_text(entry.get("position_title")),
-            _clean_text(entry.get("activity_type")),
-        ]:
-            if value and value not in parts:
-                parts.append(value)
-
-        duration = _clean_text(entry.get("duration"))
-        if duration and not is_artifact(duration, is_duration=True):
-            parts.append(f"duration {duration}")
-
-        level = _clean_text(entry.get("level"))
-        if level:
-            parts.append(level)
-
-        detail = (
-            _truncate_text(entry.get("achievement"), max_words=18)
-            or _truncate_text(entry.get("roles_and_responsibilities"), max_words=18)
-            or _truncate_text(entry.get("description_raw"), max_words=18)
-        )
-        if detail:
-            parts.append(detail)
-
-        if not parts:
-            return None
-        return "; ".join(parts)
 
     def _build_academic_summary(entries):
         if not entries:
@@ -102,27 +63,35 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
                         f"School changed from {previous_entry.get('school_name')} to {entry.get('school_name')} between {previous_entry.get('academic_level')} and {entry.get('academic_level')}"
                     )
             if previous_score is not None and current_score is not None:
-                diff = current_score - previous_score
-                if diff <= -7:
+                current_max = _safe_float(entry.get("max_score_raw")) or 100.0
+                prev_max = _safe_float(previous_entry.get("max_score_raw")) or 100.0
+                
+                current_p = (current_score / current_max) * 100
+                prev_p = (previous_score / prev_max) * 100
+                diff_p = current_p - prev_p
+                
+                if diff_p <= -7:
                     notes.append(
-                        f"Performance dipped from {previous_entry.get('academic_level')} to {entry.get('academic_level')} by {abs(diff):.1f} points"
+                        f"Performance dipped from {previous_entry.get('academic_level')} to {entry.get('academic_level')} by {abs(diff_p):.1f} percentage points"
                     )
-                elif diff >= 7:
+                elif diff_p >= 7:
                     notes.append(
-                        f"Performance improved from {previous_entry.get('academic_level')} to {entry.get('academic_level')} by {diff:.1f} points"
+                        f"Performance improved from {previous_entry.get('academic_level')} to {entry.get('academic_level')} by {diff_p:.1f} percentage points"
                     )
 
             subjects = entry.get("subject_entries", []) or []
             subject_scores = []
             for subject in subjects:
                 score = _safe_float(subject.get("score_raw"))
+                mx = _safe_float(subject.get("max_score_raw")) or 100.0
                 if score is not None:
-                    subject_scores.append((score, _clean_text(subject.get("subject_name"))))
+                    subject_scores.append((score, _clean_text(subject.get("subject_name")), mx))
             if subject_scores:
-                lowest_score, lowest_subject = min(subject_scores, key=lambda item: item[0])
-                if lowest_subject and lowest_score <= 80:
+                lowest_score, lowest_subject, lowest_max = min(subject_scores, key=lambda item: (item[0]/item[2])*100)
+                lowest_p = (lowest_score / lowest_max) * 100
+                if lowest_subject and lowest_p <= 80:
                     notes.append(
-                        f"{entry.get('academic_level')} includes a lower subject score in {lowest_subject} ({lowest_score:.1f})"
+                        f"{entry.get('academic_level')} includes a lower subject score in {lowest_subject} ({lowest_score:.1f}/{lowest_max:.0f})"
                     )
 
             previous_entry = entry
@@ -148,13 +117,6 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
         if not section_scores:
             return sections
 
-        if compact_mode:
-            highest_score = max(score for score, _ in section_scores)
-            lowest_score, lowest_label = min(section_scores, key=lambda item: item[0])
-            if highest_score - lowest_score >= 8 and lowest_label:
-                sections.append({"label": lowest_label, "score": f"{lowest_score:.2f}".rstrip("0").rstrip(".")})
-            return sections
-
         for score, label in section_scores:
             cleaned_sec = {"label": label, "score": f"{score:.2f}".rstrip("0").rstrip(".")}
             sections.append({k: v for k, v in cleaned_sec.items() if v is not None})
@@ -166,8 +128,7 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
     # 1. Applicant Context
     identifiers = canonical.get("identifiers", {})
     context = {"preferred_major": identifiers.get("preferred_major")}
-    if not compact_mode:
-        context["full_name"] = identifiers.get("full_name")
+    context["full_name"] = identifiers.get("full_name")
     
     family = identifiers.get("family_background", {})
     context_family = {}
@@ -175,10 +136,7 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
         for parent_key in ["father", "mother"]:
             if parent_key in family and isinstance(family[parent_key], dict):
                 parent_data = family[parent_key]
-                if compact_mode:
-                    cleaned_parent = _compact_parent(parent_data)
-                else:
-                    cleaned_parent = {k: v for k, v in parent_data.items() if v is not None}
+                cleaned_parent = {k: v for k, v in parent_data.items() if v is not None}
                 if cleaned_parent:
                     context_family[parent_key] = cleaned_parent
     
@@ -197,54 +155,48 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
             "level": entry.get("academic_level"),
             "year": entry.get("academic_year"),
             "grading_mode": entry.get("grading_mode"),
-            "overall_score": entry.get("score_raw")
+            "overall_score": entry.get("score_raw"),
+            "max_score": entry.get("max_score_raw")
         }
 
-        if not compact_mode:
-            aca_entry["school_name"] = entry.get("school_name")
-            aca_entry["board_name"] = entry.get("board_name")
-        else:
-            previous_entry = academic_entries[academic_index - 1] if academic_index > 0 else None
-            if previous_entry is None or entry.get("school_name") != previous_entry.get("school_name"):
-                aca_entry["school_name"] = entry.get("school_name")
-            if previous_entry is None or entry.get("board_name") != previous_entry.get("board_name"):
-                aca_entry["board_name"] = entry.get("board_name")
+        aca_entry["school_name"] = entry.get("school_name")
+        aca_entry["board_name"] = entry.get("board_name")
         
         if entry.get("predicted_score_raw") is not None:
             aca_entry["predicted_score_raw"] = entry.get("predicted_score_raw")
             
-        if compact_mode:
-            subjects = []
-            subject_scores = []
-            for sub in entry.get("subject_entries", []):
-                score = _safe_float(sub.get("score_raw"))
-                subject_name = _clean_text(sub.get("subject_name"))
-                if score is None or not subject_name:
-                    continue
-                subject_scores.append((score, subject_name))
-            if subject_scores:
-                top_score, top_subject = max(subject_scores, key=lambda item: item[0])
-                low_score, low_subject = min(subject_scores, key=lambda item: item[0])
-                aca_entry["subject_summary"] = {
-                    "highest_subject": top_subject,
-                    "highest_score": f"{top_score:.2f}".rstrip("0").rstrip("."),
-                    "lowest_subject": low_subject,
-                    "lowest_score": f"{low_score:.2f}".rstrip("0").rstrip(".")
-                }
-        else:
-            subjects = []
-            for sub in entry.get("subject_entries", []):
+        subjects = []
+        for sub in entry.get("subject_entries", []):
+            name = sub.get("subject_name", "").lower()
+            score_str = sub.get("score_raw")
+            
+            # Logic for "Interesting" subjects
+            is_interesting = False
+            if "math" in name or "physics" in name:
+                is_interesting = True
+            
+            if score_str:
+                try:
+                    score_val = float(score_str)
+                    if score_val <= 80 or score_val >= 99: # Include poor or excellent performance
+                        is_interesting = True
+                except ValueError:
+                    pass
+            
+            if is_interesting:
                 s_entry = {
                     "subject": sub.get("subject_name"),
-                    "score": sub.get("score_raw")
+                    "score": sub.get("score_raw"),
+                    "max_score": sub.get("max_score_raw")
                 }
                 if sub.get("predicted_score_raw") is not None:
                     s_entry["predicted_score"] = sub.get("predicted_score_raw")
                 cleaned_s = {k: v for k, v in s_entry.items() if v is not None}
                 if cleaned_s:
                     subjects.append(cleaned_s)
-            if subjects:
-                aca_entry["subjects"] = subjects
+        
+        if subjects:
+            aca_entry["subjects_concise"] = subjects
             
         cleaned_aca = {k: v for k, v in aca_entry.items() if v is not None}
         if cleaned_aca:
@@ -288,10 +240,9 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
             
         essay_entry = {
             "entity_id": ent_id,
-            "text": _truncate_text(entry.get("raw_text"), max_words=120 if compact_mode else 1000)
+            "prompt": entry.get("essay_identifier"),
+            "text": _truncate_text(entry.get("raw_text"), max_words=1000)
         }
-        if not compact_mode:
-            essay_entry["prompt"] = entry.get("essay_identifier")
         essay_profile.append(essay_entry)
 
     # 5. Activity Profile (with Artifact Detection)
@@ -308,14 +259,8 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
             except (ValueError, IndexError):
                 return True
         
-        # Generic blocklist for name/responsibilities
-        blocklist = ["Organization", "Reference", "Position", "Role", "Title", "Name", "Duration", "Level"]
-        if not is_position and s_text in blocklist:
-            return True
-            
-        # Form label patterns
-        labels = ["Mobile Number", "Email Address", "Date of Birth"]
-        if any(label.lower() in s_text.lower() for label in labels):
+        # Use centralized stop-word check instead of a local blocklist
+        if is_stop_word(s_text):
             return True
             
         if "?" in s_text:
@@ -341,14 +286,6 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
             "type": entry.get("activity_type")
         }
 
-        if compact_mode:
-            summary = _build_activity_summary(entry)
-            if not summary:
-                continue
-            act_entry["summary"] = summary
-            activity_profile.append(act_entry)
-            continue
-        
         # Apply artifact checks
         name = entry.get("activity_name")
         if name and not is_artifact(name):
@@ -385,30 +322,7 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
         activity_profile.append(act_entry)
 
     # 6. Construct final projection
-    projection_entity_map = entity_id_map
-    if compact_mode:
-        referenced_ids = set()
-        for section_name in ["academic_profile", "test_profile", "essay_profile", "activity_profile"]:
-            for entry in locals().get(section_name, []):
-                if isinstance(entry, dict) and entry.get("entity_id"):
-                    referenced_ids.add(entry["entity_id"])
-        for signal in deterministic_signals:
-            for entity_id in signal.get("referenced_entity_ids", []) or []:
-                if entity_id:
-                    referenced_ids.add(entity_id)
-        compact_map = []
-        seen = set()
-        for entry in entity_id_map:
-            entity_id = entry.get("entity_id")
-            if entity_id not in referenced_ids or entity_id in seen:
-                continue
-            seen.add(entity_id)
-            compact_entry = {"entity_id": entity_id}
-            descriptor = entry.get("descriptor")
-            if descriptor:
-                compact_entry["descriptor"] = descriptor
-            compact_map.append(compact_entry)
-        projection_entity_map = compact_map
+    llm_entity_id_map = [e for e in entity_id_map if e.get("collection") != "schooling_history"]
 
     projection = {
         "applicant_context": {k: v for k, v in context.items() if v is not None},
@@ -416,10 +330,10 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
         "test_profile": test_profile,
         "essay_profile": essay_profile,
         "activity_profile": activity_profile,
-        "entity_id_map": projection_entity_map,
+        "entity_id_map": llm_entity_id_map,
         "deterministic_signals": deterministic_signals
     }
-    if compact_mode and academic_summary:
+    if academic_summary:
         projection["academic_summary"] = academic_summary
     
     # Internal Verification

@@ -87,23 +87,25 @@ def construct_bundle(validated_signals: list, canonical: dict, entity_id_map: li
                 "academic_level": entry.get("academic_level"),
                 "academic_year": entry.get("academic_year"),
                 "overall_score": entry.get("score_raw"),
+                "overall_max": entry.get("max_score_raw"),
                 "grading_mode": entry.get("grading_mode"),
             }
             subjects = []
             for sub in entry.get("subject_entries", []) or []:
                 score = safe_float(sub.get("score_raw"))
+                mx = safe_float(sub.get("max_score_raw")) or 100.0
                 subject_name = clean_text(sub.get("subject_name"))
                 if score is None or not subject_name:
                     continue
-                subjects.append((score, subject_name))
+                subjects.append((score, subject_name, mx))
             if subjects:
-                high_score, high_subject = max(subjects, key=lambda item: item[0])
-                low_score, low_subject = min(subjects, key=lambda item: item[0])
+                high_score, high_subject, high_max = max(subjects, key=lambda item: (item[0]/item[2])*100)
+                low_score, low_subject, low_max = min(subjects, key=lambda item: (item[0]/item[2])*100)
                 content["subject_summary"] = {
                     "highest_subject": high_subject,
-                    "highest_score": f"{high_score:.2f}".rstrip("0").rstrip("."),
+                    "highest_score": f"{high_score:.1f}/{high_max:.0f}",
                     "lowest_subject": low_subject,
-                    "lowest_score": f"{low_score:.2f}".rstrip("0").rstrip(".")
+                    "lowest_score": f"{low_score:.1f}/{low_max:.0f}"
                 }
             return {k: v for k, v in content.items() if v is not None}
 
@@ -134,7 +136,7 @@ def construct_bundle(validated_signals: list, canonical: dict, entity_id_map: li
         if collection == "essay_entries":
             content = {
                 "essay_identifier": entry.get("essay_identifier"),
-                "text_excerpt": truncate_text(entry.get("raw_text"), max_words=120)
+                "text_excerpt": truncate_text(entry.get("raw_text"), max_words=300)
             }
             return {k: v for k, v in content.items() if v is not None}
 
@@ -181,46 +183,49 @@ def construct_bundle(validated_signals: list, canonical: dict, entity_id_map: li
 
     # Map entity_id to its canonical entry for fast lookup
     entity_cache = {}
+    collection_cursors = {}
     for mapping in entity_id_map:
         eid = mapping.get("entity_id")
         coll = mapping.get("collection")
-        desc = mapping.get("descriptor")
-        
-        # Find the entry in the canonical collection
         entries = canonical.get(coll, [])
-        for entry in entries:
-            # Match descriptor based on collection type logic from projection builder
-            match = False
-            if coll == "academic_entries":
-                match = entry.get("academic_level") == desc
-            elif coll == "test_entries":
-                match = entry.get("test_name") == desc
-            elif coll == "essay_entries":
-                match = entry.get("essay_identifier") == desc
-            elif coll == "activity_entries":
-                match = (entry.get("activity_name") or entry.get("activity_type")) == desc
-            
-            if match:
-                entity_cache[eid] = {
-                    "entity_id": eid,
-                    "collection": coll,
-                    "content": compact_content(entry, coll) if compact_mode else clean_entry(entry, coll)
-                }
-                break
+        idx = collection_cursors.get(coll, 0)
+        if idx < len(entries):
+            entry = entries[idx]
+            entity_cache[eid] = {
+                "entity_id": eid,
+                "collection": coll,
+                "content": compact_content(entry, coll) if compact_mode else clean_entry(entry, coll)
+            }
+        collection_cursors[coll] = idx + 1
 
     # Build Signal-Evidence pairs
     signal_evidence_pairs = []
+    already_included_entity_ids = set()
     for sig in validated_signals:
         evidence_list = []
         for eid in sig.get("referenced_entity_ids", []):
             if eid in entity_cache:
-                evidence_list.append(entity_cache[eid])
+                if eid in already_included_entity_ids:
+                    # Include lightweight reference for subsequent occurrences
+                    cache_item = entity_cache[eid]
+                    evidence_list.append({
+                        "entity_id": eid,
+                        "collection": cache_item["collection"],
+                        "content_ref": "see_prior_signal"
+                    })
+                else:
+                    # First occurrence gets full content
+                    evidence_list.append(entity_cache[eid])
+                    already_included_entity_ids.add(eid)
         
         signal_evidence_pairs.append({
             "signal": {
                 "signal_id": sig.get("signal_id"),
                 "title": sig.get("title"),
-                "description": sig.get("description"),
+                "essay_claim": sig.get("essay_claim"),
+                "evidence_observation": sig.get("evidence_observation"),
+                "tension_or_coherence": sig.get("tension_or_coherence"),
+                "interview_hook": sig.get("interview_hook"),
                 "referenced_entity_ids": sig.get("referenced_entity_ids")
             },
             "evidence": evidence_list

@@ -1,169 +1,169 @@
-from typing import List, Dict, Any
 import uuid
 import re
 import logging
+from typing import List, Dict, Any, Tuple
+from app.utils.form_vocab import is_stop_word, TEST_SECTION_MAP, TEST_METADATA_KEYS
 
 logger = logging.getLogger(__name__)
 
-def extract_test_records(normalized_rows: List[List[str]]) -> Dict[str, Any]:
-    """
-    Extract standardized tests as a collection using normalized rows.
-    Handles specific SAT and JEE Main layouts with row-level context.
-    """
-    entries = []
-    confidence = 0.90
+def _safe_float(s: str) -> float:
+    if not s: return None
+    try:
+        # Remove commas, % etc
+        clean = re.sub(r"[^\d\.]", "", s)
+        return float(clean)
+    except:
+        return None
+
+def _extract_numeric(text: str) -> str:
+    """Extracts a score-like number from text (e.g. '97.69')."""
+    match = re.search(r"(\d{1,3}(?:\.\d+)?)\s*%?$", text.strip())
+    if match:
+        return match.group(1)
+    return None
+
+def _split_cell(text: str) -> Tuple[str, str]:
+    """Splits a cell into potential label and value."""
+    clean = text.strip()
+    # 1. Joined case: 'Physics Percentile 96.67'
+    match = re.search(r"^(.*?)\s*[:\-–]?\s*([\d\.]+)%?$", clean)
+    if match:
+        return match.group(1).strip(), match.group(2).strip()
+    return clean, None
+
+def _match_label(text: str) -> str:
+    """Matches a string to a canonical field label from the registry."""
+    clean = text.lower().strip()
+    if not clean: return None
     
-    # Common test labels to trigger capture
-    TEST_HEADERS = [
-        ("SAT", ["scholastic assessment test", "sat details"]),
-        ("JEE", ["joint entrance examination", "jee main details", "jee mains"])
-    ]
+    # Try exact match first
+    if clean in TEST_SECTION_MAP:
+        return TEST_SECTION_MAP[clean]
+    
+    # Try partial match (greedy)
+    for kw, formal in TEST_SECTION_MAP.items():
+        if kw == clean or (len(kw) > 3 and kw in clean):
+            return formal
+    return None
 
-    # Hints for routing
-    ROUTING_HINTS = {
-        "JEE": ["physics", "chemistry", "percentile", "roll number", "rank"],
-        "SAT": ["reading", "writing", "math"]
-    }
+def extract_test_records(blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Standardized Test Extractor (Vocabulary-Driven).
+    Uses Y-clustering to reconstruct rows and Label-Registry for field mapping.
+    """
+    if not blocks:
+        return {"test_entries": [], "confidence_score": 0.0}
 
-    def create_entry(test_type: str) -> Dict[str, Any]:
+    confidence = 0.90
+    entries = []
+
+    def normalize_text(t):
+        return " ".join(t.lower().split())
+
+    full_text_norm = " ".join([normalize_text(b["text"]) for b in blocks])
+    
+    jee_kws = ["jee", "joint entrance", "nta score", "physics percentile"]
+    sat_kws = ["sat", "scholastic assessment", "reading and writing", "reading score"]
+    
+    has_jee = any(kw in full_text_norm for kw in jee_kws)
+    has_sat = any(kw in full_text_norm for kw in sat_kws)
+    
+    def create_entry(name: str) -> Dict:
         return {
             "entry_id": str(uuid.uuid4()),
-            "test_name": "SAT" if test_type == "SAT" else "JEE Mains",
+            "test_name": name,
             "test_date": None,
             "total_score": None,
             "sectional_scores": [],
             "percentile": None,
             "rank": None,
             "result_status": "available",
-            "confidence_score": confidence
+            "confidence_score": confidence,
         }
-
-    current_entry = None
-
-    for row in normalized_rows:
-        row_text = " ".join(row)
-        lower_row = row_text.lower()
-
-        # 1. Detect Test Transitions (Section Headers)
-        found_signals = []
-        for t_type, keywords in TEST_HEADERS:
-            for kw in keywords:
-                for m in re.finditer(re.escape(kw), lower_row):
-                    found_signals.append((m.start(), t_type))
         
-        found_signals.sort()
-        if found_signals:
-            for _, t_type in found_signals:
-                header_name = "SAT" if t_type == "SAT" else "JEE Mains"
-                # Find or Create entry
-                target_e = None
-                for e in entries:
-                    if e["test_name"] == header_name:
-                        target_e = e
-                        break
-                if not target_e:
-                    target_e = create_entry(t_type)
-                    entries.append(target_e)
-                current_entry = target_e
+    if has_jee: entries.append(create_entry("JEE Mains"))
+    if has_sat: entries.append(create_entry("SAT"))
+    
+    if not entries:
+        return {"test_entries": [], "confidence_score": 0.0}
 
-        if not entries:
-            continue
+    # --- 1. Y-Clustering into Rows ---
+    page_blocks = sorted(blocks, key=lambda b: (b["page"], -b["bbox"][3]))
+    rows = []
+    cur_row = []
+    cur_y = None
+    cur_page = None
 
-        # 2. Determine Row Context (SAT or JEE?)
-        row_context_entry = current_entry
-        for test_type, hints in ROUTING_HINTS.items():
-            if any(h in lower_row for h in hints):
-                target_name = "SAT" if test_type == "SAT" else "JEE Mains"
-                for e in entries:
-                    if e["test_name"] == target_name:
-                        row_context_entry = e
-                        break
-                break
+    for b in page_blocks:
+        p = b["page"]
+        cy = (b["bbox"][1] + b["bbox"][3]) / 2
+        
+        if cur_y is None or (p == cur_page and abs(cy - cur_y) < 25):
+            cur_row.append(b)
+            cur_y = cy
+            cur_page = p
+        else:
+            rows.append(sorted(cur_row, key=lambda x: x["bbox"][0]))
+            cur_row = [b]
+            cur_y = cy
+            cur_page = p
+    if cur_row:
+        rows.append(sorted(cur_row, key=lambda x: x["bbox"][0]))
 
-        # 3. Extract Scores from Row Cells
-        for cell in row:
-            clean_cell = cell.strip()
-            if not clean_cell: continue
+    def assign_val(test_name: str, key: str, val: str):
+        for e in entries:
+            if e["test_name"] == test_name:
+                if key == "__total__":
+                    e["total_score"] = val
+                elif key == "__date__":
+                    e["test_date"] = val
+                elif key == "__roll__":
+                    pass
+                else:
+                    if not any(s["label"] == key for s in e["sectional_scores"]):
+                        e["sectional_scores"].append({"label": key, "raw_score": val})
+
+    # --- 2. Process each Row ---
+    for row in rows:
+        row_text = " ".join([normalize_text(b["text"]) for b in row])
+        
+        target_test = "JEE Mains"
+        if any(kw in row_text for kw in ["reading", "sat", "evidence-based"]):
+            target_test = "SAT"
+        
+        # Keep track of indices that were already used as labels or values
+        # to avoid double-dipping in Joined cells
+        
+        for idx, b in enumerate(row):
+            b_text_norm = normalize_text(b["text"])
+            label_p, val_p = _split_cell(b_text_norm)
             
-            # Robust label-value extraction from cell
-            # Matches "Label 99.0" or "Label: 99.0" or "Label 99.0%"
-            match = re.search(r"(.*?)\s*[:\-–]?\s*([\d\.]+)%?$", clean_cell)
-            if match:
-                label, val = match.groups()
-                label = label.strip().lower()
-            else:
-                label = clean_cell.lower()
-                val = None
-
-            target_entry = row_context_entry
-
-            # A. Total Score / Test Date Capture
-            # If we match a total score keyword, we set total_score
-            # We use more specific keywords for JEE to avoid matching "Physics Percentile"
-            total_score_kws = ["total score", "test date", "aggregate nta score", "jee mains percentile"]
-            if any(kw in label for kw in total_score_kws):
-                ext_val = val
-                if not ext_val and len(row) > 1:
-                    idx = row.index(cell)
-                    if idx + 1 < len(row):
-                        next_val = row[idx+1].strip()
-                        num_match = re.search(r"([\d\.]+)%?$", next_val)
-                        if num_match:
-                             ext_val = num_match.group(1)
-                
-                if ext_val:
-                    target_entry["total_score"] = ext_val
-                    # For JEE, we only want to set total_score here, not add a sectional entry
-                    if "jee" in target_entry["test_name"].lower():
-                         continue
-
-            # B. Sectional Score Mapping
-            # Priority: Specific subjects first
-            section_map = [
-                ("math", "Maths Percentile"),
-                ("physics", "Physics Percentile"),
-                ("chemistry", "Chemistry Percentile"),
-                ("reading", "Reading/Writing"),
-                ("writing", "Reading/Writing"),
-                ("rank", "Sectional Rank"),     # Specific rank keywords
-                ("percentile", "Sectional Percentile") # Fallback percentile
-            ]
-
-            matched_section = None
-            for kw, formal_label in section_map:
-                if kw in label:
-                    matched_section = formal_label
-                    break
+            canonical = _match_label(label_p)
+            final_val = val_p
             
-            if matched_section:
-                final_val = val
-                if not final_val and len(row) > 1:
-                    idx = row.index(cell)
-                    if idx + 1 < len(row):
-                        next_val = row[idx+1].strip()
-                        num_match = re.search(r"([\d\.]+)%?$", next_val)
-                        if num_match:
-                            final_val = num_match.group(1)
-                
-                if final_val:
-                    # Deduplicate in case of duplicate blocks/fuzzy matching
-                    if not any(s["label"] == matched_section for s in target_entry["sectional_scores"]):
-                        target_entry["sectional_scores"].append({
-                            "label": matched_section,
-                            "raw_score": final_val
-                        })
+            # If no joined value, look right
+            if canonical and not final_val:
+                if idx + 1 < len(row):
+                    next_block = row[idx+1]
+                    numeric = _extract_numeric(next_block["text"])
+                    if numeric and not is_stop_word(next_block["text"]):
+                        final_val = numeric
 
-    # Final cleanup
-    # Ensure JEE always has subjects if possible
-    for e in entries:
-        if e["test_name"] == "JEE Mains" and len(e["sectional_scores"]) < 3:
-            # If we have a total_score but few sectional scores, maybe one of them was the total?
-            # We don't have enough info to re-assign, but at least we captured what we could.
-            pass
+            if final_val and canonical:
+                # Heuristic: If label is __date__ but value looks like a score (>=50 or has decimal),
+                # and we don't have a total_score yet, treat it as __total__ if it is JEE.
+                if canonical == "__date__" and target_test == "JEE Mains":
+                    try:
+                        num_val = float(final_val)
+                        if num_val > 50:
+                            canonical = "__total__"
+                    except: pass
+                assign_val(target_test, canonical, final_val)
 
-    final_entries = [e for e in entries if e["total_score"] or e["sectional_scores"]]
-            
+    # Final cleanup: remove empty entries
+    final = [e for e in entries if e["total_score"] or e["sectional_scores"]]
+    
     return {
-        "test_entries": final_entries,
+        "test_entries": final,
         "confidence_score": confidence
     }

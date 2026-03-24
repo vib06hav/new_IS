@@ -1,28 +1,9 @@
 import re
 from typing import List, Dict, Any
+from app.utils.form_vocab import SECTION_HEADERS
 
-# Predefined known section headers for fuzzy matching
-KNOWN_SECTIONS = [
-    "Personal Details",
-    "Personal Information",
-    "Academics",
-    "Academic Records",
-    "Class 9th / Equivalent",
-    "Class 10th / Equivalent",
-    "Class 11th / Equivalent",
-    "Class 12th Details",
-    "Standardized Test Scores",
-    "Standardized Tests",
-    "Additional Test Scores",
-    "Essays",
-    "Extra- Curricular Activities (Outside the Classroom)",
-    "Extracurricular Activities",
-    "Co- Curricular Activities (Tinkering, Research and More)",
-    "Leadership Role at School",
-    "Activities",
-    "Awards",
-    "Declaration"
-]
+# Build lookup set from centralized registry
+KNOWN_SECTIONS = list(SECTION_HEADERS)
 
 def detect_sections(blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
@@ -65,7 +46,12 @@ def detect_sections(blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
             if len(lines) > 1:
                 remaining_text = "\n".join(lines[1:]).strip()
                 if remaining_text:
-                    current_section["blocks"].append({"page": block["page"], "text": remaining_text})
+                    # Preserve coordinates for the remaining text
+                    current_section["blocks"].append({
+                        "page": block["page"], 
+                        "text": remaining_text,
+                        "bbox": block["bbox"]
+                    })
         else:
             current_section["blocks"].append(block)
             

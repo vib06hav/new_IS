@@ -1,0 +1,84 @@
+{
+  "interpreted_signals": [
+    {
+      "signal_id": "INT-001",
+      "title": "Tech Ambition vs. Limited Hands-On Experience",
+      "essay_claim": "Applicant frames their excitement around 'solving real-world problems using creativity and logic' and 'designing solutions that can create meaningful impact' (ESS-001).",
+      "evidence_observation": "Activity profile shows no coding, robotics, AI projects, or tech-related internships; the only technical evidence is a perfect score in an AI school subject (ACA-002).",
+      "tension_or_coherence": "TENSION — the essay emphasizes building impactful technological solutions, yet the extracurricular record lacks concrete tech projects or internships beyond coursework.",
+      "interview_hook": "What concrete steps have you taken to build or create technology beyond coursework, and how do you plan to develop the hands-on skills needed to turn your interest in impactful tech into reality?",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACA-002"
+      ],
+      "supporting_det_signal_ids": []
+    },
+    {
+      "signal_id": "INT-002",
+      "title": "Strong Math Foundation and AI Aptitude",
+      "essay_claim": "Applicant expresses a 'keen interest in interdisciplinary learning—blending tech with design, data, and human behavior' (ESS-001).",
+      "evidence_observation": "Perfect score in AI subject (ACA-002), JEE Maths percentile 96.67 and overall 99.33 (TEST-001), and regular participation in Maths/Science Olympiads (ACT-003) demonstrate strong quantitative and AI-related aptitude.",
+      "tension_or_coherence": "COHERENCE — high math performance and AI achievement align with the stated interest in tech and interdisciplinary learning.",
+      "interview_hook": "Beyond the AI course, what self-directed projects or learning have you undertaken to explore the intersection of AI with design or human behavior?",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACA-002",
+        "TEST-001",
+        "ACT-003"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-001",
+        "DET-003"
+      ]
+    },
+    {
+      "signal_id": "INT-003",
+      "title": "Physics Performance Gap Amid Strong Math",
+      "essay_claim": "Applicant describes excitement about 'solving real-world problems using creativity and logic' (ESS-001), indicating a broad interest in scientific problem‑solving.",
+      "evidence_observation": "Physics scores are relatively low (58 in 11th, 52 in 12th) while Mathematics scores are exceptionally high (150, 144) and overall performance remains strong (ACA-003, ACA-004, TEST-001).",
+      "tension_or_coherence": "TENSION — strong math and overall achievement contrast with weaker physics results despite the applicant’s stated interest in science‑oriented problem solving.",
+      "interview_hook": "When you encountered difficulty in physics, what strategies did you use to improve, and what did that teach you about tackling challenging subjects?",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACA-003",
+        "ACA-004",
+        "TEST-001"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-001"
+      ]
+    },
+    {
+      "signal_id": "INT-004",
+      "title": "Stray Dog Initiative Leadership Lessons",
+      "essay_claim": "Applicant recounts leading a stray‑dog welfare project, describing how they addressed resident concerns, organized feeding drives, and learned that 'leadership is as much about listening and empathy as it is about action' (ESS-002).",
+      "evidence_observation": "The only formal leadership role listed is School House Captain (LEAD-005); no community service or animal‑welfare activities appear in the activity profile, leaving the essay as the sole source of this leadership experience.",
+      "tension_or_coherence": "TENSION — the essay provides a rich narrative of community leadership, yet the activity profile lacks corresponding entries, raising questions about the depth and reflection on that experience.",
+      "interview_hook": "In the stray dog project, you faced resident concerns; how did you navigate those conversations, and what did that teach you about leading change in the face of opposition?",
+      "referenced_entity_ids": [
+        "ESS-002",
+        "LEAD-005"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-002"
+      ]
+    },
+    {
+      "signal_id": "INT-005",
+      "title": "Board Transition and Academic Adaptation",
+      "essay_claim": "Applicant notes an 'eagerness to learn' and enjoyment of 'applying what I learn to practical challenges' (ESS-001), reflecting a self‑directed approach to overcoming academic obstacles.",
+      "evidence_observation": "The board changed from CBSE to Telangana State Board between 10th and 11th grade; physics scores dropped to 58 and 52 in those years while overall performance stayed high (ACA-002, ACA-003, ACA-004).",
+      "tension_or_coherence": "TENSION — the board shift coincides with a dip in physics performance despite strong overall scores, suggesting an adaptation challenge that the applicant managed to overcome.",
+      "interview_hook": "What prompted the switch from CBSE to Telangana board, and how did you adjust your study approach to maintain high overall performance despite lower physics scores?",
+      "referenced_entity_ids": [
+        "ACA-002",
+        "ACA-003",
+        "ACA-004",
+        "ESS-001"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-001"
+      ]
+    }
+  ]
+}

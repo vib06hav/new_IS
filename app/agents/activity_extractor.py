@@ -4,6 +4,7 @@ import re
 import math
 import logging
 from app.utils.grid_detector import get_vertical_lines, get_page_heights
+from app.utils.activity_filter import is_valid_activity
 
 logger = logging.getLogger(__name__)
 
@@ -197,12 +198,9 @@ def extract_activities(section_blocks: List[Dict[str, Any]], pdf_path: str = "")
                     entry[field] = f"{existing} {txt}" if existing else txt
                     row_has_data = True
         
-        identity = entry.get("activity_name") or entry.get("position_title")
-        if row_has_data and identity and len(str(identity)) > 2:
-            id_lower = str(identity).lower()
-            if id_lower not in ["yes", "no", "n/a", "select", "description", "activity"]:
-                if "?" not in id_lower and "capacity" not in id_lower and len(id_lower) < 200:
-                    all_entries.append(entry)
+        if row_has_data:
+            if is_valid_activity(entry):
+                all_entries.append(entry)
 
     return {
         "activity_entries": all_entries,

@@ -9,7 +9,6 @@ from app.agents.test_extractor import extract_test_records
 from app.agents.essay_extractor import extract_essays
 from app.agents.activity_extractor import extract_activities
 from app.agents.cross_section_detector import detect_cross_sections
-from app.agents.timeline_builder import build_timeline
 from app.agents.integrity_analyzer import analyze_integrity
 from app.agents.assembler import assemble_canonical
 from app.projection.ros_projector import project_ros
@@ -86,7 +85,7 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
         elif any(kw in label for kw in ["class", "academic", "education", "degree", "school"]):
             logger.debug(f"Row matched Academic category: {label}")
             academic_blocks.extend(blocks)
-        elif any(kw in label for kw in ["test", "jee", "sat", "act", "examination"]):
+        elif any(kw in label for kw in ["test", "jee", "sat", "act", "examination", "percentile", "score"]):
             logger.debug(f"Row matched Test category: {label}")
             test_blocks.extend(blocks)
         elif "essay" in label:
@@ -111,7 +110,8 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
 
     # Agent 5: Standardized Tests
     logger.debug("Agent invocation (agent_id: 5, agent_name: Standardized Tests Extractor Python Agent)")
-    test_data = extract_test_records(test_rows)
+    # Pass raw blocks to use coordinate-based lookup with keywords
+    test_data = extract_test_records(test_blocks if test_blocks else layout_data["blocks"])
     logger.debug(f"Agent completion (agent_id: 5, confidence_score: {test_data.get('confidence_score', 'N/A')})")
 
     # Agent 6: Essays
@@ -135,15 +135,6 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
     )
     logger.debug(f"Agent completion (agent_id: 8, confidence_score: {cross_section_data.get('confidence_score', 'N/A')})")
 
-    # Agent 9: Timeline Builder
-    logger.debug("Agent invocation (agent_id: 9, agent_name: Timeline Builder Python Agent)")
-    timeline_data = build_timeline(
-        academic_data.get("academic_entries", []),
-        test_data.get("test_entries", []),
-        activity_data.get("activity_entries", [])
-    )
-    logger.debug(f"Agent completion (agent_id: 9, confidence_score: {timeline_data.get('confidence_score', 'N/A')})")
-
     # Agent 10: Integrtiy Analyzer
     logger.debug("Agent invocation (agent_id: 10, agent_name: Integrity Analyzer Python Agent)")
     integrity_data = analyze_integrity(
@@ -166,7 +157,6 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
         essay_data=essay_data,
         activity_data=activity_data,
         cross_section_data=cross_section_data,
-        timeline_data=timeline_data,
         integrity_data=integrity_data
     )
     

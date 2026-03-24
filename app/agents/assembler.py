@@ -13,7 +13,6 @@ def assemble_canonical(
     essay_data: Dict[str, Any],
     activity_data: Dict[str, Any],
     cross_section_data: Dict[str, Any],
-    timeline_data: Dict[str, Any],
     integrity_data: Dict[str, Any]
 ) -> Dict[str, Any]:
     """
@@ -43,7 +42,6 @@ def assemble_canonical(
         {"agent_id": 6, "agent_name": "Essay Extractor", "confidence_score": essay_data.get("confidence_score", 0.0)},
         {"agent_id": 7, "agent_name": "Activity Extractor", "confidence_score": activity_data.get("confidence_score", 0.0)},
         {"agent_id": 8, "agent_name": "Cross-Section Entity Detector", "confidence_score": cross_section_data.get("confidence_score", 0.0)},
-        {"agent_id": 9, "agent_name": "Timeline Builder", "confidence_score": timeline_data.get("confidence_score", 0.0)},
         {"agent_id": 10, "agent_name": "Completeness & Integrity Analyzer", "confidence_score": integrity_data.get("confidence_score", 0.0)},
     ]
     
@@ -63,7 +61,6 @@ def assemble_canonical(
         "test_entries": test_data.get("test_entries", []),
         "essay_entries": essay_data.get("essay_entries", []),
         "activity_entries": activity_data.get("activity_entries", []),
-        "timeline_entries": timeline_data.get("timeline_entries", []),
         "cross_references": {"entity_map": cross_section_data.get("entity_map", [])},
         "integrity_report": {"anomalies": integrity_data.get("anomalies", [])},
         "extraction_confidence": extraction_confidence

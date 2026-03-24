@@ -1,0 +1,220 @@
+{
+  "academic_entries": [
+    {
+      "entry_id": "90562ee5-f561-4f13-8e72-9ea5a24b1224",
+      "academic_level": "9TH",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "academic_year": "2022",
+      "marking_scheme_raw": "Percentage",
+      "grading_mode": "percentage",
+      "score_raw": "81.6",
+      "max_score_raw": null,
+      "predicted_score_raw": null,
+      "subject_entries": [
+        {
+          "subject_name": "Mathematics",
+          "score_raw": "95.8",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "English",
+          "score_raw": "81.8",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Hindi",
+          "score_raw": "86.6",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Science",
+          "score_raw": "87.4",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Social Studies",
+          "score_raw": "77.5",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "ac2959a4-b2a2-4e09-8e29-38a2d3332f32",
+      "academic_level": "10TH",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "academic_year": "2023",
+      "marking_scheme_raw": "Percentage",
+      "grading_mode": "percentage",
+      "score_raw": "96.6",
+      "max_score_raw": null,
+      "predicted_score_raw": null,
+      "subject_entries": [
+        {
+          "subject_name": "Mathematics",
+          "score_raw": "98",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Science",
+          "score_raw": "95",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "English",
+          "score_raw": "95",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Hindi",
+          "score_raw": "95",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Artificial Intelligence",
+          "score_raw": "100",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "959a31cd-edba-47c5-9ae6-775e541f601c",
+      "academic_level": "11TH",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+      "academic_year": "2024",
+      "marking_scheme_raw": "Percentage",
+      "grading_mode": "percentage",
+      "score_raw": "97.9",
+      "max_score_raw": "Upload Conversion Scale (In Case Of Letter Grades): NO",
+      "predicted_score_raw": null,
+      "subject_entries": [
+        {
+          "subject_name": "Mathematics",
+          "score_raw": "150",
+          "max_score_raw": "150",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Physics",
+          "score_raw": "58",
+          "max_score_raw": "60",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Chemistry",
+          "score_raw": "60",
+          "max_score_raw": "60",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Sanskrit",
+          "score_raw": "95",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "English",
+          "score_raw": "97",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "45b4785a-f347-45a3-971b-6b0450f82ab3",
+      "academic_level": "12TH",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+      "academic_year": "2025",
+      "marking_scheme_raw": "Percentage",
+      "grading_mode": "percentage",
+      "score_raw": "97.4",
+      "max_score_raw": null,
+      "predicted_score_raw": null,
+      "subject_entries": [
+        {
+          "subject_name": "Mathematics",
+          "score_raw": "144",
+          "max_score_raw": "150",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Physics",
+          "score_raw": "52",
+          "max_score_raw": "60",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Chemistry",
+          "score_raw": "56",
+          "max_score_raw": "60",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Sanskrit",
+          "score_raw": "99",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "English",
+          "score_raw": "96",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85,
+      "result_status": "Passed"
+    }
+  ],
+  "schooling_history": [
+    {
+      "entry_id": "f105c90f-93d8-40de-83e4-b1169ece4694",
+      "level": "9TH",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "location": null,
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "4774ce91-7af0-47c7-bea5-7652a6d9da1e",
+      "level": "10TH",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "location": null,
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "629d03db-c3d1-4f19-ac61-5b5a4708753c",
+      "level": "11TH",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+      "location": null,
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "e7848085-fe1f-4677-ac50-9fa2798900ad",
+      "level": "12TH",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+      "location": null,
+      "confidence_score": 0.85
+    }
+  ],
+  "confidence_score": 0.85
+}

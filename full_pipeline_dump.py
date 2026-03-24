@@ -115,6 +115,8 @@ def run_full_dump(pdf_path: str):
     start_time = time.time()
     logger.info("Executing LLM Call 1...")
     print("Stage 3: LLM Stage 1 (Signal Interpretation)...", flush=True)
+    from app.agents.signal_interpreter import build_signal_interpreter_messages
+    results["stages"]["3_llm_call_1_messages"] = sanitize_for_json(build_signal_interpreter_messages(call_1_proj))
     raw_call_1 = interpret_signals(call_1_proj)
     print(f"LLM Call 1 Complete in {time.time() - start_time:.2f}s", flush=True)
     results["stages"]["3_llm_call_1_raw"] = raw_call_1
@@ -139,6 +141,8 @@ def run_full_dump(pdf_path: str):
     
     start_time = time.time()
     print("Stage 6: LLM Stage 2 (Interview Generation)...", flush=True)
+    from app.agents.interview_generator import build_interview_messages
+    results["stages"]["6_llm_call_2_messages"] = sanitize_for_json(build_interview_messages(bundle, entity_id_map))
     raw_call_2 = generate_interview(bundle, entity_id_map)
     print(f"LLM Call 2 Complete in {time.time() - start_time:.2f}s", flush=True)
     results["stages"]["6_llm_call_2_raw"] = raw_call_2

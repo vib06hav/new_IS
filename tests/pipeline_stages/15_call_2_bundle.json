@@ -1,0 +1,248 @@
+{
+  "application_id": "4b5f3709-958b-4ed6-99cf-2fc7d04fb5ef",
+  "signal_evidence_pairs": [
+    {
+      "signal": {
+        "signal_id": "DET-001",
+        "title": null,
+        "essay_claim": null,
+        "evidence_observation": null,
+        "tension_or_coherence": null,
+        "interview_hook": null,
+        "referenced_entity_ids": [
+          "ACA-001",
+          "ACA-002",
+          "ACA-003",
+          "ACA-004"
+        ]
+      },
+      "evidence": [
+        {
+          "entity_id": "ACA-001",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "9TH",
+            "school_name": "Jayshree Periwal International School",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "academic_year": "2022",
+            "grading_mode": "percentage",
+            "score_raw": "81.6",
+            "subject_entries": [
+              {
+                "subject_name": "Mathematics",
+                "score_raw": "95.8",
+                "max_score_raw": "100"
+              },
+              {
+                "subject_name": "English",
+                "score_raw": "81.8",
+                "max_score_raw": "100"
+              },
+              {
+                "subject_name": "Hindi",
+                "score_raw": "86.6",
+                "max_score_raw": "100"
+              },
+              {
+                "subject_name": "Science",
+                "score_raw": "87.4",
+                "max_score_raw": "100"
+              },
+              {
+                "subject_name": "Social Studies",
+                "score_raw": "77.5",
+                "max_score_raw": "100"
+              }
+            ],
+            "entity_id": "ACA-001"
+          }
+        },
+        {
+          "entity_id": "ACA-002",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "10TH",
+            "school_name": "Jayshree Periwal International School",
+            "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+            "academic_year": "2023",
+            "grading_mode": "percentage",
+            "score_raw": "96.6",
+            "subject_entries": [
+              {
+                "subject_name": "Mathematics",
+                "score_raw": "98",
+                "max_score_raw": "100"
+              },
+              {
+                "subject_name": "Science",
+                "score_raw": "95",
+                "max_score_raw": "100"
+              },
+              {
+                "subject_name": "English",
+                "score_raw": "95",
+                "max_score_raw": "100"
+              },
+              {
+                "subject_name": "Hindi",
+                "score_raw": "95",
+                "max_score_raw": "100"
+              },
+              {
+                "subject_name": "Artificial Intelligence",
+                "score_raw": "100",
+                "max_score_raw": "100"
+              }
+            ],
+            "entity_id": "ACA-002"
+          }
+        },
+        {
+          "entity_id": "ACA-003",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "11TH",
+            "school_name": "Jayshree Periwal International School",
+            "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+            "academic_year": "2024",
+            "grading_mode": "percentage",
+            "score_raw": "97.9",
+            "max_score_raw": "Upload Conversion Scale (In Case Of Letter Grades): NO",
+            "subject_entries": [
+              {
+                "subject_name": "Mathematics",
+                "score_raw": "150",
+                "max_score_raw": "150"
+              },
+              {
+                "subject_name": "Physics",
+                "score_raw": "58",
+                "max_score_raw": "60"
+              },
+              {
+                "subject_name": "Chemistry",
+                "score_raw": "60",
+                "max_score_raw": "60"
+              },
+              {
+                "subject_name": "Sanskrit",
+                "score_raw": "95",
+                "max_score_raw": "100"
+              },
+              {
+                "subject_name": "English",
+                "score_raw": "97",
+                "max_score_raw": "100"
+              }
+            ],
+            "entity_id": "ACA-003"
+          }
+        },
+        {
+          "entity_id": "ACA-004",
+          "collection": "academic_entries",
+          "content": {
+            "academic_level": "12TH",
+            "school_name": "Jayshree Periwal International School",
+            "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+            "academic_year": "2025",
+            "grading_mode": "percentage",
+            "score_raw": "97.4",
+            "subject_entries": [
+              {
+                "subject_name": "Mathematics",
+                "score_raw": "144",
+                "max_score_raw": "150"
+              },
+              {
+                "subject_name": "Physics",
+                "score_raw": "52",
+                "max_score_raw": "60"
+              },
+              {
+                "subject_name": "Chemistry",
+                "score_raw": "56",
+                "max_score_raw": "60"
+              },
+              {
+                "subject_name": "Sanskrit",
+                "score_raw": "99",
+                "max_score_raw": "100"
+              },
+              {
+                "subject_name": "English",
+                "score_raw": "96",
+                "max_score_raw": "100"
+              }
+            ],
+            "entity_id": "ACA-004"
+          }
+        }
+      ]
+    },
+    {
+      "signal": {
+        "signal_id": "DET-002",
+        "title": null,
+        "essay_claim": null,
+        "evidence_observation": null,
+        "tension_or_coherence": null,
+        "interview_hook": null,
+        "referenced_entity_ids": [
+          "LEAD-005"
+        ]
+      },
+      "evidence": [
+        {
+          "entity_id": "LEAD-005",
+          "collection": "activity_entries",
+          "content": {
+            "activity_type": "leadership",
+            "position_title": "School House Captain",
+            "duration": "1",
+            "roles_and_responsibilities": "Was the School House Captain at",
+            "entity_id": "LEAD-005"
+          }
+        }
+      ]
+    },
+    {
+      "signal": {
+        "signal_id": "DET-003",
+        "title": null,
+        "essay_claim": null,
+        "evidence_observation": null,
+        "tension_or_coherence": null,
+        "interview_hook": null,
+        "referenced_entity_ids": [
+          "TEST-001"
+        ]
+      },
+      "evidence": [
+        {
+          "entity_id": "TEST-001",
+          "collection": "test_entries",
+          "content": {
+            "test_name": "JEE Mains",
+            "total_score": "99.01",
+            "sectional_scores": [
+              {
+                "label": "Physics Percentile",
+                "raw_score": "96.67"
+              },
+              {
+                "label": "Maths Percentile",
+                "raw_score": "99.33"
+              },
+              {
+                "label": "Chemistry Percentile",
+                "raw_score": "97.69"
+              }
+            ],
+            "entity_id": "TEST-001"
+          }
+        }
+      ]
+    }
+  ]
+}

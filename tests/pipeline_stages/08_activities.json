@@ -1,0 +1,61 @@
+{
+  "activity_entries": [
+    {
+      "entry_id": "eaaeb066-c594-4298-8a08-3eef6d3b2322",
+      "activity_type": "extracurricular",
+      "activity_name": "Music Piano",
+      "position_title": "Grade 4 Qualified from\nPhilips International\nSchool of Music",
+      "level": "International",
+      "duration": "5",
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "7f8afcae-f1fe-4462-a5cf-529052cd4d55",
+      "activity_type": "extracurricular",
+      "activity_name": "Yoga",
+      "position_title": "Beginner level\npractitioner of Yoga and\nmindfulness",
+      "level": "Personal",
+      "duration": "2",
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "e957b223-dd37-4a62-834d-f0cba00cc4dd",
+      "activity_type": "co_curricular",
+      "activity_name": "Olympiads",
+      "position_title": "Has been regularly\nparticipating in Maths,\nScience Olympiads at\nschool",
+      "level": "District",
+      "duration": "7",
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "a6ed2fd0-44be-445e-b7eb-e96a2ac9623b",
+      "activity_type": "co_curricular",
+      "activity_name": "Reading",
+      "position_title": "Is an ardent reader of\nfiction and non fiction\nbooks on personal\ndevelopment etc",
+      "level": "Personal",
+      "duration": "6",
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "1b22d1e1-7e85-4601-9dd3-ac26258c2a28",
+      "activity_type": "leadership",
+      "activity_name": null,
+      "position_title": "School House Captain",
+      "level": null,
+      "duration": "1",
+      "achievement": null,
+      "roles_and_responsibilities": "Was the School House Captain at",
+      "confidence_score": 0.95
+    }
+  ],
+  "preferred_major": "Computer Science and Artificial Intelligence",
+  "confidence_score": 0.9
+}

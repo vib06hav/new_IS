@@ -38,6 +38,7 @@ class Identifiers(BaseModel):
 class SubjectEntry(BaseModel):
     subject_name: str
     score_raw: Optional[str] = None
+    max_score_raw: Optional[str] = None
     predicted_score_raw: Optional[str] = None
 
 class AcademicEntry(BaseModel):
@@ -49,6 +50,7 @@ class AcademicEntry(BaseModel):
     marking_scheme_raw: Optional[str] = None
     grading_mode: str
     score_raw: Optional[str] = None
+    max_score_raw: Optional[str] = None
     predicted_score_raw: Optional[str] = None
     subject_entries: List[SubjectEntry] = Field(default_factory=list)
     confidence_score: float = Field(ge=0.0, le=1.0)
@@ -92,14 +94,6 @@ class ActivityEntry(BaseModel):
     description_raw: Optional[str] = None
     confidence_score: float = Field(ge=0.0, le=1.0)
 
-# --- Timeline Entries ---
-class TimelineEntry(BaseModel):
-    entry_id: str
-    year: str
-    event_label: str
-    source_type: str
-    source_reference: str
-
 # --- Cross References ---
 class SourceReference(BaseModel):
     source_type: str
@@ -142,7 +136,6 @@ class CanonicalData(BaseModel):
     test_entries: List[TestEntry] = Field(default_factory=list)
     essay_entries: List[EssayEntry] = Field(default_factory=list)
     activity_entries: List[ActivityEntry] = Field(default_factory=list)
-    timeline_entries: List[TimelineEntry] = Field(default_factory=list)
     cross_references: CrossReferences
     integrity_report: IntegrityReport
     extraction_confidence: ExtractionConfidence

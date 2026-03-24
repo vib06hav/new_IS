@@ -53,10 +53,20 @@ def _assign_entity_ids(canonical_data: Dict[str, Any]) -> Tuple[Dict[str, Any], 
 
 def _project_page_1(annotated: Dict[str, Any]) -> Dict[str, Any]:
     identifiers = annotated.get("identifiers", {})
+    _strip_keys = {"entry_id", "confidence_score"}
+    schooling_history = [
+        {k: v for k, v in entry.items() if k not in _strip_keys}
+        for entry in annotated.get("schooling_history", [])
+    ]
     page_1 = {
-        "identity": identifiers,
+        "identity": {
+            "application_id": identifiers.get("application_id"),
+            "full_name": identifiers.get("full_name"),
+            "date_of_birth": identifiers.get("date_of_birth"),
+            "preferred_major": identifiers.get("preferred_major")
+        },
         "family_background": identifiers.get("family_background", None),
-        "schooling_history": annotated.get("schooling_history", []),
+        "schooling_history": schooling_history,
         "academic_orientation": identifiers.get("declared_preferences", {})
     }
     return page_1

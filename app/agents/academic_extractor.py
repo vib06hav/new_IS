@@ -1,16 +1,16 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import uuid
 import re
+import logging
+from app.utils.form_vocab import ACADEMIC_COLUMN_MAP, is_stop_word
 
+logger = logging.getLogger(__name__)
 
 def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Extract academic records using precise spatial layout blocks.
     Clusters blocks into horizontal rows by Y-coordinate, then uses a
-    state-machine approach:
-      1. Detect metadata header row (School Name | Board | Year | ...)
-      2. Detect the level+data row (12th | SGGS... | CBSE... | 2024 | ...)
-      3. Detect subject table header, then read subject data rows
+    state-machine approach with spatial column mapping for tables.
     """
     entries = []
     schooling_history = []
@@ -30,7 +30,8 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
         rows, cur_row, cur_y = [], [], None
         for b in page_blocks:
             cy = (b["bbox"][1] + b["bbox"][3]) / 2
-            if cur_y is None or abs(cy - cur_y) < 10:
+            # Use 12px cluster threshold
+            if cur_y is None or abs(cy - cur_y) < 12:
                 cur_row.append(b)
                 cur_y = cy if cur_y is None else cur_y
             else:
@@ -42,15 +43,8 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
             r.sort(key=lambda b: b["bbox"][0])
             all_rows.append(r)
 
-    def _texts(row):
-        return [b["text"].strip().replace("\n", " ") for b in row]
-
     # ─── Known column headers ───
-    HEADER_LABELS = {
-        "school name", "institute name", "board", "year of passing", "marking scheme",
-        "obtained percentage/cgp a", "obtained percentage/cgpa",
-        "predicted marks/grades", "result status",
-    }
+    HEADER_LABELS = set(ACADEMIC_COLUMN_MAP.keys())
 
     LEVEL_RE = re.compile(
         r'\b(9th|10th|11th|12th|class\s*9|class\s*10|class\s*11|class\s*12)\b',
@@ -59,49 +53,71 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
 
     current_entry = None
     in_subject_table = False
-    # Ordered column names from the most recent header row (excluding the implicit Level column)
-    header_columns = []
+    
+    # Header state for metadata (School, Board, etc.)
+    metadata_header_cols = []
+    
+    # Header state for Subject Table (Subject, Max, Obtained)
+    subject_column_map = {}
 
-    for row in all_rows:
-        texts = _texts(row)
+    for row_blocks in all_rows:
+        texts = [b["text"].strip().replace("\n", " ") for b in row_blocks]
         text_full = " ".join(texts)
         lower_full = text_full.lower()
 
         # ── Skip noise rows ──
-        if "do you have" in lower_full or "gap after" in lower_full:
-            continue
-        if "upload" in lower_full and "transcript" in lower_full:
-            continue
-        if lower_full.startswith("country:") or lower_full.startswith("state:"):
-            continue
-        # Skip personal info labels that appear in the full block list
-        if any(kw in lower_full for kw in [
-            "highest degree", "field of employment", "educational institute",
-            "father details", "mother details", "sibling details",
-            "address details", "communication address", "permanent address",
-            "additional information", "preferred major", "positions of",
-            "date of birth", "mobile number", "email address",
-            "nationality", "first generation", "full name",
-            "subject category",
-        ]):
+        if any(kw in lower_full for kw in ["do you have", "gap after", "upload transcript", "country:", "state:", "subject category"]):
             continue
 
-        # ── A. Metadata header row? ──
+        # ── A. Metadata header row? (School Name | Board | ...) ──
         lower_cells = {t.lower() for t in texts}
         header_hits = lower_cells & HEADER_LABELS
-        if len(header_hits) >= 3:
-            header_columns = [t.lower() for t in texts]
-            in_subject_table = False
-            continue
+        if len(header_hits) >= 2:
+            metadata_header_cols = [t.lower() for t in texts]
+            # If it's pure header, skip the rest
+            if not LEVEL_RE.search(lower_full) and "subject" not in lower_full:
+                continue
 
-        # ── B. Level trigger row (may also contain inline data) ──
+        # ── B. Subject Table Header (Detect columns spatially) ──
+        # Check this BEFORE level trigger for rows that contain both (Telangana)
+        if "subject" in lower_full and ("marks" in lower_full or "grade" in lower_full):
+            in_subject_table = True
+            subject_column_map = {}
+            for b in row_blocks:
+                t_norm = b["text"].lower().strip()
+                if "subject" == t_norm or "subject name" == t_norm:
+                    subject_column_map["subject_name"] = b["bbox"][0]
+                elif "maximum" in t_norm:
+                    subject_column_map["max_score_raw"] = b["bbox"][0]
+                elif "obtained" in t_norm:
+                    subject_column_map["score_raw"] = b["bbox"][0]
+                elif "predicted" in t_norm:
+                    subject_column_map["predicted_score_raw"] = b["bbox"][0]
+            # Don't continue yet, might also be a Level Trigger
+
+        # ── C. Level trigger row (trigger new Entry) ──
         level_match = LEVEL_RE.search(lower_full)
         if level_match:
-            # Normalize the level string
             raw_level = level_match.group(1).upper()
             clean_level = re.sub(r'CLASS\s*', '', raw_level).strip() or raw_level
 
-            in_subject_table = False
+            # If we already have an active entry for this level, don't restart!
+            if current_entry and current_entry["academic_level"] == clean_level:
+                # Map inline data bits
+                if len(texts) == len(metadata_header_cols) and len(texts) > 1:
+                    _apply_header_data(current_entry, metadata_header_cols[1:], texts[1:])
+                elif len(texts) == len(metadata_header_cols) + 1:
+                    _apply_header_data(current_entry, metadata_header_cols, texts[1:])
+                else:
+                    _apply_header_data(current_entry, metadata_header_cols, texts[1:])
+                continue
+
+            # If we were in a subject table for a PREVIOUS level, and now a new level starts
+            # AND this row isn't the header for the *new* table, reset.
+            if "subject" not in lower_full:
+                in_subject_table = False
+                subject_column_map = {}
+            
             if current_entry:
                 entries.append(current_entry)
 
@@ -114,82 +130,60 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
                 "marking_scheme_raw": None,
                 "grading_mode": "unknown",
                 "score_raw": None,
+                "max_score_raw": None,
                 "predicted_score_raw": None,
                 "subject_entries": [],
                 "confidence_score": confidence,
             }
 
-            # The level token occupies cell 0; the rest are data values
-            # that correspond to header_columns (which also starts at "School Name")
-            # So data_vals[0] → header_columns[0], data_vals[1] → header_columns[1], etc.
-            data_vals = texts[1:]  # Skip the level cell
-            _apply_header_data(current_entry, header_columns, data_vals)
-            continue
-
-        # ── C. Subject table header ──
-        if ("subject wise marks" in lower_full
-            or ("subject" in lower_full
-                and ("maximum" in lower_full or "obtained" in lower_full
-                     or "predicted" in lower_full))):
-            in_subject_table = True
-            continue
-
-        # ── D. Subject data row ──
-        if in_subject_table and current_entry and len(texts) >= 2:
-            first = texts[0]
-            is_serial = bool(re.match(r'^\d+\.?$', first))
-
-            if is_serial and len(texts) >= 3:
-                subj_name = texts[1]
-                obtained = texts[3] if len(texts) >= 4 else texts[2]
-            elif not is_serial and len(texts) >= 2:
-                subj_name = texts[0]
-                obtained = texts[2] if len(texts) >= 3 else texts[1]
+            # Map inline data bits
+            if len(texts) == len(metadata_header_cols) and len(texts) > 1:
+                _apply_header_data(current_entry, metadata_header_cols[1:], texts[1:])
+            elif len(texts) == len(metadata_header_cols) + 1:
+                _apply_header_data(current_entry, metadata_header_cols, texts[1:])
             else:
-                # Row doesn't match subject pattern — exit table mode
-                in_subject_table = False
-                continue
-
-            # Valid subject: must have digits in score and short subject name
-            if (len(subj_name) >= 2 and len(subj_name) < 50
-                    and any(c.isdigit() for c in obtained)
-                    and not any(kw in subj_name.lower() for kw in [
-                        "applicant", "date:", "rank", "position", "role",
-                        "prefect", "leadership", "cultural",
-                    ])):
-                current_entry["subject_entries"].append({
-                    "subject_name": subj_name,
-                    "score_raw": obtained,
-                    "predicted_score_raw": None,
-                })
-            else:
-                # Failed validation — this isn't a real subject row, exit table
-                in_subject_table = False
+                 _apply_header_data(current_entry, metadata_header_cols, texts[1:])
             continue
 
-        # ── E. Freeform school name extraction ──
-        if current_entry and not in_subject_table:
-            for cell in texts:
-                if not current_entry["school_name"]:
-                    m = re.search(
-                        r'([A-Z][A-Za-z\s]+(?:School|College|Institute|Academy|University))',
-                        cell,
-                    )
-                    if m:
-                        current_entry["school_name"] = m.group(1).strip()
+        # ── D. Subject Table Data (Use Spatial Column Map) ──
+        if in_subject_table and current_entry and subject_column_map:
+            row_data = {"subject_name": None, "max_score_raw": None, "score_raw": None, "predicted_score_raw": None}
+            used_blocks = set()
+            for key, anchor_x in subject_column_map.items():
+                best_block, min_dist = None, 50
+                for i, b in enumerate(row_blocks):
+                    if i in used_blocks: continue
+                    dist = abs(b["bbox"][0] - anchor_x)
+                    if dist < min_dist:
+                        min_dist, best_block = dist, (i, b)
+                if best_block:
+                    idx, b = best_block
+                    row_data[key] = b["text"].strip()
+                    used_blocks.add(idx)
 
-    # Flush last entry
+            subj_name, score = row_data["subject_name"], row_data["score_raw"]
+            if subj_name and score and not is_stop_word(subj_name):
+                 if any(c.isdigit() for c in score) or len(score) <= 3:
+                      current_entry["subject_entries"].append({
+                          "subject_name": subj_name,
+                          "score_raw": score,
+                          "max_score_raw": row_data.get("max_score_raw"),
+                          "predicted_score_raw": row_data.get("predicted_score_raw"),
+                      })
+                      continue
+            if not subj_name or len(subj_name) < 2:
+                in_subject_table = False
+
     if current_entry:
         entries.append(current_entry)
 
-    # ── Deduplicate: merge entries with the same level ──
+    # ── Merge and Deduplicate ──
     merged = {}
     for e in entries:
         lvl = e["academic_level"]
         if lvl in merged:
             existing = merged[lvl]
-            for key in ["school_name", "board_name", "academic_year",
-                         "marking_scheme_raw", "score_raw", "predicted_score_raw"]:
+            for key in ["school_name", "board_name", "academic_year", "marking_scheme_raw", "score_raw", "max_score_raw", "predicted_score_raw"]:
                 if not existing.get(key) and e.get(key):
                     existing[key] = e[key]
             if e.get("grading_mode") != "unknown":
@@ -200,47 +194,21 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
             merged[lvl] = e
 
     final_entries = list(merged.values())
-
-    # Map academic entries to schooling history (Page 1 summary)
     for ent in final_entries:
         schooling_history.append({
-            "entry_id": uuid.uuid4(),
-            "level": ent["academic_level"],
-            "school_name": ent.get("school_name"),
-            "board_name": ent.get("board_name"),
-            "location": None,  # Optional: could parse from noise rows if available
-            "confidence_score": ent.get("confidence_score", 0.9)
+            "entry_id": str(uuid.uuid4()), "level": ent["academic_level"],
+            "school_name": ent.get("school_name"), "board_name": ent.get("board_name"),
+            "location": None, "confidence_score": ent.get("confidence_score", 0.9)
         })
 
-    return {
-        "academic_entries": final_entries,
-        "schooling_history": schooling_history,
-        "confidence_score": confidence,
-    }
-
+    return {"academic_entries": final_entries, "schooling_history": schooling_history, "confidence_score": confidence}
 
 def _apply_header_data(entry: dict, header_columns: list, data_vals: list):
-    """Map data values to the entry dict using the header column labels."""
     for idx, hdr in enumerate(header_columns):
         val = data_vals[idx] if idx < len(data_vals) else None
-        if not val:
-            continue
-        if "school" in hdr or "institute" in hdr:
-            entry["school_name"] = val
-        elif hdr == "board":
-            entry["board_name"] = val
-        elif "year" in hdr:
-            entry["academic_year"] = val
-        elif "marking" in hdr:
-            entry["marking_scheme_raw"] = val
-            entry["grading_mode"] = (
-                "percentage" if "percent" in val.lower()
-                else "cgpa" if "cgpa" in val.lower()
-                else "unknown"
-            )
-        elif "percentage" in hdr or "cgpa" in hdr:
-            entry["score_raw"] = val
-        elif "predicted" in hdr:
-            entry["predicted_score_raw"] = val
-        elif "result" in hdr:
-            entry.setdefault("result_status", val)
+        if not val: continue
+        canonical_key = ACADEMIC_COLUMN_MAP.get(hdr.strip().lower())
+        if canonical_key:
+            entry[canonical_key] = val
+            if canonical_key == "marking_scheme_raw":
+                entry["grading_mode"] = "percentage" if "percent" in val.lower() else "cgpa" if "cgpa" in val.lower() else "unknown"

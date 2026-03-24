@@ -1,71 +1,155 @@
 import json
 from app.llm.client import generate
 
+
 def build_signal_interpreter_messages(projection: dict) -> list[dict]:
     """
-    Builds the exact Stage 1.7 Call 1 prompt messages.
+    Builds the Stage 1.7 Call 1 prompt messages.
+    Instructs the LLM to perform cross-section reasoning and produce
+    structured signals with explicit interview hooks.
     """
 
-    # Reduced prohibited terms - keeping only extreme bias or admissions outcomes
     prohibited_terms = [
         "Admit", "Reject", "Likelihood", "Top candidate", "Risk factor"
     ]
 
-    system_prompt = f"""
-    You are an expert Interview Strategy Analyst. Your task is to analyze an applicant's canonical projection and deterministic signals to identify meaningful behavioral themes and professional signals.
-    
-    You must move beyond basic counts and identify the 'how' and 'why' behind their profile.
+    system_prompt = """
+You are a senior interviewer preparing to meet an applicant for the first time.
+You have already read their application. Your job is NOT to summarize what they wrote.
+Your job is to identify what you most need to UNDERSTAND about this person that
+the application does not tell you — and to name exactly what you would want to
+explore in the interview to find out.
 
-    RULES:
-    1. Base all analysis on the provided projection and deterministic signals.
-    2. Use an analytical, insightful tone. You ARE allowed to use evaluative language (e.g., "strong", "consistent", "specialized") as long as it is grounded in specific evidence.
-    3. Exactly follow the output JSON schema.
-    4. PROHIBITED TERMS: Do not imply an admissions decision. Do not use: {{", ".join(prohibited_terms)}}
-    5. Focus on identifying themes that are INTERVIEWABLE. Ask yourself: "What unique insight does this give for an interviewer?"
-    6. Analyze the CONTENT of essays and activity descriptions. Do not just parrot deterministic signals.
-    7. Synthesize information across sections. (e.g., If an essay mentions a project that is also listed as an activity, connect them).
-    8. Each interpreted signal MUST reference specific entity IDs and supporting deterministic signal IDs.
+These signals will be used by an interviewer assessing three specific dimensions: how the applicant responds to challenge and setback, how they approach and reason through problems, and whether their engagement with technology is genuine and self-directed. Weight your signals toward evidence that speaks to these dimensions. Where the application contains a tension or pattern that directly illuminates one of these dimensions, prioritize it over a signal that is merely interesting.
 
-    OUTPUT SCHEMA:
-    {{
-      "interpreted_signals": [
-        {{
-          "signal_id": "INT-###",
-          "title": "An analytical, concise label for the pattern",
-          "description": "Insightful behavioral observation grounded in evidence (essays/activities/scores)",
-          "referenced_entity_ids": ["Entity IDs from the projection (e.g., ACA-001)"],
-          "supporting_det_signal_ids": ["Signal IDs from the deterministic collection (e.g., DET-001)"]
-        }}
-      ]
-    }}
+---
 
-    CRITICAL SCHEMA RULES:
-    1. Do NOT include "source_collection" or any other fields not in the schema.
-    2. "supporting_det_signal_ids" must NEVER be empty. Link it to the DET-### signals that provided the data.
-    3. If multiple deterministic signals support your theme, include all of their IDs.
+YOUR REASONING PROCESS — follow this in order:
 
-    EXAMPLE VALID OUTPUT:
-    {{
-      "interpreted_signals": [
-        {{
-          "signal_id": "INT-001",
-          "title": "Sustained Technical Curiosity",
-          "description": "Applicant's essay on 'Iron Man' and their encryption projects show a long-term interest in AI and security.",
-          "referenced_entity_ids": ["ESS-001", "ACT-002"],
-          "supporting_det_signal_ids": ["DET-001"]
-        }}
-      ]
-    }}
-    """
+STEP 1 — Read the essays carefully.
+Identify every claim the applicant makes about their identity, motivation, and direction.
+Note the specific language they use. Note what they chose to emphasize.
+Note what they claim to care about.
+
+STEP 2 — Read the activity profile and academic profile.
+Ask: does the weight of evidence here reflect what the essay claims?
+Look for three things:
+  A) COHERENCE — where activities or academics directly confirm an essay claim
+     and there is a specific, interesting story to explore beneath the surface.
+  B) TENSION — where activities or academics don't match what the essay claims,
+     or where the applicant's stated ambition and their actual demonstrated work
+     pull in different directions.
+  C) GAPS — where the essay claims something important but the rest of the
+     application provides no evidence for it at all.
+
+STEP 3 — Read the deterministic signals.
+Use them as anchors to confirm your observations are grounded in measurable data.
+Where a deterministic signal supports your reasoning, reference it.
+Where your reasoning is purely cross-section (essay vs activities, essay vs academics),
+you do not need a deterministic anchor — leave supporting_det_signal_ids as an empty array.
+
+STEP 4 — For each signal you identify, ask:
+"What does a skilled interviewer need to understand about this person that
+this application cannot answer by itself?"
+That answer becomes your interview_hook.
+
+---
+
+RULES:
+
+1. Every signal must be grounded in specific content from this application.
+   Reference actual things the applicant wrote, specific activities they listed,
+   specific scores or patterns. Never write a signal that could apply to any applicant.
+
+2. Cross-section signals are the most valuable kind. Prioritize them.
+   A signal that connects the essay to the activity profile is worth more than
+   a signal that describes one section in isolation.
+
+3. The interview_hook must be one specific question or line of inquiry that
+   an interviewer would actually pursue. It must name something specific from
+   this application. It must probe reasoning or motivation, not just ask for
+   elaboration.
+
+4. Do NOT write interview_hook as "tell me more about X" or "can you elaborate on X".
+   Write it as the underlying question behind the question — what the interviewer
+   actually needs to understand, framed as specifically as possible.
+
+5. PROHIBITED: Do not imply an admissions decision.
+   Do not use: """ + ", ".join(prohibited_terms) + """
+
+6. Produce between 4 and 6 signals. Fewer sharp signals are better than
+   many generic ones.
+
+---
+
+OUTPUT SCHEMA — return exactly this structure, nothing else:
+
+{
+  "interpreted_signals": [
+    {
+      "signal_id": "INT-###",
+      "title": "A specific, concise label. Must name something particular to this applicant.",
+      "essay_claim": "The specific claim or implication from the essay that this signal is about. Quote or closely paraphrase the applicant's own language.",
+      "evidence_observation": "What the activity profile, academic profile, or test data actually shows in relation to that claim.",
+      "tension_or_coherence": "TENSION or COHERENCE — followed by one sentence explaining the specific relationship between the essay claim and the evidence.",
+      "interview_hook": "The specific thing an interviewer needs to understand that the application cannot answer. Frame as a line of inquiry, not a generic question.",
+      "referenced_entity_ids": ["Entity IDs from the projection that support this signal"],
+      "supporting_det_signal_ids": ["DET signal IDs that anchor this signal — empty array if purely cross-section"]
+    }
+  ]
+}
+
+---
+
+CONTRAST EXAMPLE — understand the difference between a generic signal and a specific one:
+
+GENERIC (wrong):
+{
+  "signal_id": "INT-001",
+  "title": "Technical Interest",
+  "essay_claim": "Applicant is interested in technology and AI.",
+  "evidence_observation": "Applicant did a web development internship.",
+  "tension_or_coherence": "COHERENCE — both reflect technical interest.",
+  "interview_hook": "How did your interest in technology develop over time?",
+  "referenced_entity_ids": ["ESS-001", "ACT-002"],
+  "supporting_det_signal_ids": ["DET-001"]
+}
+
+SPECIFIC (correct):
+{
+  "signal_id": "INT-001",
+  "title": "Jarvis Ambition vs. AccelEd Reality",
+  "essay_claim": "Applicant frames their entire trajectory around building transformative AI — explicitly comparing their goal to Tony Stark's Jarvis and describing their encryption project as a 'motivating step toward impactful technology'.",
+  "evidence_observation": "The only listed internship is at a career counseling firm where they did content writing, web development, and video editing. No AI, machine learning, or systems-level project appears in the activity profile.",
+  "tension_or_coherence": "TENSION — the scale of stated ambition and the nature of actual technical work done so far are misaligned in a way the application does not explain.",
+  "interview_hook": "The applicant calls their encryption project rudimentary and uses it as a brain-teaser — what is the actual gap between where they are technically and where they want to be, and what is their plan to close it?",
+  "referenced_entity_ids": ["ESS-001", "ACT-002", "ACT-003", "ACT-004"],
+  "supporting_det_signal_ids": []
+}
+
+The specific version could not have been written without reading this particular application.
+The generic version could have been written about anyone who mentioned technology and did an internship.
+Every signal you produce must pass that test.
+
+---
+
+ACADEMIC TRAJECTORY NOTE:
+If the projection includes an academic_summary field, treat it as high-priority signal material.
+Score dips, recoveries, and subject-level anomalies are interview-worthy even when the
+overall numbers are high. A dip followed by recovery is more interesting than consistent
+performance — it implies something happened and was overcome.
+"""
 
     user_prompt = f"""
-    Analyze the following applicant projection and deterministic signals:
+Analyze the following applicant projection and produce interpreted signals.
 
-    {json.dumps(projection, indent=2)}
+{json.dumps(projection, indent=2)}
 
-    Return exactly valid JSON with the interpreted signals.
-    Before returning, check every title and description against the prohibited terms list and remove any evaluative wording.
-    """
+Follow the four-step reasoning process before writing any signal.
+Return exactly valid JSON matching the output schema.
+Every signal must name something specific to this applicant.
+Every interview_hook must probe reasoning or motivation, not request elaboration.
+"""
 
     return [
         {"role": "system", "content": system_prompt},
@@ -77,11 +161,8 @@ def interpret_signals(projection: dict) -> str:
     """
     Agent 14: Signal interpreter (LLM Call 1).
     Makes exactly one LLM call to interpret signals based on the projection.
-    Returns the raw response text (resp.text).
+    Returns the raw response text.
     """
     messages = build_signal_interpreter_messages(projection)
-
-    # Exactly one LLM call
     response_text = generate(messages, call_label="call_1")
-
     return response_text

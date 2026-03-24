@@ -1,0 +1,25 @@
+{
+  "identifiers": {
+    "full_name": "Aarav Jain",
+    "date_of_birth": "2007-06-14",
+    "family_background": {
+      "father": {
+        "name": "Sandeep Jain",
+        "education": "B.Com",
+        "field_of_employment": "Textile Export Business",
+        "organization": "Jain Tex Exports",
+        "designation": "Founder and Managing Director"
+      },
+      "mother": {
+        "name": null,
+        "education": null,
+        "field_of_employment": null,
+        "organization": null,
+        "designation": null
+      }
+    },
+    "declared_preferences": {},
+    "demographic_flags": {}
+  },
+  "confidence_score": 0.85
+}

@@ -1,0 +1,23 @@
+{
+  "essay_entries": [
+    {
+      "entry_id": "4729e623-b452-4b0e-bf28-b2d0dc76ae33",
+      "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+      "raw_text": "From a young age, I’ve been fascinated by how things work—whether it's the logic behind mobile apps, the science in smart devices, or the\ninnovation that powers everyday life. What excites me most about engineering and technology is the ability to solve real-world problems\nusing creativity and logic. It's not just about building machines or writing code—it's about designing solutions that can create meaningful\nimpact. The ever-evolving nature of tech, combined with its potential to transform industries from healthcare to climate, makes this field\nincredibly exciting for me. I believe my curiosity, collaborative mindset, and eagerness to learn make me a strong fit for Plaksha’s B.Tech program. I enjoy working on\nprojects, asking questions, and applying what I learn to practical challenges. I also have a keen interest in interdisciplinary learning—blending\ntech with design, data, and human behavior—which I understand is core to Plaksha’s approach. What draws me most to Plaksha is its focus\non innovation, entrepreneurship, and societal impact. I’m excited by the opportunity to learn from faculty, mentors, and peers who are\npassionate about building a better future through technology. Plaksha’s hands-on curriculum, values-driven mission, and emphasis on\nleadership resonate deeply with my aspirations.",
+      "word_count": 196,
+      "placeholder_flag": false,
+      "short_response_flag": false,
+      "confidence_score": 0.9
+    },
+    {
+      "entry_id": "28b7c7e5-23b2-4cb0-b628-a3a461318f53",
+      "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+      "raw_text": "Having grown up with a pet dog, I’ve developed a deep sense of empathy and care for animals. That personal connection inspired me to take\naction when I noticed several stray dogs in my neighborhood struggling with hunger, injuries, and neglect. I initiated a small project with a\nfew classmates to support these animals by organizing feeding drives, arranging basic medical aid through local NGOs, and spreading\nawareness about responsible and humane treatment of strays. One of the major challenges was addressing concerns from some residents who were initially uncomfortable with our activities. There were\nworries about safety and cleanliness. Instead of giving up, I took the time to understand their perspective and created a small awareness\ncampaign. We shared how caring for strays through sterilization and regular feeding could actually make the community safer. We also made\nsure to clean up after every feeding and involved local animal welfare volunteers to lend credibility to our efforts. This experience taught me that leadership is as much about listening and empathy as it is about action. It showed me how\nperseverance—combined with teamwork and a clear sense of purpose—can gradually change mindsets and make a difference. It also\nreinforced that even small initiatives, when pursued with sincerity, can have a positive and lasting impact.",
+      "word_count": 213,
+      "placeholder_flag": false,
+      "short_response_flag": false,
+      "confidence_score": 0.9
+    }
+  ],
+  "confidence_score": 0.9
+}
