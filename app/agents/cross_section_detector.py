@@ -1,6 +1,13 @@
 from typing import List, Dict, Any
 import re
 
+GENERIC_ENTITY_TOKENS = {
+    "School", "Board", "Details", "Information", "Activities",
+    "References", "Declaration", "Consent", "Additional", "Personal",
+    "International", "District", "Captain"
+}
+
+
 def detect_cross_sections(
     academic_entries: List[Dict],
     test_entries: List[Dict],
@@ -19,7 +26,7 @@ def detect_cross_sections(
             return []
         # Find capitalized words > 3 chars as potential entities
         tokens = re.findall(r'\b[A-Z][a-z]{3,}\b', text)
-        return list(set(tokens))
+        return [token for token in set(tokens) if token not in GENERIC_ENTITY_TOKENS]
 
     # Map sources
     sources = []
@@ -64,7 +71,8 @@ def detect_cross_sections(
                 if k not in seen:
                     seen.add(k)
                     unique_refs.append(r)
-            if len(unique_refs) > 1:
+            source_types = {ref["source_type"] for ref in unique_refs}
+            if len(unique_refs) > 1 and len(source_types) > 1:
                 final_entities.append({
                     "entity_token": token,
                     "source_references": unique_refs

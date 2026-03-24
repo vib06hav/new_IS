@@ -4,6 +4,7 @@ import re
 from app.agents.layout_extractor import extract_layout_blocks
 from app.agents.section_detector import detect_sections
 from app.agents.personal_extractor import extract_personal_info
+from app.agents.additional_info_extractor import extract_additional_info
 from app.agents.academic_extractor import extract_academic_records
 from app.agents.test_extractor import extract_test_records
 from app.agents.essay_extractor import extract_essays
@@ -30,12 +31,147 @@ from app.models.application import Application
 from app.models.canonical_record import CanonicalRecord
 from app.models.synthesis_record import SynthesisRecord
 from app.canonical.version import CANONICAL_VERSION
+from app.config import settings
+from app.utils.text_normalization import normalize_label
 from app.utils.sanitizer import sanitize_for_json
 from sqlalchemy.orm import Session
 from datetime import datetime
 import logging
 import uuid
 logger = logging.getLogger(__name__)
+
+
+def _merge_activity_results(*results: Dict[str, Any]) -> Dict[str, Any]:
+    activity_entries = []
+    confidences = []
+    preferred_major = None
+
+    for result in results:
+        if not result:
+            continue
+        activity_entries.extend(result.get("activity_entries", []))
+        if result.get("confidence_score") is not None:
+            confidences.append(result.get("confidence_score", 0.0))
+        if not preferred_major and result.get("preferred_major"):
+            preferred_major = result["preferred_major"]
+
+    return {
+        "activity_entries": activity_entries,
+        "preferred_major": preferred_major,
+        "confidence_score": (sum(confidences) / len(confidences)) if confidences else 0.0,
+    }
+
+
+def _get_parser_engine_version() -> str:
+    version = settings.PARSER_ENGINE_VERSION
+    return version if version in {"v1", "v2"} else "v2"
+
+
+def _rows_for_section(section: Dict[str, Any], layout_rows: Any) -> list:
+    if not layout_rows:
+        return []
+
+    start = section.get("start_row_index")
+    end = section.get("end_row_index")
+    if start is None or end is None:
+        return []
+
+    return [
+        row
+        for row in layout_rows
+        if start <= row.get("row_index", -1) <= end
+    ]
+
+
+def _collect_section_blocks(section_data: Dict[str, Any], parser_engine_version: str) -> Dict[str, Any]:
+    buckets = {
+        "personal_blocks": [],
+        "parent_blocks": [],
+        "academic_blocks": [],
+        "test_blocks": [],
+        "essay_blocks": [],
+        "additional_info_blocks": [],
+        "extra_blocks": [],
+        "co_blocks": [],
+        "leadership_blocks": [],
+    }
+
+    for section in section_data.get("sections", []):
+        label = section.get("label", "").lower()
+        section_type = section.get("section_type")
+        blocks = section.get("blocks", [])
+        logger.debug(f"Processing section: '{label}' ({section_type}) with {len(blocks)} blocks")
+
+        if parser_engine_version == "v1":
+            if "personal" in label:
+                buckets["personal_blocks"].extend(blocks)
+            elif any(kw in label for kw in ["parent", "father", "mother"]):
+                buckets["parent_blocks"].extend(blocks)
+            elif "extra" in label and "curricul" in label:
+                buckets["extra_blocks"].extend(blocks)
+            elif "co" in label and "curricul" in label:
+                buckets["co_blocks"].extend(blocks)
+            elif "leadership" in label:
+                buckets["leadership_blocks"].extend(blocks)
+            elif any(kw in label for kw in ["class", "academic", "education", "degree", "school"]):
+                buckets["academic_blocks"].extend(blocks)
+            elif any(kw in label for kw in ["test", "jee", "sat", "act", "examination", "percentile", "score"]):
+                buckets["test_blocks"].extend(blocks)
+            elif "essay" in label:
+                buckets["essay_blocks"].extend(blocks)
+            elif "additional" in label:
+                buckets["additional_info_blocks"].extend(blocks)
+            continue
+
+        if section_type == "personal_details":
+            buckets["personal_blocks"].extend(blocks)
+        elif section_type == "parent_details":
+            buckets["parent_blocks"].extend(blocks)
+        elif section_type == "extracurricular":
+            buckets["extra_blocks"].extend(blocks)
+        elif section_type == "co_curricular":
+            buckets["co_blocks"].extend(blocks)
+        elif section_type == "leadership":
+            buckets["leadership_blocks"].extend(blocks)
+        elif section_type == "academics":
+            buckets["academic_blocks"].extend(blocks)
+        elif section_type == "standardized_tests":
+            buckets["test_blocks"].extend(blocks)
+        elif section_type == "essays":
+            buckets["essay_blocks"].extend(blocks)
+        elif section_type == "additional_information":
+            buckets["additional_info_blocks"].extend(blocks)
+
+    return buckets
+
+
+def _collect_parent_sections(section_data: Dict[str, Any], parser_engine_version: str, layout_rows: Any) -> list:
+    parent_sections = []
+    for section in section_data.get("sections", []):
+        label = section.get("label", "").lower()
+        section_type = section.get("section_type")
+
+        if parser_engine_version == "v1":
+            is_parent_section = any(kw in label for kw in ["parent", "father", "mother"])
+        else:
+            is_parent_section = section_type == "parent_details"
+
+        if not is_parent_section:
+            continue
+
+        section_rows = _rows_for_section(section, layout_rows)
+        row_blocks = []
+        for row in section_rows:
+            row_blocks.extend(row.get("blocks", []))
+
+        parent_sections.append({
+            "label": section.get("label"),
+            "normalized_label": normalize_label(section.get("label", "")),
+            "blocks": row_blocks or section.get("blocks", []),
+        })
+
+    return parent_sections
+
 
 def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, Any]:
     """
@@ -57,61 +193,80 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
 
     # Agent 2: Section Boundary Detection
     logger.debug("Agent invocation (agent_id: 2, agent_name: Section Boundary Detector Python Agent)")
-    section_data = detect_sections(layout_data["blocks"])
+    section_data = detect_sections(layout_data["blocks"], rows=layout_data.get("rows"))
     logger.debug(f"Agent completion (agent_id: 2, confidence_score: {section_data.get('confidence_score', 'N/A')})")
-
-    academic_blocks = []
-    test_blocks = []
-    essay_blocks = []
-    
-    extra_blocks = []
-    co_blocks = []
-    leadership_blocks = []
-
+    parser_engine_version = _get_parser_engine_version()
+    logger.info(f"Parser engine version: {parser_engine_version}")
+    section_buckets = _collect_section_blocks(section_data, parser_engine_version)
+    parent_sections = _collect_parent_sections(section_data, parser_engine_version, layout_data.get("rows"))
+    academic_rows = []
+    test_rows = []
     for section in section_data.get("sections", []):
+        section_rows = _rows_for_section(section, layout_data.get("rows"))
+        if not section_rows:
+            continue
+        section_type = section.get("section_type")
         label = section.get("label", "").lower()
-        blocks = section.get("blocks", [])
-        logger.debug(f"Processing section: '{label}' with {len(blocks)} blocks")
-        
-        if "extra" in label and "curricul" in label:
-            logger.debug(f"Row matched Extra category: {label}")
-            extra_blocks.extend(blocks)
-        elif "co" in label and "curricul" in label:
-            logger.debug(f"Row matched Co-Curricular category: {label}")
-            co_blocks.extend(blocks)
-        elif "leadership" in label:
-            logger.debug(f"Row matched Leadership category: {label}")
-            leadership_blocks.extend(blocks)
-        elif any(kw in label for kw in ["class", "academic", "education", "degree", "school"]):
-            logger.debug(f"Row matched Academic category: {label}")
-            academic_blocks.extend(blocks)
-        elif any(kw in label for kw in ["test", "jee", "sat", "act", "examination", "percentile", "score"]):
-            logger.debug(f"Row matched Test category: {label}")
-            test_blocks.extend(blocks)
-        elif "essay" in label:
-            logger.debug(f"Row matched Essay category: {label}")
-            essay_blocks.extend(blocks)
+        if parser_engine_version == "v1":
+            if any(kw in label for kw in ["class", "academic", "education", "degree", "school"]):
+                academic_rows.extend(section_rows)
+            elif any(kw in label for kw in ["test", "jee", "sat", "act", "examination", "percentile", "score"]):
+                test_rows.extend(section_rows)
         else:
-            logger.debug(f"No match for section: {label}")
+            if section_type == "academics":
+                academic_rows.extend(section_rows)
+            elif section_type == "standardized_tests":
+                test_rows.extend(section_rows)
+    personal_blocks = section_buckets["personal_blocks"]
+    academic_blocks = section_buckets["academic_blocks"]
+    test_blocks = section_buckets["test_blocks"]
+    essay_blocks = section_buckets["essay_blocks"]
+    additional_info_blocks = section_buckets["additional_info_blocks"]
+    extra_blocks = section_buckets["extra_blocks"]
+    co_blocks = section_buckets["co_blocks"]
+    leadership_blocks = section_buckets["leadership_blocks"]
 
-    academic_rows = normalize_layout(academic_blocks) if academic_blocks else layout_data["normalized_rows"]
-    test_rows = normalize_layout(test_blocks) if test_blocks else layout_data["normalized_rows"]
     essay_blocks_to_pass = essay_blocks if essay_blocks else layout_data["blocks"]
 
     # Agent 3: Personal Information
     logger.debug("Agent invocation (agent_id: 3, agent_name: Personal Information Extractor Python Agent)")
-    personal_data = extract_personal_info(layout_data["blocks"])
+    personal_scope = personal_blocks if personal_blocks else layout_data["blocks"]
+    personal_data = extract_personal_info(
+        personal_scope,
+        parent_sections=parent_sections,
+    )
     logger.debug(f"Agent completion (agent_id: 3, confidence_score: {personal_data.get('confidence_score', 'N/A')})")
+
+    if additional_info_blocks:
+        logger.debug("Agent invocation (agent_id: 3a, agent_name: Additional Information Extractor Python Agent)")
+        additional_info_data = extract_additional_info(additional_info_blocks, all_blocks=layout_data["blocks"])
+        preferred_major = additional_info_data.get("preferred_major")
+        if preferred_major:
+            identifiers = personal_data.setdefault("identifiers", {})
+            identifiers.setdefault("declared_preferences", {})
+            identifiers["preferred_major"] = identifiers.get("preferred_major") or preferred_major
+            identifiers["declared_preferences"]["major"] = (
+                identifiers["declared_preferences"].get("major") or preferred_major
+            )
+            personal_data["confidence_score"] = max(
+                personal_data.get("confidence_score", 0.0),
+                additional_info_data.get("confidence_score", 0.0),
+            )
+        logger.debug(
+            f"Agent completion (agent_id: 3a, confidence_score: {additional_info_data.get('confidence_score', 'N/A')})"
+        )
 
     # Agent 4: Academic Records
     logger.debug("Agent invocation (agent_id: 4, agent_name: Academic Records Extractor Python Agent)")
-    academic_data = extract_academic_records(layout_data["blocks"])
+    academic_scope = academic_blocks if academic_blocks else layout_data["blocks"]
+    academic_data = extract_academic_records(academic_scope, rows=academic_rows or None)
     logger.debug(f"Agent completion (agent_id: 4, confidence_score: {academic_data.get('confidence_score', 'N/A')})")
 
     # Agent 5: Standardized Tests
     logger.debug("Agent invocation (agent_id: 5, agent_name: Standardized Tests Extractor Python Agent)")
     # Pass raw blocks to use coordinate-based lookup with keywords
-    test_data = extract_test_records(test_blocks if test_blocks else layout_data["blocks"])
+    test_scope = test_blocks if test_blocks else layout_data["blocks"]
+    test_data = extract_test_records(test_scope, rows=test_rows or None)
     logger.debug(f"Agent completion (agent_id: 5, confidence_score: {test_data.get('confidence_score', 'N/A')})")
 
     # Agent 6: Essays
@@ -121,9 +276,14 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
 
     # Agent 7: Activities (Categorized)
     logger.debug("Agent invocation (agent_id: 7, agent_name: Activities Extractor Python Agent)")
-    
-    # Pass all blocks so it can detect its own section boundaries as per the plan
-    activity_data = extract_activities(layout_data["blocks"], pdf_path)
+    if extra_blocks or co_blocks or leadership_blocks:
+        activity_data = _merge_activity_results(
+            extract_activities(extra_blocks, pdf_path, forced_section="extracurricular") if extra_blocks else {},
+            extract_activities(co_blocks, pdf_path, forced_section="co_curricular") if co_blocks else {},
+            extract_activities(leadership_blocks, pdf_path, forced_section="leadership") if leadership_blocks else {},
+        )
+    else:
+        activity_data = extract_activities(layout_data["blocks"], pdf_path)
 
     # Agent 8: Cross-Section Entity Detection
     logger.debug("Agent invocation (agent_id: 8, agent_name: Cross-Section Entity Detector Python Agent)")
@@ -141,7 +301,9 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
         personal_data.get("identifiers", {}),
         academic_data.get("academic_entries", []),
         essay_data.get("essay_entries", []),
-        activity_data.get("activity_entries", [])
+        activity_data.get("activity_entries", []),
+        layout_meta=layout_data,
+        section_meta=section_data,
     )
     logger.debug(f"Agent completion (agent_id: 10, confidence_score: {integrity_data.get('confidence_score', 'N/A')})")
 

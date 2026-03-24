@@ -1,61 +1,66 @@
 {
   "activity_entries": [
     {
-      "entry_id": "615a9128-1e70-4823-b9b7-5922b30de90e",
+      "entry_id": "b4b51873-faab-469f-9444-dd8296ec0669",
       "activity_type": "extracurricular",
       "activity_name": "Music Piano",
-      "position_title": "Grade 4 Qualified from\nPhilips International\nSchool of Music",
+      "position_title": null,
       "level": "International",
       "duration": "5",
       "achievement": null,
       "roles_and_responsibilities": null,
+      "description_raw": null,
       "confidence_score": 0.95
     },
     {
-      "entry_id": "70fc1abd-a3d0-461c-a27e-5c58a08d0e75",
+      "entry_id": "ad463597-4ec8-408c-a16a-97216187dace",
       "activity_type": "extracurricular",
       "activity_name": "Yoga",
-      "position_title": "Beginner level\npractitioner of Yoga and\nmindfulness",
+      "position_title": null,
       "level": "Personal",
       "duration": "2",
       "achievement": null,
       "roles_and_responsibilities": null,
+      "description_raw": null,
       "confidence_score": 0.95
     },
     {
-      "entry_id": "763c94df-e007-4f69-a972-31755de4b667",
+      "entry_id": "5c3be480-811c-4f33-a8a6-a1250dc74eec",
       "activity_type": "co_curricular",
       "activity_name": "Olympiads",
-      "position_title": "Has been regularly\nparticipating in Maths,\nScience Olympiads at\nschool",
+      "position_title": null,
       "level": "District",
       "duration": "7",
       "achievement": null,
       "roles_and_responsibilities": null,
+      "description_raw": "Has been regularly\nparticipating in Maths,\nScience Olympiads at\nschool",
       "confidence_score": 0.95
     },
     {
-      "entry_id": "13bb0bd1-bc91-44cf-97ac-92eeded5463b",
+      "entry_id": "4f1e479c-bbd2-43d1-8349-db6281b5a3f4",
       "activity_type": "co_curricular",
       "activity_name": "Reading",
-      "position_title": "Is an ardent reader of\nfiction and non fiction\nbooks on personal\ndevelopment etc",
+      "position_title": null,
       "level": "Personal",
       "duration": "6",
       "achievement": null,
       "roles_and_responsibilities": null,
+      "description_raw": "Is an ardent reader of\nfiction and non fiction\nbooks on personal\ndevelopment etc",
       "confidence_score": 0.95
     },
     {
-      "entry_id": "683163a9-a6b8-46d3-a5d1-9c4eed9ca656",
+      "entry_id": "fb6333b8-145e-428e-91f5-4592df3bbc04",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "School House Captain",
       "level": null,
       "duration": "1",
       "achievement": null,
-      "roles_and_responsibilities": "Was the School House Captain at",
+      "roles_and_responsibilities": null,
+      "description_raw": "Was the School House Captain at",
       "confidence_score": 0.95
     }
   ],
-  "preferred_major": "Computer Science and Artificial Intelligence",
+  "preferred_major": null,
   "confidence_score": 0.9
 }

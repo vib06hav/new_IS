@@ -8,7 +8,33 @@ from app.utils.activity_filter import is_valid_activity
 
 logger = logging.getLogger(__name__)
 
-def extract_activities(section_blocks: List[Dict[str, Any]], pdf_path: str = "") -> Dict[str, Any]:
+
+def _looks_like_descriptive_text(value: Optional[str]) -> bool:
+    if not value:
+        return False
+    word_count = len(str(value).replace("\n", " ").split())
+    lowered = str(value).lower()
+    return word_count > 4 or any(token in lowered for token in [" has ", " is ", " was ", " practitioner", "participating"])
+
+
+def _normalize_activity_entry(entry: Dict[str, Any]) -> Dict[str, Any]:
+    if entry.get("activity_type") != "leadership" and _looks_like_descriptive_text(entry.get("position_title")):
+        entry["description_raw"] = entry.get("position_title")
+        entry["position_title"] = None
+
+    if entry.get("roles_and_responsibilities"):
+        roles = entry["roles_and_responsibilities"].strip()
+        if roles.lower().endswith((" at", " in", " for", " with", " of", " to")):
+            entry["description_raw"] = " ".join(filter(None, [entry.get("description_raw"), roles])).strip()
+            entry["roles_and_responsibilities"] = None
+
+    return entry
+
+def extract_activities(
+    section_blocks: List[Dict[str, Any]],
+    pdf_path: str = "",
+    forced_section: Optional[str] = None,
+) -> Dict[str, Any]:
     """
     Extract activities using a Grid-Line based spatial approach with Dynamic Column Mapping.
     Handles isolated headers, cross-page stitching, and horizontal layout shifts.
@@ -85,7 +111,7 @@ def extract_activities(section_blocks: List[Dict[str, Any]], pdf_path: str = "")
         "leadership": {1: "position_title", 2: "duration", 3: "roles_and_responsibilities"}
     }
 
-    current_section: Optional[str] = None
+    current_section: Optional[str] = forced_section
     v_lines: List[float] = []
     v_lines_page = -1
     active_field_map: Dict[int, str] = {}
@@ -97,7 +123,7 @@ def extract_activities(section_blocks: List[Dict[str, Any]], pdf_path: str = "")
         row_y_bottom_pdf = float(row[0]["bbox"][1])
         
         # X. Specific catch for Preferred Major (Additional Information section)
-        if "preferred major" in row_text:
+        if not forced_section and "preferred major" in row_text:
             # The value is usually to the right or in the same row
             # Let's try to grab all text in the row excluding the label
             label_match = re.search(r'preferred\s*major', row_text)
@@ -120,22 +146,23 @@ def extract_activities(section_blocks: List[Dict[str, Any]], pdf_path: str = "")
             continue
 
         # B. Detect Section Start/Reset
-        found_section = None
-        for s_type, pattern in SECTION_RE.items():
-            if pattern.search(row_text):
-                found_section = s_type
-                break
-        
-        if found_section:
-            # Handle continuation headers on new pages
-            if found_section == current_section and is_top_of_page:
+        if not forced_section:
+            found_section = None
+            for s_type, pattern in SECTION_RE.items():
+                if pattern.search(row_text):
+                    found_section = s_type
+                    break
+
+            if found_section:
+                # Handle continuation headers on new pages
+                if found_section == current_section and is_top_of_page:
+                    continue
+                current_section = found_section
+                active_field_map = {} # Reset field map for new section or layout
+                # Trigger fresh grid detection on the header page
+                v_lines = get_vertical_lines(pdf_path, row_page, row_y_bottom_pdf - 300, row_y_top_pdf + 10)
+                v_lines_page = row_page
                 continue
-            current_section = found_section
-            active_field_map = {} # Reset field map for new section or layout
-            # Trigger fresh grid detection on the header page
-            v_lines = get_vertical_lines(pdf_path, row_page, row_y_bottom_pdf - 300, row_y_top_pdf + 10)
-            v_lines_page = row_page
-            continue
 
         if not current_section:
             continue
@@ -174,7 +201,7 @@ def extract_activities(section_blocks: List[Dict[str, Any]], pdf_path: str = "")
             "entry_id": str(uuid.uuid4()), "activity_type": current_section,
             "activity_name": None, "position_title": None, "level": None,
             "duration": None, "achievement": None, "roles_and_responsibilities": None,
-            "confidence_score": 0.95
+            "description_raw": None, "confidence_score": 0.95
         }
         
         row_has_data = False
@@ -199,6 +226,7 @@ def extract_activities(section_blocks: List[Dict[str, Any]], pdf_path: str = "")
                     row_has_data = True
         
         if row_has_data:
+            entry = _normalize_activity_entry(entry)
             if is_valid_activity(entry):
                 all_entries.append(entry)
 

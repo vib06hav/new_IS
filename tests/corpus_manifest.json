@@ -1,0 +1,67 @@
+[
+  {
+    "pdf": "Dummy App (1)_v8_filled.pdf",
+    "pages": 6,
+    "full_name": "Aarav Jain",
+    "preferred_major": "Computer Science and Artificial Intelligence",
+    "academic_entries": 4,
+    "test_entries": 1,
+    "essay_entries": 2,
+    "activity_entries": 5,
+    "required_section_types": ["personal_details", "parent_details", "standardized_tests", "essays"],
+    "forbidden_section_labels": [],
+    "max_anomalies": 0
+  },
+  {
+    "pdf": "Dummy App (2)_v8_filled.pdf",
+    "pages": 6,
+    "full_name": "Ananya Kapoor",
+    "preferred_major": "Computer Science and Artificial Intelligence",
+    "academic_entries": 4,
+    "test_entries": 1,
+    "essay_entries": 2,
+    "activity_entries": 5,
+    "required_section_types": ["personal_details", "parent_details", "standardized_tests", "essays"],
+    "forbidden_section_labels": ["COUNCIL FOR THE INDIAN SCHOOL"],
+    "max_anomalies": 0
+  },
+  {
+    "pdf": "Dummy App (3)_v8_filled.pdf",
+    "pages": 6,
+    "full_name": "Sai Kiran Reddy",
+    "preferred_major": "Computer Science and Artificial Intelligence",
+    "academic_entries": 4,
+    "test_entries": 1,
+    "essay_entries": 2,
+    "activity_entries": 10,
+    "required_section_types": ["personal_details", "parent_details", "standardized_tests", "essays"],
+    "forbidden_section_labels": [],
+    "max_anomalies": 0
+  },
+  {
+    "pdf": "Dummy App (5)_v8_filled.pdf",
+    "pages": 6,
+    "full_name": "Raghav Sharma",
+    "preferred_major": "Computer Science and Artificial Intelligence",
+    "academic_entries": 4,
+    "test_entries": 1,
+    "essay_entries": 2,
+    "activity_entries": 3,
+    "required_section_types": ["personal_details", "parent_details", "standardized_tests", "essays"],
+    "forbidden_section_labels": [],
+    "max_anomalies": 0
+  },
+  {
+    "pdf": "Dummy App (8)_v8_filled.pdf",
+    "pages": 7,
+    "full_name": "Arjun Mehta",
+    "preferred_major": "Computer Science and Artificial Intelligence",
+    "academic_entries": 4,
+    "test_entries": 2,
+    "essay_entries": 2,
+    "activity_entries": 10,
+    "required_section_types": ["personal_details", "parent_details", "standardized_tests", "essays", "extracurricular"],
+    "forbidden_section_labels": [],
+    "max_anomalies": 0
+  }
+]

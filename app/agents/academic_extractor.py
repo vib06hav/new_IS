@@ -2,11 +2,16 @@ from typing import List, Dict, Any, Optional
 import uuid
 import re
 import logging
+from app.utils.block_deduper import dedupe_near_overlapping_blocks
 from app.utils.form_vocab import ACADEMIC_COLUMN_MAP, is_stop_word
+from app.utils.row_grouper import group_blocks_into_rows
 
 logger = logging.getLogger(__name__)
 
-def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
+def extract_academic_records(
+    section_blocks: List[Dict[str, Any]],
+    rows: Optional[List[Dict[str, Any]]] = None,
+) -> Dict[str, Any]:
     """
     Extract academic records using precise spatial layout blocks.
     Clusters blocks into horizontal rows by Y-coordinate, then uses a
@@ -17,31 +22,11 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
     confidence = 0.85
 
     # ─── Step 1: Cluster blocks into horizontal rows ───
-    blocks_by_page = {}
-    for b in section_blocks:
-        blocks_by_page.setdefault(b["page"], []).append(b)
-
-    all_rows = []
-    for page in sorted(blocks_by_page.keys()):
-        page_blocks = sorted(
-            blocks_by_page[page],
-            key=lambda b: -(b["bbox"][1] + b["bbox"][3]) / 2,
-        )
-        rows, cur_row, cur_y = [], [], None
-        for b in page_blocks:
-            cy = (b["bbox"][1] + b["bbox"][3]) / 2
-            # Use 12px cluster threshold
-            if cur_y is None or abs(cy - cur_y) < 12:
-                cur_row.append(b)
-                cur_y = cy if cur_y is None else cur_y
-            else:
-                rows.append(cur_row)
-                cur_row, cur_y = [b], cy
-        if cur_row:
-            rows.append(cur_row)
-        for r in rows:
-            r.sort(key=lambda b: b["bbox"][0])
-            all_rows.append(r)
+    if rows is not None:
+        all_rows = [dedupe_near_overlapping_blocks(row.get("blocks", [])) for row in rows if row.get("blocks")]
+    else:
+        section_blocks = dedupe_near_overlapping_blocks(section_blocks)
+        all_rows = group_blocks_into_rows(section_blocks, y_threshold=12)
 
     # ─── Known column headers ───
     HEADER_LABELS = set(ACADEMIC_COLUMN_MAP.keys())
@@ -154,14 +139,17 @@ def extract_academic_records(section_blocks: List[Dict[str, Any]]) -> Dict[str, 
                     row_data[key] = b["text"].strip()
                     used_blocks.add(idx)
 
-            subj_name, score = row_data["subject_name"], row_data["score_raw"]
-            if subj_name and score and not is_stop_word(subj_name):
-                 if any(c.isdigit() for c in score) or len(score) <= 3:
+            subj_name = row_data["subject_name"]
+            score = row_data["score_raw"]
+            predicted_score = row_data["predicted_score_raw"]
+            if subj_name and not is_stop_word(subj_name):
+                 effective_score = score or predicted_score
+                 if effective_score and (any(c.isdigit() for c in effective_score) or len(effective_score) <= 3):
                       current_entry["subject_entries"].append({
                           "subject_name": subj_name,
                           "score_raw": score,
                           "max_score_raw": row_data.get("max_score_raw"),
-                          "predicted_score_raw": row_data.get("predicted_score_raw"),
+                          "predicted_score_raw": predicted_score,
                       })
                       continue
             if not subj_name or len(subj_name) < 2:

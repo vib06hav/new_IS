@@ -1,0 +1,582 @@
+{
+  "canonical_version": "1.1",
+  "identifiers": {
+    "application_id": "Dummy App (8)_v8_filled",
+    "full_name": "Arjun Mehta",
+    "date_of_birth": "2007-03-12",
+    "family_background": {
+      "father": {
+        "name": "Rajiv Mehta",
+        "education": "MBA",
+        "field_of_employment": "Information Technology",
+        "organization": "Infosys Ltd",
+        "designation": "Senior Vice President"
+      },
+      "mother": {
+        "name": null,
+        "education": null,
+        "field_of_employment": null,
+        "organization": null,
+        "designation": null
+      }
+    },
+    "preferred_major": "Computer Science and Artificial Intelligence"
+  },
+  "academic_entries": [
+    {
+      "entry_id": "eb5a0c3c-6132-44c1-b469-3203605c18f6",
+      "academic_level": "9TH",
+      "school_name": "Delhi Public School Mathura Road",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "academic_year": "2022",
+      "marking_scheme_raw": "Percentage",
+      "grading_mode": "percentage",
+      "score_raw": "98.45",
+      "max_score_raw": null,
+      "predicted_score_raw": null,
+      "subject_entries": [
+        {
+          "subject_name": "Mathematics",
+          "score_raw": "100",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Science",
+          "score_raw": "99",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Social science",
+          "score_raw": "100",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Artificial intelligence",
+          "score_raw": "98.75",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "English",
+          "score_raw": "94",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "71c9116e-8477-4e4e-80f2-80f9bf462b76",
+      "academic_level": "10TH",
+      "school_name": "Delhi Public School Mathura Road",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "academic_year": "2023",
+      "marking_scheme_raw": "Percentage",
+      "grading_mode": "percentage",
+      "score_raw": "98",
+      "max_score_raw": null,
+      "predicted_score_raw": null,
+      "subject_entries": [
+        {
+          "subject_name": "Mathematics",
+          "score_raw": "98",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Science",
+          "score_raw": "100",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Social Science",
+          "score_raw": "100",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Artificial Intelligence",
+          "score_raw": "100",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "English",
+          "score_raw": "95",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Hindi",
+          "score_raw": "95",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "4b76a69e-af3a-4232-a38d-8d05e3b48b44",
+      "academic_level": "11TH",
+      "school_name": "Delhi Public School Mathura Road",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "academic_year": "2024",
+      "marking_scheme_raw": "Percentage",
+      "grading_mode": "percentage",
+      "score_raw": "74.75",
+      "max_score_raw": null,
+      "predicted_score_raw": null,
+      "subject_entries": [
+        {
+          "subject_name": "Mathematics",
+          "score_raw": "68.25",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Physics",
+          "score_raw": "54.85",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "Chemistry",
+          "score_raw": "74.75",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "English",
+          "score_raw": "85.37",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        },
+        {
+          "subject_name": "PE",
+          "score_raw": "90.50",
+          "max_score_raw": "100",
+          "predicted_score_raw": null
+        }
+      ],
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "a29a0a27-ab3c-4fbd-8ae5-3c191d748fa5",
+      "academic_level": "12TH",
+      "school_name": "Delhi Public School Mathura Road",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "academic_year": "2025",
+      "marking_scheme_raw": "Percentage",
+      "grading_mode": "percentage",
+      "score_raw": null,
+      "max_score_raw": null,
+      "predicted_score_raw": null,
+      "subject_entries": [
+        {
+          "subject_name": "Mathematics",
+          "score_raw": null,
+          "max_score_raw": "100",
+          "predicted_score_raw": "96"
+        },
+        {
+          "subject_name": "Physics",
+          "score_raw": null,
+          "max_score_raw": "100",
+          "predicted_score_raw": "95"
+        },
+        {
+          "subject_name": "Chemistry",
+          "score_raw": null,
+          "max_score_raw": "100",
+          "predicted_score_raw": "96"
+        },
+        {
+          "subject_name": "Physical Education",
+          "score_raw": null,
+          "max_score_raw": "100",
+          "predicted_score_raw": "95"
+        },
+        {
+          "subject_name": "English",
+          "score_raw": null,
+          "max_score_raw": "100",
+          "predicted_score_raw": "95"
+        }
+      ],
+      "confidence_score": 0.85
+    }
+  ],
+  "schooling_history": [
+    {
+      "entry_id": "f02cc5be-1498-40b8-9ba3-d7f959643aa8",
+      "level": "9TH",
+      "school_name": "Delhi Public School Mathura Road",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "location": null,
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "014109e8-6327-4e39-a404-d89366d806e3",
+      "level": "10TH",
+      "school_name": "Delhi Public School Mathura Road",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "location": null,
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "657983f5-4207-4786-9282-b7003c12b81a",
+      "level": "11TH",
+      "school_name": "Delhi Public School Mathura Road",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "location": null,
+      "confidence_score": 0.85
+    },
+    {
+      "entry_id": "996854ab-6122-409e-a04d-8da5ae2e42cd",
+      "level": "12TH",
+      "school_name": "Delhi Public School Mathura Road",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "location": null,
+      "confidence_score": 0.85
+    }
+  ],
+  "test_entries": [
+    {
+      "entry_id": "c629eb47-49e9-4e27-8eed-594fbab25c48",
+      "test_name": "JEE Mains",
+      "test_date": null,
+      "total_score": "99.39",
+      "sectional_scores": [
+        {
+          "label": "Physics Percentile",
+          "raw_score": "98.97"
+        },
+        {
+          "label": "Maths Percentile",
+          "raw_score": "98.1"
+        },
+        {
+          "label": "Chemistry Percentile",
+          "raw_score": "99.7"
+        }
+      ],
+      "percentile": null,
+      "rank": null,
+      "result_status": "available",
+      "confidence_score": 0.9
+    },
+    {
+      "entry_id": "9cf4b3f2-4539-4673-8538-8844e9e1e03b",
+      "test_name": "SAT",
+      "test_date": null,
+      "total_score": "510",
+      "sectional_scores": [
+        {
+          "label": "Reading/Writing",
+          "raw_score": "730"
+        },
+        {
+          "label": "Math",
+          "raw_score": "780"
+        }
+      ],
+      "percentile": null,
+      "rank": null,
+      "result_status": "available",
+      "confidence_score": 0.9
+    }
+  ],
+  "essay_entries": [
+    {
+      "entry_id": "52b4a7d0-dba3-4869-9bb6-cd181b81e21e",
+      "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+      "raw_text": "It is my firm belief that the strength of my abilities and skills makes me an ideal candidate for the BTech program at Plaksha University. I am\nhighly self-motivated and hardworking, and possess a strong interest in technology and its applications, which gives me a firm confidence\nthat I would be able to perform well in the fast-paced and challenging setting of Plaksha University. My consistent performance in\nmathematics and science as evidenced in my grades further cements my capability of succeeding in a technocentric field. For instance, my\naggregate performance at high school of 98.6%, inclusive of 99% in Physics, Chemistry and Maths, as well as a perfect 100% performance in\nArtificial Intelligence, are a testament to my devotion to academics as well as problem solving. These accomplishments are a testament not\nonly to my academic accomplishments but also to my mindset that values seeking new information. Outside of school, I do my best to seek\nout projects that implement my knowledge and transform it into reality. Projects of this nature correspond to the ideal of Plaksha in terms of\nbeing hands-on and innovative in terms of turning ideas into reality. For example, during one of the group-based Smart City projects, we\naimed to design one which is fully powered by renewable sources with no use of fossil fuels. This project integrated my interest in\nengineering with my aim to solve real-world problems in an environmentally friendly way. I also built a personal web page with HTML and\nCSS, built a text game in Python that demonstrated basic game design, and did data scraping and analysis with Python using Pandas and\nMatplotlib. The idea of Plaksha's education being focused on real practical projects is in line with my approach to learning. I will be looking for\nlearning opportunities provided by Plaksha to improve my abilities and make use of my knowledge in the undertakings that will be of great\nimportance. The multidisciplinary and cooperative environment at Plaksha will not only assist me with the improvement of my engineering\nabilities, but also enable me to search for new ways of solving pressing problems in the world. I also participated in some hackathons and\ncompetitions such as Zenith 2022, Codex, and Robotronics 2022 where I also got the chance to advance my teamwork and leadership skills.\nAlso, placing second in the ION 2022 Rising Entrepreneurs contest evidences my ability to remember the significance of working together\ntoward reaching targets in a competitive environment. What I find most appealing in pursuing a career path as an engineer or in the\ntechnology field is the prospect of impacting the world utilizing my various capabilities. The opportunities of interacting with different\nstudents and professors at Plaksha will definitely Give me the latitude to open my eyes better and to other ideas. Being engaged with such\npeople both in and outside the class will enable me to get a better grasp of education and effective practice to enable me to prepare for the\nfuture.",
+      "word_count": 499,
+      "placeholder_flag": false,
+      "short_response_flag": false,
+      "confidence_score": 0.9
+    },
+    {
+      "entry_id": "602bde10-35b6-4774-8238-0ee5df2f4814",
+      "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+      "raw_text": "In a recent project names Tenelach organized by DPS School Mathura Road, I led a team of four members to design a smart city powered\nentirely by clean energy, utilizing solar power, wind energy, geothermal energy, and other sustainable sources to eliminate the use of fossil\nfuels. Over the course of four weeks, I took responsibility for coordinating the team's efforts and ensuring the smooth execution of the\nproject. I demonstrated Innovation by leading the team in creating a novel solution for a sustainable smart city that relied entirely on clean energy,\nshowcasing a forward-thinking approach to environmental challenges. When faced with technical difficulties and tight timelines, I remained\nResilient, working tirelessly to troubleshoot issues and keeping the team focused on our goal despite setbacks. This helped maintain our\nmomentum and ensured that we could deliver the project successfully. My commitment to Excellence was evident in my dedication to high-quality work. I carefully managed the project's progress, ensuring every\nelement of the design was meticulously planned and executed, striving for the highest standards in every aspect of the project. I also showed Respect by honoring the contributions of each team member. I fostered a collaborative environment, listening to everyone's\nideas and ensuring that everyone's voice was heard. This respect extended to the core concept of our project itself, as we aimed to create a\nmodel that prioritizes sustainability and environmental respect by eliminating the use of fossil fuels. Finally, I upheld Integrity by being honest and reliable throughout the process. I ensured that communication within the team remained\ntransparent, and I took accountability for my tasks while supporting my teammates in their roles. I remained ethical and committed to our\nshared goal of creating a clean-energy solution.",
+      "word_count": 287,
+      "placeholder_flag": false,
+      "short_response_flag": false,
+      "confidence_score": 0.9
+    }
+  ],
+  "activity_entries": [
+    {
+      "entry_id": "4620ac59-3b20-4c9c-82ec-b5f2cc2083e2",
+      "activity_type": "extracurricular",
+      "activity_name": "Chess",
+      "position_title": null,
+      "level": "District",
+      "duration": null,
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "description_raw": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "ab5546d4-7c49-455b-8676-e65f78eaff5f",
+      "activity_type": "extracurricular",
+      "activity_name": "Electronic Keyboard\n(Music)",
+      "position_title": null,
+      "level": "National",
+      "duration": null,
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "description_raw": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "ff12196a-0c27-4d65-b112-6c4f3f96dc58",
+      "activity_type": "extracurricular",
+      "activity_name": "Badminton",
+      "position_title": null,
+      "level": "Personal",
+      "duration": null,
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "description_raw": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "2401a6db-bb40-4d8b-b0ba-05ad946b1114",
+      "activity_type": "co_curricular",
+      "activity_name": null,
+      "position_title": "District Champion (Gold)",
+      "level": null,
+      "duration": null,
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "description_raw": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "789ac79e-e3a9-458d-a709-f581df931ad2",
+      "activity_type": "co_curricular",
+      "activity_name": null,
+      "position_title": "Local club tournament",
+      "level": null,
+      "duration": null,
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "description_raw": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "62855f37-f8f5-44c0-913c-010637944d4e",
+      "activity_type": "co_curricular",
+      "activity_name": "SHISMUN 22",
+      "position_title": "Best Delegate",
+      "level": "National",
+      "duration": null,
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "description_raw": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "68ca8a15-c771-4e89-bb36-ec6ad00b90e5",
+      "activity_type": "co_curricular",
+      "activity_name": "SOFIEO",
+      "position_title": "Rank 4",
+      "level": "International",
+      "duration": null,
+      "achievement": null,
+      "roles_and_responsibilities": null,
+      "description_raw": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "217a2318-90c1-4803-9b22-3e99a751fa09",
+      "activity_type": "leadership",
+      "activity_name": null,
+      "position_title": "Project leader",
+      "level": null,
+      "duration": "2",
+      "achievement": null,
+      "roles_and_responsibilities": "Ogan Donation drive Plantation\ndrive Education of poor Blood\ndonation drive",
+      "description_raw": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "45717e74-54cb-40e5-8945-1be49f137ab9",
+      "activity_type": "leadership",
+      "activity_name": null,
+      "position_title": "Team Leader",
+      "level": null,
+      "duration": "1",
+      "achievement": null,
+      "roles_and_responsibilities": "design a smart city powered\nentirely by clean energy, utilizing\nsolar power, wind energy,\ngeothermal energy, and other\nsustainable sources to eliminate\nthe use of fossil fuels.",
+      "description_raw": null,
+      "confidence_score": 0.95
+    },
+    {
+      "entry_id": "e5fd885e-4f95-4d90-aace-961c12c32485",
+      "activity_type": "leadership",
+      "activity_name": null,
+      "position_title": "Lead",
+      "level": null,
+      "duration": "1",
+      "achievement": null,
+      "roles_and_responsibilities": "iON 2022 Rising entrepreneur\n2nd prize",
+      "description_raw": null,
+      "confidence_score": 0.95
+    }
+  ],
+  "cross_references": {
+    "entity_map": [
+      {
+        "entity_token": "Artificial",
+        "source_references": [
+          {
+            "source_type": "academic",
+            "entry_id": "eb5a0c3c-6132-44c1-b469-3203605c18f6"
+          },
+          {
+            "source_type": "academic",
+            "entry_id": "71c9116e-8477-4e4e-80f2-80f9bf462b76"
+          },
+          {
+            "source_type": "essay",
+            "entry_id": "52b4a7d0-dba3-4869-9bb6-cd181b81e21e"
+          }
+        ]
+      },
+      {
+        "entity_token": "Intelligence",
+        "source_references": [
+          {
+            "source_type": "academic",
+            "entry_id": "71c9116e-8477-4e4e-80f2-80f9bf462b76"
+          },
+          {
+            "source_type": "essay",
+            "entry_id": "52b4a7d0-dba3-4869-9bb6-cd181b81e21e"
+          }
+        ]
+      },
+      {
+        "entity_token": "Physics",
+        "source_references": [
+          {
+            "source_type": "academic",
+            "entry_id": "4b76a69e-af3a-4232-a38d-8d05e3b48b44"
+          },
+          {
+            "source_type": "academic",
+            "entry_id": "a29a0a27-ab3c-4fbd-8ae5-3c191d748fa5"
+          },
+          {
+            "source_type": "essay",
+            "entry_id": "52b4a7d0-dba3-4869-9bb6-cd181b81e21e"
+          }
+        ]
+      },
+      {
+        "entity_token": "Chemistry",
+        "source_references": [
+          {
+            "source_type": "academic",
+            "entry_id": "4b76a69e-af3a-4232-a38d-8d05e3b48b44"
+          },
+          {
+            "source_type": "academic",
+            "entry_id": "a29a0a27-ab3c-4fbd-8ae5-3c191d748fa5"
+          },
+          {
+            "source_type": "essay",
+            "entry_id": "52b4a7d0-dba3-4869-9bb6-cd181b81e21e"
+          }
+        ]
+      },
+      {
+        "entity_token": "Education",
+        "source_references": [
+          {
+            "source_type": "academic",
+            "entry_id": "a29a0a27-ab3c-4fbd-8ae5-3c191d748fa5"
+          },
+          {
+            "source_type": "activity",
+            "entry_id": "217a2318-90c1-4803-9b22-3e99a751fa09"
+          }
+        ]
+      },
+      {
+        "entity_token": "Rising",
+        "source_references": [
+          {
+            "source_type": "essay",
+            "entry_id": "52b4a7d0-dba3-4869-9bb6-cd181b81e21e"
+          },
+          {
+            "source_type": "activity",
+            "entry_id": "e5fd885e-4f95-4d90-aace-961c12c32485"
+          }
+        ]
+      }
+    ]
+  },
+  "integrity_report": {
+    "anomalies": []
+  },
+  "extraction_confidence": {
+    "agent_scores": [
+      {
+        "agent_id": 1,
+        "agent_name": "Layout Block Extractor",
+        "confidence_score": 0.95
+      },
+      {
+        "agent_id": 2,
+        "agent_name": "Section Boundary Detector",
+        "confidence_score": 0.9
+      },
+      {
+        "agent_id": 3,
+        "agent_name": "Personal Information Extractor",
+        "confidence_score": 0.85
+      },
+      {
+        "agent_id": 4,
+        "agent_name": "Academic Records Extractor",
+        "confidence_score": 0.85
+      },
+      {
+        "agent_id": 5,
+        "agent_name": "Standardized Test Extractor",
+        "confidence_score": 0.9
+      },
+      {
+        "agent_id": 6,
+        "agent_name": "Essay Extractor",
+        "confidence_score": 0.9
+      },
+      {
+        "agent_id": 7,
+        "agent_name": "Activity Extractor",
+        "confidence_score": 0.9
+      },
+      {
+        "agent_id": 8,
+        "agent_name": "Cross-Section Entity Detector",
+        "confidence_score": 0.95
+      },
+      {
+        "agent_id": 10,
+        "agent_name": "Completeness & Integrity Analyzer",
+        "confidence_score": 0.95
+      }
+    ],
+    "aggregate_confidence": 0.8790000000000001
+  }
+}

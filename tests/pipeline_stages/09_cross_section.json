@@ -1,126 +1,19 @@
 {
   "entity_map": [
     {
-      "entity_token": "Mathematics",
-      "source_references": [
-        {
-          "source_type": "academic",
-          "entry_id": "8f50ce6b-0170-4eed-8fb7-08fc6005e77b"
-        },
-        {
-          "source_type": "academic",
-          "entry_id": "f9b17836-7828-456c-b48f-84b8daf3059a"
-        },
-        {
-          "source_type": "academic",
-          "entry_id": "9256710b-6082-4be9-88c0-3e74de23e532"
-        },
-        {
-          "source_type": "academic",
-          "entry_id": "3ea73788-ceb0-41d5-a3ef-3bc5f07d2414"
-        }
-      ]
-    },
-    {
-      "entity_token": "English",
-      "source_references": [
-        {
-          "source_type": "academic",
-          "entry_id": "8f50ce6b-0170-4eed-8fb7-08fc6005e77b"
-        },
-        {
-          "source_type": "academic",
-          "entry_id": "f9b17836-7828-456c-b48f-84b8daf3059a"
-        },
-        {
-          "source_type": "academic",
-          "entry_id": "9256710b-6082-4be9-88c0-3e74de23e532"
-        },
-        {
-          "source_type": "academic",
-          "entry_id": "3ea73788-ceb0-41d5-a3ef-3bc5f07d2414"
-        }
-      ]
-    },
-    {
-      "entity_token": "Hindi",
-      "source_references": [
-        {
-          "source_type": "academic",
-          "entry_id": "8f50ce6b-0170-4eed-8fb7-08fc6005e77b"
-        },
-        {
-          "source_type": "academic",
-          "entry_id": "f9b17836-7828-456c-b48f-84b8daf3059a"
-        }
-      ]
-    },
-    {
       "entity_token": "Science",
       "source_references": [
         {
           "source_type": "academic",
-          "entry_id": "8f50ce6b-0170-4eed-8fb7-08fc6005e77b"
+          "entry_id": "d5ae571f-6d9d-4a31-b5c5-ce0a4d83b3fb"
         },
         {
           "source_type": "academic",
-          "entry_id": "f9b17836-7828-456c-b48f-84b8daf3059a"
-        },
-        {
-          "source_type": "activity",
-          "entry_id": "763c94df-e007-4f69-a972-31755de4b667"
-        }
-      ]
-    },
-    {
-      "entity_token": "Physics",
-      "source_references": [
-        {
-          "source_type": "academic",
-          "entry_id": "9256710b-6082-4be9-88c0-3e74de23e532"
-        },
-        {
-          "source_type": "academic",
-          "entry_id": "3ea73788-ceb0-41d5-a3ef-3bc5f07d2414"
-        }
-      ]
-    },
-    {
-      "entity_token": "Chemistry",
-      "source_references": [
-        {
-          "source_type": "academic",
-          "entry_id": "9256710b-6082-4be9-88c0-3e74de23e532"
-        },
-        {
-          "source_type": "academic",
-          "entry_id": "3ea73788-ceb0-41d5-a3ef-3bc5f07d2414"
-        }
-      ]
-    },
-    {
-      "entity_token": "Sanskrit",
-      "source_references": [
-        {
-          "source_type": "academic",
-          "entry_id": "9256710b-6082-4be9-88c0-3e74de23e532"
-        },
-        {
-          "source_type": "academic",
-          "entry_id": "3ea73788-ceb0-41d5-a3ef-3bc5f07d2414"
-        }
-      ]
-    },
-    {
-      "entity_token": "School",
-      "source_references": [
-        {
-          "source_type": "activity",
-          "entry_id": "615a9128-1e70-4823-b9b7-5922b30de90e"
+          "entry_id": "9d700322-584a-498c-9323-91946db330c6"
         },
         {
           "source_type": "activity",
-          "entry_id": "683163a9-a6b8-46d3-a5d1-9c4eed9ca656"
+          "entry_id": "5c3be480-811c-4f33-a8a6-a1250dc74eec"
         }
       ]
     }

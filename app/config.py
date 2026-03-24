@@ -46,6 +46,7 @@ class Settings:
         self.LLM_KEEP_ALIVE = os.environ.get("LLM_KEEP_ALIVE", "10m")
         self.LLM_LOAD_WAIT_TIMEOUT_SECONDS = os.environ.get("LLM_LOAD_WAIT_TIMEOUT_SECONDS", "120")
         self.LLM_LOAD_POLL_INTERVAL_SECONDS = os.environ.get("LLM_LOAD_POLL_INTERVAL_SECONDS", "5")
+        self.PARSER_ENGINE_VERSION = os.environ.get("PARSER_ENGINE_VERSION", "v2")
         self.UPLOAD_DIRECTORY = os.environ.get("UPLOAD_DIRECTORY")
         self.MAX_UPLOAD_SIZE_MB = os.environ.get("MAX_UPLOAD_SIZE_MB")
         self.APP_ENV = os.environ.get("APP_ENV")
@@ -100,6 +101,10 @@ class Settings:
 
         if self.LLM_PAYLOAD_MODE not in {"full", "compact"}:
             errors.append("LLM_PAYLOAD_MODE must be one of {full, compact}")
+
+        self.PARSER_ENGINE_VERSION = str(self.PARSER_ENGINE_VERSION).strip().lower()
+        if self.PARSER_ENGINE_VERSION not in {"v1", "v2"}:
+            errors.append("PARSER_ENGINE_VERSION must be one of {v1, v2}")
 
         if self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES:
             try:
@@ -183,6 +188,7 @@ class Settings:
         logger.info(f"JWT_ALGORITHM: {self.JWT_ALGORITHM}")
         logger.info(f"LLM_PROVIDER: {self.LLM_PROVIDER}")
         logger.info(f"LLM_PAYLOAD_MODE: {self.LLM_PAYLOAD_MODE}")
+        logger.info(f"PARSER_ENGINE_VERSION: {self.PARSER_ENGINE_VERSION}")
         logger.info(f"LLM_ENDPOINT: {self.LLM_ENDPOINT}")
         logger.info(f"LLM_MODEL_NAME: {self.LLM_MODEL_NAME}")
         logger.info("LLM_API_KEY: ***[REDACTED]***")
