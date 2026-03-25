@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 
 from app.utils.block_deduper import dedupe_near_overlapping_blocks
 from app.utils.text_normalization import normalize_label
@@ -6,7 +6,6 @@ from app.utils.text_normalization import normalize_label
 
 def extract_personal_info(
     section_blocks: List[Dict[str, Any]],
-    parent_sections: Optional[List[Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """
     Extracts labeled personal fields strictly based on layout bounding boxes.
@@ -17,17 +16,12 @@ def extract_personal_info(
         "full_name": None,
         "date_of_birth": None,
         "preferred_major": None,
-        "family_background": {
-            "father": {"name": None, "education": None, "field_of_employment": None, "organization": None, "designation": None},
-            "mother": {"name": None, "education": None, "field_of_employment": None, "organization": None, "designation": None}
-        },
         "declared_preferences": {},
         "demographic_flags": {}
     }
 
     confidence = 0.85
     section_blocks = dedupe_near_overlapping_blocks(section_blocks)
-    parent_sections = parent_sections or []
 
     def find_value_for_label(label_block: Dict[str, Any], blocks: List[Dict[str, Any]]) -> str:
         """Find the nearest block to the right on the same row."""
@@ -79,45 +73,6 @@ def extract_personal_info(
             identifiers["preferred_major"] = val
         elif lower_text == "first generation":
             identifiers["demographic_flags"]["first_generation"] = val.lower() in {"yes", "true"}
-
-    # Second pass: section-aware parent details
-    parent_labels = {
-        "name", "highest degree attained", "education",
-        "field of employment", "occupation", "organization", "designation",
-        "mobile number", "email address", "date of birth",
-        "nationality", "educational institute (last attended)",
-    }
-
-    for parent_section in parent_sections:
-        section_label = normalize_label(parent_section.get("label", ""))
-        if section_label == "father details":
-            context = "father"
-        elif section_label == "mother details":
-            context = "mother"
-        else:
-            continue
-
-        parent_blocks = dedupe_near_overlapping_blocks(parent_section.get("blocks", []))
-        for block in parent_blocks:
-            text = block.get("text", "").strip()
-            clean_label = normalize_label(text).strip(" -:")
-            if clean_label not in parent_labels:
-                continue
-
-            val = find_value_for_label(block, parent_blocks)
-            if not val:
-                continue
-
-            if clean_label == "name":
-                identifiers["family_background"][context]["name"] = val
-            elif clean_label in {"highest degree attained", "education"}:
-                identifiers["family_background"][context]["education"] = val
-            elif clean_label in {"field of employment", "occupation"}:
-                identifiers["family_background"][context]["field_of_employment"] = val
-            elif clean_label == "organization":
-                identifiers["family_background"][context]["organization"] = val
-            elif clean_label == "designation":
-                identifiers["family_background"][context]["designation"] = val
 
     return {
         "identifiers": identifiers,

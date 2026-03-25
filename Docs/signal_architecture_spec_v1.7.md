@@ -180,12 +180,12 @@ Deterministic signals represent observable facts about the canonical dataset tha
 
 Examples of valid deterministic signals:
 
-- An activity entry spans more than three years of participation
-- Subject performance shows a distribution concentrated in one domain
-- A leadership role entry is present
-- An essay entry has a word count significantly below the typical range
-- Academic entries show consistent performance across levels
-- Multiple activity entries share a common domain keyword
+- Consecutive academic levels show a meaningful percentage-point shift
+- A board or school transition occurs between consecutive academic levels
+- A single academic entry shows a large spread between highest and lowest subject scores
+- A leadership activity includes a structured role, duration, and supporting detail
+- A non-leadership activity shows sustained participation with structured detail
+- A test entry shows a large spread between highest and lowest section scores
 
 ### 6.3 What Deterministic Signals Are Not
 
@@ -222,15 +222,12 @@ Field rules:
 ### 6.5 Allowed Signal Types
 
 ```
-"duration_pattern"
-"domain_concentration"
-"leadership_presence"
-"academic_distribution"
-"essay_characteristic"
-"cross_section_pattern"
-"activity_volume"
-"test_performance_pattern"
-"timeline_characteristic"
+"academic_trajectory_shift"
+"academic_transition_event"
+"subject_imbalance"
+"leadership_depth"
+"sustained_commitment"
+"test_section_imbalance"
 ```
 
 New signal types may be added in future stages. Unlisted types must not be used.

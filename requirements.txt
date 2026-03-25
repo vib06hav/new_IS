@@ -10,6 +10,7 @@ bcrypt==3.2.2
 pdfminer.six
 python-multipart
 httpx
+braintrust
 python-dotenv
 pytest
 pymupdf

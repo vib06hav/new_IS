@@ -1,5 +1,6 @@
 import httpx
 import logging
+import os
 import time
 from typing import Any
 
@@ -7,6 +8,96 @@ from app.config import settings
 from app.llm.token_counter import estimate_messages_tokens, estimate_text_tokens
 
 logger = logging.getLogger(__name__)
+
+try:
+    from braintrust import init_logger
+except ImportError:  # pragma: no cover - optional dependency guard
+    init_logger = None
+
+_braintrust_logger = None
+
+
+def _get_braintrust_logger():
+    global _braintrust_logger
+    if _braintrust_logger is not None:
+        return _braintrust_logger
+
+    if init_logger is None:
+        return None
+
+    braintrust_api_key = os.getenv("BRAINTRUST_API_KEY", "").strip()
+    if not braintrust_api_key:
+        return None
+
+    try:
+        _braintrust_logger = init_logger(
+            project="AG_InterviewStandardiser",
+            api_key=braintrust_api_key,
+        )
+    except Exception as exc:  # pragma: no cover - tracing must not break LLM calls
+        logger.warning("Braintrust initialization failed: %s", exc)
+        return None
+
+    return _braintrust_logger
+
+
+def _messages_for_trace(messages: list[dict]) -> dict[str, Any]:
+    system_prompt = ""
+    user_payload: list[dict[str, Any]] = []
+
+    for message in messages:
+        role = str(message.get("role", ""))
+        content = message.get("content", "")
+        if role == "system" and not system_prompt:
+            system_prompt = str(content)
+        else:
+            user_payload.append({"role": role, "content": content})
+
+    return {
+        "system_prompt": system_prompt,
+        "user_input": user_payload,
+    }
+
+
+def _run_with_braintrust_trace(
+    messages: list[dict],
+    call_label: str | None,
+    llm_callable,
+):
+    bt_logger = _get_braintrust_logger()
+    if bt_logger is None:
+        return llm_callable()
+
+    trace_input = _messages_for_trace(messages)
+    metadata = {
+        "model_name": settings.LLM_MODEL_NAME,
+        "provider": settings.LLM_PROVIDER,
+    }
+    if call_label:
+        metadata["request_identifier"] = call_label
+
+    try:
+        return bt_logger.traced(
+            lambda span: _run_llm_span(span, trace_input, metadata, llm_callable),
+            {
+                "name": call_label or "llm_call",
+                "type": "llm",
+            },
+        )
+    except Exception as exc:  # pragma: no cover - tracing must not break LLM calls
+        logger.warning("Braintrust tracing failed: %s", exc)
+        return llm_callable()
+
+
+def _run_llm_span(span, trace_input: dict[str, Any], metadata: dict[str, Any], llm_callable):
+    span.log(
+        input=trace_input,
+        metadata=metadata,
+        tags=["pipeline:interview_signals"],
+    )
+    response_text = llm_callable()
+    span.log(output=response_text)
+    return response_text
 
 
 class LLMClientError(Exception):
@@ -19,10 +110,18 @@ def generate(messages: list[dict], call_label: str | None = None) -> str:
     The active transport is selected by settings.LLM_PROVIDER.
     """
     if settings.LLM_PROVIDER == "ollama":
-        return _generate_ollama(messages, call_label)
+        return _run_with_braintrust_trace(
+            messages,
+            call_label,
+            lambda: _generate_ollama(messages, call_label),
+        )
 
     if settings.LLM_PROVIDER in {"openai", "openrouter", "openai_compatible"}:
-        return _generate_openai_compatible(messages, call_label)
+        return _run_with_braintrust_trace(
+            messages,
+            call_label,
+            lambda: _generate_openai_compatible(messages, call_label),
+        )
 
     raise LLMClientError(f"Unsupported LLM_PROVIDER: {settings.LLM_PROVIDER}")
 

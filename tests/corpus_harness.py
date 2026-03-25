@@ -9,15 +9,15 @@ from app.agents.activity_extractor import extract_activities
 from app.agents.additional_info_extractor import extract_additional_info
 from app.agents.cross_section_detector import detect_cross_sections
 from app.agents.essay_extractor import extract_essays
+from app.agents.family_extractor import extract_family_background
 from app.agents.integrity_analyzer import analyze_integrity
 from app.agents.layout_extractor import extract_layout_blocks
 from app.agents.personal_extractor import extract_personal_info
 from app.agents.geographic_extractor import extract_geographic_context
+from app.agents.section_scope_resolver import resolve_section_scopes
 from app.agents.section_detector import detect_sections
 from app.agents.test_extractor import extract_test_records
 from app.utils.layout_normalizer import normalize_layout
-from app.utils.section_types import classify_section_label
-from app.utils.text_normalization import normalize_label
 
 
 PDF_DIR = Path(__file__).resolve().parent / "pdfs"
@@ -56,149 +56,26 @@ def _merge_activity_results(*results: Dict[str, Any]) -> Dict[str, Any]:
         "confidence_score": (sum(confidences) / len(confidences)) if confidences else 0.0,
     }
 
-
-def _collect_section_map(section_data: Dict[str, Any], parser_engine_version: str) -> Dict[str, List[Dict[str, Any]]]:
-    section_map: Dict[str, List[Dict[str, Any]]] = {}
-    for section in section_data.get("sections", []):
-        section_type = section.get("section_type")
-        label = section.get("label", "").lower()
-        if parser_engine_version == "v1":
-            if "personal" in label:
-                section_type = "personal_details"
-            elif any(kw in label for kw in ["parent", "father", "mother"]):
-                section_type = "parent_details"
-            elif "extra" in label and "curricul" in label:
-                section_type = "extracurricular"
-            elif "co" in label and "curricul" in label:
-                section_type = "co_curricular"
-            elif "leadership" in label:
-                section_type = "leadership"
-            elif any(kw in label for kw in ["class", "academic", "education", "degree", "school"]):
-                section_type = "academics"
-            elif any(kw in label for kw in ["test", "jee", "sat", "act", "examination", "percentile", "score"]):
-                section_type = "standardized_tests"
-            elif "essay" in label:
-                section_type = "essays"
-            elif "additional" in label:
-                section_type = "additional_information"
-
-        if section_type:
-            section_map.setdefault(section_type, []).extend(section.get("blocks", []))
-    return section_map
-
-
-def _collect_parent_sections(
-    section_data: Dict[str, Any],
-    parser_engine_version: str,
-    layout_rows: List[Dict[str, Any]],
-) -> List[Dict[str, Any]]:
-    parent_sections: List[Dict[str, Any]] = []
-    for section in section_data.get("sections", []):
-        section_type = section.get("section_type")
-        label = section.get("label", "").lower()
-        if parser_engine_version == "v1":
-            if any(kw in label for kw in ["parent", "father", "mother"]):
-                section_rows = _rows_for_section(section, layout_rows)
-                row_blocks: List[Dict[str, Any]] = []
-                for row in section_rows:
-                    row_blocks.extend(row.get("blocks", []))
-                parent_sections.append({
-                    "label": section.get("label"),
-                    "normalized_label": normalize_label(section.get("label", "")),
-                    "blocks": row_blocks or section.get("blocks", []),
-                })
-        elif section_type == "parent_details":
-            section_rows = _rows_for_section(section, layout_rows)
-            row_blocks: List[Dict[str, Any]] = []
-            for row in section_rows:
-                row_blocks.extend(row.get("blocks", []))
-            parent_sections.append({
-                "label": section.get("label"),
-                "normalized_label": normalize_label(section.get("label", "")),
-                "blocks": row_blocks or section.get("blocks", []),
-            })
-    return parent_sections
-
-
-def _collect_address_sections(
-    section_data: Dict[str, Any],
-    parser_engine_version: str,
-    layout_rows: List[Dict[str, Any]],
-) -> List[Dict[str, Any]]:
-    address_sections: List[Dict[str, Any]] = []
-    for section in section_data.get("sections", []):
-        section_type = section.get("section_type")
-        label = section.get("label", "").lower()
-        if parser_engine_version == "v1":
-            is_address_section = "address" in label
-        else:
-            is_address_section = section_type == "address_details"
-
-        if not is_address_section:
-            continue
-
-        section_rows = _rows_for_section(section, layout_rows)
-        row_blocks: List[Dict[str, Any]] = []
-        for row in section_rows:
-            row_blocks.extend(row.get("blocks", []))
-
-        address_sections.append({
-            "label": section.get("label"),
-            "normalized_label": normalize_label(section.get("label", "")),
-            "blocks": row_blocks or section.get("blocks", []),
-        })
-
-    return address_sections
-
-
-def _rows_for_section(section: Dict[str, Any], layout_rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    if not layout_rows:
-        return []
-
-    start = section.get("start_row_index")
-    end = section.get("end_row_index")
-    if start is None or end is None:
-        return []
-
-    return [row for row in layout_rows if start <= row.get("row_index", -1) <= end]
-
-
 def _run_deterministic_pipeline_stages(pdf_path: Path, parser_engine_version: str = "v2") -> Dict[str, Any]:
     layout_data = extract_layout_blocks(str(pdf_path))
     layout_data["normalized_rows"] = normalize_layout(layout_data["blocks"])
     section_data = detect_sections(layout_data["blocks"], rows=layout_data.get("rows"))
-    section_map = _collect_section_map(section_data, parser_engine_version)
-    parent_sections = _collect_parent_sections(
-        section_data,
-        parser_engine_version,
-        layout_data.get("rows", []),
-    )
-    address_sections = _collect_address_sections(
-        section_data,
-        parser_engine_version,
-        layout_data.get("rows", []),
-    )
-    academic_rows: List[Dict[str, Any]] = []
-    test_rows: List[Dict[str, Any]] = []
-    for section in section_data.get("sections", []):
-        section_rows = _rows_for_section(section, layout_data.get("rows", []))
-        if not section_rows:
-            continue
-        section_type = section.get("section_type")
-        label = section.get("label", "").lower()
-        if parser_engine_version == "v1":
-            if any(kw in label for kw in ["class", "academic", "education", "degree", "school"]):
-                academic_rows.extend(section_rows)
-            elif any(kw in label for kw in ["test", "jee", "sat", "act", "examination", "percentile", "score"]):
-                test_rows.extend(section_rows)
-        else:
-            if section_type == "academics":
-                academic_rows.extend(section_rows)
-            elif section_type == "standardized_tests":
-                test_rows.extend(section_rows)
+    scopes = resolve_section_scopes(section_data, parser_engine_version, layout_data.get("rows", []))
+    section_map = scopes["section_map"]
+    section_slices = scopes["section_slices"]
+    parent_sections = section_slices.get("parent_details", [])
+    address_sections = section_slices.get("address_details", [])
+    academic_rows = scopes["academic_rows"]
+    test_rows = scopes["test_rows"]
 
     personal_scope = section_map.get("personal_details", []) or layout_data["blocks"]
-    personal_data = extract_personal_info(personal_scope, parent_sections=parent_sections)
+    personal_data = extract_personal_info(personal_scope)
+    family_data = extract_family_background(parent_sections)
+    personal_data.setdefault("identifiers", {})["family_background"] = family_data["family_background"]
+    personal_data["confidence_score"] = max(
+        personal_data.get("confidence_score", 0.0),
+        family_data.get("confidence_score", 0.0),
+    )
     geographic_data = extract_geographic_context(address_sections)
     if geographic_data.get("geographic_context"):
         personal_data.setdefault("identifiers", {})["geographic_context"] = geographic_data["geographic_context"]

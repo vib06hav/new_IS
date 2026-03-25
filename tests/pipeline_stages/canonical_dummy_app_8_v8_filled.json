@@ -29,7 +29,7 @@
   },
   "academic_entries": [
     {
-      "entry_id": "ec6dd54e-af0b-438d-8b68-c407aee63123",
+      "entry_id": "df8fbe4a-f66e-47bf-a5ec-e8ea35685c12",
       "academic_level": "9TH",
       "school_name": "Delhi Public School Mathura Road",
       "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
@@ -74,7 +74,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "b64ea656-f327-4093-9bc3-e21eb1515a0a",
+      "entry_id": "e6827d08-f3c3-4d6a-9b30-f409377684d1",
       "academic_level": "10TH",
       "school_name": "Delhi Public School Mathura Road",
       "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
@@ -125,7 +125,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "9fd0adf2-f023-44ce-95a8-3bb8550a6193",
+      "entry_id": "a0a47792-73f6-4a96-a4e1-c04f996d4141",
       "academic_level": "11TH",
       "school_name": "Delhi Public School Mathura Road",
       "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
@@ -170,7 +170,7 @@
       "confidence_score": 0.85
     },
     {
-      "entry_id": "085b3bf9-59ad-4ec2-a90f-1a266a810c0a",
+      "entry_id": "04ab8080-e381-4b75-8c85-e708a85c9161",
       "academic_level": "12TH",
       "school_name": "Delhi Public School Mathura Road",
       "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
@@ -217,7 +217,7 @@
   ],
   "test_entries": [
     {
-      "entry_id": "3e2d6bf3-7daa-4005-9081-a5ddf6a3aca5",
+      "entry_id": "799d5b14-a483-452a-8fa3-92709bc9ea66",
       "test_name": "JEE Mains",
       "test_date": null,
       "total_score": "99.39",
@@ -241,7 +241,7 @@
       "confidence_score": 0.9
     },
     {
-      "entry_id": "37c6dc13-2ec8-4d2a-84af-09ccce6a6a11",
+      "entry_id": "d1ad79f7-aae3-4945-a746-e8f31dffd011",
       "test_name": "SAT",
       "test_date": null,
       "total_score": "510",
@@ -263,7 +263,7 @@
   ],
   "essay_entries": [
     {
-      "entry_id": "47992e30-4a59-4205-afca-1bc25eb8d25d",
+      "entry_id": "24a05938-d24c-4f11-b7d1-e20e49283314",
       "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
       "raw_text": "It is my firm belief that the strength of my abilities and skills makes me an ideal candidate for the BTech program at Plaksha University. I am\nhighly self-motivated and hardworking, and possess a strong interest in technology and its applications, which gives me a firm confidence\nthat I would be able to perform well in the fast-paced and challenging setting of Plaksha University. My consistent performance in\nmathematics and science as evidenced in my grades further cements my capability of succeeding in a technocentric field. For instance, my\naggregate performance at high school of 98.6%, inclusive of 99% in Physics, Chemistry and Maths, as well as a perfect 100% performance in\nArtificial Intelligence, are a testament to my devotion to academics as well as problem solving. These accomplishments are a testament not\nonly to my academic accomplishments but also to my mindset that values seeking new information. Outside of school, I do my best to seek\nout projects that implement my knowledge and transform it into reality. Projects of this nature correspond to the ideal of Plaksha in terms of\nbeing hands-on and innovative in terms of turning ideas into reality. For example, during one of the group-based Smart City projects, we\naimed to design one which is fully powered by renewable sources with no use of fossil fuels. This project integrated my interest in\nengineering with my aim to solve real-world problems in an environmentally friendly way. I also built a personal web page with HTML and\nCSS, built a text game in Python that demonstrated basic game design, and did data scraping and analysis with Python using Pandas and\nMatplotlib. The idea of Plaksha's education being focused on real practical projects is in line with my approach to learning. I will be looking for\nlearning opportunities provided by Plaksha to improve my abilities and make use of my knowledge in the undertakings that will be of great\nimportance. The multidisciplinary and cooperative environment at Plaksha will not only assist me with the improvement of my engineering\nabilities, but also enable me to search for new ways of solving pressing problems in the world. I also participated in some hackathons and\ncompetitions such as Zenith 2022, Codex, and Robotronics 2022 where I also got the chance to advance my teamwork and leadership skills.\nAlso, placing second in the ION 2022 Rising Entrepreneurs contest evidences my ability to remember the significance of working together\ntoward reaching targets in a competitive environment. What I find most appealing in pursuing a career path as an engineer or in the\ntechnology field is the prospect of impacting the world utilizing my various capabilities. The opportunities of interacting with different\nstudents and professors at Plaksha will definitely Give me the latitude to open my eyes better and to other ideas. Being engaged with such\npeople both in and outside the class will enable me to get a better grasp of education and effective practice to enable me to prepare for the\nfuture.",
       "word_count": 499,
@@ -272,7 +272,7 @@
       "confidence_score": 0.9
     },
     {
-      "entry_id": "f3c1ad74-b9b0-49d6-aab9-1cd0da6ab636",
+      "entry_id": "ec6e168a-a0c9-465d-b593-b2d79ec36c43",
       "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
       "raw_text": "In a recent project names Tenelach organized by DPS School Mathura Road, I led a team of four members to design a smart city powered\nentirely by clean energy, utilizing solar power, wind energy, geothermal energy, and other sustainable sources to eliminate the use of fossil\nfuels. Over the course of four weeks, I took responsibility for coordinating the team's efforts and ensuring the smooth execution of the\nproject. I demonstrated Innovation by leading the team in creating a novel solution for a sustainable smart city that relied entirely on clean energy,\nshowcasing a forward-thinking approach to environmental challenges. When faced with technical difficulties and tight timelines, I remained\nResilient, working tirelessly to troubleshoot issues and keeping the team focused on our goal despite setbacks. This helped maintain our\nmomentum and ensured that we could deliver the project successfully. My commitment to Excellence was evident in my dedication to high-quality work. I carefully managed the project's progress, ensuring every\nelement of the design was meticulously planned and executed, striving for the highest standards in every aspect of the project. I also showed Respect by honoring the contributions of each team member. I fostered a collaborative environment, listening to everyone's\nideas and ensuring that everyone's voice was heard. This respect extended to the core concept of our project itself, as we aimed to create a\nmodel that prioritizes sustainability and environmental respect by eliminating the use of fossil fuels. Finally, I upheld Integrity by being honest and reliable throughout the process. I ensured that communication within the team remained\ntransparent, and I took accountability for my tasks while supporting my teammates in their roles. I remained ethical and committed to our\nshared goal of creating a clean-energy solution.",
       "word_count": 287,
@@ -283,7 +283,7 @@
   ],
   "activity_entries": [
     {
-      "entry_id": "e60aa99c-80c0-4e6e-823d-e8b92ed5079b",
+      "entry_id": "dfbd156d-49f1-4546-a9a1-be284e838a00",
       "activity_type": "extracurricular",
       "activity_name": "Chess",
       "position_title": null,
@@ -295,7 +295,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "15ab5d05-c6fe-4cb5-9d66-6bef4a9024c9",
+      "entry_id": "2a05bc74-6cb7-4428-9839-be53e6b0ffa1",
       "activity_type": "extracurricular",
       "activity_name": "Electronic Keyboard\n(Music)",
       "position_title": null,
@@ -307,7 +307,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "d919a364-89a1-4e6a-9699-0e6678705813",
+      "entry_id": "5a6268f3-58f3-4d94-8a5c-5feb126fbd8b",
       "activity_type": "extracurricular",
       "activity_name": "Badminton",
       "position_title": null,
@@ -319,7 +319,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "f3be0df2-6422-4294-946f-e4d1372969bb",
+      "entry_id": "313f83ea-cd97-4d30-8740-7a47ff8f99f7",
       "activity_type": "co_curricular",
       "activity_name": null,
       "position_title": "District Champion (Gold)",
@@ -331,7 +331,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "aaa1cddb-3ce3-4c93-8805-8e0227c15ce3",
+      "entry_id": "1baad5b7-1993-4e56-bcaa-4edcb2a2d4bf",
       "activity_type": "co_curricular",
       "activity_name": null,
       "position_title": "Local club tournament",
@@ -343,7 +343,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "1b4aec7f-f470-47fb-a062-01003969eddd",
+      "entry_id": "ac593521-5f95-4c99-8f3b-fbd332eb0905",
       "activity_type": "co_curricular",
       "activity_name": "SHISMUN 22",
       "position_title": "Best Delegate",
@@ -355,7 +355,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "3e70bdac-447e-463b-99ed-e3444a4e1ed0",
+      "entry_id": "50420be6-6127-4625-a109-5ce9c518e0b0",
       "activity_type": "co_curricular",
       "activity_name": "SOFIEO",
       "position_title": "Rank 4",
@@ -367,7 +367,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "14f6116a-0946-4f45-b0fa-e4bb01d2a432",
+      "entry_id": "0e67ec31-2008-43d4-8f15-d48ad94c0260",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "Project leader",
@@ -379,7 +379,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "d38435fd-d4c2-412e-a244-0dda84c20cd6",
+      "entry_id": "f3bfdd58-905a-4012-8de3-c4a95f1a1866",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "Team Leader",
@@ -391,7 +391,7 @@
       "confidence_score": 0.95
     },
     {
-      "entry_id": "8de92e2c-4f2c-41d6-bce2-439c23d511ec",
+      "entry_id": "6f5e7454-6019-45cf-9625-53be76b495a2",
       "activity_type": "leadership",
       "activity_name": null,
       "position_title": "Lead",
@@ -421,7 +421,7 @@
       {
         "agent_id": 3,
         "agent_name": "Personal Information Extractor",
-        "confidence_score": 0.85
+        "confidence_score": 0.9
       },
       {
         "agent_id": 4,
@@ -454,6 +454,6 @@
         "confidence_score": 0.95
       }
     ],
-    "aggregate_confidence": 0.8790000000000001
+    "aggregate_confidence": 0.884
   }
 }

@@ -32,18 +32,35 @@ Note the specific language they use. Note what they chose to emphasize.
 Note what they claim to care about.
 
 STEP 2 — Read the activity profile and academic profile.
+The academic profile contains interview-relevant academics from 10TH, 11TH, and 12TH, including later-year subject detail.
 Ask: does the weight of evidence here reflect what the essay claims?
-Look for three things:
-  A) COHERENCE — where activities or academics directly confirm an essay claim
-     and there is a specific, interesting story to explore beneath the surface.
+Look for three things (in priority order):
+  C) GAPS — highest priority. Missing evidence for claimed identity or direction.
   B) TENSION — where activities or academics don't match what the essay claims,
      or where the applicant's stated ambition and their actual demonstrated work
      pull in different directions.
-  C) GAPS — where the essay claims something important but the rest of the
-     application provides no evidence for it at all.
+  A) COHERENCE — lowest priority. Only include if the alignment reveals a non-obvious,
+   interview-worthy question about depth, decision-making, or underlying motivation.
+
+Also evaluate DEPTH vs SURFACE:
+Does the activity profile demonstrate depth, ownership, or outcomes —
+or does it consist primarily of participation labels without evidence of impact or initiative?
+
+Explicitly consider negative space:
+What kinds of activities or evidence would you expect given the essay claims,
+but are missing from the application?
+
+When evaluating GAPS, TENSION, and COHERENCE, explicitly incorporate later-year academic patterns:
+subject weakness or strength across 10TH to 12TH, alignment or mismatch between
+subject performance and stated direction, and whether later-year academics reinforce
+or complicate the essay narrative.
 
 STEP 3 — Read the deterministic signals.
-Use them as anchors to confirm your observations are grounded in measurable data.
+Use deterministic signals selectively as anchors where they sharpen or validate a signal.
+They are precision-biased anchors, not an exhaustive list of all relevant patterns.
+Do not include them unless they materially strengthen the reasoning.
+Avoid forcing deterministic references into otherwise cross-sectional insights.
+
 Where a deterministic signal supports your reasoning, reference it.
 Where your reasoning is purely cross-section (essay vs activities, essay vs academics),
 you do not need a deterministic anchor — leave supporting_det_signal_ids as an empty array.
@@ -65,10 +82,10 @@ RULES:
    A signal that connects the essay to the activity profile is worth more than
    a signal that describes one section in isolation.
 
-3. The interview_hook must be one specific question or line of inquiry that
-   an interviewer would actually pursue. It must name something specific from
-   this application. It must probe reasoning or motivation, not just ask for
-   elaboration.
+3. The interview_hook must target an uncertainty that would change an evaluator’s interpretation
+   of the applicant along one of the three core dimensions (challenge response, problem-solving,
+   or genuine engagement with technology).
+   It must expose something the interviewer cannot infer from the application alone.
 
 4. Do NOT write interview_hook as "tell me more about X" or "can you elaborate on X".
    Write it as the underlying question behind the question — what the interviewer
@@ -79,6 +96,15 @@ RULES:
 
 6. Produce between 4 and 6 signals. Fewer sharp signals are better than
    many generic ones.
+
+7. If the essay language is generic, high-level, or non-specific (e.g., "curiosity", "impact", "innovation"),
+   you must explicitly treat this as a LOW-EVIDENCE CLAIM.
+   Do not take such claims at face value. Instead, convert such claims into GAPS or TENSION signals by explicitly testing
+   whether they are substantiated anywhere else in the application.
+
+8. Before finalizing each signal, test:
+   "Could this signal be written about 100 applicants with similar profiles?"
+   If yes, discard or rewrite it to include more specific grounding.
 
 ---
 
@@ -130,14 +156,6 @@ SPECIFIC (correct):
 The specific version could not have been written without reading this particular application.
 The generic version could have been written about anyone who mentioned technology and did an internship.
 Every signal you produce must pass that test.
-
----
-
-ACADEMIC TRAJECTORY NOTE:
-If the projection includes an academic_summary field, treat it as high-priority signal material.
-Score dips, recoveries, and subject-level anomalies are interview-worthy even when the
-overall numbers are high. A dip followed by recovery is more interesting than consistent
-performance — it implies something happened and was overcome.
 """
 
     user_prompt = f"""

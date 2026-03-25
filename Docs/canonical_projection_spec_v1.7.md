@@ -833,7 +833,7 @@ Before passing a completed projection to an LLM call, the following deterministi
 | Entity ID map coverage | Every entity ID appearing in the projection body also appears in `entity_id_map`. |
 | No null fields | No field in the projection has a `null` value. Null fields were omitted at construction time. |
 | No empty arrays | A section array (e.g. `academic_profile`) is omitted entirely if it would be empty rather than included as an empty array. |
-| Deterministic signals attached | `deterministic_signals` is present and non-empty before the projection is passed to Call 1. |
+| Deterministic signals attached | `deterministic_signals` key is present before the projection is passed to Call 1. The array may be empty when no high-signal structured patterns qualify. |
 | No internal metadata | No `confidence_score`, `entry_id`, `placeholder_flag`, `short_response_flag`, `result_status`, or `extraction_confidence` fields are present anywhere in the projection. |
 
 If any check fails, the projection is not passed to the LLM and the pipeline is halted. The failure reason is logged.

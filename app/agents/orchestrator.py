@@ -4,6 +4,7 @@ import re
 from app.agents.layout_extractor import extract_layout_blocks
 from app.agents.section_detector import detect_sections
 from app.agents.personal_extractor import extract_personal_info
+from app.agents.family_extractor import extract_family_background
 from app.agents.geographic_extractor import extract_geographic_context
 from app.agents.additional_info_extractor import extract_additional_info
 from app.agents.academic_extractor import extract_academic_records
@@ -33,7 +34,7 @@ from app.models.canonical_record import CanonicalRecord
 from app.models.synthesis_record import SynthesisRecord
 from app.canonical.version import CANONICAL_VERSION
 from app.config import settings
-from app.utils.text_normalization import normalize_label
+from app.agents.section_scope_resolver import resolve_section_scopes
 from app.utils.sanitizer import sanitize_for_json
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -68,142 +69,6 @@ def _get_parser_engine_version() -> str:
     return version if version in {"v1", "v2"} else "v2"
 
 
-def _rows_for_section(section: Dict[str, Any], layout_rows: Any) -> list:
-    if not layout_rows:
-        return []
-
-    start = section.get("start_row_index")
-    end = section.get("end_row_index")
-    if start is None or end is None:
-        return []
-
-    return [
-        row
-        for row in layout_rows
-        if start <= row.get("row_index", -1) <= end
-    ]
-
-
-def _collect_section_blocks(section_data: Dict[str, Any], parser_engine_version: str) -> Dict[str, Any]:
-    buckets = {
-        "personal_blocks": [],
-        "parent_blocks": [],
-        "academic_blocks": [],
-        "test_blocks": [],
-        "essay_blocks": [],
-        "additional_info_blocks": [],
-        "extra_blocks": [],
-        "co_blocks": [],
-        "leadership_blocks": [],
-    }
-
-    for section in section_data.get("sections", []):
-        label = section.get("label", "").lower()
-        section_type = section.get("section_type")
-        blocks = section.get("blocks", [])
-        logger.debug(f"Processing section: '{label}' ({section_type}) with {len(blocks)} blocks")
-
-        if parser_engine_version == "v1":
-            if "personal" in label:
-                buckets["personal_blocks"].extend(blocks)
-            elif any(kw in label for kw in ["parent", "father", "mother"]):
-                buckets["parent_blocks"].extend(blocks)
-            elif "extra" in label and "curricul" in label:
-                buckets["extra_blocks"].extend(blocks)
-            elif "co" in label and "curricul" in label:
-                buckets["co_blocks"].extend(blocks)
-            elif "leadership" in label:
-                buckets["leadership_blocks"].extend(blocks)
-            elif any(kw in label for kw in ["class", "academic", "education", "degree", "school"]):
-                buckets["academic_blocks"].extend(blocks)
-            elif any(kw in label for kw in ["test", "jee", "sat", "act", "examination", "percentile", "score"]):
-                buckets["test_blocks"].extend(blocks)
-            elif "essay" in label:
-                buckets["essay_blocks"].extend(blocks)
-            elif "additional" in label:
-                buckets["additional_info_blocks"].extend(blocks)
-            continue
-
-        if section_type == "personal_details":
-            buckets["personal_blocks"].extend(blocks)
-        elif section_type == "parent_details":
-            buckets["parent_blocks"].extend(blocks)
-        elif section_type == "extracurricular":
-            buckets["extra_blocks"].extend(blocks)
-        elif section_type == "co_curricular":
-            buckets["co_blocks"].extend(blocks)
-        elif section_type == "leadership":
-            buckets["leadership_blocks"].extend(blocks)
-        elif section_type == "academics":
-            buckets["academic_blocks"].extend(blocks)
-        elif section_type == "standardized_tests":
-            buckets["test_blocks"].extend(blocks)
-        elif section_type == "essays":
-            buckets["essay_blocks"].extend(blocks)
-        elif section_type == "additional_information":
-            buckets["additional_info_blocks"].extend(blocks)
-
-    return buckets
-
-
-def _collect_parent_sections(section_data: Dict[str, Any], parser_engine_version: str, layout_rows: Any) -> list:
-    parent_sections = []
-    for section in section_data.get("sections", []):
-        label = section.get("label", "").lower()
-        section_type = section.get("section_type")
-
-        if parser_engine_version == "v1":
-            is_parent_section = any(kw in label for kw in ["parent", "father", "mother"])
-            is_address_section = "address" in label
-        else:
-            is_parent_section = section_type == "parent_details"
-            is_address_section = section_type == "address_details"
-
-        if not is_parent_section and not is_address_section:
-            continue
-
-        section_rows = _rows_for_section(section, layout_rows)
-        row_blocks = []
-        for row in section_rows:
-            row_blocks.extend(row.get("blocks", []))
-
-        parent_sections.append({
-            "label": section.get("label"),
-            "normalized_label": normalize_label(section.get("label", "")),
-            "blocks": row_blocks or section.get("blocks", []),
-        })
-
-    return parent_sections
-
-
-def _collect_address_sections(section_data: Dict[str, Any], parser_engine_version: str, layout_rows: Any) -> list:
-    address_sections = []
-    for section in section_data.get("sections", []):
-        label = section.get("label", "").lower()
-        section_type = section.get("section_type")
-
-        if parser_engine_version == "v1":
-            is_address_section = "address" in label
-        else:
-            is_address_section = section_type == "address_details"
-
-        if not is_address_section:
-            continue
-
-        section_rows = _rows_for_section(section, layout_rows)
-        row_blocks = []
-        for row in section_rows:
-            row_blocks.extend(row.get("blocks", []))
-
-        address_sections.append({
-            "label": section.get("label"),
-            "normalized_label": normalize_label(section.get("label", "")),
-            "blocks": row_blocks or section.get("blocks", []),
-        })
-
-    return address_sections
-
-
 def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, Any]:
     """
     Executes the deterministic agent pipeline in fixed order.
@@ -228,44 +93,33 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
     logger.debug(f"Agent completion (agent_id: 2, confidence_score: {section_data.get('confidence_score', 'N/A')})")
     parser_engine_version = _get_parser_engine_version()
     logger.info(f"Parser engine version: {parser_engine_version}")
-    section_buckets = _collect_section_blocks(section_data, parser_engine_version)
-    parent_sections = _collect_parent_sections(section_data, parser_engine_version, layout_data.get("rows"))
-    address_sections = _collect_address_sections(section_data, parser_engine_version, layout_data.get("rows"))
-    academic_rows = []
-    test_rows = []
-    for section in section_data.get("sections", []):
-        section_rows = _rows_for_section(section, layout_data.get("rows"))
-        if not section_rows:
-            continue
-        section_type = section.get("section_type")
-        label = section.get("label", "").lower()
-        if parser_engine_version == "v1":
-            if any(kw in label for kw in ["class", "academic", "education", "degree", "school"]):
-                academic_rows.extend(section_rows)
-            elif any(kw in label for kw in ["test", "jee", "sat", "act", "examination", "percentile", "score"]):
-                test_rows.extend(section_rows)
-        else:
-            if section_type == "academics":
-                academic_rows.extend(section_rows)
-            elif section_type == "standardized_tests":
-                test_rows.extend(section_rows)
-    personal_blocks = section_buckets["personal_blocks"]
-    academic_blocks = section_buckets["academic_blocks"]
-    test_blocks = section_buckets["test_blocks"]
-    essay_blocks = section_buckets["essay_blocks"]
-    additional_info_blocks = section_buckets["additional_info_blocks"]
-    extra_blocks = section_buckets["extra_blocks"]
-    co_blocks = section_buckets["co_blocks"]
-    leadership_blocks = section_buckets["leadership_blocks"]
+    scopes = resolve_section_scopes(section_data, parser_engine_version, layout_data.get("rows"))
+    section_map = scopes["section_map"]
+    section_slices = scopes["section_slices"]
+    parent_sections = section_slices.get("parent_details", [])
+    address_sections = section_slices.get("address_details", [])
+    academic_rows = scopes["academic_rows"]
+    test_rows = scopes["test_rows"]
+    personal_blocks = section_map.get("personal_details", [])
+    academic_blocks = section_map.get("academics", [])
+    test_blocks = section_map.get("standardized_tests", [])
+    essay_blocks = section_map.get("essays", [])
+    additional_info_blocks = section_map.get("additional_information", [])
+    extra_blocks = section_map.get("extracurricular", [])
+    co_blocks = section_map.get("co_curricular", [])
+    leadership_blocks = section_map.get("leadership", [])
 
     essay_blocks_to_pass = essay_blocks if essay_blocks else layout_data["blocks"]
 
     # Agent 3: Personal Information
     logger.debug("Agent invocation (agent_id: 3, agent_name: Personal Information Extractor Python Agent)")
     personal_scope = personal_blocks if personal_blocks else layout_data["blocks"]
-    personal_data = extract_personal_info(
-        personal_scope,
-        parent_sections=parent_sections,
+    personal_data = extract_personal_info(personal_scope)
+    family_data = extract_family_background(parent_sections)
+    personal_data.setdefault("identifiers", {})["family_background"] = family_data["family_background"]
+    personal_data["confidence_score"] = max(
+        personal_data.get("confidence_score", 0.0),
+        family_data.get("confidence_score", 0.0),
     )
     geographic_data = extract_geographic_context(address_sections)
     if geographic_data.get("geographic_context"):

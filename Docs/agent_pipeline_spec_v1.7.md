@@ -476,15 +476,12 @@ for i from 1 to len(collection):
 
 | Type | Description |
 |---|---|
-| `"duration_pattern"` | An activity entry with a duration value indicating multi-year participation |
-| `"domain_concentration"` | Multiple entries (academic or activity) concentrated in the same subject domain |
-| `"leadership_presence"` | One or more entries with `activity_type: "leadership"` present |
-| `"academic_distribution"` | Observable pattern in score distribution across subjects or levels |
-| `"essay_characteristic"` | A measurable characteristic of an essay entry (e.g. short response flag) |
-| `"cross_section_pattern"` | An entity token appearing meaningfully across multiple canonical sections |
-| `"activity_volume"` | Total number of activity entries across or within a specific type |
-| `"test_performance_pattern"` | Observable pattern in test score or sectional breakdown data |
-| `"timeline_characteristic"` | A pattern observable from academic year sequencing |
+| `"academic_trajectory_shift"` | Meaningful percentage-point change across consecutive academic levels |
+| `"academic_transition_event"` | School or board transition across consecutive academic levels |
+| `"subject_imbalance"` | Large spread between the highest and lowest scored subjects within one academic entry |
+| `"leadership_depth"` | Leadership entry with structured role, duration, and supporting detail |
+| `"sustained_commitment"` | Non-leadership activity showing multi-year participation with structured detail |
+| `"test_section_imbalance"` | Large spread between the highest and lowest sections within one test |
 
 **Output schema per signal:**
 
@@ -544,7 +541,7 @@ Field rules:
 - Every entity ID in the projection body appears in the entity ID map
 - No null fields are present anywhere in the projection
 - No section array is empty (empty sections are omitted entirely)
-- `deterministic_signals` is present and non-empty
+- `deterministic_signals` key is present (it may be an empty array)
 - No internal metadata fields are present (`confidence_score`, `entry_id`, `placeholder_flag`, `short_response_flag`, `result_status`, `extraction_confidence`)
 
 If any check fails, the pipeline is halted and the failure is logged. The projection is not passed to Agent 14.

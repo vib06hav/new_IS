@@ -3,10 +3,12 @@ from app.agents.additional_info_extractor import extract_additional_info
 from app.agents.assembler import assemble_canonical
 from app.agents.academic_extractor import extract_academic_records
 from app.agents.cross_section_detector import detect_cross_sections
+from app.agents.family_extractor import extract_family_background
 from app.agents.integrity_analyzer import analyze_integrity
 from app.agents.layout_extractor import _build_block_ir, _build_header_candidates, _build_issue_ir, _build_layout_issues, _build_page_stats
 from app.agents.geographic_extractor import extract_geographic_context
 from app.agents.personal_extractor import extract_personal_info
+from app.agents.section_scope_resolver import resolve_section_scopes
 from app.agents.section_detector import detect_sections
 from app.agents.test_extractor import extract_test_records
 from tests.corpus_harness import _run_deterministic_pipeline_stages
@@ -225,11 +227,7 @@ def test_additional_info_extractor_can_use_broader_layout_search_for_same_row_va
     assert result["preferred_major"] == "Computer Science and Artificial Intelligence"
 
 
-def test_personal_extractor_parses_parent_sections_from_section_metadata():
-    personal_blocks = [
-        {"page": 1, "text": "Full Name", "bbox": (20, 700, 90, 715)},
-        {"page": 1, "text": "Aarav Jain", "bbox": (180, 700, 240, 715)},
-    ]
+def test_family_extractor_parses_parent_sections_from_section_metadata():
     parent_sections = [
         {
             "label": "Father Details",
@@ -251,16 +249,15 @@ def test_personal_extractor_parses_parent_sections_from_section_metadata():
         },
     ]
 
-    result = extract_personal_info(personal_blocks, parent_sections=parent_sections)
+    result = extract_family_background(parent_sections)
 
-    assert result["identifiers"]["full_name"] == "Aarav Jain"
-    assert result["identifiers"]["family_background"]["father"]["name"] == "Rajesh Jain"
-    assert result["identifiers"]["family_background"]["father"]["organization"] == "Acme Industries"
-    assert result["identifiers"]["family_background"]["mother"]["name"] == "Sunita Jain"
-    assert result["identifiers"]["family_background"]["mother"]["education"] == "M.Sc"
+    assert result["family_background"]["father"]["name"] == "Rajesh Jain"
+    assert result["family_background"]["father"]["organization"] == "Acme Industries"
+    assert result["family_background"]["mother"]["name"] == "Sunita Jain"
+    assert result["family_background"]["mother"]["education"] == "M.Sc"
 
 
-def test_personal_extractor_ignores_generic_parent_grouping_section():
+def test_family_extractor_ignores_generic_parent_grouping_section():
     parent_sections = [
         {
             "label": "Parent Details",
@@ -271,10 +268,56 @@ def test_personal_extractor_ignores_generic_parent_grouping_section():
         }
     ]
 
-    result = extract_personal_info([], parent_sections=parent_sections)
+    result = extract_family_background(parent_sections)
 
-    assert result["identifiers"]["family_background"]["father"]["name"] is None
-    assert result["identifiers"]["family_background"]["mother"]["name"] is None
+    assert result["family_background"]["father"]["name"] is None
+    assert result["family_background"]["mother"]["name"] is None
+
+
+def test_section_scope_resolver_separates_parent_and_address_slices():
+    layout_rows = [
+        {
+            "row_index": 0,
+            "blocks": [
+                {"page": 1, "text": "Father Details", "bbox": (20, 700, 110, 715)},
+                {"page": 1, "text": "Name", "bbox": (20, 680, 60, 695)},
+                {"page": 1, "text": "Rajesh Jain", "bbox": (180, 680, 250, 695)},
+            ],
+        },
+        {
+            "row_index": 1,
+            "blocks": [
+                {"page": 1, "text": "Permanent Address", "bbox": (20, 640, 130, 655)},
+                {"page": 1, "text": "Town/City", "bbox": (20, 620, 80, 635)},
+                {"page": 1, "text": "Jaipur", "bbox": (180, 620, 220, 635)},
+            ],
+        },
+    ]
+    section_data = {
+        "sections": [
+            {
+                "label": "Father Details",
+                "section_type": "parent_details",
+                "start_row_index": 0,
+                "end_row_index": 0,
+                "blocks": layout_rows[0]["blocks"],
+            },
+            {
+                "label": "Permanent Address",
+                "section_type": "address_details",
+                "start_row_index": 1,
+                "end_row_index": 1,
+                "blocks": layout_rows[1]["blocks"],
+            },
+        ]
+    }
+
+    scopes = resolve_section_scopes(section_data, "v2", layout_rows)
+
+    assert len(scopes["section_slices"]["parent_details"]) == 1
+    assert len(scopes["section_slices"]["address_details"]) == 1
+    assert scopes["section_slices"]["parent_details"][0]["label"] == "Father Details"
+    assert scopes["section_slices"]["address_details"][0]["label"] == "Permanent Address"
 
 
 def test_geographic_extractor_prefers_permanent_address_when_available():

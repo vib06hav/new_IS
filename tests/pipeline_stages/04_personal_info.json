@@ -3,6 +3,10 @@
     "full_name": "Aarav Jain",
     "date_of_birth": "2007-06-14",
     "preferred_major": "Computer Science and Artificial Intelligence",
+    "declared_preferences": {
+      "major": "Computer Science and Artificial Intelligence"
+    },
+    "demographic_flags": {},
     "family_background": {
       "father": {
         "name": "Sandeep Jain",
@@ -23,12 +27,7 @@
       "city": "Jaipur",
       "state": "Rajasthan",
       "country": "India"
-    },
-    "declared_preferences": {
-      "major": "Computer Science and Artificial Intelligence"
-    },
-    "demographic_flags": {},
-    "application_id": "dummy_app_1"
+    }
   },
-  "confidence_score": 0.85
+  "confidence_score": 0.9
 }
