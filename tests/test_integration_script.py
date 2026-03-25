@@ -51,7 +51,27 @@ def run_integration_test():
             # Mock the LLM to avoid real AI generation time
             mock_llm_response = {
                 "themes": [
-                    {"theme_id": "THEME-001", "title": "Mock", "description": "Mock", "referenced_entity_ids": []}
+                    {
+                        "theme_id": "THEME-001",
+                        "title": "Mock",
+                        "framing": "Mock framing",
+                        "what_this_theme_must_resolve": "Mock resolve",
+                        "supporting_signal_ids": ["SIG-001"],
+                        "referenced_entity_ids": []
+                    }
+                ],
+                "signals": [
+                    {
+                        "signal_id": "SIG-001",
+                        "theme_id": "THEME-001",
+                        "title": "Mock signal",
+                        "evidence_anchor": "Mock anchor",
+                        "direct_read": "Mock direct read",
+                        "what_remains_open": "Mock open question",
+                        "why_it_matters": "Mock matters",
+                        "referenced_entity_ids": [],
+                        "supporting_det_signal_ids": []
+                    }
                 ],
                 "question_groups": [
                     {"theme_id": "THEME-001", "group_title": "Mock Group", "questions": ["Mock question?"]}
@@ -73,4 +93,5 @@ def run_integration_test():
         if os.path.exists(pdf_path):
             os.remove(pdf_path)
             
-run_integration_test()
+if __name__ == "__main__":
+    run_integration_test()

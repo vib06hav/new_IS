@@ -96,9 +96,18 @@ def _normalize_theme_entries(raw_themes: Any, rules: List[str]) -> List[Dict[str
                 _first_present(theme, ["title", "theme_name", "name", "heading", "theme_title"], ""),
                 rules,
             ),
-            "description": _rewrite_prohibited_phrasing(
-                _first_present(theme, ["description", "summary", "details", "theme_description"], ""),
+            "framing": _rewrite_prohibited_phrasing(
+                _first_present(theme, ["framing", "description", "summary", "details", "theme_description"], ""),
                 rules,
+            ),
+            "what_this_theme_must_resolve": _rewrite_prohibited_phrasing(
+                _first_present(theme, ["what_this_theme_must_resolve", "resolution", "resolve", "interview_purpose"], ""),
+                rules,
+            ),
+            "supporting_signal_ids": _first_present(
+                theme,
+                ["supporting_signal_ids", "signal_ids", "member_signal_ids"],
+                [],
             ),
             "referenced_entity_ids": _first_present(
                 theme,
@@ -113,7 +122,7 @@ def _normalize_signal_output(data: Any, rules: List[str]) -> Any:
     if not isinstance(data, dict):
         return data
 
-    raw_signals = data.get("interpreted_signals", [])
+    raw_signals = data.get("signals", [])
     normalized_signals = []
     if isinstance(raw_signals, list):
         for sig in raw_signals:
@@ -121,12 +130,12 @@ def _normalize_signal_output(data: Any, rules: List[str]) -> Any:
                 continue
             normalized_signals.append({
                 "signal_id": _first_present(sig, ["signal_id", "id"]),
-                "theme_id": _first_present(sig, ["theme_id", "theme", "theme_ref"]),
                 "title": _rewrite_prohibited_phrasing(_first_present(sig, ["title", "name", "label"], ""), rules),
-                "essay_claim": _first_present(sig, ["essay_claim"], ""),
-                "evidence_observation": _first_present(sig, ["evidence_observation"], ""),
-                "tension_or_coherence": _first_present(sig, ["tension_or_coherence"], ""),
-                "interview_hook": _first_present(sig, ["interview_hook"], ""),
+                "theme_id": _first_present(sig, ["theme_id", "theme", "theme_ref"]),
+                "evidence_anchor": _first_present(sig, ["evidence_anchor"], ""),
+                "direct_read": _first_present(sig, ["direct_read"], ""),
+                "what_remains_open": _first_present(sig, ["what_remains_open"], ""),
+                "why_it_matters": _first_present(sig, ["why_it_matters"], ""),
                 "referenced_entity_ids": _first_present(sig, ["referenced_entity_ids", "entity_ids", "references"], []),
                 "supporting_det_signal_ids": _first_present(
                     sig,
@@ -135,7 +144,7 @@ def _normalize_signal_output(data: Any, rules: List[str]) -> Any:
                 ),
             })
     return {
-        "interpreted_signals": normalized_signals,
+        "signals": normalized_signals,
         "themes": _normalize_theme_entries(data.get("themes", []), rules),
     }
 
@@ -144,7 +153,7 @@ def _backfill_signal_references(normalized_output: Any, deterministic_signals: L
     if not isinstance(normalized_output, dict):
         return normalized_output
 
-    signals = normalized_output.get("interpreted_signals")
+    signals = normalized_output.get("signals")
     if not isinstance(signals, list):
         return normalized_output
 
@@ -248,14 +257,14 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
         })
         return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
 
-    signals = normalized_output.get("interpreted_signals")
+    signals = normalized_output.get("signals")
     themes = normalized_output.get("themes")
     if not isinstance(signals, list):
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
-            "field": "interpreted_signals",
+            "field": "signals",
             "type": "structure_error",
-            "context": "'interpreted_signals' must be an array.",
+            "context": "'signals' must be an array.",
         })
     if not isinstance(themes, list):
         violations_log.append({
@@ -271,20 +280,19 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
     valid_det_signal_ids = {s.get("signal_id") for s in deterministic_signals if s.get("signal_id")}
 
     passed = True
-    known_int_ids = set()
+    known_signal_ids = set()
     known_theme_ids = set()
     sanitized_signals = []
     sanitized_themes = []
-    theme_signal_counts: Dict[str, int] = {}
-    theme_signal_refs: Dict[str, set[str]] = {}
+    sanitized_signal_lookup: Dict[str, Dict[str, Any]] = {}
 
     for idx, sig in enumerate(signals):
         if not isinstance(sig, dict):
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"interpreted_signals[{idx}]",
+                "field": f"signals[{idx}]",
                 "type": "structure_error",
-                "context": "Each interpreted signal must be an object.",
+                "context": "Each signal must be an object.",
             })
             passed = False
             continue
@@ -292,12 +300,11 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
         sig_passed = True
         required = [
             "signal_id",
-            "theme_id",
             "title",
-            "essay_claim",
-            "evidence_observation",
-            "tension_or_coherence",
-            "interview_hook",
+            "evidence_anchor",
+            "direct_read",
+            "what_remains_open",
+            "why_it_matters",
             "referenced_entity_ids",
             "supporting_det_signal_ids",
         ]
@@ -306,7 +313,7 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
             if value is None or (isinstance(value, str) and not value.strip()):
                 violations_log.append({
                     "violation_id": str(uuid.uuid4()),
-                    "field": f"interpreted_signals[{idx}].{field}",
+                    "field": f"signals[{idx}].{field}",
                     "type": "missing_field",
                     "context": f"Required field '{field}' is missing or empty.",
                 })
@@ -314,43 +321,32 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
                 passed = False
 
         signal_id = sig.get("signal_id")
-        if not signal_id or not re.match(r"^INT-\d{3}$", str(signal_id)):
+        if not signal_id or not re.match(r"^SIG-\d{3}$", str(signal_id)):
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"interpreted_signals[{idx}].signal_id",
+                "field": f"signals[{idx}].signal_id",
                 "type": "invalid_format",
                 "context": f"Invalid ID format: {signal_id}",
             })
             sig_passed = False
             passed = False
-        elif signal_id in known_int_ids:
+        elif signal_id in known_signal_ids:
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"interpreted_signals[{idx}].signal_id",
+                "field": f"signals[{idx}].signal_id",
                 "type": "duplicate_id",
                 "context": f"Duplicate signal ID: {signal_id}",
             })
             sig_passed = False
             passed = False
         else:
-            known_int_ids.add(signal_id)
-
-        theme_id = sig.get("theme_id")
-        if not theme_id or not re.match(r"^THEME-\d{3}$", str(theme_id)):
-            violations_log.append({
-                "violation_id": str(uuid.uuid4()),
-                "field": f"interpreted_signals[{idx}].theme_id",
-                "type": "invalid_format",
-                "context": f"Invalid theme_id format: {theme_id}",
-            })
-            sig_passed = False
-            passed = False
+            known_signal_ids.add(signal_id)
 
         referenced_entity_ids = sig.get("referenced_entity_ids", [])
         if not isinstance(referenced_entity_ids, list) or not referenced_entity_ids:
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"interpreted_signals[{idx}].referenced_entity_ids",
+                "field": f"signals[{idx}].referenced_entity_ids",
                 "type": "empty_array",
                 "context": "Signal must reference at least one entity ID.",
             })
@@ -361,7 +357,7 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
                 if ent_id not in valid_entity_ids:
                     violations_log.append({
                         "violation_id": str(uuid.uuid4()),
-                        "field": f"interpreted_signals[{idx}].referenced_entity_ids",
+                        "field": f"signals[{idx}].referenced_entity_ids",
                         "type": "invented_entity_id",
                         "context": f"Invented Entity ID: {ent_id}",
                     })
@@ -372,7 +368,7 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
         if not isinstance(supporting_det_signal_ids, list):
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"interpreted_signals[{idx}].supporting_det_signal_ids",
+                "field": f"signals[{idx}].supporting_det_signal_ids",
                 "type": "invalid_type",
                 "context": "supporting_det_signal_ids must be an array.",
             })
@@ -383,15 +379,15 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
                 if det_id not in valid_det_signal_ids:
                     violations_log.append({
                         "violation_id": str(uuid.uuid4()),
-                        "field": f"interpreted_signals[{idx}].supporting_det_signal_ids",
+                        "field": f"signals[{idx}].supporting_det_signal_ids",
                         "type": "invented_det_signal_id",
                         "context": f"Invented Deterministic Signal ID: {det_id}",
                     })
                     sig_passed = False
                     passed = False
 
-        for field in ["title", "essay_claim", "evidence_observation", "tension_or_coherence", "interview_hook"]:
-            if _append_text_violations(violations_log, f"interpreted_signals[{idx}].{field}", sig.get(field, ""), rules):
+        for field in ["title", "evidence_anchor", "direct_read", "what_remains_open", "why_it_matters"]:
+            if _append_text_violations(violations_log, f"signals[{idx}].{field}", sig.get(field, ""), rules):
                 sig_passed = False
                 passed = False
 
@@ -400,18 +396,16 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
 
         sanitized_signal = {
             "signal_id": signal_id,
-            "theme_id": theme_id,
             "title": sig.get("title"),
-            "essay_claim": sig.get("essay_claim"),
-            "evidence_observation": sig.get("evidence_observation"),
-            "tension_or_coherence": sig.get("tension_or_coherence"),
-            "interview_hook": sig.get("interview_hook"),
+            "evidence_anchor": sig.get("evidence_anchor"),
+            "direct_read": sig.get("direct_read"),
+            "what_remains_open": sig.get("what_remains_open"),
+            "why_it_matters": sig.get("why_it_matters"),
             "referenced_entity_ids": referenced_entity_ids,
             "supporting_det_signal_ids": supporting_det_signal_ids,
         }
         sanitized_signals.append(sanitized_signal)
-        theme_signal_counts[theme_id] = theme_signal_counts.get(theme_id, 0) + 1
-        theme_signal_refs.setdefault(theme_id, set()).update(referenced_entity_ids)
+        sanitized_signal_lookup[signal_id] = sanitized_signal
 
     for idx, theme in enumerate(themes):
         if not isinstance(theme, dict):
@@ -425,7 +419,7 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
             continue
 
         theme_passed = True
-        required = ["theme_id", "title", "description", "referenced_entity_ids"]
+        required = ["theme_id", "title", "framing", "what_this_theme_must_resolve", "supporting_signal_ids"]
         for field in required:
             value = theme.get(field)
             if value is None or (isinstance(value, str) and not value.strip()):
@@ -460,29 +454,29 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
         else:
             known_theme_ids.add(theme_id)
 
-        refs = theme.get("referenced_entity_ids", [])
-        if not isinstance(refs, list) or not refs:
+        supporting_signal_ids = theme.get("supporting_signal_ids", [])
+        if not isinstance(supporting_signal_ids, list):
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"themes[{idx}].referenced_entity_ids",
-                "type": "empty_array",
-                "context": "Theme must reference at least one entity ID.",
+                "field": f"themes[{idx}].supporting_signal_ids",
+                "type": "invalid_type",
+                "context": "Theme must provide supporting_signal_ids as an array.",
             })
             theme_passed = False
             passed = False
         else:
-            for ref in refs:
-                if ref not in valid_entity_ids:
+            for signal_id in supporting_signal_ids:
+                if signal_id not in sanitized_signal_lookup:
                     violations_log.append({
                         "violation_id": str(uuid.uuid4()),
-                        "field": f"themes[{idx}].referenced_entity_ids",
-                        "type": "invented_entity_id",
-                        "context": f"Invented entity ID: {ref}",
+                        "field": f"themes[{idx}].supporting_signal_ids",
+                        "type": "unknown_supporting_signal_id",
+                        "context": f"Unknown supporting signal ID: {signal_id}",
                     })
                     theme_passed = False
                     passed = False
 
-        for field in ["title", "description"]:
+        for field in ["title", "framing", "what_this_theme_must_resolve"]:
             if _append_text_violations(violations_log, f"themes[{idx}].{field}", theme.get(field, ""), rules):
                 theme_passed = False
                 passed = False
@@ -490,54 +484,66 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
         if not theme_passed:
             continue
 
+        referenced_entity_ids = []
+        for signal_id in supporting_signal_ids:
+            signal = sanitized_signal_lookup.get(signal_id)
+            if not signal:
+                continue
+            for entity_id in signal["referenced_entity_ids"]:
+                if entity_id not in referenced_entity_ids:
+                    referenced_entity_ids.append(entity_id)
+
         sanitized_themes.append({
             "theme_id": theme_id,
             "title": theme.get("title"),
-            "description": theme.get("description"),
-            "referenced_entity_ids": refs,
+            "framing": theme.get("framing"),
+            "what_this_theme_must_resolve": theme.get("what_this_theme_must_resolve"),
+            "supporting_signal_ids": supporting_signal_ids,
+            "referenced_entity_ids": referenced_entity_ids,
         })
 
-    valid_theme_ids = {theme["theme_id"] for theme in sanitized_themes}
+    signal_to_theme_ids: Dict[str, List[str]] = {signal["signal_id"]: [] for signal in sanitized_signals}
+    for theme in sanitized_themes:
+        for signal_id in theme["supporting_signal_ids"]:
+            if signal_id in signal_to_theme_ids:
+                signal_to_theme_ids[signal_id].append(theme["theme_id"])
 
-    for idx, sig in enumerate(sanitized_signals):
-        theme_id = sig["theme_id"]
-        if theme_id not in valid_theme_ids:
+    for signal_id, theme_ids in signal_to_theme_ids.items():
+        if len(theme_ids) > 1:
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"interpreted_signals[{idx}].theme_id",
-                "type": "broken_linkage",
-                "context": f"References non-existent theme_id: {theme_id}",
+                "field": "themes.supporting_signal_ids",
+                "type": "signal_linked_multiple_times",
+                "context": f"Signal {signal_id} linked to multiple themes: {theme_ids}",
+            })
+            passed = False
+        elif len(theme_ids) == 0:
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": "themes.supporting_signal_ids",
+                "type": "missing_signal_coverage",
+                "context": f"Signal {signal_id} is not linked to any theme.",
             })
             passed = False
 
     for idx, theme in enumerate(sanitized_themes):
-        theme_id = theme["theme_id"]
-        member_count = theme_signal_counts.get(theme_id, 0)
-        if member_count == 0:
+        if not theme["supporting_signal_ids"]:
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"themes[{idx}].theme_id",
+                "field": f"themes[{idx}].supporting_signal_ids",
                 "type": "orphan_theme",
-                "context": f"Theme {theme_id} is not referenced by any interpreted signal.",
+                "context": f"Theme {theme['theme_id']} has no supporting signals.",
             })
             passed = False
-            continue
 
-        signal_refs = theme_signal_refs.get(theme_id, set())
-        ungrounded_refs = [ref for ref in theme["referenced_entity_ids"] if ref not in signal_refs]
-        if ungrounded_refs:
-            violations_log.append({
-                "violation_id": str(uuid.uuid4()),
-                "field": f"themes[{idx}].referenced_entity_ids",
-                "type": "ungrounded_theme_entity_id",
-                "context": f"Theme references IDs not grounded in member signals: {ungrounded_refs}",
-            })
-            passed = False
+    if passed:
+        for signal in sanitized_signals:
+            signal["theme_id"] = signal_to_theme_ids[signal["signal_id"]][0]
 
     return {
         "passed": passed,
         "sanitized_output": {
-            "interpreted_signals": sanitized_signals,
+            "signals": sanitized_signals,
             "themes": sanitized_themes,
         } if passed else None,
         "normalized_output": normalized_output,
@@ -588,9 +594,19 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
 
     bundle_themes = []
     if isinstance(bundle, dict):
-        raw_themes = bundle.get("themes", [])
-        if isinstance(raw_themes, list):
-            bundle_themes = [theme for theme in raw_themes if isinstance(theme, dict)]
+        raw_groups = bundle.get("theme_signal_evidence_groups", [])
+        if isinstance(raw_groups, list):
+            for group in raw_groups:
+                if not isinstance(group, dict):
+                    continue
+                theme = group.get("theme")
+                if isinstance(theme, dict):
+                    bundle_themes.append(theme)
+
+        if not bundle_themes:
+            raw_themes = bundle.get("themes", [])
+            if isinstance(raw_themes, list):
+                bundle_themes = [theme for theme in raw_themes if isinstance(theme, dict)]
 
     expected_theme_ids = [theme.get("theme_id") for theme in bundle_themes if theme.get("theme_id")]
     expected_theme_id_set = set(expected_theme_ids)

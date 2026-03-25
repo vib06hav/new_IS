@@ -12,7 +12,7 @@ def construct_bundle(validated_call_1_output: dict, canonical: dict, entity_id_m
     """
 
     compact_mode = settings.LLM_PAYLOAD_MODE == "compact"
-    validated_signals = validated_call_1_output.get("interpreted_signals", [])
+    validated_signals = validated_call_1_output.get("signals", [])
     validated_themes = validated_call_1_output.get("themes", [])
 
     def is_artifact(text, is_duration=False, is_position=False):
@@ -227,10 +227,10 @@ def construct_bundle(validated_call_1_output: dict, canonical: dict, entity_id_m
                 "signal_id": signal.get("signal_id"),
                 "theme_id": signal.get("theme_id"),
                 "title": signal.get("title"),
-                "essay_claim": signal.get("essay_claim"),
-                "evidence_observation": signal.get("evidence_observation"),
-                "tension_or_coherence": signal.get("tension_or_coherence"),
-                "interview_hook": signal.get("interview_hook"),
+                "evidence_anchor": signal.get("evidence_anchor"),
+                "direct_read": signal.get("direct_read"),
+                "what_remains_open": signal.get("what_remains_open"),
+                "why_it_matters": signal.get("why_it_matters"),
                 "referenced_entity_ids": signal.get("referenced_entity_ids"),
             },
             "evidence": evidence_list,
@@ -248,7 +248,9 @@ def construct_bundle(validated_call_1_output: dict, canonical: dict, entity_id_m
             "theme": {
                 "theme_id": theme.get("theme_id"),
                 "title": theme.get("title"),
-                "description": theme.get("description"),
+                "framing": theme.get("framing"),
+                "what_this_theme_must_resolve": theme.get("what_this_theme_must_resolve"),
+                "supporting_signal_ids": theme.get("supporting_signal_ids"),
                 "referenced_entity_ids": theme.get("referenced_entity_ids"),
             },
             "signal_evidence_pairs": grouped_pairs,
@@ -257,6 +259,5 @@ def construct_bundle(validated_call_1_output: dict, canonical: dict, entity_id_m
     app_id = canonical.get("identifiers", {}).get("application_id", "UNKNOWN")
     return {
         "application_id": app_id,
-        "themes": validated_themes,
         "theme_signal_evidence_groups": theme_signal_evidence_groups,
     }

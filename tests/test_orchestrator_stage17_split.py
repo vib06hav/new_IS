@@ -31,15 +31,15 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
     }
     entity_id_map = [{"entity_id": "ACA-001", "collection": "academic_entries", "descriptor": "10TH"}]
     call_1_validated = {
-        "interpreted_signals": [
+        "signals": [
             {
-                "signal_id": "INT-001",
+                "signal_id": "SIG-001",
                 "theme_id": "THEME-001",
                 "title": "Signal title",
-                "essay_claim": "Essay claim",
-                "evidence_observation": "Evidence",
-                "tension_or_coherence": "TENSION - grounded",
-                "interview_hook": "Hook",
+                "evidence_anchor": "Evidence anchor",
+                "direct_read": "Direct read",
+                "what_remains_open": "What remains open",
+                "why_it_matters": "Why it matters",
                 "referenced_entity_ids": ["ACA-001"],
                 "supporting_det_signal_ids": ["DET-001"],
             }
@@ -48,7 +48,9 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
             {
                 "theme_id": "THEME-001",
                 "title": "Theme title",
-                "description": "Theme description",
+                "framing": "Theme framing",
+                "what_this_theme_must_resolve": "Theme resolution",
+                "supporting_signal_ids": ["SIG-001"],
                 "referenced_entity_ids": ["ACA-001"],
             }
         ],
@@ -61,7 +63,7 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
                 "theme": call_1_validated["themes"][0],
                 "signal_evidence_pairs": [
                     {
-                        "signal": call_1_validated["interpreted_signals"][0],
+                        "signal": call_1_validated["signals"][0],
                         "evidence": [{"entity_id": "ACA-001", "collection": "academic_entries", "content": {}}],
                     }
                 ],
@@ -82,7 +84,7 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
         "page_1_background_profile": {"identity": {}},
         "page_2_academic_and_engagement": {"academic_records": []},
         "page_3_essays": {"essays": []},
-        "page_4_focus_themes": {"themes": call_1_validated["themes"]},
+        "page_4_focus_areas": {"themes": call_1_validated["themes"], "signals": call_1_validated["signals"]},
         "page_5_question_groups": {"question_groups": question_groups_validated["question_groups"]},
     }
 
@@ -144,6 +146,8 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
     assert construct_bundle_mock.call_args.args[0] == call_1_validated
     assert assemble_ros_mock.call_args.kwargs["themes"] == call_1_validated["themes"]
     assert assemble_ros_mock.call_args.kwargs["question_groups"] == question_groups_validated["question_groups"]
-    assert result["ros_v1"]["page_4_focus_themes"]["themes"] == call_1_validated["themes"]
+    assert result["ros_v1"]["page_4_focus_areas"]["themes"] == call_1_validated["themes"]
+    assert result["ros_v1"]["page_4_focus_areas"]["signals"] == call_1_validated["signals"]
     assert result["ros_v1"]["page_5_question_groups"]["question_groups"] == question_groups_validated["question_groups"]
     assert result["ros_v1"]["signal_data"]["themes"] == call_1_validated["themes"]
+    assert result["ros_v1"]["signal_data"]["signals"] == call_1_validated["signals"]

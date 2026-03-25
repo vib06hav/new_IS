@@ -319,6 +319,7 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
     # 12. ROS Assembler
     logger.debug("ROS Assembler")
     validated_themes = validated_call_1_output["themes"]
+    validated_signals = validated_call_1_output["signals"]
     validated_question_groups = val_res_2["sanitized_output"]["question_groups"]
     
     report_meta = {
@@ -333,6 +334,7 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
         page_2=page_2,
         page_3=page_3,
         themes=validated_themes,
+        signals=validated_signals,
         question_groups=validated_question_groups,
         report_metadata=report_meta
     )
@@ -341,7 +343,7 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
     synthesis_output = ros_document.copy()
     synthesis_output["signal_data"] = {
         "deterministic_signals": deterministic_signals,
-        "interpreted_signals": validated_call_1_output["interpreted_signals"],
+        "signals": validated_signals,
         "themes": validated_themes,
     }
 

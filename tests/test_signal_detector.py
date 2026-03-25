@@ -305,18 +305,19 @@ def test_build_projection_allows_empty_deterministic_signals_and_omits_academic_
 def test_validate_signals_rejects_invented_det_ids_when_signal_set_is_empty():
     raw_output = json.dumps(
         {
-            "interpreted_signals": [
+            "signals": [
                 {
-                    "signal_id": "INT-001",
+                    "signal_id": "SIG-001",
                     "title": "Grounded title",
-                    "essay_claim": "Quoted essay claim",
-                    "evidence_observation": "Observed evidence",
-                    "tension_or_coherence": "COHERENCE - factual relationship",
-                    "interview_hook": "Specific interview hook",
+                    "evidence_anchor": "Quoted essay claim",
+                    "direct_read": "Observed evidence",
+                    "what_remains_open": "Specific open question",
+                    "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-999"],
                 }
-            ]
+            ],
+            "themes": [],
         }
     )
     entity_id_map = [{"entity_id": "ACA-001", "collection": "academic_entries", "descriptor": "9TH"}]
@@ -333,15 +334,14 @@ def test_validate_signals_rejects_invented_det_ids_when_signal_set_is_empty():
 def test_validate_signals_accepts_themes_and_theme_linkage():
     raw_output = json.dumps(
         {
-            "interpreted_signals": [
+            "signals": [
                 {
-                    "signal_id": "INT-001",
-                    "theme_id": "THEME-001",
+                    "signal_id": "SIG-001",
                     "title": "Grounded title",
-                    "essay_claim": "Quoted essay claim",
-                    "evidence_observation": "Observed evidence",
-                    "tension_or_coherence": "COHERENCE - factual relationship",
-                    "interview_hook": "Specific interview hook",
+                    "evidence_anchor": "Quoted essay claim",
+                    "direct_read": "Observed evidence",
+                    "what_remains_open": "Specific open question",
+                    "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-001"],
                 }
@@ -350,8 +350,9 @@ def test_validate_signals_accepts_themes_and_theme_linkage():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "description": "Grounded theme description",
-                    "referenced_entity_ids": ["ACA-001"],
+                    "framing": "Grounded theme framing",
+                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "supporting_signal_ids": ["SIG-001"],
                 }
             ],
         }
@@ -362,21 +363,22 @@ def test_validate_signals_accepts_themes_and_theme_linkage():
     result = validate_signals(raw_output, entity_id_map, deterministic_signals)
 
     assert result["passed"] is True
-    assert result["sanitized_output"]["interpreted_signals"][0]["theme_id"] == "THEME-001"
+    assert result["sanitized_output"]["signals"][0]["theme_id"] == "THEME-001"
     assert result["sanitized_output"]["themes"][0]["theme_id"] == "THEME-001"
+    assert result["sanitized_output"]["themes"][0]["referenced_entity_ids"] == ["ACA-001"]
 
 
-def test_validate_signals_rejects_missing_signal_theme_id():
+def test_validate_signals_rejects_theme_with_unknown_supporting_signal():
     raw_output = json.dumps(
         {
-            "interpreted_signals": [
+            "signals": [
                 {
-                    "signal_id": "INT-001",
+                    "signal_id": "SIG-001",
                     "title": "Grounded title",
-                    "essay_claim": "Quoted essay claim",
-                    "evidence_observation": "Observed evidence",
-                    "tension_or_coherence": "COHERENCE - factual relationship",
-                    "interview_hook": "Specific interview hook",
+                    "evidence_anchor": "Quoted essay claim",
+                    "direct_read": "Observed evidence",
+                    "what_remains_open": "Specific open question",
+                    "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-001"],
                 }
@@ -385,8 +387,9 @@ def test_validate_signals_rejects_missing_signal_theme_id():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "description": "Grounded theme description",
-                    "referenced_entity_ids": ["ACA-001"],
+                    "framing": "Grounded theme framing",
+                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "supporting_signal_ids": ["SIG-999"],
                 }
             ],
         }
@@ -398,7 +401,7 @@ def test_validate_signals_rejects_missing_signal_theme_id():
 
     assert result["passed"] is False
     assert any(
-        violation["field"] == "interpreted_signals[0].theme_id"
+        violation["type"] == "unknown_supporting_signal_id"
         for violation in result["violations_log"]
     )
 
@@ -406,15 +409,14 @@ def test_validate_signals_rejects_missing_signal_theme_id():
 def test_validate_signals_rejects_orphan_theme():
     raw_output = json.dumps(
         {
-            "interpreted_signals": [
+            "signals": [
                 {
-                    "signal_id": "INT-001",
-                    "theme_id": "THEME-001",
+                    "signal_id": "SIG-001",
                     "title": "Grounded title",
-                    "essay_claim": "Quoted essay claim",
-                    "evidence_observation": "Observed evidence",
-                    "tension_or_coherence": "COHERENCE - factual relationship",
-                    "interview_hook": "Specific interview hook",
+                    "evidence_anchor": "Quoted essay claim",
+                    "direct_read": "Observed evidence",
+                    "what_remains_open": "Specific open question",
+                    "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-001"],
                 }
@@ -423,14 +425,16 @@ def test_validate_signals_rejects_orphan_theme():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "description": "Grounded theme description",
-                    "referenced_entity_ids": ["ACA-001"],
+                    "framing": "Grounded theme framing",
+                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "supporting_signal_ids": ["SIG-001"],
                 },
                 {
                     "theme_id": "THEME-002",
                     "title": "Orphan theme",
-                    "description": "No member signals",
-                    "referenced_entity_ids": ["ACA-001"],
+                    "framing": "No member signals",
+                    "what_this_theme_must_resolve": "No member signals",
+                    "supporting_signal_ids": [],
                 },
             ],
         }
@@ -450,15 +454,14 @@ def test_validate_signals_rejects_orphan_theme():
 def test_validate_signals_rejects_signal_pointing_to_unknown_theme():
     raw_output = json.dumps(
         {
-            "interpreted_signals": [
+            "signals": [
                 {
-                    "signal_id": "INT-001",
-                    "theme_id": "THEME-999",
+                    "signal_id": "SIG-001",
                     "title": "Grounded title",
-                    "essay_claim": "Quoted essay claim",
-                    "evidence_observation": "Observed evidence",
-                    "tension_or_coherence": "COHERENCE - factual relationship",
-                    "interview_hook": "Specific interview hook",
+                    "evidence_anchor": "Quoted essay claim",
+                    "direct_read": "Observed evidence",
+                    "what_remains_open": "Specific open question",
+                    "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-001"],
                 }
@@ -467,8 +470,9 @@ def test_validate_signals_rejects_signal_pointing_to_unknown_theme():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "description": "Grounded theme description",
-                    "referenced_entity_ids": ["ACA-001"],
+                    "framing": "Grounded theme framing",
+                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "supporting_signal_ids": ["SIG-001", "SIG-999"],
                 }
             ],
         }
@@ -480,23 +484,22 @@ def test_validate_signals_rejects_signal_pointing_to_unknown_theme():
 
     assert result["passed"] is False
     assert any(
-        violation["type"] == "broken_linkage"
+        violation["type"] == "unknown_supporting_signal_id"
         for violation in result["violations_log"]
     )
 
 
-def test_validate_signals_rejects_ungrounded_theme_entity_ids():
+def test_validate_signals_rejects_signal_linked_to_multiple_themes():
     raw_output = json.dumps(
         {
-            "interpreted_signals": [
+            "signals": [
                 {
-                    "signal_id": "INT-001",
-                    "theme_id": "THEME-001",
+                    "signal_id": "SIG-001",
                     "title": "Grounded title",
-                    "essay_claim": "Quoted essay claim",
-                    "evidence_observation": "Observed evidence",
-                    "tension_or_coherence": "COHERENCE - factual relationship",
-                    "interview_hook": "Specific interview hook",
+                    "evidence_anchor": "Quoted essay claim",
+                    "direct_read": "Observed evidence",
+                    "what_remains_open": "Specific open question",
+                    "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-001"],
                 }
@@ -505,8 +508,16 @@ def test_validate_signals_rejects_ungrounded_theme_entity_ids():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "description": "Grounded theme description",
-                    "referenced_entity_ids": ["ACA-001", "ACA-002"],
+                    "framing": "Grounded theme framing",
+                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "supporting_signal_ids": ["SIG-001"],
+                },
+                {
+                    "theme_id": "THEME-002",
+                    "title": "Second theme",
+                    "framing": "Second theme framing",
+                    "what_this_theme_must_resolve": "Second theme resolution",
+                    "supporting_signal_ids": ["SIG-001"],
                 }
             ],
         }
@@ -521,7 +532,7 @@ def test_validate_signals_rejects_ungrounded_theme_entity_ids():
 
     assert result["passed"] is False
     assert any(
-        violation["type"] == "ungrounded_theme_entity_id"
+        violation["type"] == "signal_linked_multiple_times"
         for violation in result["violations_log"]
     )
 
@@ -545,8 +556,8 @@ def test_validate_question_groups_accepts_question_groups_only():
     )
     bundle = {
         "themes": [
-            {"theme_id": "THEME-001", "title": "Theme 1", "description": "Desc 1", "referenced_entity_ids": ["ACA-001"]},
-            {"theme_id": "THEME-002", "title": "Theme 2", "description": "Desc 2", "referenced_entity_ids": ["ACA-002"]},
+            {"theme_id": "THEME-001", "title": "Theme 1", "framing": "Frame 1", "what_this_theme_must_resolve": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
+            {"theme_id": "THEME-002", "title": "Theme 2", "framing": "Frame 2", "what_this_theme_must_resolve": "Resolve 2", "supporting_signal_ids": ["SIG-002"], "referenced_entity_ids": ["ACA-002"]},
         ]
     }
 
@@ -573,8 +584,8 @@ def test_validate_question_groups_rejects_missing_theme_coverage():
     )
     bundle = {
         "themes": [
-            {"theme_id": "THEME-001", "title": "Theme 1", "description": "Desc 1", "referenced_entity_ids": ["ACA-001"]},
-            {"theme_id": "THEME-002", "title": "Theme 2", "description": "Desc 2", "referenced_entity_ids": ["ACA-002"]},
+            {"theme_id": "THEME-001", "title": "Theme 1", "framing": "Frame 1", "what_this_theme_must_resolve": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
+            {"theme_id": "THEME-002", "title": "Theme 2", "framing": "Frame 2", "what_this_theme_must_resolve": "Resolve 2", "supporting_signal_ids": ["SIG-002"], "referenced_entity_ids": ["ACA-002"]},
         ]
     }
 
@@ -606,7 +617,7 @@ def test_validate_question_groups_rejects_duplicate_theme_groups():
     )
     bundle = {
         "themes": [
-            {"theme_id": "THEME-001", "title": "Theme 1", "description": "Desc 1", "referenced_entity_ids": ["ACA-001"]},
+            {"theme_id": "THEME-001", "title": "Theme 1", "framing": "Frame 1", "what_this_theme_must_resolve": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
         ]
     }
 
@@ -633,7 +644,7 @@ def test_validate_question_groups_rejects_invented_theme_ids():
     )
     bundle = {
         "themes": [
-            {"theme_id": "THEME-001", "title": "Theme 1", "description": "Desc 1", "referenced_entity_ids": ["ACA-001"]},
+            {"theme_id": "THEME-001", "title": "Theme 1", "framing": "Frame 1", "what_this_theme_must_resolve": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
         ]
     }
 

@@ -46,14 +46,21 @@ Each signal contains these fields:
 - signal_id
 - theme_id
 - title
-- essay_claim
-- evidence_observation
-- tension_or_coherence
-- interview_hook
+- evidence_anchor
+- direct_read
+- what_remains_open
+- why_it_matters
 
-The interview_hook is the most important field. It tells you exactly what the
-interviewer needs to understand that the application cannot answer by itself.
-Your questions must address the interview_hook directly and specifically.
+Each theme contains these fields:
+- theme_id
+- title
+- framing
+- what_this_theme_must_resolve
+
+The most important inputs are:
+- what_remains_open: the unresolved thing the application cannot answer by itself
+- why_it_matters: why that unresolved point would materially change understanding
+- what_this_theme_must_resolve: the coherence frame for the whole question group
 
 ---
 
@@ -61,8 +68,9 @@ HOW TO BUILD QUESTIONS:
 
 For each provided theme, produce exactly one question_group using the same
 theme_id. Each question_group must contain 3 to 4 questions. At least one
-question must directly address the interview_hook of a signal in that theme.
-The others should probe the same territory from different angles.
+question must directly address the what_remains_open of a signal in that theme.
+The others should probe the same territory from different angles while staying
+coherent with what_this_theme_must_resolve.
 
 A question is only acceptable if it meets both of these tests:
   TEST 1 - Could this question only be asked about this specific applicant?
@@ -89,9 +97,8 @@ CONTRAST EXAMPLE - understand the difference:
 Signal context: applicant's essay emphasizes excitement about solving real-world
 problems through technology, but activity profile shows piano, yoga, olympiads,
 and reading - no tech projects or internships.
-Interview hook: what concrete steps has the applicant taken to build or create
-technology beyond coursework, and how do they plan to close the gap between
-stated ambition and demonstrated technical work.
+What remains open: whether the applicant's technology-facing identity is already
+grounded in self-directed technical practice or is still primarily aspirational.
 
 WRONG question:
 "How has your interest in technology developed over time?"
@@ -122,7 +129,7 @@ OUTPUT SCHEMA - return exactly this structure, nothing else:
       "questions": [
         "Question 1 - specific, probing, names something from this application",
         "Question 2 - probes from a different angle",
-        "Question 3 - addresses the interview_hook directly"
+        "Question 3 - directly targets what remains open"
       ]
     }
   ]
@@ -144,8 +151,9 @@ THEME SIGNAL-EVIDENCE BUNDLE:
 ENTITY REFERENCE MAP:
 {json.dumps(entity_id_map, indent=2)}
 
-Before writing any question, re-read the interview_hook field of each signal.
-That is the core of what the interviewer needs to understand.
+Before writing any question, re-read the what_remains_open field of each signal
+and the what_this_theme_must_resolve field of each theme.
+Those are the core of what the interviewer needs to understand.
 Every question must pass both tests: specific to this applicant, and probing
 reasoning rather than requesting elaboration.
 Return exactly valid JSON matching the output schema.

@@ -1,0 +1,22 @@
+{
+  "question_groups": [
+    {
+      "theme_id": "THEME-001",
+      "group_title": "Technology Identity Questions",
+      "questions": [
+        "Your essay makes technology sound central to how you see yourself. Outside coursework, where have you actually built something technical on your own and what happened when it became difficult?",
+        "Your academic record shows very strong structured performance, especially in mathematics. What is a problem you pursued when there was no clear method or answer key, and how did you know what to try next?",
+        "Looking at your current record, what is the strongest evidence you would give that technology is something you do and not only something you want to do?"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "group_title": "Ownership and Agency Questions",
+      "questions": [
+        "In the stray-dog effort, what was one decision you made yourself after residents pushed back, and why did you choose that response instead of another one?",
+        "When you say you initiated that effort with classmates, what part of the work would not have happened if you had stepped away?",
+        "What did that experience teach you about the difference between caring about an issue and actually taking responsibility for it when other people are uncomfortable?"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,312 @@
+{
+  "application_id": "dummy_app_1",
+  "theme_signal_evidence_groups": [
+    {
+      "theme": {
+        "theme_id": "THEME-001",
+        "title": "Aspirational Technologist or Practiced Builder",
+        "framing": "This theme concerns the relationship between the applicant's stated technology identity and their demonstrated lived practice.",
+        "what_this_theme_must_resolve": "Whether the applicant's technology-facing identity is already practiced and self-directed or still primarily aspirational.",
+        "supporting_signal_ids": [
+          "SIG-001",
+          "SIG-002"
+        ],
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-001",
+          "ACT-002",
+          "ACT-003",
+          "ACT-004",
+          "ACA-002",
+          "ACA-003",
+          "ACA-004",
+          "TEST-001"
+        ]
+      },
+      "signal_evidence_pairs": [
+        {
+          "signal": {
+            "signal_id": "SIG-001",
+            "theme_id": "THEME-001",
+            "title": "Tech Identity Without Visible Practice",
+            "evidence_anchor": "The engineering essay makes technology central to the applicant's identity and future direction.",
+            "direct_read": "The record contains strong technology-facing language but little visible self-directed technical building work in activities.",
+            "what_remains_open": "Whether the applicant's technology-facing identity is already grounded in lived practice or still mostly aspirational.",
+            "why_it_matters": "Resolving this changes how the applicant's entire technology-facing self-presentation should be understood.",
+            "referenced_entity_ids": [
+              "ESS-001",
+              "ACT-001",
+              "ACT-002",
+              "ACT-003",
+              "ACT-004"
+            ]
+          },
+          "evidence": [
+            {
+              "entity_id": "ESS-001",
+              "collection": "essay_entries",
+              "content": {
+                "essay_identifier": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+                "raw_text": "From a young age, I've been fascinated by how things work-whether it's the logic behind mobile apps, the science in smart devices, or the\ninnovation that powers everyday life. What excites me most about engineering and technology is the ability to solve real-world problems\nusing creativity and logic. It's not just about building machines or writing code-it's about designing solutions that can create meaningful\nimpact. The ever-evolving nature of tech, combined with its potential to transform industries from healthcare to climate, makes this field\nincredibly exciting for me. I believe my curiosity, collaborative mindset, and eagerness to learn make me a strong fit for Plaksha's B.Tech program. I enjoy working on\nprojects, asking questions, and applying what I learn to practical challenges. I also have a keen interest in interdisciplinary learning-blending\ntech with design, data, and human behavior-which I understand is core to Plaksha's approach. What draws me most to Plaksha is its focus\non innovation, entrepreneurship, and societal impact. I'm excited by the opportunity to learn from faculty, mentors, and peers who are\npassionate about building a better future through technology. Plaksha's hands-on curriculum, values-driven mission, and emphasis on\nleadership resonate deeply with my aspirations.",
+                "word_count": 196
+              }
+            },
+            {
+              "entity_id": "ACT-001",
+              "collection": "activity_entries",
+              "content": {
+                "activity_type": "extracurricular",
+                "activity_name": "Music Piano",
+                "level": "International",
+                "duration": "5"
+              }
+            },
+            {
+              "entity_id": "ACT-002",
+              "collection": "activity_entries",
+              "content": {
+                "activity_type": "extracurricular",
+                "activity_name": "Yoga",
+                "level": "Personal",
+                "duration": "2"
+              }
+            },
+            {
+              "entity_id": "ACT-003",
+              "collection": "activity_entries",
+              "content": {
+                "activity_type": "co_curricular",
+                "activity_name": "Olympiads",
+                "level": "District",
+                "duration": "7",
+                "description_raw": "Has been regularly\nparticipating in Maths,\nScience Olympiads at\nschool"
+              }
+            },
+            {
+              "entity_id": "ACT-004",
+              "collection": "activity_entries",
+              "content": {
+                "activity_type": "co_curricular",
+                "activity_name": "Reading",
+                "level": "Personal",
+                "duration": "6",
+                "description_raw": "Is an ardent reader of\nfiction and non fiction\nbooks on personal\ndevelopment etc"
+              }
+            }
+          ]
+        },
+        {
+          "signal": {
+            "signal_id": "SIG-002",
+            "theme_id": "THEME-001",
+            "title": "Strong Scores, Real Reasoning Unknown",
+            "evidence_anchor": "The academic and test record shows very high performance, especially in mathematics.",
+            "direct_read": "The applicant performs strongly in structured academic problem-solving across school and JEE Mains.",
+            "what_remains_open": "How the applicant reasons when the problem is open-ended, ambiguous, or not exam-shaped.",
+            "why_it_matters": "This determines whether the applicant's evident capability extends beyond structured performance settings.",
+            "referenced_entity_ids": [
+              "ACA-002",
+              "ACA-003",
+              "ACA-004",
+              "TEST-001"
+            ]
+          },
+          "evidence": [
+            {
+              "entity_id": "ACA-002",
+              "collection": "academic_entries",
+              "content": {
+                "academic_level": "10TH",
+                "school_name": "Jayshree Periwal International School",
+                "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+                "academic_year": "2023",
+                "grading_mode": "percentage",
+                "score_raw": "96.6",
+                "subject_entries": [
+                  {
+                    "subject_name": "Mathematics",
+                    "score_raw": "98",
+                    "max_score_raw": "100"
+                  },
+                  {
+                    "subject_name": "Science",
+                    "score_raw": "95",
+                    "max_score_raw": "100"
+                  },
+                  {
+                    "subject_name": "English",
+                    "score_raw": "95",
+                    "max_score_raw": "100"
+                  },
+                  {
+                    "subject_name": "Hindi",
+                    "score_raw": "95",
+                    "max_score_raw": "100"
+                  },
+                  {
+                    "subject_name": "Artificial Intelligence",
+                    "score_raw": "100",
+                    "max_score_raw": "100"
+                  }
+                ]
+              }
+            },
+            {
+              "entity_id": "ACA-003",
+              "collection": "academic_entries",
+              "content": {
+                "academic_level": "11TH",
+                "school_name": "Jayshree Periwal International School",
+                "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+                "academic_year": "2024",
+                "grading_mode": "percentage",
+                "score_raw": "97.9",
+                "subject_entries": [
+                  {
+                    "subject_name": "Mathematics",
+                    "score_raw": "150",
+                    "max_score_raw": "150"
+                  },
+                  {
+                    "subject_name": "Physics",
+                    "score_raw": "58",
+                    "max_score_raw": "60"
+                  },
+                  {
+                    "subject_name": "Chemistry",
+                    "score_raw": "60",
+                    "max_score_raw": "60"
+                  },
+                  {
+                    "subject_name": "Sanskrit",
+                    "score_raw": "95",
+                    "max_score_raw": "100"
+                  },
+                  {
+                    "subject_name": "English",
+                    "score_raw": "97",
+                    "max_score_raw": "100"
+                  }
+                ]
+              }
+            },
+            {
+              "entity_id": "ACA-004",
+              "collection": "academic_entries",
+              "content": {
+                "academic_level": "12TH",
+                "school_name": "Jayshree Periwal International School",
+                "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+                "academic_year": "2025",
+                "grading_mode": "percentage",
+                "score_raw": "97.4",
+                "subject_entries": [
+                  {
+                    "subject_name": "Mathematics",
+                    "score_raw": "144",
+                    "max_score_raw": "150"
+                  },
+                  {
+                    "subject_name": "Physics",
+                    "score_raw": "52",
+                    "max_score_raw": "60"
+                  },
+                  {
+                    "subject_name": "Chemistry",
+                    "score_raw": "56",
+                    "max_score_raw": "60"
+                  },
+                  {
+                    "subject_name": "Sanskrit",
+                    "score_raw": "99",
+                    "max_score_raw": "100"
+                  },
+                  {
+                    "subject_name": "English",
+                    "score_raw": "96",
+                    "max_score_raw": "100"
+                  }
+                ]
+              }
+            },
+            {
+              "entity_id": "TEST-001",
+              "collection": "test_entries",
+              "content": {
+                "test_name": "JEE Mains",
+                "total_score": "99.01",
+                "sectional_scores": [
+                  {
+                    "label": "Physics Percentile",
+                    "raw_score": "96.67"
+                  },
+                  {
+                    "label": "Maths Percentile",
+                    "raw_score": "99.33"
+                  },
+                  {
+                    "label": "Chemistry Percentile",
+                    "raw_score": "97.69"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "theme": {
+        "theme_id": "THEME-002",
+        "title": "Initiative, Ownership, and Real Agency",
+        "framing": "This theme concerns whether the applicant's stories of contribution reflect genuine ownership under friction rather than surface participation.",
+        "what_this_theme_must_resolve": "How the applicant actually acts, decides, and adapts when responsibility becomes real.",
+        "supporting_signal_ids": [
+          "SIG-003"
+        ],
+        "referenced_entity_ids": [
+          "ESS-002",
+          "LEAD-005"
+        ]
+      },
+      "signal_evidence_pairs": [
+        {
+          "signal": {
+            "signal_id": "SIG-003",
+            "theme_id": "THEME-002",
+            "title": "Community Action and Actual Ownership",
+            "evidence_anchor": "The community essay describes initiating a stray-dog support effort with classmates and responding to neighborhood resistance.",
+            "direct_read": "The applicant can narrate a socially grounded initiative involving persistence, persuasion, and coordination.",
+            "what_remains_open": "How much of the decision-making and adaptation in that effort was personally owned by the applicant in practice.",
+            "why_it_matters": "Resolving this changes whether the story reads as real agency or mostly participant-level involvement.",
+            "referenced_entity_ids": [
+              "ESS-002",
+              "LEAD-005"
+            ]
+          },
+          "evidence": [
+            {
+              "entity_id": "ESS-002",
+              "collection": "essay_entries",
+              "content": {
+                "essay_identifier": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+                "raw_text": "Having grown up with a pet dog, I've developed a deep sense of empathy and care for animals. That personal connection inspired me to take\naction when I noticed several stray dogs in my neighborhood struggling with hunger, injuries, and neglect. I initiated a small project with a\nfew classmates to support these animals by organizing feeding drives, arranging basic medical aid through local NGOs, and spreading\nawareness about responsible and humane treatment of strays. One of the major challenges was addressing concerns from some residents who were initially uncomfortable with our activities. There were\nworries about safety and cleanliness. Instead of giving up, I took the time to understand their perspective and created a small awareness\ncampaign. We shared how caring for strays through sterilization and regular feeding could actually make the community safer. We also made\nsure to clean up after every feeding and involved local animal welfare volunteers to lend credibility to our efforts. This experience taught me that leadership is as much about listening and empathy as it is about action. It showed me how\nperseverance-combined with teamwork and a clear sense of purpose-can gradually change mindsets and make a difference. It also\nreinforced that even small initiatives, when pursued with sincerity, can have a positive and lasting impact.",
+                "word_count": 213
+              }
+            },
+            {
+              "entity_id": "LEAD-005",
+              "collection": "activity_entries",
+              "content": {
+                "activity_type": "leadership",
+                "position_title": "School House Captain",
+                "duration": "1",
+                "description_raw": "Was the School House Captain at"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

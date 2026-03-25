@@ -1,0 +1,287 @@
+{
+  "applicant_context": {
+    "preferred_major": "Computer Science and Artificial Intelligence"
+  },
+  "academic_profile": [
+    {
+      "entity_id": "ACA-002",
+      "level": "10TH",
+      "year": "2023",
+      "grading_mode": "percentage",
+      "overall_score": "96.6",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "CENTRAL BOARD OF SECONDARY EDUCATION(CBSE)",
+      "subjects_concise": [
+        {
+          "subject": "Mathematics",
+          "score": "98",
+          "max_score": "100"
+        },
+        {
+          "subject": "Science",
+          "score": "95",
+          "max_score": "100"
+        },
+        {
+          "subject": "English",
+          "score": "95",
+          "max_score": "100"
+        },
+        {
+          "subject": "Hindi",
+          "score": "95",
+          "max_score": "100"
+        },
+        {
+          "subject": "Artificial Intelligence",
+          "score": "100",
+          "max_score": "100"
+        }
+      ]
+    },
+    {
+      "entity_id": "ACA-003",
+      "level": "11TH",
+      "year": "2024",
+      "grading_mode": "percentage",
+      "overall_score": "97.9",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+      "subjects_concise": [
+        {
+          "subject": "Mathematics",
+          "score": "150",
+          "max_score": "150"
+        },
+        {
+          "subject": "Physics",
+          "score": "58",
+          "max_score": "60"
+        },
+        {
+          "subject": "Chemistry",
+          "score": "60",
+          "max_score": "60"
+        },
+        {
+          "subject": "Sanskrit",
+          "score": "95",
+          "max_score": "100"
+        },
+        {
+          "subject": "English",
+          "score": "97",
+          "max_score": "100"
+        }
+      ]
+    },
+    {
+      "entity_id": "ACA-004",
+      "level": "12TH",
+      "year": "2025",
+      "grading_mode": "percentage",
+      "overall_score": "97.4",
+      "school_name": "Jayshree Periwal International School",
+      "board_name": "TELANGANA STATE BOARD OF INTERMEDIATE EDUCATION",
+      "subjects_concise": [
+        {
+          "subject": "Mathematics",
+          "score": "144",
+          "max_score": "150"
+        },
+        {
+          "subject": "Physics",
+          "score": "52",
+          "max_score": "60"
+        },
+        {
+          "subject": "Chemistry",
+          "score": "56",
+          "max_score": "60"
+        },
+        {
+          "subject": "Sanskrit",
+          "score": "99",
+          "max_score": "100"
+        },
+        {
+          "subject": "English",
+          "score": "96",
+          "max_score": "100"
+        }
+      ]
+    }
+  ],
+  "test_profile": [
+    {
+      "entity_id": "TEST-001",
+      "test_name": "JEE Mains",
+      "total_score": "99.01",
+      "sections": [
+        {
+          "label": "Physics Percentile",
+          "score": "96.67"
+        },
+        {
+          "label": "Maths Percentile",
+          "score": "99.33"
+        },
+        {
+          "label": "Chemistry Percentile",
+          "score": "97.69"
+        }
+      ]
+    }
+  ],
+  "essay_profile": [
+    {
+      "entity_id": "ESS-001",
+      "prompt": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?",
+      "text": "From a young age, I've been fascinated by how things work-whether it's the logic behind mobile apps, the science in smart devices, or the innovation that powers everyday life. What excites me most about engineering and technology is the ability to solve real-world problems using creativity and logic. It's not just about building machines or writing code-it's about designing solutions that can create meaningful impact. The ever-evolving nature of tech, combined with its potential to transform industries from healthcare to climate, makes this field incredibly exciting for me. I believe my curiosity, collaborative mindset, and eagerness to learn make me a strong fit for Plaksha's B.Tech program. I enjoy working on projects, asking questions, and applying what I learn to practical challenges. I also have a keen interest in interdisciplinary learning-blending tech with design, data, and human behavior-which I understand is core to Plaksha's approach. What draws me most to Plaksha is its focus on innovation, entrepreneurship, and societal impact. I'm excited by the opportunity to learn from faculty, mentors, and peers who are passionate about building a better future through technology. Plaksha's hands-on curriculum, values-driven mission, and emphasis on leadership resonate deeply with my aspirations."
+    },
+    {
+      "entity_id": "ESS-002",
+      "prompt": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?",
+      "text": "Having grown up with a pet dog, I've developed a deep sense of empathy and care for animals. That personal connection inspired me to take action when I noticed several stray dogs in my neighborhood struggling with hunger, injuries, and neglect. I initiated a small project with a few classmates to support these animals by organizing feeding drives, arranging basic medical aid through local NGOs, and spreading awareness about responsible and humane treatment of strays. One of the major challenges was addressing concerns from some residents who were initially uncomfortable with our activities. There were worries about safety and cleanliness. Instead of giving up, I took the time to understand their perspective and created a small awareness campaign. We shared how caring for strays through sterilization and regular feeding could actually make the community safer. We also made sure to clean up after every feeding and involved local animal welfare volunteers to lend credibility to our efforts. This experience taught me that leadership is as much about listening and empathy as it is about action. It showed me how perseverance-combined with teamwork and a clear sense of purpose-can gradually change mindsets and make a difference. It also reinforced that even small initiatives, when pursued with sincerity, can have a positive and lasting impact."
+    }
+  ],
+  "activity_profile": [
+    {
+      "entity_id": "ACT-001",
+      "type": "extracurricular",
+      "name": "Music Piano",
+      "level": "International",
+      "duration_years": "5"
+    },
+    {
+      "entity_id": "ACT-002",
+      "type": "extracurricular",
+      "name": "Yoga",
+      "level": "Personal",
+      "duration_years": "2"
+    },
+    {
+      "entity_id": "ACT-003",
+      "type": "co_curricular",
+      "name": "Olympiads",
+      "level": "District",
+      "duration_years": "7",
+      "description": "Has been regularly\nparticipating in Maths,\nScience Olympiads at\nschool"
+    },
+    {
+      "entity_id": "ACT-004",
+      "type": "co_curricular",
+      "level": "Personal",
+      "duration_years": "6",
+      "description": "Is an ardent reader of\nfiction and non fiction\nbooks on personal\ndevelopment etc"
+    },
+    {
+      "entity_id": "LEAD-005",
+      "type": "leadership",
+      "position": "School House Captain",
+      "duration_years": "1",
+      "description": "Was the School House Captain at"
+    }
+  ],
+  "entity_id_map": [
+    {
+      "entity_id": "ACA-001",
+      "collection": "academic_entries",
+      "descriptor": "9TH"
+    },
+    {
+      "entity_id": "ACA-002",
+      "collection": "academic_entries",
+      "descriptor": "10TH"
+    },
+    {
+      "entity_id": "ACA-003",
+      "collection": "academic_entries",
+      "descriptor": "11TH"
+    },
+    {
+      "entity_id": "ACA-004",
+      "collection": "academic_entries",
+      "descriptor": "12TH"
+    },
+    {
+      "entity_id": "TEST-001",
+      "collection": "test_entries",
+      "descriptor": "JEE Mains"
+    },
+    {
+      "entity_id": "ESS-001",
+      "collection": "essay_entries",
+      "descriptor": "What excites you about a career in engineering/technology? Why do you think your abilities and skills are a good fit for\nPlaksha's B.Tech program?"
+    },
+    {
+      "entity_id": "ESS-002",
+      "collection": "essay_entries",
+      "descriptor": "Share a time when you contributed to a project or activity that positively affected your school or community. What\nchallenges did you face, and what did you learn about leadership and perseverance?"
+    },
+    {
+      "entity_id": "ACT-001",
+      "collection": "activity_entries",
+      "descriptor": "Music Piano"
+    },
+    {
+      "entity_id": "ACT-002",
+      "collection": "activity_entries",
+      "descriptor": "Yoga"
+    },
+    {
+      "entity_id": "ACT-003",
+      "collection": "activity_entries",
+      "descriptor": "Olympiads"
+    },
+    {
+      "entity_id": "ACT-004",
+      "collection": "activity_entries",
+      "descriptor": "Reading"
+    },
+    {
+      "entity_id": "LEAD-005",
+      "collection": "activity_entries",
+      "descriptor": "School House Captain"
+    }
+  ],
+  "deterministic_signals": [
+    {
+      "signal_id": "DET-001",
+      "signal_type": "academic_transition_event",
+      "observation": "Board changed between 10TH and 11TH.",
+      "referenced_entity_ids": [
+        "ACA-002",
+        "ACA-003"
+      ],
+      "source_collection": "academic_entries"
+    },
+    {
+      "signal_id": "DET-002",
+      "signal_type": "leadership_depth",
+      "observation": "Leadership experience includes the role 'School House Captain' with 1.0-year duration.",
+      "referenced_entity_ids": [
+        "LEAD-005"
+      ],
+      "source_collection": "activity_entries"
+    },
+    {
+      "signal_id": "DET-003",
+      "signal_type": "sustained_commitment",
+      "observation": "Music Piano reached International level participation over 5.0 years.",
+      "referenced_entity_ids": [
+        "ACT-001"
+      ],
+      "source_collection": "activity_entries"
+    },
+    {
+      "signal_id": "DET-004",
+      "signal_type": "sustained_commitment",
+      "observation": "Olympiads reached District level participation over 7.0 years.",
+      "referenced_entity_ids": [
+        "ACT-003"
+      ],
+      "source_collection": "activity_entries"
+    }
+  ]
+}

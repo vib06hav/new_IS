@@ -1,0 +1,94 @@
+{
+  "signals": [
+    {
+      "signal_id": "SIG-001",
+      "title": "Tech Identity Without Visible Practice",
+      "evidence_anchor": "The engineering essay makes technology central to the applicant's identity and future direction.",
+      "direct_read": "The record contains strong technology-facing language but little visible self-directed technical building work in activities.",
+      "what_remains_open": "Whether the applicant's technology-facing identity is already grounded in lived practice or still mostly aspirational.",
+      "why_it_matters": "Resolving this changes how the applicant's entire technology-facing self-presentation should be understood.",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACT-001",
+        "ACT-002",
+        "ACT-003",
+        "ACT-004"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-003",
+        "DET-004"
+      ],
+      "theme_id": "THEME-001"
+    },
+    {
+      "signal_id": "SIG-002",
+      "title": "Strong Scores, Real Reasoning Unknown",
+      "evidence_anchor": "The academic and test record shows very high performance, especially in mathematics.",
+      "direct_read": "The applicant performs strongly in structured academic problem-solving across school and JEE Mains.",
+      "what_remains_open": "How the applicant reasons when the problem is open-ended, ambiguous, or not exam-shaped.",
+      "why_it_matters": "This determines whether the applicant's evident capability extends beyond structured performance settings.",
+      "referenced_entity_ids": [
+        "ACA-002",
+        "ACA-003",
+        "ACA-004",
+        "TEST-001"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-001"
+      ],
+      "theme_id": "THEME-001"
+    },
+    {
+      "signal_id": "SIG-003",
+      "title": "Community Action and Actual Ownership",
+      "evidence_anchor": "The community essay describes initiating a stray-dog support effort with classmates and responding to neighborhood resistance.",
+      "direct_read": "The applicant can narrate a socially grounded initiative involving persistence, persuasion, and coordination.",
+      "what_remains_open": "How much of the decision-making and adaptation in that effort was personally owned by the applicant in practice.",
+      "why_it_matters": "Resolving this changes whether the story reads as real agency or mostly participant-level involvement.",
+      "referenced_entity_ids": [
+        "ESS-002",
+        "LEAD-005"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-002"
+      ],
+      "theme_id": "THEME-002"
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "Aspirational Technologist or Practiced Builder",
+      "framing": "This theme concerns the relationship between the applicant's stated technology identity and their demonstrated lived practice.",
+      "what_this_theme_must_resolve": "Whether the applicant's technology-facing identity is already practiced and self-directed or still primarily aspirational.",
+      "supporting_signal_ids": [
+        "SIG-001",
+        "SIG-002"
+      ],
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACT-001",
+        "ACT-002",
+        "ACT-003",
+        "ACT-004",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004",
+        "TEST-001"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "Initiative, Ownership, and Real Agency",
+      "framing": "This theme concerns whether the applicant's stories of contribution reflect genuine ownership under friction rather than surface participation.",
+      "what_this_theme_must_resolve": "How the applicant actually acts, decides, and adapts when responsibility becomes real.",
+      "supporting_signal_ids": [
+        "SIG-003"
+      ],
+      "referenced_entity_ids": [
+        "ESS-002",
+        "LEAD-005"
+      ]
+    }
+  ]
+}

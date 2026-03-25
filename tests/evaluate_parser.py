@@ -40,7 +40,7 @@ def main():
                 "page_1_background_profile": page_1,
                 "page_2_academic_and_engagement": page_2,
                 "page_3_essays": page_3,
-                "page_4_focus_themes": {"themes": []},
+                "page_4_focus_areas": {"themes": [], "signals": []},
                 "page_5_question_groups": {"question_groups": []}
             }
         else:
