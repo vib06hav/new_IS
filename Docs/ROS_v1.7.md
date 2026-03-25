@@ -70,8 +70,8 @@ All six keys are required. No key may be absent. No additional top-level keys ma
 | Page 1 | `page_1_background_profile` | Canonical projection | Deterministic |
 | Page 2 | `page_2_academic_and_engagement` | Canonical projection | Deterministic |
 | Page 3 | `page_3_essays` | Canonical projection | Deterministic |
-| Page 4 | `page_4_focus_themes` | LLM Call 2 (validated) | Signal-guided synthesis |
-| Page 5 | `page_5_question_groups` | LLM Call 2 (validated) | Signal-guided synthesis |
+| Page 4 | `page_4_focus_themes` | LLM Call 1 themes (validated) | Signal-guided synthesis |
+| Page 5 | `page_5_question_groups` | LLM Call 2 question groups (validated) | Signal-guided synthesis |
 
 Pages 1–3 and Pages 4–5 are produced through entirely separate pipeline paths and merged only at the ROS Assembly step.
 
@@ -402,7 +402,7 @@ Highlights are character-span annotations computed deterministically by the ROS 
 
 ### 9.1 Provenance
 
-Page 4 is produced by LLM Call 2 (Agent 16) and validated by the Policy Guard before inclusion in the ROS artifact. In Stage 1.7, Page 4 is the product of signal-guided synthesis: LLM Call 2 receives a validated signal-evidence bundle — not the raw canonical projection — and derives themes from interpreted signals that are themselves grounded in deterministic observations from canonical data. This provides a traceable chain from canonical evidence to interview guidance.
+Page 4 is produced by LLM Call 1 (Agent 14) and validated by the Policy Guard before inclusion in the ROS artifact. In Stage 1.7, Page 4 is the product of signal-guided synthesis: LLM Call 1 reads the canonical projection and deterministic signals, then emits themes together with interpreted signals. This provides a traceable chain from canonical evidence to interview guidance.
 
 This provenance note is informational. It does not change the Page 4 schema.
 
@@ -434,10 +434,10 @@ This provenance note is informational. It does not change the Page 4 schema.
 
 ### 9.4 Production Rules
 
-- Page 4 is populated directly from validated LLM Call 2 output — no reformatting, no renaming, no restructuring by the ROS Assembly step
+- Page 4 is populated directly from validated LLM Call 1 theme output — no reformatting, no renaming, no restructuring by the ROS Assembly step
 - Every `referenced_entity_id` has been validated by the Policy Guard against the entity ID map before the ROS is assembled
 - No evaluative language is present — validated by the Policy Guard before the ROS is assembled
-- If LLM Call 2 validation fails, Page 4 is not produced and no ROS artifact is assembled
+- If LLM Call 1 validation fails, Page 4 is not produced and no ROS artifact is assembled
 
 ---
 
@@ -445,7 +445,7 @@ This provenance note is informational. It does not change the Page 4 schema.
 
 ### 10.1 Provenance
 
-Page 5 is produced by LLM Call 2 (Agent 16) in the same call that produces Page 4. The same signal-guided provenance applies. Question groups are linked to the themes in Page 4 via `theme_id`.
+Page 5 is produced by LLM Call 2 (Agent 16). The same signal-guided provenance applies, but Call 2 now consumes pre-validated themes from Call 1 rather than inventing them. Question groups are linked to the themes in Page 4 via `theme_id`.
 
 ### 10.2 Full Schema
 
@@ -473,7 +473,7 @@ Page 5 is produced by LLM Call 2 (Agent 16) in the same call that produces Page 
 
 ### 10.4 Production Rules
 
-- Page 5 is populated directly from validated LLM Call 2 output — no reformatting or restructuring
+- Page 5 is populated directly from validated LLM Call 2 question-group output — no reformatting or restructuring
 - Every `theme_id` in Page 5 has been validated against the themes defined in Page 4 before the ROS is assembled
 - No evaluative language is present — validated by the Policy Guard
 - Questions must be exploratory — they invite the applicant to describe, explain, or reflect. They do not demand justification of grades, imply deficiency, or use comparative language
@@ -529,7 +529,8 @@ The ROS v1 artifact is assembled by the ROS Assembly Step (`app/ros/assembler.py
 Assembly merges:
 - `report_metadata` — system-generated at assembly time
 - `page_1_background_profile`, `page_2_academic_and_engagement`, `page_3_essays` — from the deterministic ROS projection (produced before the signal pipeline begins)
-- `page_4_focus_themes`, `page_5_question_groups` — from validated LLM Call 2 output
+- `page_4_focus_themes` — from validated LLM Call 1 themes
+- `page_5_question_groups` — from validated LLM Call 2 question groups
 
 The ROS Assembly Step does not transform, reformat, or reinterpret any page content. It places each page into the top-level structure as-is.
 
@@ -549,7 +550,7 @@ If any condition is not met, no ROS artifact is assembled and no partial artifac
 | Five-page structure — all pages present in every assembled ROS | ✅ |
 | `report_version` is always `"ROS_v1"` | ✅ |
 | Pages 1–3 are deterministic — no LLM involvement | ✅ |
-| Pages 4–5 are produced by LLM Call 2 only — validated before inclusion | ✅ |
+| Page 4 is produced by validated LLM Call 1 themes and Page 5 by validated LLM Call 2 question groups | ✅ |
 | All entity IDs in Pages 4–5 validated against entity ID map | ✅ |
 | No evaluative language in any page — validated by Policy Guard | ✅ |
 | `TST-###` prefix for all test entries | ✅ |

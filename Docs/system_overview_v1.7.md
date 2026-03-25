@@ -144,7 +144,7 @@ Return ROS v1
 | Signal Interpretation | Agent 14 | LLM — Call 1 | Analyzes projection and signals; produces interpreted signal collection |
 | Signal Validation | Policy Guard | Deterministic | Validates Call 1 output — schema, entity IDs, language |
 | Bundle Construction | Agent 15 | Deterministic | Pairs validated signals with canonical evidence; produces signal–evidence bundle |
-| Interview Generation | Agent 16 | LLM — Call 2 | Transforms signal–evidence bundle into themes and question groups |
+| Interview Generation | Agent 16 | LLM — Call 2 | Transforms theme-first signal–evidence bundle into question groups |
 | Output Validation | Policy Guard | Deterministic | Validates Call 2 output — schema, entity IDs, language |
 | ROS Assembly | ROS Assembler | Deterministic | Merges deterministic Pages 1–3 with LLM-generated Pages 4–5 |
 
@@ -236,12 +236,12 @@ ROS v1 is a five-page structured JSON artifact. Each page has a defined schema a
 | Page 1 | Background Profile | Canonical projection via ROS Projector | Deterministic |
 | Page 2 | Academic and Engagement Profile | Canonical projection via ROS Projector | Deterministic |
 | Page 3 | Essays | Canonical projection via ROS Projector | Deterministic |
-| Page 4 | Focus Themes | LLM Call 2 output (validated) | Signal-guided synthesis |
-| Page 5 | Question Groups | LLM Call 2 output (validated) | Signal-guided synthesis |
+| Page 4 | Focus Themes | LLM Call 1 themes (validated) | Signal-guided synthesis |
+| Page 5 | Question Groups | LLM Call 2 question groups (validated) | Signal-guided synthesis |
 
 Pages 1–3 are produced entirely without LLM involvement. They are deterministic projections of canonical data assigned stable entity IDs by the ROS projector.
 
-Pages 4–5 are produced by LLM Call 2 and reflect interview themes and question groups derived from the validated signal–evidence bundle. They carry entity ID references back to the canonical entries that support each theme, providing a traceable link from interview guidance to source applicant data.
+Page 4 is produced by validated LLM Call 1 themes, and Page 5 is produced by validated LLM Call 2 question groups. Together they reflect interview guidance derived from the validated theme-first signal–evidence bundle. They carry entity ID references back to the canonical entries that support each theme, providing a traceable link from interview guidance to source applicant data.
 
 ### 7.2 What LLM Synthesis Does Not Do
 
@@ -275,9 +275,9 @@ The system makes exactly two LLM calls per application. This boundary is absolut
 
 ### 8.2 LLM Call 2 — Interview Generation
 
-- **Input:** Validated signal–evidence bundle + entity ID map
-- **Output:** Themes (`page_4_focus_themes`) and question groups (`page_5_question_groups`)
-- **Permitted:** Structured interview themes and exploratory questions grounded in signals
+- **Input:** Validated theme-first signal–evidence bundle + entity ID map
+- **Output:** Question groups (`page_5_question_groups`)
+- **Permitted:** Structured exploratory questions grounded in pre-validated themes and signals
 - **Prohibited:** Evaluative language, new facts, invented entity IDs, rewritten essay content, admissions commentary
 
 ### 8.3 What Neither Call May Do

@@ -585,10 +585,22 @@ If any check fails, the pipeline is halted and the failure is logged. The projec
   "interpreted_signals": [
     {
       "signal_id": "INT-###",
+      "theme_id": "THEME-###",
       "title": "string",
-      "description": "string",
+      "essay_claim": "string",
+      "evidence_observation": "string",
+      "tension_or_coherence": "string",
+      "interview_hook": "string",
       "referenced_entity_ids": ["string"],
       "supporting_det_signal_ids": ["string"]
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "THEME-###",
+      "title": "string",
+      "description": "string",
+      "referenced_entity_ids": ["string"]
     }
   ]
 }
@@ -597,16 +609,17 @@ If any check fails, the pipeline is halted and the failure is logged. The projec
 Field rules:
 
 - `signal_id`: Format `INT-###`, numbered sequentially from `INT-001`, unique within the collection
+- `theme_id`: Valid theme identifier defined in the same Call 1 response.
 - `title`: Neutral, concise label for the interpreted signal. No evaluative language.
-- `description`: Factual behavioral observation grounded in evidence. No evaluative language. No new facts.
+- `essay_claim`, `evidence_observation`, `tension_or_coherence`, `interview_hook`: Structured reasoning fields grounding the signal and the eventual interview line of inquiry.
 - `referenced_entity_ids`: Must reference only entity IDs provided in the projection. No invented IDs.
 - `supporting_det_signal_ids`: Must reference only signal IDs from the deterministic signal collection. No invented IDs.
+- `themes[]`: Validated applicant-specific interview territories that Call 2 must reuse.
 
 **LLM Call 1 must not produce:**
 
-- Interview questions of any kind
+- Interview questions or question groups of any kind
 - Narrative summaries
-- Thematic groupings
 - Evaluative language (prohibited language list in Section 15 of this document)
 - New facts not present in canonical data
 - Invented entity IDs
@@ -642,13 +655,19 @@ Field rules:
 
 **Structural validation:**
 - Response is valid JSON
-- `interpreted_signals` key is present
-- Each signal contains all required fields: `signal_id`, `title`, `description`, `referenced_entity_ids`, `supporting_det_signal_ids`
+- `interpreted_signals` and `themes` keys are present
+- Each signal contains all required fields: `signal_id`, `theme_id`, `title`, `essay_claim`, `evidence_observation`, `tension_or_coherence`, `interview_hook`, `referenced_entity_ids`, `supporting_det_signal_ids`
+- Each theme contains all required fields: `theme_id`, `title`, `description`, `referenced_entity_ids`
 - No required field is null or empty
 
 **Signal ID validation:**
 - All `signal_id` values follow the `INT-###` format
 - No duplicate `signal_id` values exist
+
+**Theme ID validation:**
+- All `theme_id` values in `themes[]` follow the `THEME-###` format
+- Every `interpreted_signals[].theme_id` references a defined theme
+- Every theme must be referenced by at least one signal
 
 **Entity ID validation:**
 - Every `referenced_entity_id` in every signal exists in the entity ID map provided to Agent 14
@@ -659,13 +678,13 @@ Field rules:
 - No invented deterministic signal IDs are present
 
 **Language validation:**
-- No prohibited term appears in any `title` or `description` field
+- No prohibited term appears in any signal/title field or in any theme title/description field
 - Prohibited language list in Section 15 of this document
 
 **On validation success:**
-- Produces validated interpreted signal collection
+- Produces validated interpreted signal and theme collections
 - Produces structured violations log confirming zero violations
-- Passes validated signals to Agent 15
+- Passes validated Call 1 output to Agent 15
 
 **On validation failure:**
 - Entire signal collection is rejected — no partial acceptance
@@ -732,19 +751,41 @@ Field rules:
 ```json
 {
   "application_id": "string",
-  "signal_evidence_pairs": [
+  "themes": [
     {
-      "signal": {
-        "signal_id": "INT-###",
+      "theme_id": "THEME-###",
+      "title": "string",
+      "description": "string",
+      "referenced_entity_ids": ["string"]
+    }
+  ],
+  "theme_signal_evidence_groups": [
+    {
+      "theme": {
+        "theme_id": "THEME-###",
         "title": "string",
         "description": "string",
         "referenced_entity_ids": ["string"]
       },
-      "evidence": [
+      "signal_evidence_pairs": [
         {
-          "entity_id": "string",
-          "collection": "string",
-          "content": {}
+          "signal": {
+            "signal_id": "INT-###",
+            "theme_id": "THEME-###",
+            "title": "string",
+            "essay_claim": "string",
+            "evidence_observation": "string",
+            "tension_or_coherence": "string",
+            "interview_hook": "string",
+            "referenced_entity_ids": ["string"]
+          },
+          "evidence": [
+            {
+              "entity_id": "string",
+              "collection": "string",
+              "content": {}
+            }
+          ]
         }
       ]
     }
@@ -784,10 +825,10 @@ Field rules:
 
 - Make exactly one LLM call per application
 - Provide the signal-evidence bundle and entity ID map to the LLM
-- Receive structured themes and question groups output from the LLM
+- Receive structured question-group output from the LLM
 - Pass raw LLM output to the Policy Guard for validation — Agent 16 does not validate the output itself
 
-**LLM Call 2 is the presentation engine.** Its sole function is to transform validated, evidence-grounded signals into structured interview themes and question groups for the interviewer.
+**LLM Call 2 is the presentation engine.** Its sole function is to transform validated, pre-grouped theme/signal evidence into structured interview question groups for the interviewer.
 
 **LLM Call 2 does not receive:**
 
@@ -801,14 +842,6 @@ Field rules:
 
 ```json
 {
-  "themes": [
-    {
-      "theme_id": "THEME-###",
-      "title": "string",
-      "description": "string",
-      "referenced_entity_ids": ["string"]
-    }
-  ],
   "question_groups": [
     {
       "theme_id": "THEME-###",
@@ -821,9 +854,9 @@ Field rules:
 
 Field rules:
 
-- `theme_id`: Unique identifier per theme. Format `THEME-###`.
-- All `referenced_entity_ids` must exist in the entity ID map provided to Agent 16
-- Each `question_groups` entry must reference a valid `theme_id` from the `themes` array
+- `theme_id`: Must reuse a valid theme ID supplied in the input bundle. Format `THEME-###`.
+- Each `question_groups` entry must reference a valid provided `theme_id`
+- Exactly one question group must be produced per provided theme
 - Questions must be open-ended and exploratory
 
 **LLM Call 2 must not produce:**
@@ -831,7 +864,7 @@ Field rules:
 - Evaluative language (prohibited language list in Section 15 of this document)
 - New facts not present in the signal-evidence bundle
 - Invented entity IDs
-- Invented theme IDs referenced in question groups but not defined in themes
+- Invented theme IDs referenced in question groups
 - Admissions commentary
 - Comparative language between applicants
 - Predictions or likelihood statements
@@ -850,7 +883,6 @@ Field rules:
 
 | LLM Output Field | ROS Page |
 |---|---|
-| `themes[]` | `page_4_focus_themes` |
 | `question_groups[]` | `page_5_question_groups` |
 
 **Output:** Raw LLM response (passed immediately to Policy Guard — Call 2 invocation)
@@ -866,7 +898,8 @@ Field rules:
 **Input:**
 
 - ROS Pages 1–3 (from ROS Projection Layer)
-- Validated ROS Pages 4–5 content (from Policy Guard — Call 2 invocation)
+- Validated Page 4 themes (from Policy Guard — Call 1 invocation)
+- Validated Page 5 question groups (from Policy Guard — Call 2 invocation)
 - `report_metadata`
 
 **Responsibilities:**

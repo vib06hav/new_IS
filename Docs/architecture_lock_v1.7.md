@@ -76,7 +76,7 @@ Persist Canonical + ROS v1
 
 **Policy Guard** — The deterministic validation module (`policy/guard.py`) that enforces prohibited language rules and entity ID reference validity. Invoked after both LLM calls.
 
-**ROS v1** — The final five-page output artifact. Pages 1–3 are produced deterministically. Pages 4–5 are produced by LLM Call 2 and validated before inclusion.
+**ROS v1** — The final five-page output artifact. Pages 1–3 are produced deterministically. Page 4 is produced by validated LLM Call 1 themes, and Page 5 is produced by validated LLM Call 2 question groups.
 
 ---
 
@@ -114,7 +114,7 @@ The system permits exactly two LLM calls per application. No more, no fewer.
 
 **LLM Call 2 — Interview Generation:**
 - Receives the validated signal-evidence bundle only
-- Produces ROS Pages 4–5 content (themes and question groups)
+- Produces ROS Page 5 content (question groups only)
 - Does not receive the canonical projection
 - Does not receive raw Call 1 output
 
@@ -314,7 +314,7 @@ Specifically:
 - No iterative refinement loop involving an LLM is permitted
 - No intermediate LLM reasoning is stored and reused across calls
 
-The only permissible data flow from Call 1 to Call 2 is through the validated signal-evidence bundle, constructed deterministically by the bundle construction step. This is a structured data handoff, not a reasoning chain.
+The only permissible data flow from Call 1 to Call 2 is through the validated theme-first signal-evidence bundle, constructed deterministically by the bundle construction step. This is a structured data handoff, not a reasoning chain.
 
 ---
 

@@ -25,7 +25,7 @@ from app.agents.interview_generator import generate_interview
 from app.llm.client import LLMClientError
 
 # Policy and ROS
-from app.policy.guard import validate_signals, validate_themes
+from app.policy.guard import validate_question_groups, validate_signals
 from app.ros.assembler import assemble_ros_v1
 
 # Models and Utilities
@@ -285,8 +285,8 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
 
     # 8. Agent 15: Bundle Constructor
     logger.debug(f"Agent 15: Bundle Constructor (keys in val_res_1: {list(val_res_1.keys())})")
-    signals_to_bundle = val_res_1["sanitized_output"]["interpreted_signals"]
-    signal_evidence_bundle = construct_bundle(signals_to_bundle, canonical_data, entity_id_map)
+    validated_call_1_output = val_res_1["sanitized_output"]
+    signal_evidence_bundle = construct_bundle(validated_call_1_output, canonical_data, entity_id_map)
     
     # 9. Agent 16: Interview Generator (LLM Call 2)
     logger.debug("Agent 16: Interview Generator (LLM Call 2)")
@@ -307,8 +307,8 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": abort_res, "confidence": agg_conf}
     
     # 10. Policy Guard (Call 2 Validation)
-    logger.debug("Policy Guard: Theme Validation")
-    val_res_2 = validate_themes(raw_call_2_output, entity_id_map, signal_evidence_bundle)
+    logger.debug("Policy Guard: Question Group Validation")
+    val_res_2 = validate_question_groups(raw_call_2_output, entity_id_map, signal_evidence_bundle)
     
     # 11. Abort Path 2
     if not val_res_2["passed"]:
@@ -318,7 +318,8 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
 
     # 12. ROS Assembler
     logger.debug("ROS Assembler")
-    validated_output = val_res_2["sanitized_output"]
+    validated_themes = validated_call_1_output["themes"]
+    validated_question_groups = val_res_2["sanitized_output"]["question_groups"]
     
     report_meta = {
         "application_number": application_id,
@@ -331,7 +332,8 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
         page_1=page_1,
         page_2=page_2,
         page_3=page_3,
-        llm_output=validated_output,
+        themes=validated_themes,
+        question_groups=validated_question_groups,
         report_metadata=report_meta
     )
 
@@ -339,7 +341,8 @@ def run_pipeline(application_id: str, pdf_path: str, db: Session) -> Dict[str, A
     synthesis_output = ros_document.copy()
     synthesis_output["signal_data"] = {
         "deterministic_signals": deterministic_signals,
-        "interpreted_signals": val_res_1["sanitized_output"]["interpreted_signals"]
+        "interpreted_signals": validated_call_1_output["interpreted_signals"],
+        "themes": validated_themes,
     }
 
     # 14-16. Persistence and Finalization

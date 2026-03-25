@@ -1,12 +1,13 @@
 import json
+
 from app.llm.client import generate
 
 
 def build_interview_messages(bundle: dict, entity_id_map: list) -> list[dict]:
     """
     Builds the Stage 1.7 Call 2 prompt messages.
-    Instructs the LLM to generate interview themes and questions grounded
-    in validated signals, using interview_hook fields as primary targeting.
+    Instructs the LLM to generate interview question groups grounded
+    in pre-defined themes and validated signals.
     """
 
     prohibited_terms = [
@@ -17,34 +18,38 @@ def build_interview_messages(bundle: dict, entity_id_map: list) -> list[dict]:
 
     system_prompt = """
 You are preparing an interviewer who has never met this applicant but has read
-their application file. Your job is to produce interview themes and question
-groups that will help the interviewer have a genuinely revealing conversation.
+their application file. Your job is to produce question groups that will help
+the interviewer have a genuinely revealing conversation.
 
 The interviewer has three specific goals for this interview:
-  1. GRIT AND GROWTH — understanding how the applicant responds to setbacks,
+  1. GRIT AND GROWTH - understanding how the applicant responds to setbacks,
      difficulty, and the gap between where they are and where they want to be.
-  2. PROBLEM SOLVING — understanding how the applicant actually reasons through
+  2. PROBLEM SOLVING - understanding how the applicant actually reasons through
      challenges, not just that they solved something.
-  3. TECHNOLOGY ENGAGEMENT — understanding whether the applicant's interest in
+  3. TECHNOLOGY ENGAGEMENT - understanding whether the applicant's interest in
      technology is genuine and self-directed, or primarily stated.
 
-Every theme you produce must serve at least one of these three goals.
-Every question group must contain at least one question that directly probes
-the relevant goal through the specific evidence in the bundle.
+The themes have already been defined for you. Do not invent, merge, split,
+rename, or reinterpret them. Your job is to write exactly one question group
+for each provided theme_id.
 
 ---
 
 YOUR INPUT:
 
-You will receive a signal-evidence bundle. Each entry in signal_evidence_pairs
-contains a signal and its supporting evidence.
+You will receive a theme-first signal-evidence bundle.
+Each theme entry contains:
+- theme: the validated theme you must target
+- signal_evidence_pairs: the validated signals and supporting evidence grouped under that theme
 
-The signal contains these fields:
-- title: the name of the pattern or tension identified
-- essay_claim: what the applicant claimed or implied in their essay
-- evidence_observation: what the activity or academic data actually shows
-- tension_or_coherence: whether these align or conflict, and how
-- interview_hook: the specific line of inquiry an interviewer needs to pursue
+Each signal contains these fields:
+- signal_id
+- theme_id
+- title
+- essay_claim
+- evidence_observation
+- tension_or_coherence
+- interview_hook
 
 The interview_hook is the most important field. It tells you exactly what the
 interviewer needs to understand that the application cannot answer by itself.
@@ -52,34 +57,18 @@ Your questions must address the interview_hook directly and specifically.
 
 ---
 
-HOW TO BUILD THEMES:
-
-Do not create one theme per signal mechanically. Read all signals together and
-group them by which interviewer goal they serve. Signals that both relate to
-the applicant's academic response to challenge should become one theme, not two.
-Aim for 3 to 4 themes that each represent a meaningful interview territory.
-
-Each theme must:
-- Have a title that names something specific to this applicant, not a generic
-  category. "Academic Resilience Amid Board Transition" is specific.
-  "Academic Performance" is not.
-- Have a description that explains what the interviewer is trying to understand
-  about this person, not just what the evidence shows.
-- Reference the entity IDs of the evidence that supports it.
-
----
-
 HOW TO BUILD QUESTIONS:
 
-For each theme, produce 3 to 4 questions. At least one must directly address
-the interview_hook of the signal that drove the theme. The others should probe
-the same territory from different angles.
+For each provided theme, produce exactly one question_group using the same
+theme_id. Each question_group must contain 3 to 4 questions. At least one
+question must directly address the interview_hook of a signal in that theme.
+The others should probe the same territory from different angles.
 
 A question is only acceptable if it meets both of these tests:
-  TEST 1 — Could this question only be asked about this specific applicant?
+  TEST 1 - Could this question only be asked about this specific applicant?
            If the same question could be asked of any applicant in this field,
            it fails. Rewrite it to name something specific.
-  TEST 2 — Does this question probe reasoning or motivation rather than asking
+  TEST 2 - Does this question probe reasoning or motivation rather than asking
            for elaboration? Questions of the form "tell me more about X" or
            "can you elaborate on X" fail. Questions that ask why a specific
            choice was made, how the applicant thought through a specific
@@ -95,11 +84,11 @@ PROHIBITED QUESTION FORMS:
 
 ---
 
-CONTRAST EXAMPLE — understand the difference:
+CONTRAST EXAMPLE - understand the difference:
 
 Signal context: applicant's essay emphasizes excitement about solving real-world
 problems through technology, but activity profile shows piano, yoga, olympiads,
-and reading — no tech projects or internships.
+and reading - no tech projects or internships.
 Interview hook: what concrete steps has the applicant taken to build or create
 technology beyond coursework, and how do they plan to close the gap between
 stated ambition and demonstrated technical work.
@@ -109,12 +98,12 @@ WRONG question:
 
 RIGHT question:
 "Your essay describes excitement about designing solutions that create meaningful
-impact, but your activities outside school are piano, yoga, and reading — where
+impact, but your activities outside school are piano, yoga, and reading - where
 in your life have you actually built or created something technical, even
 informally, and what happened?"
 
 The right question could not have been asked without reading this specific
-application. It names the specific tension. It does not ask for elaboration —
+application. It names the specific tension. It does not ask for elaboration -
 it forces the applicant to account for a gap.
 
 ---
@@ -123,41 +112,33 @@ PROHIBITED TERMS: """ + ", ".join(prohibited_terms) + """
 
 ---
 
-OUTPUT SCHEMA — return exactly this structure, nothing else:
+OUTPUT SCHEMA - return exactly this structure, nothing else:
 
 {
-  "themes": [
-    {
-      "theme_id": "THEME-###",
-      "title": "Specific label naming something particular to this applicant",
-      "description": "What the interviewer is trying to understand about this person through this theme",
-      "referenced_entity_ids": ["Entity IDs that support this theme"]
-    }
-  ],
   "question_groups": [
     {
       "theme_id": "THEME-###",
       "group_title": "Short neutral label for the question group",
       "questions": [
-        "Question 1 — specific, probing, names something from this application",
-        "Question 2 — probes from a different angle",
-        "Question 3 — addresses the interview_hook directly"
+        "Question 1 - specific, probing, names something from this application",
+        "Question 2 - probes from a different angle",
+        "Question 3 - addresses the interview_hook directly"
       ]
     }
   ]
 }
 
-Theme IDs numbered sequentially from THEME-001.
-Every question_group must reference a theme_id defined in themes.
+Reuse the provided theme_id values exactly as given.
 questions must be a flat array of plain strings only.
-Produce one question_group per theme.
+Produce exactly one question_group per provided theme.
+Do not return a themes array.
 """
 
     user_prompt = f"""
-Produce interview themes and question groups for this applicant based on the
-following signal-evidence bundle.
+Produce interview question groups for this applicant based on the
+following theme-first signal-evidence bundle.
 
-SIGNAL-EVIDENCE BUNDLE:
+THEME SIGNAL-EVIDENCE BUNDLE:
 {json.dumps(bundle, indent=2)}
 
 ENTITY REFERENCE MAP:
@@ -165,13 +146,11 @@ ENTITY REFERENCE MAP:
 
 Before writing any question, re-read the interview_hook field of each signal.
 That is the core of what the interviewer needs to understand.
-Every theme must serve at least one of the three interviewer goals:
-grit and growth, problem solving, or technology engagement.
 Every question must pass both tests: specific to this applicant, and probing
 reasoning rather than requesting elaboration.
-
 Return exactly valid JSON matching the output schema.
-Before returning, check each question against the two tests.
+Before returning, check that you produced exactly one question_group for every
+theme_id supplied in the bundle, and no others.
 If any question could be asked of any applicant, rewrite it to name something
 specific from this bundle.
 """
@@ -185,7 +164,7 @@ specific from this bundle.
 def generate_interview(bundle: dict, entity_id_map: list) -> str:
     """
     Agent 16: Interview generator (LLM Call 2).
-    Makes exactly one LLM call to produce interview themes and questions.
+    Makes exactly one LLM call to produce interview question groups.
     Returns the raw response text.
     """
     messages = build_interview_messages(bundle, entity_id_map)

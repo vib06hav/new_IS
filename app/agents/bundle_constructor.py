@@ -2,19 +2,25 @@ import re
 
 from app.config import settings
 
-def construct_bundle(validated_signals: list, canonical: dict, entity_id_map: list) -> dict:
+
+def construct_bundle(validated_call_1_output: dict, canonical: dict, entity_id_map: list) -> dict:
     """
-    Agent 15: Signal–evidence bundle constructor.
-    Pairs validated interpreted signals with their canonical evidence.
-    Includes only non-null relevant fields, omitting internal metadata or artifacts.
+    Agent 15: Theme-first signal-evidence bundle constructor.
+    Groups validated interpreted signals under validated themes and pairs them
+    with canonical evidence. Includes only non-null relevant fields, omitting
+    internal metadata or artifacts.
     """
 
     compact_mode = settings.LLM_PAYLOAD_MODE == "compact"
+    validated_signals = validated_call_1_output.get("interpreted_signals", [])
+    validated_themes = validated_call_1_output.get("themes", [])
 
     def is_artifact(text, is_duration=False, is_position=False):
-        if not text: return True
+        if not text:
+            return True
         s_text = str(text).strip()
-        if not s_text: return True
+        if not s_text:
+            return True
         if is_duration:
             try:
                 float(re.findall(r"\d+\.?\d*", s_text)[0])
@@ -57,6 +63,46 @@ def construct_bundle(validated_signals: list, canonical: dict, entity_id_map: li
         except ValueError:
             return None
 
+    def clean_entry(entry, collection):
+        """Applies field hygiene and null omission to a canonical entry."""
+        metadata_keys = {
+            "entry_id", "confidence_score", "placeholder_flag",
+            "short_response_flag", "result_status", "extraction_confidence",
+            "marking_scheme_raw", "test_date",
+        }
+
+        cleaned = {}
+        for key, value in entry.items():
+            if key in metadata_keys or value is None:
+                continue
+
+            if collection == "activity_entries":
+                if key == "duration" and is_artifact(value, is_duration=True):
+                    continue
+                if key == "position_title" and is_artifact(value, is_position=True):
+                    continue
+                if key in ["activity_name", "roles_and_responsibilities"] and is_artifact(value):
+                    continue
+
+            if isinstance(value, dict):
+                nested = {nk: nv for nk, nv in value.items() if nk not in metadata_keys and nv is not None}
+                if nested:
+                    cleaned[key] = nested
+            elif isinstance(value, list):
+                nested_list = []
+                for item in value:
+                    if isinstance(item, dict):
+                        nested_item = {nk: nv for nk, nv in item.items() if nk not in metadata_keys and nv is not None}
+                        if nested_item:
+                            nested_list.append(nested_item)
+                    else:
+                        nested_list.append(item)
+                if nested_list:
+                    cleaned[key] = nested_list
+            else:
+                cleaned[key] = value
+        return cleaned
+
     def compact_content(entry, collection):
         if collection == "activity_entries":
             parts = []
@@ -93,19 +139,19 @@ def construct_bundle(validated_signals: list, canonical: dict, entity_id_map: li
             subjects = []
             for sub in entry.get("subject_entries", []) or []:
                 score = safe_float(sub.get("score_raw"))
-                mx = safe_float(sub.get("max_score_raw")) or 100.0
+                max_score = safe_float(sub.get("max_score_raw")) or 100.0
                 subject_name = clean_text(sub.get("subject_name"))
                 if score is None or not subject_name:
                     continue
-                subjects.append((score, subject_name, mx))
+                subjects.append((score, subject_name, max_score))
             if subjects:
-                high_score, high_subject, high_max = max(subjects, key=lambda item: (item[0]/item[2])*100)
-                low_score, low_subject, low_max = min(subjects, key=lambda item: (item[0]/item[2])*100)
+                high_score, high_subject, high_max = max(subjects, key=lambda item: (item[0] / item[2]) * 100)
+                low_score, low_subject, low_max = min(subjects, key=lambda item: (item[0] / item[2]) * 100)
                 content["subject_summary"] = {
                     "highest_subject": high_subject,
                     "highest_score": f"{high_score:.1f}/{high_max:.0f}",
                     "lowest_subject": low_subject,
-                    "lowest_score": f"{low_score:.1f}/{low_max:.0f}"
+                    "lowest_score": f"{low_score:.1f}/{low_max:.0f}",
                 }
             return {k: v for k, v in content.items() if v is not None}
 
@@ -136,104 +182,81 @@ def construct_bundle(validated_signals: list, canonical: dict, entity_id_map: li
         if collection == "essay_entries":
             content = {
                 "essay_identifier": entry.get("essay_identifier"),
-                "text_excerpt": truncate_text(entry.get("raw_text"), max_words=300)
+                "text_excerpt": truncate_text(entry.get("raw_text"), max_words=300),
             }
             return {k: v for k, v in content.items() if v is not None}
 
         return clean_entry(entry, collection)
 
-    def clean_entry(entry, collection):
-        """Applies field hygiene and null omission to a canonical entry."""
-        metadata_keys = {
-            "entry_id", "confidence_score", "placeholder_flag", 
-            "short_response_flag", "result_status", "extraction_confidence", 
-            "marking_scheme_raw", "test_date"
-        }
-        
-        cleaned = {}
-        for k, v in entry.items():
-            if k in metadata_keys or v is None:
-                continue
-            
-            # Handle specific collection rules and artifact filtering
-            if collection == "activity_entries":
-                if k == "duration" and is_artifact(v, is_duration=True):
-                    continue
-                if k == "position_title" and is_artifact(v, is_position=True):
-                    continue
-                if k in ["activity_name", "roles_and_responsibilities"] and is_artifact(v):
-                    continue
-            
-            # Recursive clean for nested objects/lists
-            if isinstance(v, dict):
-                nested = {nk: nv for nk, nv in v.items() if nk not in metadata_keys and nv is not None}
-                if nested: cleaned[k] = nested
-            elif isinstance(v, list):
-                nested_list = []
-                for item in v:
-                    if isinstance(item, dict):
-                        ni = {nk: nv for nk, nv in item.items() if nk not in metadata_keys and nv is not None}
-                        if ni: nested_list.append(ni)
-                    else:
-                        nested_list.append(item)
-                if nested_list: cleaned[k] = nested_list
-            else:
-                cleaned[k] = v
-        return cleaned
-
-    # Map entity_id to its canonical entry for fast lookup
     entity_cache = {}
     collection_cursors = {}
     for mapping in entity_id_map:
-        eid = mapping.get("entity_id")
-        coll = mapping.get("collection")
-        entries = canonical.get(coll, [])
-        idx = collection_cursors.get(coll, 0)
+        entity_id = mapping.get("entity_id")
+        collection = mapping.get("collection")
+        entries = canonical.get(collection, [])
+        idx = collection_cursors.get(collection, 0)
         if idx < len(entries):
             entry = entries[idx]
-            entity_cache[eid] = {
-                "entity_id": eid,
-                "collection": coll,
-                "content": compact_content(entry, coll) if compact_mode else clean_entry(entry, coll)
+            entity_cache[entity_id] = {
+                "entity_id": entity_id,
+                "collection": collection,
+                "content": compact_content(entry, collection) if compact_mode else clean_entry(entry, collection),
             }
-        collection_cursors[coll] = idx + 1
+        collection_cursors[collection] = idx + 1
 
-    # Build Signal-Evidence pairs
-    signal_evidence_pairs = []
     already_included_entity_ids = set()
-    for sig in validated_signals:
+
+    def build_signal_evidence_pair(signal: dict) -> dict:
         evidence_list = []
-        for eid in sig.get("referenced_entity_ids", []):
-            if eid in entity_cache:
-                if eid in already_included_entity_ids:
-                    # Include lightweight reference for subsequent occurrences
-                    cache_item = entity_cache[eid]
-                    evidence_list.append({
-                        "entity_id": eid,
-                        "collection": cache_item["collection"],
-                        "content_ref": "see_prior_signal"
-                    })
-                else:
-                    # First occurrence gets full content
-                    evidence_list.append(entity_cache[eid])
-                    already_included_entity_ids.add(eid)
-        
-        signal_evidence_pairs.append({
+        for entity_id in signal.get("referenced_entity_ids", []):
+            if entity_id not in entity_cache:
+                continue
+            if entity_id in already_included_entity_ids:
+                cache_item = entity_cache[entity_id]
+                evidence_list.append({
+                    "entity_id": entity_id,
+                    "collection": cache_item["collection"],
+                    "content_ref": "see_prior_signal",
+                })
+            else:
+                evidence_list.append(entity_cache[entity_id])
+                already_included_entity_ids.add(entity_id)
+
+        return {
             "signal": {
-                "signal_id": sig.get("signal_id"),
-                "title": sig.get("title"),
-                "essay_claim": sig.get("essay_claim"),
-                "evidence_observation": sig.get("evidence_observation"),
-                "tension_or_coherence": sig.get("tension_or_coherence"),
-                "interview_hook": sig.get("interview_hook"),
-                "referenced_entity_ids": sig.get("referenced_entity_ids")
+                "signal_id": signal.get("signal_id"),
+                "theme_id": signal.get("theme_id"),
+                "title": signal.get("title"),
+                "essay_claim": signal.get("essay_claim"),
+                "evidence_observation": signal.get("evidence_observation"),
+                "tension_or_coherence": signal.get("tension_or_coherence"),
+                "interview_hook": signal.get("interview_hook"),
+                "referenced_entity_ids": signal.get("referenced_entity_ids"),
             },
-            "evidence": evidence_list
+            "evidence": evidence_list,
+        }
+
+    theme_signal_evidence_groups = []
+    for theme in validated_themes:
+        theme_id = theme.get("theme_id")
+        grouped_pairs = [
+            build_signal_evidence_pair(signal)
+            for signal in validated_signals
+            if signal.get("theme_id") == theme_id
+        ]
+        theme_signal_evidence_groups.append({
+            "theme": {
+                "theme_id": theme.get("theme_id"),
+                "title": theme.get("title"),
+                "description": theme.get("description"),
+                "referenced_entity_ids": theme.get("referenced_entity_ids"),
+            },
+            "signal_evidence_pairs": grouped_pairs,
         })
 
     app_id = canonical.get("identifiers", {}).get("application_id", "UNKNOWN")
-
     return {
         "application_id": app_id,
-        "signal_evidence_pairs": signal_evidence_pairs
+        "themes": validated_themes,
+        "theme_signal_evidence_groups": theme_signal_evidence_groups,
     }

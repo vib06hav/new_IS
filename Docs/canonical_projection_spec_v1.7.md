@@ -90,7 +90,7 @@ The `cross_references.entity_map` section contains word-level tokens shared acro
 
 ### 3.5 Token Economy
 
-Each LLM call in the Stage 1.7 pipeline must be bounded in scope. LLM Call 1 should reason about the applicant's profile and signals. LLM Call 2 should generate interview guidance from a signal-evidence bundle. Neither call benefits from receiving the full canonical document. The projection layer ensures that each LLM stage receives exactly the context it needs to perform its task — no more, no less.
+Each LLM call in the Stage 1.7 pipeline must be bounded in scope. LLM Call 1 should reason about the applicant's profile and signals and emit themes plus interpreted signals. LLM Call 2 should generate interview guidance from a theme-first signal-evidence bundle. Neither call benefits from receiving the full canonical document. The projection layer ensures that each LLM stage receives exactly the context it needs to perform its task — no more, no less.
 
 ---
 
@@ -682,19 +682,41 @@ The signal-evidence bundle conforms to the following schema:
 ```json
 {
   "application_id": "string",
-  "signal_evidence_pairs": [
+  "themes": [
     {
-      "signal": {
-        "signal_id": "INT-###",
+      "theme_id": "THEME-###",
+      "title": "string",
+      "description": "string",
+      "referenced_entity_ids": ["string"]
+    }
+  ],
+  "theme_signal_evidence_groups": [
+    {
+      "theme": {
+        "theme_id": "THEME-###",
         "title": "string",
         "description": "string",
         "referenced_entity_ids": ["string"]
       },
-      "evidence": [
+      "signal_evidence_pairs": [
         {
-          "entity_id": "string",
-          "collection": "string",
-          "content": {}
+          "signal": {
+            "signal_id": "INT-###",
+            "theme_id": "THEME-###",
+            "title": "string",
+            "essay_claim": "string",
+            "evidence_observation": "string",
+            "tension_or_coherence": "string",
+            "interview_hook": "string",
+            "referenced_entity_ids": ["string"]
+          },
+          "evidence": [
+            {
+              "entity_id": "string",
+              "collection": "string",
+              "content": {}
+            }
+          ]
         }
       ]
     }
@@ -702,7 +724,7 @@ The signal-evidence bundle conforms to the following schema:
 }
 ```
 
-Each `signal_evidence_pair` contains one validated interpreted signal and the canonical evidence entries it references. The `content` object follows the same field inclusion rules as the canonical projection — no confidence scores, no internal UUIDs, no null fields.
+Each `theme_signal_evidence_group` contains one validated theme and the validated interpreted signals that belong to it, paired with the canonical evidence entries those signals reference. The `content` object follows the same field inclusion rules as the canonical projection — no confidence scores, no internal UUIDs, no null fields.
 
 ### 8.2 Evidence Excerpts Within the Bundle
 

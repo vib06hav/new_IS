@@ -40,7 +40,7 @@ It does not evaluate, score, rank, or assess applicants. It does not predict adm
 The system produces a **Report Output Specification (ROS v1)** artifact as its final output. This artifact contains five pages:
 
 - Pages 1–3: Deterministically projected from extracted applicant data
-- Pages 4–5: Generated through LLM synthesis — interview themes and question groups
+- Pages 4–5: Generated through LLM synthesis — themes from Call 1, question groups from Call 2
 
 ### 2.2 The Extraction Foundation
 
@@ -486,7 +486,7 @@ For each validated interpreted signal:
 
 ### 11.1 Purpose
 
-LLM Call 2 is the presentation engine. Its sole responsibility is to transform validated, evidence-grounded signals into interviewer-facing themes and question groups.
+LLM Call 2 is the presentation engine. Its sole responsibility is to transform validated, theme-grouped signal evidence into interviewer-facing question groups.
 
 Because interpretation has already occurred in Call 1, Call 2 focuses entirely on communication — producing structured outputs that help interviewers explore the applicant's experiences and motivations.
 
@@ -579,7 +579,7 @@ The complete five-page ROS v1 artifact is therefore composed as:
 | Page 1 — Background Profile | Canonical projection | Deterministic ROS Projection |
 | Page 2 — Academic + Engagement | Canonical projection | Deterministic ROS Projection |
 | Page 3 — Essays | Canonical projection + deterministic highlights | Deterministic ROS Projection |
-| Page 4 — Focus Themes | LLM Call 2 output (`themes[]`) | Interview Generation |
+| Page 4 — Focus Themes | LLM Call 1 output (`themes[]`) | Signal Interpretation |
 | Page 5 — Question Groups | LLM Call 2 output (`question_groups[]`) | Interview Generation |
 
 Pages 4–5 are populated directly from validated Call 2 output without modification. The ROS assembly step does not transform, reformat, or reinterpret the Call 2 output — it places it into the final artifact structure as-is.

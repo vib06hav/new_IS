@@ -77,27 +77,28 @@ def _run_with_braintrust_trace(
         metadata["request_identifier"] = call_label
 
     try:
-        return bt_logger.traced(
-            lambda span: _run_llm_span(span, trace_input, metadata, llm_callable),
-            {
-                "name": call_label or "llm_call",
-                "type": "llm",
-            },
+        span = bt_logger.start_span(
+            name=call_label or "llm_call",
+            type="llm",
         )
+        return _run_llm_span(span, trace_input, metadata, llm_callable)
     except Exception as exc:  # pragma: no cover - tracing must not break LLM calls
         logger.warning("Braintrust tracing failed: %s", exc)
         return llm_callable()
 
 
 def _run_llm_span(span, trace_input: dict[str, Any], metadata: dict[str, Any], llm_callable):
-    span.log(
-        input=trace_input,
-        metadata=metadata,
-        tags=["pipeline:interview_signals"],
-    )
-    response_text = llm_callable()
-    span.log(output=response_text)
-    return response_text
+    try:
+        span.log(
+            input=trace_input,
+            metadata=metadata,
+            tags=["pipeline:interview_signals"],
+        )
+        response_text = llm_callable()
+        span.log(output=response_text)
+        return response_text
+    finally:
+        span.end()
 
 
 class LLMClientError(Exception):

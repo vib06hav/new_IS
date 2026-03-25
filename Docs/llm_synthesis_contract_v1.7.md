@@ -38,7 +38,7 @@ The LLM is used for exactly two reasoning tasks in Stage 1.7:
 
 **Call 1 — Signal Interpretation:** Analyzing a curated projection of canonical applicant data together with deterministic observational signals to identify higher-level behavioral patterns. This is an analysis task. The LLM produces structured interpreted signals — it does not produce any interviewer-facing output.
 
-**Call 2 — Interview Generation:** Transforming validated, evidence-grounded interpreted signals into structured interview themes and question groups for use by human interviewers. This is a communication task. The LLM produces ROS Pages 4–5 content.
+**Call 2 — Interview Generation:** Transforming validated themes and grouped signal-evidence packets into structured interview question groups for use by human interviewers. This is a communication task. The LLM produces ROS Page 5 content, while ROS Page 4 comes from validated Call 1 themes.
 
 ### 2.2 What the LLM Is Not Used For
 
@@ -75,7 +75,7 @@ This invariant is absolute. It cannot be relaxed for any application under any c
 
 LLM Call 1 is the interpretation engine. It receives a curated view of the applicant's canonical data and a collection of deterministic observational signals. Its sole responsibility is to identify higher-level behavioral patterns — interpreted signals — that are grounded in the canonical evidence.
 
-Call 1 performs analysis only. It produces no interview questions, no themes, no narrative summaries.
+Call 1 performs analysis only. It produces no interview questions, no question groups, and no narrative summaries.
 
 ### 3.2 Input to Call 1
 
@@ -153,10 +153,22 @@ LLM Call 1 must return a strictly valid JSON object with the following structure
   "interpreted_signals": [
     {
       "signal_id": "INT-###",
+      "theme_id": "THEME-###",
       "title": "string",
-      "description": "string",
+      "essay_claim": "string",
+      "evidence_observation": "string",
+      "tension_or_coherence": "string",
+      "interview_hook": "string",
       "referenced_entity_ids": ["string"],
       "supporting_det_signal_ids": ["string"]
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "THEME-###",
+      "title": "string",
+      "description": "string",
+      "referenced_entity_ids": ["string"]
     }
   ]
 }
@@ -167,10 +179,23 @@ LLM Call 1 must return a strictly valid JSON object with the following structure
 | Field | Rule |
 |---|---|
 | `signal_id` | Format `INT-###`. Numbered sequentially from `INT-001`. Unique within the collection. No duplicates. |
+| `theme_id` | Format `THEME-###`. Must reference a theme defined in the same Call 1 response. |
 | `title` | Neutral, concise label for the interpreted signal. Maximum one sentence. No evaluative language. No prohibited terms. |
-| `description` | Factual behavioral observation grounded in canonical evidence. No evaluative language. No new facts not present in the canonical projection. No prohibited terms. |
+| `essay_claim` | Specific claim or implication from the essay that the signal is testing. |
+| `evidence_observation` | Factual observation grounded in canonical evidence. No evaluative language. No new facts not present in the canonical projection. |
+| `tension_or_coherence` | Neutral statement of whether the essay claim and evidence align or conflict. |
+| `interview_hook` | The uncertainty an interviewer needs to resolve. |
 | `referenced_entity_ids` | Must reference only entity IDs present in the entity ID map provided. No invented entity IDs. At least one reference required per signal. |
 | `supporting_det_signal_ids` | Must reference only `signal_id` values from the deterministic signal collection provided. No invented deterministic signal IDs. At least one reference required per signal. |
+
+**Field rules — themes:**
+
+| Field | Rule |
+|---|---|
+| `theme_id` | Format `THEME-###`. Numbered sequentially. Unique within the collection. |
+| `title` | Neutral, concise theme label. No evaluative language. No prohibited terms. |
+| `description` | Brief neutral description of what the interviewer is trying to understand through the theme. |
+| `referenced_entity_ids` | Must reference only entity IDs present in the entity ID map provided. No invented entity IDs. At least one reference required per theme. |
 
 ### 3.4 Output Rules — Call 1
 
@@ -183,8 +208,7 @@ LLM Call 1 must return a strictly valid JSON object with the following structure
 
 **Each interpreted signal must not:**
 
-- Contain interview questions of any kind
-- Contain thematic groupings or theme titles
+- Contain interview questions or question groups of any kind
 - Contain narrative summaries or prose portraits of the applicant
 - Introduce facts not present in the canonical projection
 - Reference entity IDs not provided in the entity ID map
@@ -211,31 +235,55 @@ LLM Call 1 must return a strictly valid JSON object with the following structure
 
 ### 4.1 Purpose
 
-LLM Call 2 is the presentation engine. It receives the validated signal-evidence bundle — a structured pairing of interpreted signals with their supporting canonical evidence. Its sole responsibility is to transform these signals into structured interview themes and question groups for use by interviewers.
+LLM Call 2 is the presentation engine. It receives the validated theme-first signal-evidence bundle — validated themes together with grouped supporting signals and evidence. Its sole responsibility is to transform that input into structured interview question groups for use by interviewers.
 
 Because interpretation has already occurred in Call 1, Call 2 focuses entirely on communication. It does not re-analyze the applicant's profile. It works from what the validated signals have already identified.
 
 ### 4.2 Input to Call 2
 
-LLM Call 2 receives the signal-evidence bundle constructed by Agent 15. The bundle contains:
+LLM Call 2 receives the theme-first signal-evidence bundle constructed by Agent 15. The bundle contains:
 
-**Signal-evidence pairs** — one pair per validated interpreted signal:
+**Validated themes** — the exact Call 1 themes that must be used for question generation.
+
+**Theme signal-evidence groups** — one group per validated theme:
 ```json
 {
   "application_id": "string",
-  "signal_evidence_pairs": [
+  "themes": [
     {
-      "signal": {
-        "signal_id": "INT-###",
+      "theme_id": "THEME-###",
+      "title": "string",
+      "description": "string",
+      "referenced_entity_ids": ["string"]
+    }
+  ],
+  "theme_signal_evidence_groups": [
+    {
+      "theme": {
+        "theme_id": "THEME-###",
         "title": "string",
         "description": "string",
         "referenced_entity_ids": ["string"]
       },
-      "evidence": [
+      "signal_evidence_pairs": [
         {
-          "entity_id": "string",
-          "collection": "string",
-          "content": {}
+          "signal": {
+            "signal_id": "INT-###",
+            "theme_id": "THEME-###",
+            "title": "string",
+            "essay_claim": "string",
+            "evidence_observation": "string",
+            "tension_or_coherence": "string",
+            "interview_hook": "string",
+            "referenced_entity_ids": ["string"]
+          },
+          "evidence": [
+            {
+              "entity_id": "string",
+              "collection": "string",
+              "content": {}
+            }
+          ]
         }
       ]
     }
@@ -262,14 +310,6 @@ LLM Call 2 must return a strictly valid JSON object with the following structure
 
 ```json
 {
-  "themes": [
-    {
-      "theme_id": "THEME-###",
-      "title": "string",
-      "description": "string",
-      "referenced_entity_ids": ["string"]
-    }
-  ],
   "question_groups": [
     {
       "theme_id": "THEME-###",
@@ -280,20 +320,11 @@ LLM Call 2 must return a strictly valid JSON object with the following structure
 }
 ```
 
-**Field rules — themes:**
-
-| Field | Rule |
-|---|---|
-| `theme_id` | Format `THEME-###`. Numbered sequentially. Unique within the collection. No duplicates. |
-| `title` | Neutral, concise theme label. No evaluative language. No prohibited terms. |
-| `description` | Brief neutral description of what the theme covers. No evaluative language. No new facts. No prohibited terms. |
-| `referenced_entity_ids` | Must reference only entity IDs present in the entity ID map provided. No invented entity IDs. At least one reference required per theme. |
-
 **Field rules — question groups:**
 
 | Field | Rule |
 |---|---|
-| `theme_id` | Must reference a `theme_id` defined in the `themes` array. No invented theme IDs. |
+| `theme_id` | Must reference a `theme_id` supplied in the Call 2 input bundle. No invented theme IDs. |
 | `group_title` | Neutral label for the question group. No evaluative language. |
 | `questions` | Array of open-ended, exploratory questions. Each question must be non-evaluative. No empty array. |
 
@@ -301,37 +332,18 @@ LLM Call 2 must return a strictly valid JSON object with the following structure
 
 | Call 2 Output Field | ROS Page |
 |---|---|
-| `themes[]` | `page_4_focus_themes` |
 | `question_groups[]` | `page_5_question_groups` |
 
-The Call 2 output is placed into the ROS artifact by the ROS Assembly Step without modification, reformatting, or reinterpretation. The schema defined here is therefore identical to the ROS Pages 4–5 schema.
+The Call 2 output is placed into the ROS artifact by the ROS Assembly Step without modification, reformatting, or reinterpretation. The schema defined here is therefore identical to ROS Page 5. ROS Page 4 is assembled from validated Call 1 themes.
 
 ### 4.4 Output Rules — Call 2
 
-**Each theme must:**
-
-- Have a unique `theme_id`
-- Have a neutral title and description
-- Reference at least one valid entity ID from the provided entity ID map
-- Derive from the signals and evidence in the bundle — not from independent reasoning about the applicant
-- Respect the canonical `activity_type` classification assigned by Agent 7 — the LLM must not reclassify activities
-
-**Each theme must not:**
-
-- Rank the applicant
-- Indicate strength or weakness
-- Predict admissions outcomes
-- Provide advice to the interviewer about the applicant's quality
-- Introduce facts not present in the signal-evidence bundle
-- Reference entity IDs not provided in the entity ID map
-- Reinterpret academic grades or test scores as indicators of quality
-- Use any term from the prohibited language list (Section 5)
-
 **Each question group must:**
 
-- Reference a valid `theme_id` from the themes array
+- Reference a valid `theme_id` from the supplied bundle
 - Have a neutral group title
 - Contain at least one question
+- Appear exactly once per supplied theme
 
 **Each question must:**
 
@@ -442,26 +454,21 @@ After Agent 16 returns the LLM response, the Policy Guard validates it before RO
 
 **Structural validation:**
 - Response is valid JSON
-- `themes` and `question_groups` keys are present and are arrays
-- Each theme contains all required fields: `theme_id`, `title`, `description`, `referenced_entity_ids`
+- `question_groups` key is present and is an array
 - Each question group contains all required fields: `theme_id`, `group_title`, `questions`
 - `questions` is a non-empty array of strings
 
 **Theme ID validation:**
-- All `theme_id` values in `themes` are unique
-- All `theme_id` values in `question_groups` reference a `theme_id` defined in the `themes` array
-- No invented theme IDs in `question_groups`
-
-**Entity ID validation:**
-- All `referenced_entity_ids` in themes exist in the entity ID map provided to Call 2
-- No invented entity IDs are present
+- All `question_groups[].theme_id` values reference a `theme_id` supplied in the Call 2 input bundle
+- Exactly one question group must be present for every supplied theme
+- No duplicate or invented theme IDs are permitted in `question_groups`
 
 **Language validation:**
 - No term from Section 5 appears in any theme title, theme description, group title, or question
 - Matching is case-insensitive and partial-match aware
 
 **On validation success:**
-- Validated themes and question groups are passed to the ROS Assembly Step
+- Validated question groups are passed to the ROS Assembly Step together with validated Call 1 themes
 - Violations log records zero violations
 
 **On validation failure:**
@@ -491,7 +498,7 @@ Neither LLM call may violate the canonical–presentation separation or alter an
 - Modify test score values or sectional breakdowns
 - Introduce academic normalization or grade conversion
 
-**Call 1 specifically may not** produce any output that resembles ROS Pages 4–5 content — no themes, no question groups, no interview guidance of any kind.
+**Call 1 specifically may not** produce any output that resembles interviewer-facing question content — no question groups, no interview guidance prose, and no interview questions of any kind.
 
 **Call 2 specifically may not** re-analyze the canonical projection — it works only from the signal-evidence bundle. It may not introduce reasoning that bypasses the interpreted signals.
 
@@ -518,7 +525,7 @@ If a projection exceeds model context limits due to an unusually large applicati
 
 **Call 1 output (interpreted signals)** is pipeline-ephemeral by default. It is not stored in a dedicated table or column. If signal data is required for auditability or debugging, it may be embedded as a structured key within `synthesis_records.synthesis_output` alongside the ROS artifact. This requires no schema change. This decision must be made explicitly before Stage 1.7 goes to production and must not be left ambiguous.
 
-**Call 2 output (themes and question groups)** is merged into the final ROS v1 artifact by the ROS Assembly Step and persisted in `synthesis_records.synthesis_output` as part of the complete five-page ROS JSON.
+**Call 2 output (question groups)** is merged into the final ROS v1 artifact by the ROS Assembly Step and persisted in `synthesis_records.synthesis_output` as part of the complete five-page ROS JSON. Validated Call 1 themes are persisted alongside it in the assembled ROS artifact.
 
 **Neither call permits:**
 

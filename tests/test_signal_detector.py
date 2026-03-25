@@ -3,7 +3,7 @@ from pathlib import Path
 
 from app.agents.projection_builder import build_projection
 from app.agents.signal_detector import detect_signals
-from app.policy.guard import validate_signals
+from app.policy.guard import validate_question_groups, validate_signals
 
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "pipeline_stages"
@@ -326,5 +326,321 @@ def test_validate_signals_rejects_invented_det_ids_when_signal_set_is_empty():
     assert result["passed"] is False
     assert any(
         violation["type"] == "invented_det_signal_id"
+        for violation in result["violations_log"]
+    )
+
+
+def test_validate_signals_accepts_themes_and_theme_linkage():
+    raw_output = json.dumps(
+        {
+            "interpreted_signals": [
+                {
+                    "signal_id": "INT-001",
+                    "theme_id": "THEME-001",
+                    "title": "Grounded title",
+                    "essay_claim": "Quoted essay claim",
+                    "evidence_observation": "Observed evidence",
+                    "tension_or_coherence": "COHERENCE - factual relationship",
+                    "interview_hook": "Specific interview hook",
+                    "referenced_entity_ids": ["ACA-001"],
+                    "supporting_det_signal_ids": ["DET-001"],
+                }
+            ],
+            "themes": [
+                {
+                    "theme_id": "THEME-001",
+                    "title": "Grounded theme",
+                    "description": "Grounded theme description",
+                    "referenced_entity_ids": ["ACA-001"],
+                }
+            ],
+        }
+    )
+    entity_id_map = [{"entity_id": "ACA-001", "collection": "academic_entries", "descriptor": "10TH"}]
+    deterministic_signals = [{"signal_id": "DET-001", "referenced_entity_ids": ["ACA-001"]}]
+
+    result = validate_signals(raw_output, entity_id_map, deterministic_signals)
+
+    assert result["passed"] is True
+    assert result["sanitized_output"]["interpreted_signals"][0]["theme_id"] == "THEME-001"
+    assert result["sanitized_output"]["themes"][0]["theme_id"] == "THEME-001"
+
+
+def test_validate_signals_rejects_missing_signal_theme_id():
+    raw_output = json.dumps(
+        {
+            "interpreted_signals": [
+                {
+                    "signal_id": "INT-001",
+                    "title": "Grounded title",
+                    "essay_claim": "Quoted essay claim",
+                    "evidence_observation": "Observed evidence",
+                    "tension_or_coherence": "COHERENCE - factual relationship",
+                    "interview_hook": "Specific interview hook",
+                    "referenced_entity_ids": ["ACA-001"],
+                    "supporting_det_signal_ids": ["DET-001"],
+                }
+            ],
+            "themes": [
+                {
+                    "theme_id": "THEME-001",
+                    "title": "Grounded theme",
+                    "description": "Grounded theme description",
+                    "referenced_entity_ids": ["ACA-001"],
+                }
+            ],
+        }
+    )
+    entity_id_map = [{"entity_id": "ACA-001", "collection": "academic_entries", "descriptor": "10TH"}]
+    deterministic_signals = [{"signal_id": "DET-001", "referenced_entity_ids": ["ACA-001"]}]
+
+    result = validate_signals(raw_output, entity_id_map, deterministic_signals)
+
+    assert result["passed"] is False
+    assert any(
+        violation["field"] == "interpreted_signals[0].theme_id"
+        for violation in result["violations_log"]
+    )
+
+
+def test_validate_signals_rejects_orphan_theme():
+    raw_output = json.dumps(
+        {
+            "interpreted_signals": [
+                {
+                    "signal_id": "INT-001",
+                    "theme_id": "THEME-001",
+                    "title": "Grounded title",
+                    "essay_claim": "Quoted essay claim",
+                    "evidence_observation": "Observed evidence",
+                    "tension_or_coherence": "COHERENCE - factual relationship",
+                    "interview_hook": "Specific interview hook",
+                    "referenced_entity_ids": ["ACA-001"],
+                    "supporting_det_signal_ids": ["DET-001"],
+                }
+            ],
+            "themes": [
+                {
+                    "theme_id": "THEME-001",
+                    "title": "Grounded theme",
+                    "description": "Grounded theme description",
+                    "referenced_entity_ids": ["ACA-001"],
+                },
+                {
+                    "theme_id": "THEME-002",
+                    "title": "Orphan theme",
+                    "description": "No member signals",
+                    "referenced_entity_ids": ["ACA-001"],
+                },
+            ],
+        }
+    )
+    entity_id_map = [{"entity_id": "ACA-001", "collection": "academic_entries", "descriptor": "10TH"}]
+    deterministic_signals = [{"signal_id": "DET-001", "referenced_entity_ids": ["ACA-001"]}]
+
+    result = validate_signals(raw_output, entity_id_map, deterministic_signals)
+
+    assert result["passed"] is False
+    assert any(
+        violation["type"] == "orphan_theme"
+        for violation in result["violations_log"]
+    )
+
+
+def test_validate_signals_rejects_signal_pointing_to_unknown_theme():
+    raw_output = json.dumps(
+        {
+            "interpreted_signals": [
+                {
+                    "signal_id": "INT-001",
+                    "theme_id": "THEME-999",
+                    "title": "Grounded title",
+                    "essay_claim": "Quoted essay claim",
+                    "evidence_observation": "Observed evidence",
+                    "tension_or_coherence": "COHERENCE - factual relationship",
+                    "interview_hook": "Specific interview hook",
+                    "referenced_entity_ids": ["ACA-001"],
+                    "supporting_det_signal_ids": ["DET-001"],
+                }
+            ],
+            "themes": [
+                {
+                    "theme_id": "THEME-001",
+                    "title": "Grounded theme",
+                    "description": "Grounded theme description",
+                    "referenced_entity_ids": ["ACA-001"],
+                }
+            ],
+        }
+    )
+    entity_id_map = [{"entity_id": "ACA-001", "collection": "academic_entries", "descriptor": "10TH"}]
+    deterministic_signals = [{"signal_id": "DET-001", "referenced_entity_ids": ["ACA-001"]}]
+
+    result = validate_signals(raw_output, entity_id_map, deterministic_signals)
+
+    assert result["passed"] is False
+    assert any(
+        violation["type"] == "broken_linkage"
+        for violation in result["violations_log"]
+    )
+
+
+def test_validate_signals_rejects_ungrounded_theme_entity_ids():
+    raw_output = json.dumps(
+        {
+            "interpreted_signals": [
+                {
+                    "signal_id": "INT-001",
+                    "theme_id": "THEME-001",
+                    "title": "Grounded title",
+                    "essay_claim": "Quoted essay claim",
+                    "evidence_observation": "Observed evidence",
+                    "tension_or_coherence": "COHERENCE - factual relationship",
+                    "interview_hook": "Specific interview hook",
+                    "referenced_entity_ids": ["ACA-001"],
+                    "supporting_det_signal_ids": ["DET-001"],
+                }
+            ],
+            "themes": [
+                {
+                    "theme_id": "THEME-001",
+                    "title": "Grounded theme",
+                    "description": "Grounded theme description",
+                    "referenced_entity_ids": ["ACA-001", "ACA-002"],
+                }
+            ],
+        }
+    )
+    entity_id_map = [
+        {"entity_id": "ACA-001", "collection": "academic_entries", "descriptor": "10TH"},
+        {"entity_id": "ACA-002", "collection": "academic_entries", "descriptor": "11TH"},
+    ]
+    deterministic_signals = [{"signal_id": "DET-001", "referenced_entity_ids": ["ACA-001"]}]
+
+    result = validate_signals(raw_output, entity_id_map, deterministic_signals)
+
+    assert result["passed"] is False
+    assert any(
+        violation["type"] == "ungrounded_theme_entity_id"
+        for violation in result["violations_log"]
+    )
+
+
+def test_validate_question_groups_accepts_question_groups_only():
+    raw_output = json.dumps(
+        {
+            "question_groups": [
+                {
+                    "theme_id": "THEME-001",
+                    "group_title": "Theme one questions",
+                    "questions": ["Why did this specific applicant choose the Physics path?"],
+                },
+                {
+                    "theme_id": "THEME-002",
+                    "group_title": "Theme two questions",
+                    "questions": ["How did the applicant respond to the board transition?"],
+                },
+            ]
+        }
+    )
+    bundle = {
+        "themes": [
+            {"theme_id": "THEME-001", "title": "Theme 1", "description": "Desc 1", "referenced_entity_ids": ["ACA-001"]},
+            {"theme_id": "THEME-002", "title": "Theme 2", "description": "Desc 2", "referenced_entity_ids": ["ACA-002"]},
+        ]
+    }
+
+    result = validate_question_groups(raw_output, [], bundle)
+
+    assert result["passed"] is True
+    assert [group["theme_id"] for group in result["sanitized_output"]["question_groups"]] == [
+        "THEME-001",
+        "THEME-002",
+    ]
+
+
+def test_validate_question_groups_rejects_missing_theme_coverage():
+    raw_output = json.dumps(
+        {
+            "question_groups": [
+                {
+                    "theme_id": "THEME-001",
+                    "group_title": "Theme one questions",
+                    "questions": ["Why did this specific applicant choose the Physics path?"],
+                }
+            ]
+        }
+    )
+    bundle = {
+        "themes": [
+            {"theme_id": "THEME-001", "title": "Theme 1", "description": "Desc 1", "referenced_entity_ids": ["ACA-001"]},
+            {"theme_id": "THEME-002", "title": "Theme 2", "description": "Desc 2", "referenced_entity_ids": ["ACA-002"]},
+        ]
+    }
+
+    result = validate_question_groups(raw_output, [], bundle)
+
+    assert result["passed"] is False
+    assert any(
+        violation["type"] == "missing_theme_coverage"
+        for violation in result["violations_log"]
+    )
+
+
+def test_validate_question_groups_rejects_duplicate_theme_groups():
+    raw_output = json.dumps(
+        {
+            "question_groups": [
+                {
+                    "theme_id": "THEME-001",
+                    "group_title": "Theme one questions",
+                    "questions": ["Why did this specific applicant choose the Physics path?"],
+                },
+                {
+                    "theme_id": "THEME-001",
+                    "group_title": "Theme one more questions",
+                    "questions": ["How did the applicant approach that same choice?"],
+                },
+            ]
+        }
+    )
+    bundle = {
+        "themes": [
+            {"theme_id": "THEME-001", "title": "Theme 1", "description": "Desc 1", "referenced_entity_ids": ["ACA-001"]},
+        ]
+    }
+
+    result = validate_question_groups(raw_output, [], bundle)
+
+    assert result["passed"] is False
+    assert any(
+        violation["type"] == "duplicate_theme_group"
+        for violation in result["violations_log"]
+    )
+
+
+def test_validate_question_groups_rejects_invented_theme_ids():
+    raw_output = json.dumps(
+        {
+            "question_groups": [
+                {
+                    "theme_id": "THEME-999",
+                    "group_title": "Unknown theme questions",
+                    "questions": ["Why did this specific applicant choose the Physics path?"],
+                }
+            ]
+        }
+    )
+    bundle = {
+        "themes": [
+            {"theme_id": "THEME-001", "title": "Theme 1", "description": "Desc 1", "referenced_entity_ids": ["ACA-001"]},
+        ]
+    }
+
+    result = validate_question_groups(raw_output, [], bundle)
+
+    assert result["passed"] is False
+    assert any(
+        violation["type"] == "broken_linkage"
         for violation in result["violations_log"]
     )
