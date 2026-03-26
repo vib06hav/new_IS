@@ -41,10 +41,16 @@ client = TestClient(app)
 def test_register_user():
     response = client.post(
         "/auth/register",
-        json={"email": "testuser@example.com", "password": "securepassword123", "role": "admin"}
+        json={
+            "name": "Test User",
+            "email": "testuser@example.com",
+            "password": "securepassword123",
+            "role": "admin",
+        }
     )
     assert response.status_code == 201
     data = response.json()
+    assert data["name"] == "Test User"
     assert data["email"] == "testuser@example.com"
     assert data["role"] == "admin"
     assert "id" in data
@@ -52,7 +58,12 @@ def test_register_user():
 def test_register_existing_user():
     response = client.post(
         "/auth/register",
-        json={"email": "testuser@example.com", "password": "securepassword123", "role": "interviewer"}
+        json={
+            "name": "Another User",
+            "email": "testuser@example.com",
+            "password": "securepassword123",
+            "role": "interviewer",
+        }
     )
     assert response.status_code == 400
     assert response.json()["detail"] == "Email already registered"
@@ -60,7 +71,7 @@ def test_register_existing_user():
 def test_login_user():
     response = client.post(
         "/auth/login",
-        json={"email": "testuser@example.com", "password": "securepassword123"}
+        data={"username": "testuser@example.com", "password": "securepassword123"}
     )
     assert response.status_code == 200
     data = response.json()
@@ -70,6 +81,6 @@ def test_login_user():
 def test_login_invalid_password():
     response = client.post(
         "/auth/login",
-        json={"email": "testuser@example.com", "password": "wrongpassword"}
+        data={"username": "testuser@example.com", "password": "wrongpassword"}
     )
     assert response.status_code == 401

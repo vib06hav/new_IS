@@ -13,6 +13,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     # The Pydantic model response expects ID as str, which works since UUID auto-converts
     return {
         "id": str(user.id),
+        "name": user.name,
         "email": user.email,
         "role": user.role
     }

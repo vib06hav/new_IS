@@ -8,14 +8,21 @@ logging.getLogger("pdfminer").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 logger.info("Application startup success")
 
+import app.models
 from app.database import get_db
 from app.auth.router import router as auth_router
+from app.api.admin import router as admin_router
 from app.api.applications import router as applications_router
+from app.api.interviewer import router as interviewer_router
+from app.api.users import router as users_router
 
 app = FastAPI(title="Interview Standardiser API", version="0.1.0")
 
 app.include_router(auth_router)
 app.include_router(applications_router)
+app.include_router(admin_router)
+app.include_router(interviewer_router)
+app.include_router(users_router)
 
 from sqlalchemy import text
 

@@ -1,0 +1,104 @@
+import uuid
+
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
+
+from app.auth.security import create_access_token
+from app.database import Base, get_db
+from app.main import app
+from app.models.application import Application
+from app.models.assignment import Assignment
+from app.models.user import User
+
+
+@compiles(JSONB, "sqlite")
+def compile_jsonb(element, compiler, **kw):
+    return "JSON"
+
+
+@compiles(UUID, "sqlite")
+def compile_uuid(element, compiler, **kw):
+    return "CHAR(32)"
+
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
+)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base.metadata.create_all(bind=engine)
+
+
+def override_get_db():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+def _token_for(email: str, role: str) -> str:
+    return create_access_token({"sub": email, "role": role})
+
+
+def test_admin_assignments_and_interviewer_listing():
+    db = TestingSessionLocal()
+    db.query(Assignment).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-api@example.com", password_hash="x", role="admin")
+    interviewer = User(
+        id=uuid.uuid4(),
+        name="Interviewer",
+        email="interviewer-api@example.com",
+        password_hash="x",
+        role="interviewer",
+    )
+    application = Application(
+        id=uuid.uuid4(),
+        uploaded_by=admin.id,
+        file_path="demo.pdf",
+        status="READY",
+    )
+    db.add_all([admin, interviewer, application])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    interviewer_id = interviewer.id
+    interviewer_email = interviewer.email
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    list_response = client.get("/applications", headers=headers)
+    assert list_response.status_code == 200
+    assert list_response.json()[0]["status"] == "READY"
+
+    assign_response = client.post(
+        f"/applications/{application_id}/assign",
+        json={"interviewer_id": str(interviewer_id)},
+        headers=headers,
+    )
+    assert assign_response.status_code == 200
+    assert assign_response.json()["status"] == "ASSIGNED"
+    assert assign_response.json()["assigned_interviewer"]["email"] == interviewer_email
+
+    assignments_response = client.get("/assignments", headers=headers)
+    assert assignments_response.status_code == 200
+    assert len(assignments_response.json()) == 1
+    assert assignments_response.json()[0]["interviewer"]["email"] == interviewer_email
+
+    interviewer_response = client.get("/users/interviewers", headers=headers)
+    assert interviewer_response.status_code == 200
+    assert interviewer_response.json()[0]["active_assignment_count"] == 1

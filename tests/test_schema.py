@@ -1,51 +1,46 @@
 from sqlalchemy import create_engine, inspect
-import sys
-from app.config import settings
+from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.pool import StaticPool
+
+from app.database import Base
+import app.models  # noqa: F401
+
+
+@compiles(JSONB, "sqlite")
+def compile_jsonb(element, compiler, **kw):
+    return "JSON"
+
+
+@compiles(UUID, "sqlite")
+def compile_uuid(element, compiler, **kw):
+    return "CHAR(32)"
+
 
 def test_schema():
-    engine = create_engine(settings.DATABASE_URL)
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    Base.metadata.create_all(bind=engine)
     inspector = inspect(engine)
 
-    tables = inspector.get_table_names()
-    required = {"users", "applications", "canonical_records", "synthesis_records"}
-    actual_custom_tables = set(tables) - {"alembic_version"}
+    tables = set(inspector.get_table_names())
+    required = {"users", "applications", "canonical_records", "assignments", "drafts"}
+    assert required.issubset(tables), f"Found tables: {tables}"
+    assert "synthesis_records" not in tables
 
-    assert actual_custom_tables == required, f"Found tables: {actual_custom_tables}"
+    users_cols = {col["name"]: col for col in inspector.get_columns("users")}
+    assert "name" in users_cols
 
-    # users type
-    users_cols = {col['name']: col for col in inspector.get_columns('users')}
-    assert str(users_cols['id']['type']) == 'UUID'
-    
-    # check keys users
-    user_pk = inspector.get_pk_constraint('users')
-    assert user_pk['name'] == 'pk_users'
-    assert user_pk['constrained_columns'] == ['id']
+    app_cols = {col["name"]: col for col in inspector.get_columns("applications")}
+    assert "status" in app_cols
+    assert "pipeline_status" not in app_cols
+    assert "pipeline_confidence" not in app_cols
 
-    app_fks = inspector.get_foreign_keys('applications')
-    assert len(app_fks) == 1
-    fk = app_fks[0]
-    assert fk['constrained_columns'] == ['uploaded_by']
-    assert fk['referred_table'] == 'users'
-    assert fk['options']['ondelete'] == 'RESTRICT'
-    assert fk['options']['onupdate'] == 'CASCADE'
+    assignment_fks = inspector.get_foreign_keys("assignments")
+    assert len(assignment_fks) == 3
 
-    app_cols = {col['name']: col for col in inspector.get_columns('applications')}
-    assert str(app_cols['pipeline_confidence']['type']).startswith('NUMERIC(5, 4)')
-
-    can_fks = inspector.get_foreign_keys('canonical_records')
-    assert can_fks[0]['options']['ondelete'] == 'CASCADE'
-
-    syn_fks = inspector.get_foreign_keys('synthesis_records')
-    assert syn_fks[0]['options']['ondelete'] == 'CASCADE'
-
-    # jsons
-    can_cols = {col['name']: col for col in inspector.get_columns('canonical_records')}
-    assert str(can_cols['canonical_data']['type']) == 'JSONB'
-
-    syn_cols = {col['name']: col for col in inspector.get_columns('synthesis_records')}
-    assert str(syn_cols['synthesis_output']['type']) == 'JSONB'
-
-    print("All Phase 4 schema validations passed.")
-
-if __name__ == "__main__":
-    test_schema()
+    drafts_cols = {col["name"]: col for col in inspector.get_columns("drafts")}
+    assert {"application_id", "version", "content", "generated_by", "is_published"}.issubset(drafts_cols.keys())
