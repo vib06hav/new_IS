@@ -6,6 +6,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.main import app
 from app.database import Base, get_db
+from app.auth.service import ensure_dev_admin_user
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
@@ -84,3 +85,16 @@ def test_login_invalid_password():
         data={"username": "testuser@example.com", "password": "wrongpassword"}
     )
     assert response.status_code == 401
+
+
+def test_ensure_dev_admin_user_is_idempotent():
+    db = TestingSessionLocal()
+    try:
+      first = ensure_dev_admin_user(db)
+      second = ensure_dev_admin_user(db)
+      assert first is not None
+      assert second is not None
+      assert first.email == second.email
+      assert first.id == second.id
+    finally:
+      db.close()

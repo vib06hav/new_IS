@@ -51,6 +51,9 @@ class Settings:
         self.MAX_UPLOAD_SIZE_MB = os.environ.get("MAX_UPLOAD_SIZE_MB")
         self.APP_ENV = os.environ.get("APP_ENV")
         self.LOG_LEVEL = os.environ.get("LOG_LEVEL")
+        self.DEV_ADMIN_EMAIL = os.environ.get("DEV_ADMIN_EMAIL", "admin@example.com")
+        self.DEV_ADMIN_PASSWORD = os.environ.get("DEV_ADMIN_PASSWORD", "Admin12345!")
+        self.DEV_ADMIN_NAME = os.environ.get("DEV_ADMIN_NAME", "Default Admin")
 
         # VALIDATE PRESENCE
         required_vars = [
@@ -169,6 +172,9 @@ class Settings:
 
         if self.LOG_LEVEL and self.LOG_LEVEL not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
             errors.append("LOG_LEVEL must be one of {DEBUG, INFO, WARNING, ERROR, CRITICAL}")
+
+        if self.DEV_ADMIN_PASSWORD and len(self.DEV_ADMIN_PASSWORD) < 8:
+            errors.append("DEV_ADMIN_PASSWORD must be at least 8 characters long")
 
         if self.UPLOAD_DIRECTORY:
             self.UPLOAD_DIRECTORY = os.path.abspath(self.UPLOAD_DIRECTORY)

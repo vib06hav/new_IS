@@ -3,6 +3,7 @@ from fastapi import HTTPException, status
 from app.models.user import User
 from app.auth.schemas import UserCreate, UserLogin
 from app.auth.security import get_password_hash, verify_password, create_access_token
+from app.config import settings
 
 def register_user(db: Session, user_data: UserCreate):
     # Check if user exists
@@ -52,3 +53,23 @@ def get_current_user_from_token(token: str, db: Session):
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
+
+
+def ensure_dev_admin_user(db: Session) -> User | None:
+    if settings.APP_ENV != "development":
+        return None
+
+    existing_user = db.query(User).filter(User.email == settings.DEV_ADMIN_EMAIL).first()
+    if existing_user:
+        return existing_user
+
+    admin_user = User(
+        name=settings.DEV_ADMIN_NAME,
+        email=settings.DEV_ADMIN_EMAIL,
+        password_hash=get_password_hash(settings.DEV_ADMIN_PASSWORD),
+        role="admin",
+    )
+    db.add(admin_user)
+    db.commit()
+    db.refresh(admin_user)
+    return admin_user

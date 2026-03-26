@@ -45,6 +45,17 @@ def delete_interviewer(
     if interviewer.role != "interviewer":
         raise HTTPException(status_code=409, detail="Only interviewer accounts can be removed here")
 
+    uploaded_application_count = (
+        db.query(Application)
+        .filter(Application.uploaded_by == user_id)
+        .count()
+    )
+    if uploaded_application_count > 0:
+        raise HTTPException(
+            status_code=409,
+            detail="Cannot remove interviewer because they are referenced as the uploader for existing applications",
+        )
+
     assignments = db.query(Assignment).filter(Assignment.interviewer_id == user_id).all()
     for assignment in assignments:
         application = db.query(Application).filter(Application.id == assignment.application_id).first()
