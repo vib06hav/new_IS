@@ -8,6 +8,7 @@ import type { ApplicationDetailInterviewer } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { JsonSection } from "@/components/JsonSection";
+import { ReviewPackageSection } from "@/components/ReviewPackageSection";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { usePolling } from "@/lib/usePolling";
@@ -118,12 +119,8 @@ export default function InterviewerApplicationPage() {
         {message ? <p className="rounded border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">{message}</p> : null}
         {error ? <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
-        {item.canonical ? (
-          <JsonSection
-            title="Canonical Data"
-            description="Fixed deterministic output for Pages 1-3."
-            data={item.canonical.canonical_data}
-          />
+        {item.review_package ? (
+          <ReviewPackageSection reviewPackage={item.review_package} roleLabel="interviewer" />
         ) : null}
 
         {item.latest_draft ? (

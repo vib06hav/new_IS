@@ -68,6 +68,18 @@ class CanonicalSummary(BaseModel):
     canonical_data: Dict[str, Any]
 
 
+class ReviewPages123(BaseModel):
+    page_1_background_profile: Dict[str, Any]
+    page_2_academic_and_engagement: Dict[str, Any]
+    page_3_essays: Dict[str, Any]
+
+
+class ReviewPackageSummary(BaseModel):
+    canonical_version: str
+    pdf_url: str
+    pages_1_3: ReviewPages123
+
+
 class ApplicationUploadResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -88,7 +100,7 @@ class ApplicationDetailAdmin(BaseModel):
     status: str
     created_at: datetime
     assigned_interviewer: Optional[UserSummary] = None
-    canonical: Optional[CanonicalSummary] = None
+    review_package: Optional[ReviewPackageSummary] = None
     published_draft: Optional[DraftSummary] = None
 
 
@@ -97,7 +109,7 @@ class ApplicationDetailInterviewer(BaseModel):
     status: str
     created_at: datetime
     assigned_interviewer: Optional[UserSummary] = None
-    canonical: Optional[CanonicalSummary] = None
+    review_package: Optional[ReviewPackageSummary] = None
     latest_draft: Optional[DraftSummary] = None
 
 

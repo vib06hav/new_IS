@@ -16,6 +16,18 @@ export type CanonicalSummary = {
   canonical_data: Record<string, unknown>;
 };
 
+export type ReviewPages123 = {
+  page_1_background_profile: Record<string, unknown>;
+  page_2_academic_and_engagement: Record<string, unknown>;
+  page_3_essays: Record<string, unknown>;
+};
+
+export type ReviewPackageSummary = {
+  canonical_version: string;
+  pdf_url: string;
+  pages_1_3: ReviewPages123;
+};
+
 export type DraftSummary = {
   id: string;
   version: number;
@@ -42,7 +54,7 @@ export type ApplicationDetailAdmin = {
   status: string;
   created_at: string;
   assigned_interviewer?: UserSummary | null;
-  canonical?: CanonicalSummary | null;
+  review_package?: ReviewPackageSummary | null;
   published_draft?: DraftSummary | null;
 };
 
@@ -51,7 +63,7 @@ export type ApplicationDetailInterviewer = {
   status: string;
   created_at: string;
   assigned_interviewer?: UserSummary | null;
-  canonical?: CanonicalSummary | null;
+  review_package?: ReviewPackageSummary | null;
   latest_draft?: DraftSummary | null;
 };
 

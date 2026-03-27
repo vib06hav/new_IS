@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -12,6 +12,8 @@ from app.api.schemas import (
     CanonicalSummary,
     DraftSummary,
     InterviewerListItem,
+    ReviewPackageSummary,
+    ReviewPages123,
     UserSummary,
 )
 from app.models.application import Application
@@ -19,6 +21,7 @@ from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
 from app.models.draft import Draft
 from app.models.user import User
+from app.projection.ros_projector import project_ros
 
 
 def get_application_or_404(db: Session, application_id: UUID) -> Application:
@@ -51,16 +54,44 @@ def get_published_draft(db: Session, application_id: UUID) -> Optional[Draft]:
 
 
 def get_canonical_summary(db: Session, application_id: UUID) -> Optional[CanonicalSummary]:
-    canonical = (
-        db.query(CanonicalRecord)
-        .filter(CanonicalRecord.application_id == application_id)
-        .first()
-    )
+    canonical = get_canonical_record(db, application_id)
     if not canonical:
         return None
     return CanonicalSummary(
         canonical_version=canonical.canonical_version,
         canonical_data=canonical.canonical_data,
+    )
+
+
+def get_canonical_record(db: Session, application_id: UUID) -> Optional[CanonicalRecord]:
+    return (
+        db.query(CanonicalRecord)
+        .filter(CanonicalRecord.application_id == application_id)
+        .first()
+    )
+
+
+def _derive_pages_1_3(canonical_data: dict[str, Any]) -> dict[str, Any]:
+    page_1, page_2, page_3, _, _ = project_ros(canonical_data)
+    return {
+        "page_1_background_profile": page_1,
+        "page_2_academic_and_engagement": page_2,
+        "page_3_essays": page_3,
+    }
+
+
+def build_review_package_summary(
+    application: Application,
+    canonical_record: Optional[CanonicalRecord],
+) -> Optional[ReviewPackageSummary]:
+    if not canonical_record:
+        return None
+
+    pages_1_3 = canonical_record.pages_1_3 or _derive_pages_1_3(canonical_record.canonical_data)
+    return ReviewPackageSummary(
+        canonical_version=canonical_record.canonical_version,
+        pdf_url=f"/api/applications/{application.id}/source-pdf",
+        pages_1_3=ReviewPages123(**pages_1_3),
     )
 
 
@@ -97,7 +128,7 @@ def build_application_list_item(
 def build_admin_detail(
     application: Application,
     interviewer: Optional[User],
-    canonical: Optional[CanonicalSummary],
+    review_package: Optional[ReviewPackageSummary],
     published_draft: Optional[Draft],
 ) -> ApplicationDetailAdmin:
     return ApplicationDetailAdmin(
@@ -105,7 +136,7 @@ def build_admin_detail(
         status=application.status,
         created_at=application.created_at,
         assigned_interviewer=build_user_summary(interviewer),
-        canonical=canonical,
+        review_package=review_package,
         published_draft=build_draft_summary(published_draft),
     )
 
@@ -113,7 +144,7 @@ def build_admin_detail(
 def build_interviewer_detail(
     application: Application,
     interviewer: Optional[User],
-    canonical: Optional[CanonicalSummary],
+    review_package: Optional[ReviewPackageSummary],
     latest_draft: Optional[Draft],
 ) -> ApplicationDetailInterviewer:
     return ApplicationDetailInterviewer(
@@ -121,7 +152,7 @@ def build_interviewer_detail(
         status=application.status,
         created_at=application.created_at,
         assigned_interviewer=build_user_summary(interviewer),
-        canonical=canonical,
+        review_package=review_package,
         latest_draft=build_draft_summary(latest_draft),
     )
 

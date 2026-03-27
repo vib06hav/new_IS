@@ -3,15 +3,17 @@ import shutil
 import uuid
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.agents.orchestrator import run_deterministic_pipeline
 from app.api.helpers import (
     build_admin_detail,
     build_interviewer_detail,
+    build_review_package_summary,
     get_application_or_404,
     get_assignment_for_application,
-    get_canonical_summary,
+    get_canonical_record,
     get_latest_draft,
     get_published_draft,
 )
@@ -87,14 +89,38 @@ def get_application(
     if assignment:
         assigned_user = db.query(User).filter(User.id == assignment.interviewer_id).first()
 
-    canonical = get_canonical_summary(db, application_id)
+    canonical_record = get_canonical_record(db, application_id)
+    review_package = build_review_package_summary(application, canonical_record)
 
     if current_user.role == "admin":
         published_draft = get_published_draft(db, application_id)
-        return build_admin_detail(application, assigned_user, canonical, published_draft)
+        return build_admin_detail(application, assigned_user, review_package, published_draft)
 
     if not assignment or assignment.interviewer_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to view this application")
 
     latest_draft = get_latest_draft(db, application_id)
-    return build_interviewer_detail(application, assigned_user, canonical, latest_draft)
+    return build_interviewer_detail(application, assigned_user, review_package, latest_draft)
+
+
+@router.get("/{application_id}/source-pdf")
+def get_application_source_pdf(
+    application_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    application = get_application_or_404(db, application_id)
+    assignment = get_assignment_for_application(db, application_id)
+
+    if current_user.role != "admin":
+        if not assignment or assignment.interviewer_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized to view this application")
+
+    if not application.file_path or not os.path.exists(application.file_path):
+        raise HTTPException(status_code=404, detail="Source PDF not found")
+
+    return FileResponse(
+        path=application.file_path,
+        media_type="application/pdf",
+        filename=f"{application_id}.pdf",
+    )

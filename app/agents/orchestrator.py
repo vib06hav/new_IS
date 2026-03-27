@@ -230,6 +230,14 @@ def run_pipeline(
     agg_conf = canonical_data.get("extraction_confidence", {}).get("aggregate_confidence", "N/A")
     logger.debug(f"Agent completion (agent_id: 11, confidence_score: {agg_conf})")
 
+    page_1, page_2, page_3, _, entity_id_map = project_ros(canonical_data)
+    deterministic_signals = detect_signals(canonical_data, entity_id_map)
+    pages_1_3 = {
+        "page_1_background_profile": page_1,
+        "page_2_academic_and_engagement": page_2,
+        "page_3_essays": page_3,
+    }
+
     # Persist canonical as soon as deterministic assembly completes so failed LLM
     # runs can still be replayed through the Stage 1.7 boundary.
     try:
@@ -244,9 +252,16 @@ def run_pipeline(
                 db_canonical = CanonicalRecord(
                     application_id=app_uuid,
                     canonical_version=CANONICAL_VERSION,
-                    canonical_data=sanitize_for_json(canonical_data)
+                    canonical_data=sanitize_for_json(canonical_data),
+                    deterministic_signals=sanitize_for_json(deterministic_signals),
+                    pages_1_3=sanitize_for_json(pages_1_3),
                 )
                 db.add(db_canonical)
+            else:
+                existing_canonical.canonical_version = CANONICAL_VERSION
+                existing_canonical.canonical_data = sanitize_for_json(canonical_data)
+                existing_canonical.deterministic_signals = sanitize_for_json(deterministic_signals)
+                existing_canonical.pages_1_3 = sanitize_for_json(pages_1_3)
 
             db_app = db.query(Application).filter(Application.id == app_uuid).first()
             if db_app:
@@ -263,6 +278,8 @@ def run_pipeline(
     if stop_after_canonical:
         return {
             "canonical_data": canonical_data,
+            "pages_1_3": pages_1_3,
+            "deterministic_signals": deterministic_signals,
             "ros_v1": None,
             "validation_result": {"passed": True, "violations_log": []},
             "confidence": agg_conf,
@@ -276,6 +293,7 @@ def run_synthesis_pipeline(
     canonical_data: Dict[str, Any],
     db: Session | None = None,
     aggregate_confidence: Any | None = None,
+    persisted_review: CanonicalRecord | None = None,
 ) -> Dict[str, Any]:
     agg_conf = (
         aggregate_confidence
@@ -286,9 +304,17 @@ def run_synthesis_pipeline(
     logger.info(f"Stage 1.7 - Commencing Pipeline Orchestration (application_id: {application_id})")
 
     page_1, page_2, page_3, annotated_canonical, entity_id_map = project_ros(canonical_data)
+    if persisted_review and persisted_review.pages_1_3:
+        page_1 = persisted_review.pages_1_3.get("page_1_background_profile", page_1)
+        page_2 = persisted_review.pages_1_3.get("page_2_academic_and_engagement", page_2)
+        page_3 = persisted_review.pages_1_3.get("page_3_essays", page_3)
 
     logger.debug("Agent 12: Signal Detector")
-    deterministic_signals = detect_signals(canonical_data, entity_id_map)
+    deterministic_signals = (
+        persisted_review.deterministic_signals
+        if persisted_review and persisted_review.deterministic_signals
+        else detect_signals(canonical_data, entity_id_map)
+    )
 
     logger.debug("Agent 13: Projection Builder")
     call_1_projection = build_projection(canonical_data, entity_id_map, deterministic_signals)

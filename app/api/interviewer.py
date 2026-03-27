@@ -7,9 +7,9 @@ from app.agents.orchestrator import run_synthesis_pipeline
 from app.api.helpers import (
     build_application_list_item,
     build_draft_summary,
+    get_canonical_record,
     get_application_or_404,
     get_assignment_for_application,
-    get_canonical_summary,
     get_latest_draft,
 )
 from app.api.schemas import ApplicationListItem, DraftMutationResponse
@@ -59,14 +59,19 @@ def generate_draft(
     if application.status not in {"ASSIGNED", "DRAFT"}:
         raise HTTPException(status_code=409, detail="Application is not ready for draft generation")
 
-    canonical = get_canonical_summary(db, application_id)
-    if not canonical:
+    canonical_record = get_canonical_record(db, application_id)
+    if not canonical_record:
         raise HTTPException(status_code=409, detail="Canonical data not available")
 
     latest_draft = get_latest_draft(db, application_id)
     next_version = 1 if not latest_draft else latest_draft.version + 1
 
-    synthesis_result = run_synthesis_pipeline(str(application_id), canonical.canonical_data, db=None)
+    synthesis_result = run_synthesis_pipeline(
+        str(application_id),
+        canonical_record.canonical_data,
+        db=None,
+        persisted_review=canonical_record,
+    )
     draft = Draft(
         application_id=application_id,
         version=next_version,

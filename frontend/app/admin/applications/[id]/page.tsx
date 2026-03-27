@@ -7,6 +7,7 @@ import { getToken } from "@/lib/auth";
 import type { ApplicationDetailAdmin } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { JsonSection } from "@/components/JsonSection";
+import { ReviewPackageSection } from "@/components/ReviewPackageSection";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { usePolling } from "@/lib/usePolling";
@@ -69,13 +70,7 @@ export default function AdminApplicationDetailPage() {
           </div>
         </Card>
 
-        {item.canonical ? (
-          <JsonSection
-            title="Canonical Data"
-            description="Admin can view deterministic output and canonical payload."
-            data={item.canonical.canonical_data}
-          />
-        ) : null}
+        {item.review_package ? <ReviewPackageSection reviewPackage={item.review_package} roleLabel="admin" /> : null}
 
         {item.status === "DRAFT" ? (
           <Card title="Draft Status" description="Admin cannot view draft pages before publish.">
