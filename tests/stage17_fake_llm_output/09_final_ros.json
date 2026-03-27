@@ -423,6 +423,10 @@
           "DET-003",
           "DET-004"
         ],
+        "supporting_fragment_ids": [
+          "ESS-001:F01",
+          "ESS-001:F02"
+        ],
         "theme_id": "THEME-001"
       },
       {
@@ -441,6 +445,7 @@
         "supporting_det_signal_ids": [
           "DET-001"
         ],
+        "supporting_fragment_ids": [],
         "theme_id": "THEME-001"
       },
       {
@@ -456,6 +461,9 @@
         ],
         "supporting_det_signal_ids": [
           "DET-002"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-002:F01"
         ],
         "theme_id": "THEME-002"
       }
@@ -542,6 +550,10 @@
           "DET-003",
           "DET-004"
         ],
+        "supporting_fragment_ids": [
+          "ESS-001:F01",
+          "ESS-001:F02"
+        ],
         "theme_id": "THEME-001"
       },
       {
@@ -560,6 +572,7 @@
         "supporting_det_signal_ids": [
           "DET-001"
         ],
+        "supporting_fragment_ids": [],
         "theme_id": "THEME-001"
       },
       {
@@ -575,6 +588,9 @@
         ],
         "supporting_det_signal_ids": [
           "DET-002"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-002:F01"
         ],
         "theme_id": "THEME-002"
       }
@@ -614,6 +630,122 @@
           "LEAD-005"
         ]
       }
-    ]
+    ],
+    "annotations": {
+      "page_1_entities": {},
+      "page_2_entities": {
+        "ACT-001": {
+          "signal_ids": [
+            "SIG-001"
+          ],
+          "theme_ids": [
+            "THEME-001"
+          ]
+        },
+        "ACT-002": {
+          "signal_ids": [
+            "SIG-001"
+          ],
+          "theme_ids": [
+            "THEME-001"
+          ]
+        },
+        "ACT-003": {
+          "signal_ids": [
+            "SIG-001"
+          ],
+          "theme_ids": [
+            "THEME-001"
+          ]
+        },
+        "ACT-004": {
+          "signal_ids": [
+            "SIG-001"
+          ],
+          "theme_ids": [
+            "THEME-001"
+          ]
+        },
+        "ACA-002": {
+          "signal_ids": [
+            "SIG-002"
+          ],
+          "theme_ids": [
+            "THEME-001"
+          ]
+        },
+        "ACA-003": {
+          "signal_ids": [
+            "SIG-002"
+          ],
+          "theme_ids": [
+            "THEME-001"
+          ]
+        },
+        "ACA-004": {
+          "signal_ids": [
+            "SIG-002"
+          ],
+          "theme_ids": [
+            "THEME-001"
+          ]
+        },
+        "TEST-001": {
+          "signal_ids": [
+            "SIG-002"
+          ],
+          "theme_ids": [
+            "THEME-001"
+          ]
+        },
+        "LEAD-005": {
+          "signal_ids": [
+            "SIG-003"
+          ],
+          "theme_ids": [
+            "THEME-002"
+          ]
+        }
+      },
+      "page_3_fragments": {
+        "ESS-001": [
+          {
+            "fragment_id": "ESS-001:F01",
+            "start_char": 0,
+            "end_char": 301,
+            "signal_ids": [
+              "SIG-001"
+            ],
+            "theme_ids": [
+              "THEME-001"
+            ]
+          },
+          {
+            "fragment_id": "ESS-001:F02",
+            "start_char": 302,
+            "end_char": 580,
+            "signal_ids": [
+              "SIG-001"
+            ],
+            "theme_ids": [
+              "THEME-001"
+            ]
+          }
+        ],
+        "ESS-002": [
+          {
+            "fragment_id": "ESS-002:F01",
+            "start_char": 0,
+            "end_char": 244,
+            "signal_ids": [
+              "SIG-003"
+            ],
+            "theme_ids": [
+              "THEME-002"
+            ]
+          }
+        ]
+      }
+    }
   }
 }

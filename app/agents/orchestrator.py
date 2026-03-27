@@ -22,6 +22,7 @@ from app.agents.projection_builder import build_projection
 from app.agents.signal_interpreter import interpret_signals
 from app.agents.bundle_constructor import construct_bundle
 from app.agents.interview_generator import generate_interview
+from app.agents.report_annotations import build_report_annotations
 from app.llm.client import LLMClientError
 
 # Policy and ROS
@@ -318,6 +319,7 @@ def run_synthesis_pipeline(
 
     logger.debug("Agent 13: Projection Builder")
     call_1_projection = build_projection(canonical_data, entity_id_map, deterministic_signals)
+    essay_fragments = call_1_projection.get("essay_fragments", [])
 
     logger.debug("Agent 14: Signal Interpreter (LLM Call 1)")
     try:
@@ -337,7 +339,12 @@ def run_synthesis_pipeline(
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": abort_res, "confidence": agg_conf}
 
     logger.debug("Policy Guard: Signal Validation")
-    val_res_1 = validate_signals(raw_call_1_output, entity_id_map, deterministic_signals)
+    val_res_1 = validate_signals(
+        raw_call_1_output,
+        entity_id_map,
+        deterministic_signals,
+        essay_fragments=essay_fragments,
+    )
 
     if not val_res_1["passed"]:
         logger.error(f"Architecture Lock 3.4: Call 1 Validation Failed for {application_id}. HALTING PIPELINE.")
@@ -396,10 +403,17 @@ def run_synthesis_pipeline(
     )
 
     synthesis_output = ros_document.copy()
+    annotations = build_report_annotations(
+        validated_signals,
+        validated_themes,
+        entity_id_map,
+        essay_fragments=essay_fragments,
+    )
     synthesis_output["signal_data"] = {
         "deterministic_signals": deterministic_signals,
         "signals": validated_signals,
         "themes": validated_themes,
+        "annotations": annotations,
     }
 
     try:

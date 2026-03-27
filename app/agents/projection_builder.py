@@ -1,5 +1,6 @@
 import re
 
+from app.agents.essay_fragments import build_essay_fragments
 from app.utils.form_vocab import is_stop_word
 
 
@@ -153,6 +154,8 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
         }
         essay_profile.append(essay_entry)
 
+    essay_fragments = build_essay_fragments(canonical, entity_id_map)
+
     # 5. Activity Profile (with Artifact Detection)
     def is_artifact(text, is_duration=False, is_position=False):
         if not text: return True
@@ -235,6 +238,7 @@ def build_projection(canonical: dict, entity_id_map: list, deterministic_signals
         "academic_profile": academic_profile,
         "test_profile": test_profile,
         "essay_profile": essay_profile,
+        "essay_fragments": essay_fragments,
         "activity_profile": activity_profile,
         "entity_id_map": entity_id_map,
         "deterministic_signals": deterministic_signals

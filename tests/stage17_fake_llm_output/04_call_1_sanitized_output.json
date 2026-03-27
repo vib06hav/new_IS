@@ -18,6 +18,10 @@
         "DET-003",
         "DET-004"
       ],
+      "supporting_fragment_ids": [
+        "ESS-001:F01",
+        "ESS-001:F02"
+      ],
       "theme_id": "THEME-001"
     },
     {
@@ -36,6 +40,7 @@
       "supporting_det_signal_ids": [
         "DET-001"
       ],
+      "supporting_fragment_ids": [],
       "theme_id": "THEME-001"
     },
     {
@@ -51,6 +56,9 @@
       ],
       "supporting_det_signal_ids": [
         "DET-002"
+      ],
+      "supporting_fragment_ids": [
+        "ESS-002:F01"
       ],
       "theme_id": "THEME-002"
     }

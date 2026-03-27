@@ -18,6 +18,7 @@ PROHIBITED_TERM_REWRITES = {
 }
 
 logger = logging.getLogger(__name__)
+MAX_FRAGMENT_IDS_PER_SIGNAL = 3
 
 
 def _scan_text(text: str, rules: List[str]) -> List[Dict[str, Any]]:
@@ -142,6 +143,11 @@ def _normalize_signal_output(data: Any, rules: List[str]) -> Any:
                     ["supporting_det_signal_ids", "det_signal_ids", "deterministic_signal_ids"],
                     [],
                 ),
+                "supporting_fragment_ids": _first_present(
+                    sig,
+                    ["supporting_fragment_ids", "fragment_ids", "essay_fragment_ids"],
+                    [],
+                ),
             })
     return {
         "signals": normalized_signals,
@@ -225,7 +231,12 @@ def _append_text_violations(
     return found_violation
 
 
-def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_signals: List[dict]) -> dict:
+def validate_signals(
+    raw_text: str,
+    entity_id_map: List[dict],
+    deterministic_signals: List[dict],
+    essay_fragments: List[dict] | None = None,
+) -> dict:
     """
     Agent 15 - Signal Validation Layer.
     Strictly validates LLM Call 1 output (interpreted signals + themes).
@@ -278,6 +289,11 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
 
     valid_entity_ids = {e.get("entity_id") for e in entity_id_map if e.get("entity_id")}
     valid_det_signal_ids = {s.get("signal_id") for s in deterministic_signals if s.get("signal_id")}
+    valid_fragment_lookup = {
+        fragment.get("fragment_id"): fragment
+        for fragment in (essay_fragments or [])
+        if fragment.get("fragment_id")
+    }
 
     passed = True
     known_signal_ids = set()
@@ -386,6 +402,63 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
                     sig_passed = False
                     passed = False
 
+        supporting_fragment_ids = sig.get("supporting_fragment_ids", [])
+        if not isinstance(supporting_fragment_ids, list):
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"signals[{idx}].supporting_fragment_ids",
+                "type": "invalid_type",
+                "context": "supporting_fragment_ids must be an array.",
+            })
+            sig_passed = False
+            passed = False
+        else:
+            deduped_fragment_ids = []
+            for fragment_id in supporting_fragment_ids:
+                if fragment_id not in deduped_fragment_ids:
+                    deduped_fragment_ids.append(fragment_id)
+            supporting_fragment_ids = deduped_fragment_ids
+
+            if len(supporting_fragment_ids) > MAX_FRAGMENT_IDS_PER_SIGNAL:
+                violations_log.append({
+                    "violation_id": str(uuid.uuid4()),
+                    "field": f"signals[{idx}].supporting_fragment_ids",
+                    "type": "too_many_fragment_ids",
+                    "context": (
+                        f"Signal may reference at most {MAX_FRAGMENT_IDS_PER_SIGNAL} fragments; "
+                        f"received {len(supporting_fragment_ids)}."
+                    ),
+                })
+                sig_passed = False
+                passed = False
+
+            for fragment_id in supporting_fragment_ids:
+                fragment = valid_fragment_lookup.get(fragment_id)
+                if not fragment:
+                    violations_log.append({
+                        "violation_id": str(uuid.uuid4()),
+                        "field": f"signals[{idx}].supporting_fragment_ids",
+                        "type": "invented_fragment_id",
+                        "context": f"Invented fragment ID: {fragment_id}",
+                    })
+                    sig_passed = False
+                    passed = False
+                    continue
+
+                fragment_entity_id = fragment.get("entity_id")
+                if fragment_entity_id not in referenced_entity_ids:
+                    violations_log.append({
+                        "violation_id": str(uuid.uuid4()),
+                        "field": f"signals[{idx}].supporting_fragment_ids",
+                        "type": "fragment_entity_mismatch",
+                        "context": (
+                            f"Fragment {fragment_id} belongs to {fragment_entity_id}, "
+                            "which is not present in referenced_entity_ids."
+                        ),
+                    })
+                    sig_passed = False
+                    passed = False
+
         for field in ["title", "evidence_anchor", "direct_read", "what_remains_open", "why_it_matters"]:
             if _append_text_violations(violations_log, f"signals[{idx}].{field}", sig.get(field, ""), rules):
                 sig_passed = False
@@ -403,6 +476,7 @@ def validate_signals(raw_text: str, entity_id_map: List[dict], deterministic_sig
             "why_it_matters": sig.get("why_it_matters"),
             "referenced_entity_ids": referenced_entity_ids,
             "supporting_det_signal_ids": supporting_det_signal_ids,
+            "supporting_fragment_ids": supporting_fragment_ids,
         }
         sanitized_signals.append(sanitized_signal)
         sanitized_signal_lookup[signal_id] = sanitized_signal

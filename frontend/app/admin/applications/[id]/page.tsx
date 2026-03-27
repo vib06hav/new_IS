@@ -65,7 +65,12 @@ export default function AdminApplicationDetailPage() {
         </Card>
 
         {item.review_package ? (
-          <ReviewPackageSection applicationId={item.id} reviewPackage={item.review_package} roleLabel="admin" />
+          <ReviewPackageSection
+            applicationId={item.id}
+            reviewPackage={item.review_package}
+            roleLabel="admin"
+            annotationSource={item.published_draft?.content}
+          />
         ) : null}
 
         {item.status === "DRAFT" ? (

@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from app.agents.projection_builder import build_projection
+from app.agents.report_annotations import build_report_annotations
 from app.agents.signal_detector import detect_signals
 from app.policy.guard import validate_question_groups, validate_signals
 
@@ -302,6 +303,44 @@ def test_build_projection_allows_empty_deterministic_signals_and_omits_academic_
     assert set(projection["applicant_context"].keys()) == {"preferred_major"}
 
 
+def test_build_projection_adds_paragraph_and_sentence_group_essay_fragments():
+    canonical = {
+        "identifiers": {"preferred_major": "Computer Science"},
+        "academic_entries": [],
+        "test_entries": [],
+        "essay_entries": [
+            {
+                "essay_identifier": "Essay With Paragraphs",
+                "raw_text": "First paragraph line one.\n\nSecond paragraph line one.",
+                "placeholder_flag": False,
+            },
+            {
+                "essay_identifier": "Essay Without Paragraphs",
+                "raw_text": "Sentence one. Sentence two. Sentence three.",
+                "placeholder_flag": False,
+            },
+        ],
+        "activity_entries": [],
+    }
+    entity_id_map = [
+        {"entity_id": "ESS-001", "collection": "essay_entries", "descriptor": "Essay With Paragraphs"},
+        {"entity_id": "ESS-002", "collection": "essay_entries", "descriptor": "Essay Without Paragraphs"},
+    ]
+
+    projection = build_projection(canonical, entity_id_map, [])
+
+    paragraph_fragments = [fragment for fragment in projection["essay_fragments"] if fragment["entity_id"] == "ESS-001"]
+    sentence_group_fragments = [fragment for fragment in projection["essay_fragments"] if fragment["entity_id"] == "ESS-002"]
+
+    assert [fragment["fragment_id"] for fragment in paragraph_fragments] == ["ESS-001:F01", "ESS-001:F02"]
+    assert paragraph_fragments[0]["text"] == "First paragraph line one."
+    assert paragraph_fragments[1]["text"] == "Second paragraph line one."
+
+    assert [fragment["fragment_id"] for fragment in sentence_group_fragments] == ["ESS-002:F01", "ESS-002:F02"]
+    assert sentence_group_fragments[0]["text"] == "Sentence one. Sentence two."
+    assert sentence_group_fragments[1]["text"] == "Sentence three."
+
+
 def test_validate_signals_rejects_invented_det_ids_when_signal_set_is_empty():
     raw_output = json.dumps(
         {
@@ -329,6 +368,129 @@ def test_validate_signals_rejects_invented_det_ids_when_signal_set_is_empty():
         violation["type"] == "invented_det_signal_id"
         for violation in result["violations_log"]
     )
+
+
+def test_validate_signals_accepts_valid_supporting_fragment_ids():
+    raw_output = json.dumps(
+        {
+            "signals": [
+                {
+                    "signal_id": "SIG-001",
+                    "title": "Grounded title",
+                    "evidence_anchor": "Quoted essay claim",
+                    "direct_read": "Observed evidence",
+                    "what_remains_open": "Specific open question",
+                    "why_it_matters": "Specific relevance",
+                    "referenced_entity_ids": ["ESS-001"],
+                    "supporting_det_signal_ids": [],
+                    "supporting_fragment_ids": ["ESS-001:F01"],
+                }
+            ],
+            "themes": [
+                {
+                    "theme_id": "THEME-001",
+                    "title": "Grounded theme",
+                    "framing": "Grounded theme framing",
+                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "supporting_signal_ids": ["SIG-001"],
+                }
+            ],
+        }
+    )
+    entity_id_map = [{"entity_id": "ESS-001", "collection": "essay_entries", "descriptor": "Essay 1"}]
+    essay_fragments = [
+        {"fragment_id": "ESS-001:F01", "entity_id": "ESS-001", "text": "Essay evidence", "start_char": 0, "end_char": 13}
+    ]
+
+    result = validate_signals(raw_output, entity_id_map, [], essay_fragments=essay_fragments)
+
+    assert result["passed"] is True
+    assert result["sanitized_output"]["signals"][0]["supporting_fragment_ids"] == ["ESS-001:F01"]
+
+
+def test_validate_signals_rejects_invalid_supporting_fragment_ids():
+    base_signal = {
+        "signal_id": "SIG-001",
+        "title": "Grounded title",
+        "evidence_anchor": "Quoted essay claim",
+        "direct_read": "Observed evidence",
+        "what_remains_open": "Specific open question",
+        "why_it_matters": "Specific relevance",
+        "referenced_entity_ids": ["ESS-001"],
+        "supporting_det_signal_ids": [],
+    }
+    entity_id_map = [{"entity_id": "ESS-001", "collection": "essay_entries", "descriptor": "Essay 1"}]
+    essay_fragments = [
+        {"fragment_id": "ESS-001:F01", "entity_id": "ESS-001", "text": "Essay evidence", "start_char": 0, "end_char": 13},
+        {"fragment_id": "ESS-002:F01", "entity_id": "ESS-002", "text": "Other essay", "start_char": 0, "end_char": 10},
+    ]
+
+    invented_fragment_result = validate_signals(
+        json.dumps(
+            {
+                "signals": [{**base_signal, "supporting_fragment_ids": ["ESS-001:F99"]}],
+                "themes": [],
+            }
+        ),
+        entity_id_map,
+        [],
+        essay_fragments=essay_fragments,
+    )
+    mismatch_result = validate_signals(
+        json.dumps(
+            {
+                "signals": [{**base_signal, "supporting_fragment_ids": ["ESS-002:F01"]}],
+                "themes": [],
+            }
+        ),
+        entity_id_map,
+        [],
+        essay_fragments=essay_fragments,
+    )
+    invalid_type_result = validate_signals(
+        json.dumps(
+            {
+                "signals": [{**base_signal, "supporting_fragment_ids": "ESS-001:F01"}],
+                "themes": [],
+            }
+        ),
+        entity_id_map,
+        [],
+        essay_fragments=essay_fragments,
+    )
+    too_many_result = validate_signals(
+        json.dumps(
+            {
+                "signals": [
+                    {
+                        **base_signal,
+                        "supporting_fragment_ids": ["ESS-001:F01", "ESS-001:F02", "ESS-001:F03", "ESS-001:F04"],
+                    }
+                ],
+                "themes": [],
+            }
+        ),
+        entity_id_map,
+        [],
+        essay_fragments=[
+            {"fragment_id": "ESS-001:F01", "entity_id": "ESS-001", "text": "A", "start_char": 0, "end_char": 1},
+            {"fragment_id": "ESS-001:F02", "entity_id": "ESS-001", "text": "B", "start_char": 1, "end_char": 2},
+            {"fragment_id": "ESS-001:F03", "entity_id": "ESS-001", "text": "C", "start_char": 2, "end_char": 3},
+            {"fragment_id": "ESS-001:F04", "entity_id": "ESS-001", "text": "D", "start_char": 3, "end_char": 4},
+        ],
+    )
+
+    assert invented_fragment_result["passed"] is False
+    assert any(violation["type"] == "invented_fragment_id" for violation in invented_fragment_result["violations_log"])
+
+    assert mismatch_result["passed"] is False
+    assert any(violation["type"] == "fragment_entity_mismatch" for violation in mismatch_result["violations_log"])
+
+    assert invalid_type_result["passed"] is False
+    assert any(violation["type"] == "invalid_type" for violation in invalid_type_result["violations_log"])
+
+    assert too_many_result["passed"] is False
+    assert any(violation["type"] == "too_many_fragment_ids" for violation in too_many_result["violations_log"])
 
 
 def test_validate_signals_accepts_themes_and_theme_linkage():
@@ -567,6 +729,53 @@ def test_validate_question_groups_accepts_question_groups_only():
     assert [group["theme_id"] for group in result["sanitized_output"]["question_groups"]] == [
         "THEME-001",
         "THEME-002",
+    ]
+
+
+def test_build_report_annotations_derives_page_2_entities_and_page_3_fragments():
+    signals = [
+        {
+            "signal_id": "SIG-001",
+            "theme_id": "THEME-001",
+            "referenced_entity_ids": ["ACA-004", "ESS-001", "ACT-003"],
+            "supporting_fragment_ids": ["ESS-001:F02"],
+        },
+        {
+            "signal_id": "SIG-002",
+            "theme_id": "THEME-001",
+            "referenced_entity_ids": ["ACA-004", "TEST-001"],
+            "supporting_fragment_ids": [],
+        },
+    ]
+    entity_id_map = [
+        {"entity_id": "ACA-004", "collection": "academic_entries", "descriptor": "12TH"},
+        {"entity_id": "ESS-001", "collection": "essay_entries", "descriptor": "Essay 1"},
+        {"entity_id": "ACT-003", "collection": "activity_entries", "descriptor": "Olympiads"},
+        {"entity_id": "TEST-001", "collection": "test_entries", "descriptor": "JEE Mains"},
+    ]
+    essay_fragments = [
+        {"fragment_id": "ESS-001:F02", "entity_id": "ESS-001", "text": "Essay evidence", "start_char": 50, "end_char": 90}
+    ]
+
+    annotations = build_report_annotations(signals, [], entity_id_map, essay_fragments=essay_fragments)
+
+    assert annotations["page_1_entities"] == {}
+    assert annotations["page_2_entities"]["ACA-004"] == {
+        "signal_ids": ["SIG-001", "SIG-002"],
+        "theme_ids": ["THEME-001"],
+    }
+    assert annotations["page_2_entities"]["ACT-003"] == {
+        "signal_ids": ["SIG-001"],
+        "theme_ids": ["THEME-001"],
+    }
+    assert annotations["page_3_fragments"]["ESS-001"] == [
+        {
+            "fragment_id": "ESS-001:F02",
+            "start_char": 50,
+            "end_char": 90,
+            "signal_ids": ["SIG-001"],
+            "theme_ids": ["THEME-001"],
+        }
     ]
 
 

@@ -42,6 +42,7 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
                 "why_it_matters": "Why it matters",
                 "referenced_entity_ids": ["ACA-001"],
                 "supporting_det_signal_ids": ["DET-001"],
+                "supporting_fragment_ids": [],
             }
         ],
         "themes": [
@@ -151,3 +152,8 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
     assert result["ros_v1"]["page_5_question_groups"]["question_groups"] == question_groups_validated["question_groups"]
     assert result["ros_v1"]["signal_data"]["themes"] == call_1_validated["themes"]
     assert result["ros_v1"]["signal_data"]["signals"] == call_1_validated["signals"]
+    assert result["ros_v1"]["signal_data"]["annotations"] == {
+        "page_1_entities": {},
+        "page_2_entities": {"ACA-001": {"signal_ids": ["SIG-001"], "theme_ids": ["THEME-001"]}},
+        "page_3_fragments": {},
+    }

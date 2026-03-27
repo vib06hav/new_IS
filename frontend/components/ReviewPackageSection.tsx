@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { JsonSection } from "@/components/JsonSection";
+import { ReviewPageThreeSection, ReviewPageTwoSection } from "@/components/ReviewPackagePages";
 import { fetchSourcePdf } from "@/lib/api";
 import type { ReviewPackageSummary } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
@@ -11,13 +12,16 @@ export function ReviewPackageSection({
   reviewPackage,
   applicationId,
   roleLabel,
+  annotationSource,
 }: {
   reviewPackage: ReviewPackageSummary;
   applicationId: string;
   roleLabel: "admin" | "interviewer";
+  annotationSource?: Record<string, unknown> | null;
 }) {
   const [openingPdf, setOpeningPdf] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
+  const annotations = extractAnnotations(annotationSource);
   const description =
     roleLabel === "admin"
       ? "Admin review artifact: raw PDF plus deterministic ROS Pages 1-3."
@@ -65,16 +69,34 @@ export function ReviewPackageSection({
         description="Background profile"
         data={reviewPackage.pages_1_3.page_1_background_profile}
       />
-      <JsonSection
-        title="ROS Page 2"
-        description="Academic and engagement"
+      <ReviewPageTwoSection
         data={reviewPackage.pages_1_3.page_2_academic_and_engagement}
+        annotations={annotations}
       />
-      <JsonSection
-        title="ROS Page 3"
-        description="Essays"
+      <ReviewPageThreeSection
         data={reviewPackage.pages_1_3.page_3_essays}
+        annotations={annotations}
       />
     </div>
   );
+}
+
+function extractAnnotations(source?: Record<string, unknown> | null) {
+  const signalData = source?.signal_data;
+  if (!signalData || typeof signalData !== "object" || Array.isArray(signalData)) {
+    return null;
+  }
+
+  const annotations = (signalData as Record<string, unknown>).annotations;
+  if (!annotations || typeof annotations !== "object" || Array.isArray(annotations)) {
+    return null;
+  }
+
+  return annotations as {
+    page_2_entities?: Record<string, { signal_ids?: string[]; theme_ids?: string[] }>;
+    page_3_fragments?: Record<
+      string,
+      Array<{ fragment_id: string; start_char: number; end_char: number; signal_ids?: string[]; theme_ids?: string[] }>
+    >;
+  };
 }

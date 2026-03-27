@@ -52,6 +52,7 @@ For each signal, write:
 - what that evidence directly shows without interpretation
 - what remains open that only a conversation can resolve
 - why resolving that unknown would materially change understanding of the applicant
+- supporting fragment IDs only when a signal is grounded in essay text
 
 STEP 5 - Only after the signal set is complete, synthesize themes from it.
 Each theme should represent one coherent interview territory surfaced by one or
@@ -77,21 +78,25 @@ RULES:
 4. why_it_matters must explain why this signal earns interview time.
    It should be one short sentence, not an evaluation of the applicant.
 
-5. PROHIBITED: Do not imply an admissions decision.
+5. If a signal relies on essay text, use only fragment IDs from the provided
+   essay_fragments list. Do not invent fragment IDs and do not return raw
+   character offsets.
+
+6. PROHIBITED: Do not imply an admissions decision.
    Do not use: """ + ", ".join(prohibited_terms) + """
 
-6. Produce between 4 and 6 signals. Fewer sharp signals are better than
+7. Produce between 4 and 6 signals. Fewer sharp signals are better than
    many generic ones.
 
-7. If the essay language is generic, high-level, or non-specific, test whether it
+8. If the essay language is generic, high-level, or non-specific, test whether it
    is grounded elsewhere in the application. Use that to sharpen the signal, but
    do not use the language of "gap", "tension", or "hook" in the final output.
 
-8. Before finalizing each signal, test:
+9. Before finalizing each signal, test:
    "Could this signal be written about 100 applicants with similar profiles?"
    If yes, discard or rewrite it to include more specific grounding.
 
-9. Themes must be applicant-specific too. Do not use generic labels like
+10. Themes must be applicant-specific too. Do not use generic labels like
    "Academic Performance" or "Leadership". Use concise labels that name the
    actual interview territory surfaced by these signals.
 
@@ -109,7 +114,8 @@ OUTPUT SCHEMA - return exactly this structure, nothing else:
       "what_remains_open": "What the application still cannot tell us that only a conversation can resolve.",
       "why_it_matters": "Why resolving this would materially change understanding of the applicant.",
       "referenced_entity_ids": ["Entity IDs from the projection that support this signal"],
-      "supporting_det_signal_ids": ["DET signal IDs that anchor this signal - empty array if purely cross-section"]
+      "supporting_det_signal_ids": ["DET signal IDs that anchor this signal - empty array if purely cross-section"],
+      "supporting_fragment_ids": ["Essay fragment IDs from essay_fragments - empty array if not essay-derived"]
     }
   ],
   "themes": [
@@ -154,7 +160,8 @@ SPECIFIC (correct):
       "what_remains_open": "Whether this technology-facing identity is already grounded in lived, self-directed practice or still exists mainly as aspiration.",
       "why_it_matters": "Resolving this changes how the applicant's entire technology-facing self-presentation should be understood.",
       "referenced_entity_ids": ["ESS-001", "ACT-002", "ACT-003", "ACT-004"],
-      "supporting_det_signal_ids": []
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": ["ESS-001:F01", "ESS-001:F02"]
     }
   ],
   "themes": [

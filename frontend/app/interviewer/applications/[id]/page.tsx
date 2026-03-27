@@ -110,7 +110,12 @@ export default function InterviewerApplicationPage() {
         {error ? <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
         {item.review_package ? (
-          <ReviewPackageSection applicationId={item.id} reviewPackage={item.review_package} roleLabel="interviewer" />
+          <ReviewPackageSection
+            applicationId={item.id}
+            reviewPackage={item.review_package}
+            roleLabel="interviewer"
+            annotationSource={item.latest_draft?.content}
+          />
         ) : null}
 
         {item.latest_draft ? (

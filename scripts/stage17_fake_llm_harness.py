@@ -8,6 +8,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.agents.bundle_constructor import construct_bundle
+from app.agents.projection_builder import build_projection
+from app.agents.report_annotations import build_report_annotations
+from app.agents.signal_detector import detect_signals
 from app.agents.interview_generator import build_interview_messages
 from app.agents.signal_interpreter import build_signal_interpreter_messages
 from app.policy.guard import validate_question_groups, validate_signals
@@ -23,24 +26,28 @@ def _write_json(path: Path, payload) -> None:
 
 
 def main() -> None:
-    projection_fixture = FIXTURE_DIR / "14_call_1_projection.json"
     canonical_fixture = FIXTURE_DIR / "11_canonical_assembled.json"
     entity_map_fixture = FIXTURE_DIR / "12_entity_id_map.json"
 
     if OUTPUT_DIR.exists():
         shutil.rmtree(OUTPUT_DIR)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(projection_fixture, OUTPUT_DIR / "01_call_1_projection_input.json")
 
-    projection = json.loads(projection_fixture.read_text(encoding="utf-8"))
     canonical = json.loads(canonical_fixture.read_text(encoding="utf-8"))
     expected_entity_id_map = json.loads(entity_map_fixture.read_text(encoding="utf-8"))
 
     page_1, page_2, page_3, _, projected_entity_map = project_ros(canonical)
     if projected_entity_map != expected_entity_id_map:
         raise RuntimeError("Projected entity_id_map does not match the fixture expected by Stage 1.7.")
-    if projection["entity_id_map"] != expected_entity_id_map:
-        raise RuntimeError("Call 1 projection fixture is out of sync with the canonical/entity_id_map fixtures.")
+
+    deterministic_signals = detect_signals(canonical, expected_entity_id_map)
+    projection = build_projection(canonical, expected_entity_id_map, deterministic_signals)
+    _write_json(OUTPUT_DIR / "01_call_1_projection_input.json", projection)
+
+    essay_fragments = projection.get("essay_fragments", [])
+    fragments_by_entity = {}
+    for fragment in essay_fragments:
+        fragments_by_entity.setdefault(fragment["entity_id"], []).append(fragment["fragment_id"])
 
     call_1_messages = build_signal_interpreter_messages(projection)
     _write_json(OUTPUT_DIR / "02_call_1_prompt_messages.json", call_1_messages)
@@ -56,6 +63,7 @@ def main() -> None:
                 "why_it_matters": "Resolving this changes how the applicant's entire technology-facing self-presentation should be understood.",
                 "referenced_entity_ids": ["ESS-001", "ACT-001", "ACT-002", "ACT-003", "ACT-004"],
                 "supporting_det_signal_ids": ["DET-003", "DET-004"],
+                "supporting_fragment_ids": fragments_by_entity.get("ESS-001", [])[:2],
             },
             {
                 "signal_id": "SIG-002",
@@ -66,6 +74,7 @@ def main() -> None:
                 "why_it_matters": "This determines whether the applicant's evident capability extends beyond structured performance settings.",
                 "referenced_entity_ids": ["ACA-002", "ACA-003", "ACA-004", "TEST-001"],
                 "supporting_det_signal_ids": ["DET-001"],
+                "supporting_fragment_ids": [],
             },
             {
                 "signal_id": "SIG-003",
@@ -76,6 +85,7 @@ def main() -> None:
                 "why_it_matters": "Resolving this changes whether the story reads as real agency or mostly participant-level involvement.",
                 "referenced_entity_ids": ["ESS-002", "LEAD-005"],
                 "supporting_det_signal_ids": ["DET-002"],
+                "supporting_fragment_ids": fragments_by_entity.get("ESS-002", [])[:1],
             },
         ],
         "themes": [
@@ -100,7 +110,8 @@ def main() -> None:
     validated_call_1 = validate_signals(
         raw_text=json.dumps(fake_call_1_response),
         entity_id_map=expected_entity_id_map,
-        deterministic_signals=projection["deterministic_signals"],
+        deterministic_signals=deterministic_signals,
+        essay_fragments=essay_fragments,
     )
     if not validated_call_1["passed"]:
         _write_json(OUTPUT_DIR / "03b_call_1_validation_errors.json", validated_call_1)
@@ -169,9 +180,15 @@ def main() -> None:
         },
     )
     ros_output["signal_data"] = {
-        "deterministic_signals": projection["deterministic_signals"],
+        "deterministic_signals": deterministic_signals,
         "signals": validated_call_1["sanitized_output"]["signals"],
         "themes": validated_call_1["sanitized_output"]["themes"],
+        "annotations": build_report_annotations(
+            validated_call_1["sanitized_output"]["signals"],
+            validated_call_1["sanitized_output"]["themes"],
+            expected_entity_id_map,
+            essay_fragments=essay_fragments,
+        ),
     }
     _write_json(OUTPUT_DIR / "09_final_ros.json", ros_output)
 
