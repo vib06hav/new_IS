@@ -140,3 +140,44 @@ def test_delete_interviewer_blocks_when_user_uploaded_applications():
     assert delete_response.json()["detail"] == (
         "Cannot remove interviewer because they are referenced as the uploader for existing applications"
     )
+
+
+def test_delete_interviewer_blocks_when_active_assignments_exist():
+    db = TestingSessionLocal()
+    db.query(Assignment).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-assigned@example.com", password_hash="x", role="admin")
+    interviewer = User(
+        id=uuid.uuid4(),
+        name="Assigned Interviewer",
+        email="assigned-interviewer@example.com",
+        password_hash="x",
+        role="interviewer",
+    )
+    application = Application(
+        id=uuid.uuid4(),
+        uploaded_by=admin.id,
+        file_path="assigned.pdf",
+        status="ASSIGNED",
+    )
+    assignment = Assignment(
+        application_id=application.id,
+        interviewer_id=interviewer.id,
+        assigned_by=admin.id,
+    )
+    db.add_all([admin, interviewer, application, assignment])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    interviewer_id = interviewer.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    delete_response = client.delete(f"/users/{interviewer_id}", headers=headers)
+    assert delete_response.status_code == 409
+    assert delete_response.json()["detail"] == "Cannot remove interviewer while they still have active assignments"

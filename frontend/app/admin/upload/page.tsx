@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { fetchApplications, retryApplication, uploadApplication } from "@/lib/api";
-import { getToken } from "@/lib/auth";
 import type { ApplicationListItem } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -22,16 +21,11 @@ export default function AdminUploadPage() {
   const [message, setMessage] = useState<string | null>(null);
 
   async function loadUploads() {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
     try {
       const [uploaded, processing, failed] = await Promise.all([
-        fetchApplications(token, "UPLOADED"),
-        fetchApplications(token, "PROCESSING"),
-        fetchApplications(token, "FAILED"),
+        fetchApplications("UPLOADED"),
+        fetchApplications("PROCESSING"),
+        fetchApplications("FAILED"),
       ]);
       setItems([...uploaded, ...processing, ...failed].sort((a, b) => b.created_at.localeCompare(a.created_at)));
       setError(null);
@@ -49,14 +43,15 @@ export default function AdminUploadPage() {
   usePolling(loadUploads, 5000, !loading);
 
   async function handleUpload() {
-    const token = getToken();
-    if (!token || !file) {
+    if (!file) {
       return;
     }
 
+    setMessage(null);
+    setError(null);
     setUploading(true);
     try {
-      const response = await uploadApplication(token, file);
+      const response = await uploadApplication(file);
       setMessage(`Upload completed with status ${response.status}.`);
       setFile(null);
       await loadUploads();
@@ -68,14 +63,11 @@ export default function AdminUploadPage() {
   }
 
   async function handleRetry(applicationId: string) {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
+    setMessage(null);
+    setError(null);
     setBusyRetryId(applicationId);
     try {
-      await retryApplication(token, applicationId);
+      await retryApplication(applicationId);
       setMessage("Retry triggered.");
       await loadUploads();
     } catch (retryError) {

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { fetchAssignments } from "@/lib/api";
-import { getToken } from "@/lib/auth";
 import type { AssignmentListItem } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -17,13 +16,8 @@ export default function AdminAssignmentsPage() {
   const [error, setError] = useState<string | null>(null);
 
   async function loadAssignments() {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
     try {
-      const data = await fetchAssignments(token);
+      const data = await fetchAssignments();
       setItems(data);
       setError(null);
     } catch (loadError) {

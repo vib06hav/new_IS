@@ -110,6 +110,9 @@ def generate(messages: list[dict], call_label: str | None = None) -> str:
     Provider-agnostic public interface for exactly one logical LLM call.
     The active transport is selected by settings.LLM_PROVIDER.
     """
+    if settings.LLM_DISABLE_LIVE_CALLS or os.getenv("LLM_DISABLE_LIVE_CALLS", "").strip().lower() in {"1", "true", "yes", "on"}:
+        raise LLMClientError("Live LLM calls are disabled in this environment.")
+
     if settings.LLM_PROVIDER == "ollama":
         return _run_with_braintrust_trace(
             messages,

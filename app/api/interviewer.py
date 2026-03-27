@@ -19,6 +19,7 @@ from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.draft import Draft
 from app.models.user import User
+from app.security.rate_limit import limiter
 
 
 router = APIRouter(tags=["Interviewer"])
@@ -53,6 +54,12 @@ def generate_draft(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_interviewer),
 ):
+    limiter.check(
+        f"generate:{current_user.id}:{application_id}",
+        limit=5,
+        window_seconds=60,
+        detail="Draft generation rate limit exceeded. Please retry shortly.",
+    )
     application = _require_assigned_application(db, application_id, current_user)
     if application.status == "PUBLISHED":
         raise HTTPException(status_code=409, detail="Published applications cannot be regenerated")
@@ -96,6 +103,12 @@ def publish_draft(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_interviewer),
 ):
+    limiter.check(
+        f"publish:{current_user.id}:{application_id}",
+        limit=5,
+        window_seconds=60,
+        detail="Publish rate limit exceeded. Please retry shortly.",
+    )
     application = _require_assigned_application(db, application_id, current_user)
     if application.status != "DRAFT":
         raise HTTPException(status_code=409, detail="Only DRAFT applications can be published")

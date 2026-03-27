@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { login } from "@/lib/api";
-import { decodeToken, saveToken } from "@/lib/auth";
+import { signOut } from "@/lib/auth";
 import type { UserRole } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -30,12 +30,11 @@ export function LoginForm({ role, title, successHref }: LoginFormProps) {
 
     try {
       const response = await login(email, password);
-      const payload = decodeToken(response.access_token);
-      if (payload.role !== role) {
+      if (response.user.role !== role) {
+        await signOut();
         throw new Error(`This account does not belong in the ${role} portal.`);
       }
 
-      saveToken(response.access_token);
       router.replace(successHref);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Login failed.");

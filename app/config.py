@@ -12,6 +12,26 @@ numeric_level = getattr(logging, initial_log_level.upper(), logging.INFO)
 logging.basicConfig(level=numeric_level, stream=sys.stderr, format='%(levelname)-5.5s [%(name)s] %(message)s')
 logger = logging.getLogger(__name__)
 
+
+def _looks_like_placeholder_secret(value: str) -> bool:
+    lowered = value.strip().lower()
+    placeholders = {
+        "changeme",
+        "replace-me",
+        "replace_this",
+        "replace-this",
+        "your-secret-here",
+        "secret",
+        "password",
+        "admin12345!",
+    }
+    if lowered in placeholders:
+        return True
+    if any(marker in lowered for marker in ("example", "placeholder", "generate-a-random", "your-llm-api-key")):
+        return True
+    unique_chars = len(set(lowered))
+    return unique_chars < 10
+
 def check_writable_dir(path: str) -> bool:
     try:
         if not os.path.exists(path):
@@ -51,9 +71,16 @@ class Settings:
         self.MAX_UPLOAD_SIZE_MB = os.environ.get("MAX_UPLOAD_SIZE_MB")
         self.APP_ENV = os.environ.get("APP_ENV")
         self.LOG_LEVEL = os.environ.get("LOG_LEVEL")
-        self.DEV_ADMIN_EMAIL = os.environ.get("DEV_ADMIN_EMAIL", "admin@example.com")
-        self.DEV_ADMIN_PASSWORD = os.environ.get("DEV_ADMIN_PASSWORD", "Admin12345!")
-        self.DEV_ADMIN_NAME = os.environ.get("DEV_ADMIN_NAME", "Default Admin")
+        self.DEV_BOOTSTRAP_ADMIN = os.environ.get("DEV_BOOTSTRAP_ADMIN", "false")
+        self.DEV_ADMIN_EMAIL = os.environ.get("DEV_ADMIN_EMAIL")
+        self.DEV_ADMIN_PASSWORD = os.environ.get("DEV_ADMIN_PASSWORD")
+        self.DEV_ADMIN_NAME = os.environ.get("DEV_ADMIN_NAME")
+        self.SESSION_COOKIE_NAME = os.environ.get("SESSION_COOKIE_NAME", "agis_session")
+        self.SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "lax")
+        self.CSRF_COOKIE_NAME = os.environ.get("CSRF_COOKIE_NAME", "agis_csrf")
+        self.CSRF_HEADER_NAME = os.environ.get("CSRF_HEADER_NAME", "X-CSRF-Token")
+        self.CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
+        self.LLM_DISABLE_LIVE_CALLS = os.environ.get("LLM_DISABLE_LIVE_CALLS", "false")
 
         # VALIDATE PRESENCE
         required_vars = [
@@ -95,6 +122,8 @@ class Settings:
 
         if self.JWT_SECRET and len(self.JWT_SECRET) < 32:
             errors.append("JWT_SECRET must be at least 32 characters long")
+        elif self.JWT_SECRET and _looks_like_placeholder_secret(self.JWT_SECRET):
+            errors.append("JWT_SECRET must not use a weak or placeholder value")
 
         if self.JWT_ALGORITHM and self.JWT_ALGORITHM not in {"HS256", "HS384", "HS512"}:
             errors.append("JWT_ALGORITHM must be one of {HS256, HS384, HS512}")
@@ -170,11 +199,41 @@ class Settings:
         if self.APP_ENV and self.APP_ENV not in {"development", "production"}:
             errors.append("APP_ENV must be 'development' or 'production'")
 
+        self.DEV_BOOTSTRAP_ADMIN = str(self.DEV_BOOTSTRAP_ADMIN).strip().lower() in {"1", "true", "yes", "on"}
+        self.LLM_DISABLE_LIVE_CALLS = str(self.LLM_DISABLE_LIVE_CALLS).strip().lower() in {"1", "true", "yes", "on"}
+
         if self.LOG_LEVEL and self.LOG_LEVEL not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
             errors.append("LOG_LEVEL must be one of {DEBUG, INFO, WARNING, ERROR, CRITICAL}")
 
-        if self.DEV_ADMIN_PASSWORD and len(self.DEV_ADMIN_PASSWORD) < 8:
-            errors.append("DEV_ADMIN_PASSWORD must be at least 8 characters long")
+        if self.SESSION_COOKIE_SAMESITE not in {"lax", "strict", "none"}:
+            errors.append("SESSION_COOKIE_SAMESITE must be one of {lax, strict, none}")
+        if not self.CSRF_COOKIE_NAME or not self.CSRF_COOKIE_NAME.strip():
+            errors.append("CSRF_COOKIE_NAME must not be empty")
+        if not self.CSRF_HEADER_NAME or not self.CSRF_HEADER_NAME.strip():
+            errors.append("CSRF_HEADER_NAME must not be empty")
+        self.CSRF_TRUSTED_ORIGINS = [
+            origin.strip()
+            for origin in self.CSRF_TRUSTED_ORIGINS.split(",")
+            if origin.strip()
+        ]
+
+        if self.DEV_BOOTSTRAP_ADMIN:
+            if self.APP_ENV != "development":
+                errors.append("DEV_BOOTSTRAP_ADMIN can only be enabled in development")
+            if not self.DEV_ADMIN_EMAIL or not self.DEV_ADMIN_PASSWORD or not self.DEV_ADMIN_NAME:
+                errors.append("DEV_BOOTSTRAP_ADMIN requires DEV_ADMIN_EMAIL, DEV_ADMIN_PASSWORD, and DEV_ADMIN_NAME")
+
+        if self.DEV_ADMIN_PASSWORD:
+            if len(self.DEV_ADMIN_PASSWORD) < 8:
+                errors.append("DEV_ADMIN_PASSWORD must be at least 8 characters long")
+            elif _looks_like_placeholder_secret(self.DEV_ADMIN_PASSWORD):
+                errors.append("DEV_ADMIN_PASSWORD must not use a weak or placeholder value")
+
+        if self.APP_ENV != "development":
+            if self.DEV_BOOTSTRAP_ADMIN:
+                errors.append("DEV_BOOTSTRAP_ADMIN must be disabled outside development")
+            if any(value for value in (self.DEV_ADMIN_EMAIL, self.DEV_ADMIN_PASSWORD, self.DEV_ADMIN_NAME)):
+                errors.append("DEV_ADMIN_* settings must not be configured outside development")
 
         if self.UPLOAD_DIRECTORY:
             self.UPLOAD_DIRECTORY = os.path.abspath(self.UPLOAD_DIRECTORY)

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { assignApplication, fetchApplications, fetchInterviewers, reassignApplication } from "@/lib/api";
-import { getToken } from "@/lib/auth";
 import type { ApplicationListItem, InterviewerListItem } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -27,15 +26,10 @@ export default function AdminReportsPage() {
   const [selectedInterviewerByApp, setSelectedInterviewerByApp] = useState<Record<string, string>>({});
 
   async function loadData() {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
     try {
       const [applications, interviewerList] = await Promise.all([
-        fetchApplications(token, statusFilter === "ALL" ? undefined : statusFilter),
-        fetchInterviewers(token),
+        fetchApplications(statusFilter === "ALL" ? undefined : statusFilter),
+        fetchInterviewers(),
       ]);
       setItems(
         applications.filter(
@@ -64,18 +58,13 @@ export default function AdminReportsPage() {
       setError("Choose an interviewer first.");
       return;
     }
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
     setBusyAppId(applicationId);
     try {
       if (mode === "assign") {
-        await assignApplication(token, applicationId, interviewerId);
+        await assignApplication(applicationId, interviewerId);
         setMessage("Application assigned.");
       } else {
-        await reassignApplication(token, applicationId, interviewerId);
+        await reassignApplication(applicationId, interviewerId);
         setMessage("Application reassigned.");
       }
       await loadData();

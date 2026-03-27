@@ -1,0 +1,174 @@
+ ⨯ Error: Could not find the module "C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1180474928'
+}
+ ⨯ Error: Could not find the module "C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '2180774737'
+}
+ ⨯ Error: Could not find the module "C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '2180774737'
+}
+ ⨯ Error: Could not find the module "C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '2180774737'
+}
+ ⨯ Error: Could not find the module "C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1180474928'
+}
+ ⨯ Error: Could not find the module "C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1180474928'
+}
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function] {
+  digest: '3664206001'
+}
+ ⨯ Error: Could not find the module "C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1180474928'
+}
+[TypeError: __webpack_modules__[moduleId] is not a function]
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function]
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function] {
+  page: '/'
+}
+ ⨯ Error: Cannot find module './778.js'
+Require stack:
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\webpack-runtime.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\login\page.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\require.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\load-components.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\utils.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\options.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\index.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\next.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\login\page.js:2:13255)
+    at Object.<anonymous> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\login\page.js:2:13304) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/interviewer/login'
+}
+ ⨯ Error: Cannot find module './778.js'
+Require stack:
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\webpack-runtime.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\admin\login\page.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\require.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\load-components.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\utils.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\options.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\index.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\next.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\login\page.js:2:13255)
+    at Object.<anonymous> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\login\page.js:2:13304) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/interviewer/login'
+}
+ ⨯ Error: Cannot find module './778.js'
+Require stack:
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\webpack-runtime.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\admin\login\page.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\require.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\load-components.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\utils.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\options.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\index.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\next.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\login\page.js:2:13255)
+    at Object.<anonymous> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\login\page.js:2:13304) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/interviewer/login'
+}
+ ⨯ Error: Cannot find module './778.js'
+Require stack:
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\webpack-runtime.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\admin\login\page.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\require.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\load-components.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\utils.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\options.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\index.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\next.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\login\page.js:2:13255)
+    at Object.<anonymous> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\login\page.js:2:13304) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/interviewer/login'
+}
+ ⨯ Error: Cannot find module './778.js'
+Require stack:
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\webpack-runtime.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\admin\login\page.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\require.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\load-components.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\utils.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\options.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\index.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\next.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\dashboard\page.js:2:12973)
+    at Object.<anonymous> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\interviewer\dashboard\page.js:2:13022) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/interviewer/dashboard'
+}
+ ⨯ Error: Cannot find module './778.js'
+Require stack:
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\webpack-runtime.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\admin\interviewers\page.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\require.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\load-components.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\utils.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\options.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\index.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\next.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\admin\reports\page.js:2:15668)
+    at Object.<anonymous> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\admin\reports\page.js:2:15717) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/admin/reports'
+}
+ ⨯ Error: Cannot find module './778.js'
+Require stack:
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\webpack-runtime.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\admin\interviewers\page.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\require.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\load-components.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\utils.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\options.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\swc\index.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\config.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\next.js
+- C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\admin\upload\page.js:2:13215)
+    at Object.<anonymous> (C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\server\app\admin\upload\page.js:2:13264) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/admin/upload'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\cache\webpack\client-development\1.pack.gz_' -> 'C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\cache\webpack\client-development\1.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\cache\webpack\client-development\0.pack.gz_' -> 'C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\frontend\.next\cache\webpack\client-development\0.pack.gz'

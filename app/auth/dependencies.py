@@ -1,20 +1,26 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Cookie, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.auth.service import get_current_user_from_token
+from app.config import settings
 from app.database import get_db
 from app.models.assignment import Assignment
 from app.models.user import User
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
-
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    request: Request,
+    session_token: str | None = Cookie(default=None, alias=settings.SESSION_COOKIE_NAME),
     db: Session = Depends(get_db),
 ) -> User:
+    token: str | None = None
+    auth_header = request.headers.get("authorization", "")
+    if auth_header.lower().startswith("bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
+    elif session_token:
+        token = session_token
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return get_current_user_from_token(token, db)
 
 

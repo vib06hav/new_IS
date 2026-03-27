@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchMyApplications } from "@/lib/api";
-import { getToken } from "@/lib/auth";
 import type { ApplicationListItem } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -18,12 +17,8 @@ export default function InterviewerDashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   async function loadApplications() {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
     try {
-      const data = await fetchMyApplications(token);
+      const data = await fetchMyApplications();
       setItems(data);
       setError(null);
     } catch (loadError) {

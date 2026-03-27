@@ -6,8 +6,9 @@ import type {
   AssignmentListItem,
   DraftMutationResponse,
   InterviewerListItem,
-  TokenResponse,
+  SessionResponse,
 } from "@/lib/types";
+import { getCsrfToken } from "@/lib/csrf";
 
 async function parseError(response: Response) {
   try {
@@ -33,7 +34,20 @@ async function parseError(response: Response) {
 }
 
 async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`/api${path}`, init);
+  const headers = new Headers(init.headers);
+  const method = (init.method || "GET").toUpperCase();
+  if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(method)) {
+    const csrfToken = getCsrfToken();
+    if (csrfToken) {
+      headers.set("X-CSRF-Token", csrfToken);
+    }
+  }
+
+  const response = await fetch(`/api${path}`, {
+    credentials: "same-origin",
+    ...init,
+    headers,
+  });
   if (!response.ok) {
     throw new Error(await parseError(response));
   }
@@ -45,17 +59,11 @@ async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   return (await response.json()) as T;
 }
 
-function authHeaders(token: string) {
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-}
-
 export async function login(email: string, password: string) {
   const body = new URLSearchParams();
   body.set("username", email);
   body.set("password", password);
-  return apiRequest<TokenResponse>("/auth/login", {
+  return apiRequest<SessionResponse>("/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -65,108 +73,97 @@ export async function login(email: string, password: string) {
 }
 
 export async function createInterviewer(payload: { name: string; email: string; password: string }) {
-  return apiRequest("/auth/register", {
+  return apiRequest("/users/interviewers", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      ...payload,
-      role: "interviewer",
-    }),
+    body: JSON.stringify(payload),
   });
 }
 
-export async function fetchApplications(token: string, status?: string) {
-  const query = status ? `?status=${encodeURIComponent(status)}` : "";
-  return apiRequest<ApplicationListItem[]>(`/applications${query}`, {
-    headers: authHeaders(token),
+export async function fetchSourcePdf(applicationId: string) {
+  const response = await fetch(`/api/applications/${applicationId}/source-pdf`, {
+    credentials: "same-origin",
   });
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+  return response.blob();
+}
+
+export async function fetchApplications(status?: string) {
+  const query = status ? `?status=${encodeURIComponent(status)}` : "";
+  return apiRequest<ApplicationListItem[]>(`/applications${query}`);
 }
 
 export async function fetchApplicationDetail<T extends ApplicationDetailAdmin | ApplicationDetailInterviewer>(
-  token: string,
   applicationId: string,
 ) {
-  return apiRequest<T>(`/applications/${applicationId}`, {
-    headers: authHeaders(token),
-  });
+  return apiRequest<T>(`/applications/${applicationId}`);
 }
 
-export async function uploadApplication(token: string, file: File) {
+export async function uploadApplication(file: File) {
   const formData = new FormData();
   formData.append("file", file);
   return apiRequest<ApplicationUploadResponse>("/applications/upload", {
     method: "POST",
-    headers: authHeaders(token),
     body: formData,
   });
 }
 
-export async function retryApplication(token: string, applicationId: string) {
+export async function retryApplication(applicationId: string) {
   return apiRequest<ApplicationListItem>(`/applications/${applicationId}/retry`, {
     method: "POST",
-    headers: authHeaders(token),
   });
 }
 
-export async function assignApplication(token: string, applicationId: string, interviewerId: string) {
+export async function assignApplication(applicationId: string, interviewerId: string) {
   return apiRequest<ApplicationListItem>(`/applications/${applicationId}/assign`, {
     method: "POST",
     headers: {
-      ...authHeaders(token),
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ interviewer_id: interviewerId }),
   });
 }
 
-export async function reassignApplication(token: string, applicationId: string, interviewerId: string) {
+export async function reassignApplication(applicationId: string, interviewerId: string) {
   return apiRequest<ApplicationListItem>(`/applications/${applicationId}/assign`, {
     method: "PUT",
     headers: {
-      ...authHeaders(token),
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ interviewer_id: interviewerId }),
   });
 }
 
-export async function fetchInterviewers(token: string) {
-  return apiRequest<InterviewerListItem[]>("/users/interviewers", {
-    headers: authHeaders(token),
-  });
+export async function fetchInterviewers() {
+  return apiRequest<InterviewerListItem[]>("/users/interviewers");
 }
 
-export async function deleteInterviewer(token: string, userId: string) {
+export async function deleteInterviewer(userId: string) {
   return apiRequest<void>(`/users/${userId}`, {
     method: "DELETE",
-    headers: authHeaders(token),
   });
 }
 
-export async function fetchAssignments(token: string) {
-  return apiRequest<AssignmentListItem[]>("/assignments", {
-    headers: authHeaders(token),
-  });
+export async function fetchAssignments() {
+  return apiRequest<AssignmentListItem[]>("/assignments");
 }
 
-export async function fetchMyApplications(token: string) {
-  return apiRequest<ApplicationListItem[]>("/me/applications", {
-    headers: authHeaders(token),
-  });
+export async function fetchMyApplications() {
+  return apiRequest<ApplicationListItem[]>("/me/applications");
 }
 
-export async function generateDraft(token: string, applicationId: string) {
+export async function generateDraft(applicationId: string) {
   return apiRequest<DraftMutationResponse>(`/applications/${applicationId}/generate`, {
     method: "POST",
-    headers: authHeaders(token),
   });
 }
 
-export async function publishDraft(token: string, applicationId: string) {
+export async function publishDraft(applicationId: string) {
   return apiRequest<DraftMutationResponse>(`/applications/${applicationId}/publish`, {
     method: "POST",
-    headers: authHeaders(token),
   });
 }

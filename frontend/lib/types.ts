@@ -1,8 +1,14 @@
 export type UserRole = "admin" | "interviewer";
 
-export type TokenResponse = {
-  access_token: string;
-  token_type: string;
+export type SessionUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+};
+
+export type SessionResponse = {
+  user: SessionUser;
 };
 
 export type UserSummary = {

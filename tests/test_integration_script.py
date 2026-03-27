@@ -29,7 +29,7 @@ def run_integration_test():
     # Use TestClient to login
     client = TestClient(app, raise_server_exceptions=True)
     resp = client.post('/auth/login', data={'username': email, 'password': 'password123'})
-    token = resp.json()['access_token']
+    assert resp.status_code == 200
     
     # Create a dummy PDF
     pdf_path = f'test_{uuid.uuid4()}.pdf'
@@ -79,7 +79,7 @@ def run_integration_test():
             }
             with patch('app.agents.synthesis_agent.generate_synthesis', return_value=mock_llm_response):
                 with open(pdf_path, 'rb') as f:
-                    upload_resp = client.post('/applications/upload', files={'file': ('test.pdf', f, 'application/pdf')}, headers={'Authorization': f'Bearer {token}'})
+                    upload_resp = client.post('/applications/upload', files={'file': ('test.pdf', f, 'application/pdf')})
             
         print(f'Upload Response Code: {upload_resp.status_code}')
         if upload_resp.status_code != 201:

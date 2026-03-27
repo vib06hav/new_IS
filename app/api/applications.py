@@ -1,9 +1,9 @@
 import os
-import shutil
 import uuid
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
+import fitz
 from sqlalchemy.orm import Session
 
 from app.agents.orchestrator import run_deterministic_pipeline
@@ -27,6 +27,7 @@ from app.config import settings
 from app.database import get_db
 from app.models.application import Application
 from app.models.user import User
+from app.security.rate_limit import limiter
 
 import logging
 
@@ -35,20 +36,67 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/applications", tags=["Applications"])
 
 
+def validate_uploaded_pdf(file_path: str) -> None:
+    try:
+        with fitz.open(file_path) as document:
+            if document.page_count == 0:
+                raise HTTPException(status_code=400, detail="Uploaded PDF has no pages")
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Uploaded file is not a valid PDF") from exc
+
+
+def write_upload_with_limit(file: UploadFile, file_path: str) -> None:
+    max_bytes = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+    bytes_written = 0
+    try:
+        with open(file_path, "wb") as buffer:
+            while True:
+                chunk = file.file.read(1024 * 1024)
+                if not chunk:
+                    break
+                bytes_written += len(chunk)
+                if bytes_written > max_bytes:
+                    raise HTTPException(
+                        status_code=413,
+                        detail=f"Uploaded file exceeds the {settings.MAX_UPLOAD_SIZE_MB} MB limit",
+                    )
+                buffer.write(chunk)
+    except HTTPException:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        raise
+    finally:
+        file.file.close()
+
+
 @router.post("/upload", response_model=ApplicationUploadResponse, status_code=status.HTTP_201_CREATED)
 def upload_application(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
-    if not file.filename.endswith(".pdf"):
+    if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported")
 
     application_id = uuid.uuid4()
     file_path = os.path.join(settings.UPLOAD_DIRECTORY, f"{application_id}.pdf")
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    limiter.check(
+        f"upload:{current_user.id}",
+        limit=10,
+        window_seconds=60,
+        detail="Upload rate limit exceeded. Please wait before uploading again.",
+    )
+    write_upload_with_limit(file, file_path)
+
+    try:
+        validate_uploaded_pdf(file_path)
+    except HTTPException:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        raise
 
     db_app = Application(
         id=application_id,
@@ -67,6 +115,11 @@ def upload_application(
         db.refresh(db_app)
         logger.info(f"Upload pipeline completed for {application_id} with status {db_app.status}")
         return ApplicationUploadResponse(id=db_app.id, status=db_app.status, created_at=db_app.created_at)
+    except HTTPException:
+        db.rollback()
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        raise
     except Exception:
         db.rollback()
         db_app.status = "FAILED"

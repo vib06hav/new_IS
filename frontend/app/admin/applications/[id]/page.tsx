@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { fetchApplicationDetail } from "@/lib/api";
-import { getToken } from "@/lib/auth";
 import type { ApplicationDetailAdmin } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { JsonSection } from "@/components/JsonSection";
@@ -20,13 +19,8 @@ export default function AdminApplicationDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   async function loadDetail() {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
     try {
-      const detail = await fetchApplicationDetail<ApplicationDetailAdmin>(token, params.id);
+      const detail = await fetchApplicationDetail<ApplicationDetailAdmin>(params.id);
       setItem(detail);
       setError(null);
     } catch (loadError) {
@@ -70,7 +64,9 @@ export default function AdminApplicationDetailPage() {
           </div>
         </Card>
 
-        {item.review_package ? <ReviewPackageSection reviewPackage={item.review_package} roleLabel="admin" /> : null}
+        {item.review_package ? (
+          <ReviewPackageSection applicationId={item.id} reviewPackage={item.review_package} roleLabel="admin" />
+        ) : null}
 
         {item.status === "DRAFT" ? (
           <Card title="Draft Status" description="Admin cannot view draft pages before publish.">

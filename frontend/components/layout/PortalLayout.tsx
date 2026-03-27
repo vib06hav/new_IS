@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { clearToken, getSession } from "@/lib/auth";
+import { getSession, signOut } from "@/lib/auth";
 import type { UserRole } from "@/lib/types";
 import { Loader } from "@/components/ui/Loader";
 
@@ -21,16 +21,26 @@ export function PortalLayout({ children, role, loginHref, title, navItems }: Por
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const session = getSession();
-    if (!session || session.role !== role) {
-      router.replace(loginHref);
-      return;
+    let cancelled = false;
+    async function checkSession() {
+      const session = await getSession();
+      if (cancelled) {
+        return;
+      }
+      if (!session || session.user.role !== role) {
+        router.replace(loginHref);
+        return;
+      }
+      setReady(true);
     }
-    setReady(true);
+    void checkSession();
+    return () => {
+      cancelled = true;
+    };
   }, [loginHref, role, router]);
 
-  function handleSignOut() {
-    clearToken();
+  async function handleSignOut() {
+    await signOut();
     router.replace(loginHref);
   }
 
@@ -61,7 +71,7 @@ export function PortalLayout({ children, role, loginHref, title, navItems }: Por
                 );
               })}
             </nav>
-            <button className="text-sm text-muted underline" onClick={handleSignOut} type="button">
+            <button className="text-sm text-muted underline" onClick={() => void handleSignOut()} type="button">
               Sign out
             </button>
           </div>

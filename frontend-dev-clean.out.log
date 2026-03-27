@@ -1,0 +1,76 @@
+
+> ag-interview-standardiser-frontend@0.1.0 dev
+> next dev --port 3002
+
+   ▲ Next.js 15.5.14
+   - Local:        http://localhost:3002
+   - Network:      http://172.23.128.1:3002
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.6s
+ ○ Compiling /admin/login ...
+ ✓ Compiled /admin/login in 1070ms (603 modules)
+ GET /admin/login 200 in 1530ms
+ ✓ Compiled /interviewer/login in 324ms (606 modules)
+ GET /interviewer/login 200 in 617ms
+ ✓ Compiled /admin/reports in 360ms (625 modules)
+ GET /admin/reports 200 in 514ms
+ ✓ Compiled /admin/upload in 293ms (632 modules)
+ GET /admin/upload 200 in 449ms
+ ✓ Compiled / in 286ms (605 modules)
+ GET / 200 in 560ms
+ ✓ Compiled /interviewer/login in 175ms (379 modules)
+ GET /interviewer/login 200 in 587ms
+ ✓ Compiled /admin/login in 156ms (382 modules)
+ GET /admin/login 200 in 446ms
+ ✓ Compiled /admin/reports in 314ms (393 modules)
+ GET /admin/reports 200 in 525ms
+ ○ Compiling /admin/interviewers ...
+ ✓ Compiled /admin/interviewers in 901ms (642 modules)
+ GET /admin/interviewers 200 in 1347ms
+ ✓ Compiled /admin/upload in 401ms (403 modules)
+ GET /admin/upload 200 in 929ms
+ GET /admin/reports 200 in 138ms
+ ○ Compiling /admin/applications/[id] ...
+ ✓ Compiled /admin/applications/[id] in 1165ms (658 modules)
+ GET /admin/applications/161eae1a-d955-4971-9127-4a62133668fd 200 in 3006ms
+ GET / 200 in 143ms
+ GET /interviewer/login 200 in 135ms
+ GET /admin/login 200 in 141ms
+ GET /admin/reports 200 in 82ms
+ GET /admin/interviewers 200 in 182ms
+ GET /admin/upload 200 in 162ms
+ GET /admin/reports 200 in 132ms
+ GET /admin/applications/02379c78-1c51-45c5-8413-961224d9e6b7 200 in 158ms
+ GET /admin/login 200 in 132ms
+ GET /interviewer/login 200 in 101ms
+ ○ Compiling /interviewer/dashboard ...
+ ✓ Compiled /interviewer/dashboard in 969ms (667 modules)
+ GET /interviewer/dashboard 200 in 1201ms
+ ○ Compiling /interviewer/applications/[id] ...
+ ✓ Compiled /interviewer/applications/[id] in 878ms (674 modules)
+ GET /interviewer/applications/02379c78-1c51-45c5-8413-961224d9e6b7 200 in 2785ms
+ GET /admin/login 200 in 146ms
+ GET /admin/reports 200 in 72ms
+ GET /admin/reports 200 in 147ms
+ GET /interviewer/login 200 in 117ms
+ GET /interviewer/dashboard 200 in 72ms
+ GET /interviewer/login 200 in 126ms
+ GET /interviewer/dashboard 200 in 147ms
+ GET /admin/login 200 in 109ms
+ GET /admin/reports 200 in 52ms
+ GET /admin/interviewers 200 in 189ms
+ ✓ Compiled in 3.9s (651 modules)
+ ✓ Compiled in 501ms (267 modules)
+ ✓ Compiled in 455ms (267 modules)
+ ✓ Compiled in 374ms (267 modules)
+ ✓ Compiled in 825ms (651 modules)
+ ✓ Compiled in 455ms (267 modules)
+ ✓ Compiled in 319ms (253 modules)
+ ✓ Compiled in 270ms (267 modules)
+ ✓ Compiled in 316ms (253 modules)
+ ✓ Compiled in 560ms (267 modules)
+ ○ Compiling /admin/login ...
+ ✓ Compiled /admin/login in 2.3s (390 modules)
+ GET /admin/login 200 in 4184ms

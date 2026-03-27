@@ -1,38 +1,111 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.models.user import User
-from app.auth.schemas import UserCreate, UserLogin
+from app.auth.schemas import InterviewerCreate, UserCreate, UserLogin
 from app.auth.security import get_password_hash, verify_password, create_access_token
 from app.config import settings
 
-def register_user(db: Session, user_data: UserCreate):
-    # Check if user exists
-    existing_user = db.query(User).filter(User.email == user_data.email).first()
+def create_user(db: Session, *, name: str, email: str, password: str, role: str) -> User:
+    existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    hashed_password = get_password_hash(user_data.password)
+
+    hashed_password = get_password_hash(password)
     db_user = User(
-        name=user_data.name,
-        email=user_data.email,
+        name=name,
+        email=email,
         password_hash=hashed_password,
-        role=user_data.role
+        role=role,
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
-def authenticate_user(db: Session, user_data: UserLogin) -> str:
+
+def register_user(db: Session, user_data: UserCreate):
+    return create_user(
+        db,
+        name=user_data.name,
+        email=user_data.email,
+        password=user_data.password,
+        role=user_data.role,
+    )
+
+
+def create_interviewer(db: Session, user_data: InterviewerCreate) -> User:
+    return create_user(
+        db,
+        name=user_data.name,
+        email=user_data.email,
+        password=user_data.password,
+        role="interviewer",
+    )
+
+
+def create_admin(db: Session, *, name: str, email: str, password: str) -> User:
+    return create_user(
+        db,
+        name=name,
+        email=email,
+        password=password,
+        role="admin",
+    )
+
+
+def bootstrap_admin_user(
+    db: Session,
+    *,
+    name: str,
+    email: str,
+    password: str,
+    promote_existing: bool = False,
+    reset_password: bool = False,
+) -> tuple[User, str]:
+    existing_user = db.query(User).filter(User.email == email).first()
+
+    if existing_user is None:
+        return create_admin(db, name=name, email=email, password=password), "created"
+
+    if existing_user.role == "admin":
+        changed = False
+        if existing_user.name != name:
+            existing_user.name = name
+            changed = True
+        if reset_password:
+            existing_user.password_hash = get_password_hash(password)
+            changed = True
+        if changed:
+            db.commit()
+            db.refresh(existing_user)
+            return existing_user, "updated"
+        return existing_user, "unchanged"
+
+    if not promote_existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="User already exists with a non-admin role. Re-run with promote_existing enabled.",
+        )
+
+    existing_user.role = "admin"
+    existing_user.name = name
+    if reset_password:
+        existing_user.password_hash = get_password_hash(password)
+    db.commit()
+    db.refresh(existing_user)
+    return existing_user, "promoted"
+
+def authenticate_user(db: Session, user_data: UserLogin) -> User:
     user = db.query(User).filter(User.email == user_data.email).first()
     if not user or not verify_password(user_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    # Create valid JWT
+    return user
+
+
+def build_session_token(user: User) -> str:
     token_data = {"sub": user.email, "role": user.role}
     return create_access_token(data=token_data)
 
@@ -56,7 +129,7 @@ def get_current_user_from_token(token: str, db: Session):
 
 
 def ensure_dev_admin_user(db: Session) -> User | None:
-    if settings.APP_ENV != "development":
+    if settings.APP_ENV != "development" or not settings.DEV_BOOTSTRAP_ADMIN:
         return None
 
     existing_user = db.query(User).filter(User.email == settings.DEV_ADMIN_EMAIL).first()

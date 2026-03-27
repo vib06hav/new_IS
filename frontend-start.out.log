@@ -1,0 +1,10 @@
+
+> ag-interview-standardiser-frontend@0.1.0 start
+> next start -p 3001
+
+   ▲ Next.js 15.5.14
+   - Local:        http://localhost:3001
+   - Network:      http://172.23.128.1:3001
+
+ ✓ Starting...
+ ✓ Ready in 821ms

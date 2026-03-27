@@ -1,0 +1,146 @@
+INFO  [app.config] Configuration loaded. APP_ENV=development, LOG_LEVEL=DEBUG
+INFO  [app.config] DATABASE_URL: ***[REDACTED]***
+INFO  [app.config] JWT_SECRET: ***[REDACTED]***
+INFO  [app.config] JWT_ALGORITHM: HS256
+INFO  [app.config] LLM_PROVIDER: openrouter
+INFO  [app.config] LLM_PAYLOAD_MODE: full
+INFO  [app.config] PARSER_ENGINE_VERSION: v2
+INFO  [app.config] LLM_ENDPOINT: https://openrouter.ai/api/v1/chat/completions
+INFO  [app.config] LLM_MODEL_NAME: nvidia/nemotron-3-super-120b-a12b:free
+INFO  [app.config] LLM_API_KEY: ***[REDACTED]***
+INFO  [app.main] Application startup success
+DEBUG [passlib.utils.compat] loaded lazy attr 'SafeConfigParser': <class 'configparser.ConfigParser'>
+DEBUG [passlib.utils.compat] loaded lazy attr 'NativeStringIO': <class '_io.StringIO'>
+DEBUG [passlib.utils.compat] loaded lazy attr 'BytesIO': <class '_io.BytesIO'>
+DEBUG [passlib.registry] registered 'bcrypt' handler: <class 'passlib.handlers.bcrypt.bcrypt'>
+DEBUG [git.cmd] Popen(['git', 'version'], cwd=C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser, stdin=None, shell=False, universal_newlines=False)
+DEBUG [git.cmd] Popen(['git', 'version'], cwd=C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser, stdin=None, shell=False, universal_newlines=False)
+INFO:     Started server process [7972]
+INFO:     Waiting for application startup.
+ERROR:    Traceback (most recent call last):
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\base.py", line 3309, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\default.py", line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: could not translate host name "db" to address: Name or service not known
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\starlette\routing.py", line 694, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\contextlib.py", line 199, in __aenter__
+    return await anext(self.gen)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\routing.py", line 203, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\contextlib.py", line 199, in __aenter__
+    return await anext(self.gen)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\routing.py", line 203, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\contextlib.py", line 199, in __aenter__
+    return await anext(self.gen)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\routing.py", line 203, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\contextlib.py", line 199, in __aenter__
+    return await anext(self.gen)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\routing.py", line 203, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\contextlib.py", line 199, in __aenter__
+    return await anext(self.gen)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\routing.py", line 203, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\routing.py", line 228, in __aenter__
+    await self._router._startup()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\fastapi\routing.py", line 4559, in _startup
+    handler()
+  File "C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\main.py", line 61, in bootstrap_dev_admin
+    user = ensure_dev_admin_user(db)
+  File "C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\auth\service.py", line 82, in ensure_dev_admin_user
+    existing_user = db.query(User).filter(User.email == settings.DEV_ADMIN_EMAIL).first()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\orm\query.py", line 2759, in first
+    return self.limit(1)._iter().first()  # type: ignore
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\orm\query.py", line 2857, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\orm\session.py", line 2351, in execute
+    return self._execute_internal(
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\orm\session.py", line 2239, in _execute_internal
+    conn = self._connection_for_bind(bind)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\orm\session.py", line 2108, in _connection_for_bind
+    return trans._connection_for_bind(engine, execution_options)
+  File "<string>", line 2, in _connection_for_bind
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\orm\session.py", line 1187, in _connection_for_bind
+    conn = bind.connect()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\base.py", line 3285, in connect
+    return self._connection_cls(self)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\base.py", line 145, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\base.py", line 2448, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\base.py", line 3309, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\sqlalchemy\engine\default.py", line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+  File "C:\Users\vibha\AppData\Local\Programs\Python\Python310\lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not translate host name "db" to address: Name or service not known
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+ERROR:    Application startup failed. Exiting.

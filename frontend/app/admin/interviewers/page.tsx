@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { createInterviewer, deleteInterviewer, fetchInterviewers } from "@/lib/api";
-import { getToken } from "@/lib/auth";
 import type { InterviewerListItem } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -25,12 +24,8 @@ export default function AdminInterviewersPage() {
   });
 
   async function loadInterviewers() {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
     try {
-      const data = await fetchInterviewers(token);
+      const data = await fetchInterviewers();
       setItems(data);
       setError(null);
     } catch (loadError) {
@@ -45,6 +40,8 @@ export default function AdminInterviewersPage() {
   }, []);
 
   async function handleCreate() {
+    setMessage(null);
+    setError(null);
     setSubmitting(true);
     try {
       await createInterviewer(form);
@@ -59,13 +56,21 @@ export default function AdminInterviewersPage() {
   }
 
   async function handleDelete(userId: string) {
-    const token = getToken();
-    if (!token) {
+    const interviewer = items.find((item) => item.id === userId);
+    const confirmed = window.confirm(
+      interviewer
+        ? `Remove ${interviewer.name}? This only works when they have no active assignments.`
+        : "Remove this interviewer? This only works when they have no active assignments.",
+    );
+    if (!confirmed) {
       return;
     }
+
+    setMessage(null);
+    setError(null);
     setBusyUserId(userId);
     try {
-      await deleteInterviewer(token, userId);
+      await deleteInterviewer(userId);
       setMessage("Interviewer removed.");
       await loadInterviewers();
     } catch (deleteError) {
@@ -83,7 +88,7 @@ export default function AdminInterviewersPage() {
           <p className="text-sm text-muted">Create and remove interviewer accounts.</p>
         </div>
 
-        <Card title="Create interviewer" description="This uses the existing register endpoint with role=interviewer.">
+        <Card title="Create interviewer" description="Only signed-in admins can create interviewer accounts.">
           <div className="grid gap-3 md:grid-cols-3">
             <Input
               label="Name"

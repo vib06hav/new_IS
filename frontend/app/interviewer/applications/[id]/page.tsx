@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { fetchApplicationDetail, generateDraft, publishDraft } from "@/lib/api";
-import { getToken } from "@/lib/auth";
 import type { ApplicationDetailInterviewer } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -23,13 +22,8 @@ export default function InterviewerApplicationPage() {
   const [message, setMessage] = useState<string | null>(null);
 
   async function loadDetail() {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
     try {
-      const detail = await fetchApplicationDetail<ApplicationDetailInterviewer>(token, params.id);
+      const detail = await fetchApplicationDetail<ApplicationDetailInterviewer>(params.id);
       setItem(detail);
       setError(null);
     } catch (loadError) {
@@ -46,13 +40,11 @@ export default function InterviewerApplicationPage() {
   usePolling(loadDetail, 5000, !loading && !busyAction);
 
   async function handleGenerate() {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
+    setMessage(null);
+    setError(null);
     setBusyAction("generate");
     try {
-      await generateDraft(token, params.id);
+      await generateDraft(params.id);
       setMessage(item?.status === "DRAFT" ? "Draft regenerated." : "Draft generated.");
       await loadDetail();
     } catch (generationError) {
@@ -63,13 +55,11 @@ export default function InterviewerApplicationPage() {
   }
 
   async function handlePublish() {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
+    setMessage(null);
+    setError(null);
     setBusyAction("publish");
     try {
-      await publishDraft(token, params.id);
+      await publishDraft(params.id);
       setMessage("Draft published.");
       await loadDetail();
     } catch (publishError) {
@@ -120,7 +110,7 @@ export default function InterviewerApplicationPage() {
         {error ? <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
         {item.review_package ? (
-          <ReviewPackageSection reviewPackage={item.review_package} roleLabel="interviewer" />
+          <ReviewPackageSection applicationId={item.id} reviewPackage={item.review_package} roleLabel="interviewer" />
         ) : null}
 
         {item.latest_draft ? (
