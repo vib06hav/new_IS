@@ -6,10 +6,11 @@ type CardProps = {
 
 export function Card({ title, description, children }: CardProps) {
   return (
-    <section className="rounded-xl border border-line bg-white p-5 shadow-sm">
+    <section className="fade-rise clay-card rounded-2xl p-6 shadow-[var(--card-shadow-soft)]">
       <div className="mb-4 space-y-1">
-        <h2 className="text-lg font-semibold text-ink">{title}</h2>
-        {description ? <p className="text-sm text-muted">{description}</p> : null}
+        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--muted)]/80">Interview Standardiser</p>
+        <h2 className="text-lg font-semibold tracking-tight text-[color:var(--brand-deep)]">{title}</h2>
+        {description ? <p className="text-sm text-[color:var(--muted)]">{description}</p> : null}
       </div>
       {children}
     </section>

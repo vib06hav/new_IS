@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/Card";
-import { JsonSection } from "@/components/JsonSection";
-import { ReviewPageThreeSection, ReviewPageTwoSection } from "@/components/ReviewPackagePages";
+import { ReviewPageOneSection, ReviewPageThreeSection, ReviewPageTwoSection } from "@/components/ReviewPackagePages";
 import { fetchSourcePdf } from "@/lib/api";
 import type { ReviewPackageSummary } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
+
+type ReviewPageTab = "page1" | "page2" | "page3";
 
 export function ReviewPackageSection({
   reviewPackage,
@@ -21,7 +23,9 @@ export function ReviewPackageSection({
 }) {
   const [openingPdf, setOpeningPdf] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<ReviewPageTab>("page1");
   const annotations = extractAnnotations(annotationSource);
+  const annotationSummary = useMemo(() => summarizeAnnotations(annotations), [annotations]);
   const description =
     roleLabel === "admin"
       ? "Admin review artifact: raw PDF plus deterministic ROS Pages 1-3."
@@ -50,33 +54,67 @@ export function ReviewPackageSection({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <Card title="Review Package" description={description}>
-        <div className="flex flex-col gap-3 text-sm text-muted md:flex-row md:items-center md:justify-between">
-          <div className="space-y-1">
-            <p>Canonical version {reviewPackage.canonical_version}</p>
-            <p>Pages 1-3 are rendered from the persisted deterministic review package.</p>
+        <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr] xl:items-end">
+          <div className="metric-strip">
+            <MetricCard label="Canonical version" value={reviewPackage.canonical_version} />
+            <MetricCard label="Page 2 annotations" value={String(annotationSummary.page2)} />
+            <MetricCard label="Page 3 highlights" value={String(annotationSummary.page3)} />
           </div>
-          <Button disabled={openingPdf} onClick={() => void handleOpenPdf()} variant="secondary">
-            {openingPdf ? "Opening source PDF..." : "Open source PDF"}
-          </Button>
+          <div className="space-y-3">
+            <p className="rounded-[1.15rem] border border-[color:var(--line)] bg-white/72 px-4 py-3 text-sm leading-6 text-[color:var(--muted)]">
+              Pages 1-3 stay deterministic. Post-generation evidence appears as a trace overlay, not a mutation of the
+              canonical review record.
+            </p>
+            <Button className="w-full" disabled={openingPdf} onClick={() => void handleOpenPdf()} variant="secondary">
+              {openingPdf ? "Opening source PDF..." : "Open source PDF"}
+            </Button>
+          </div>
         </div>
-        {pdfError ? <p className="mt-3 text-sm text-red-700">{pdfError}</p> : null}
+        {pdfError ? (
+          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{pdfError}</p>
+        ) : null}
       </Card>
 
-      <JsonSection
-        title="ROS Page 1"
-        description="Background profile"
-        data={reviewPackage.pages_1_3.page_1_background_profile}
-      />
-      <ReviewPageTwoSection
-        data={reviewPackage.pages_1_3.page_2_academic_and_engagement}
-        annotations={annotations}
-      />
-      <ReviewPageThreeSection
-        data={reviewPackage.pages_1_3.page_3_essays}
-        annotations={annotations}
-      />
+      <Card title="Pages 1-3 Workspace" description="Navigate the deterministic review package one page at a time.">
+        <div className="space-y-5">
+          <SegmentedControl
+            label="Review pages"
+            value={activeTab}
+            onChange={setActiveTab}
+            options={[
+              { value: "page1", label: "Page 1", meta: "Background profile" },
+              { value: "page2", label: "Page 2", meta: "Academic and engagement" },
+              { value: "page3", label: "Page 3", meta: "Essays and fragments" },
+            ]}
+          />
+
+          <div className="fade-rise">
+            {activeTab === "page1" ? (
+              <ReviewPageOneSection data={reviewPackage.pages_1_3.page_1_background_profile} />
+            ) : null}
+            {activeTab === "page2" ? (
+              <ReviewPageTwoSection
+                data={reviewPackage.pages_1_3.page_2_academic_and_engagement}
+                annotations={annotations}
+              />
+            ) : null}
+            {activeTab === "page3" ? (
+              <ReviewPageThreeSection data={reviewPackage.pages_1_3.page_3_essays} annotations={annotations} />
+            ) : null}
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function MetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-white/82 px-4 py-4 shadow-[var(--card-shadow-soft)]">
+      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
+      <p className="mt-2 text-sm leading-6 text-[color:var(--ink)]">{value}</p>
     </div>
   );
 }
@@ -99,4 +137,27 @@ function extractAnnotations(source?: Record<string, unknown> | null) {
       Array<{ fragment_id: string; start_char: number; end_char: number; signal_ids?: string[]; theme_ids?: string[] }>
     >;
   };
+}
+
+function summarizeAnnotations(
+  annotations:
+    | {
+        page_2_entities?: Record<string, { signal_ids?: string[]; theme_ids?: string[] }>;
+        page_3_fragments?: Record<
+          string,
+          Array<{ fragment_id: string; start_char: number; end_char: number; signal_ids?: string[]; theme_ids?: string[] }>
+        >;
+      }
+    | null,
+) {
+  if (!annotations) {
+    return { page2: 0, page3: 0 };
+  }
+
+  const page2 = annotations.page_2_entities ? Object.keys(annotations.page_2_entities).length : 0;
+  const page3 = annotations.page_3_fragments
+    ? Object.values(annotations.page_3_fragments).reduce((sum, value) => sum + value.length, 0)
+    : 0;
+
+  return { page2, page3 };
 }

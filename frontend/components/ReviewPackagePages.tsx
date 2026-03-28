@@ -38,6 +38,30 @@ const PAGE_2_SECTIONS: Array<{ key: string; label: string }> = [
   { key: "leadership_roles", label: "Leadership Roles" },
 ];
 
+export function ReviewPageOneSection({ data }: { data: unknown }) {
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    return <JsonSection title="ROS Page 1" description="Background profile" data={data} />;
+  }
+
+  return (
+    <Card title="ROS Page 1" description="Background profile">
+      <div className="grid gap-4 lg:grid-cols-2">
+        {Object.entries(data as Record<string, unknown>).map(([key, value]) => (
+          <article
+            key={key}
+            className="rounded-[1.2rem] border border-[color:var(--line)] bg-white/82 p-4 shadow-[var(--card-shadow-soft)]"
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">
+              {formatKey(key)}
+            </p>
+            <div className="mt-3 text-sm leading-7 text-[color:var(--ink)]">{renderValue(value)}</div>
+          </article>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
 export function ReviewPageTwoSection({
   data,
   annotations,
@@ -47,13 +71,7 @@ export function ReviewPageTwoSection({
 }) {
   const pageData = parsePageTwoData(data);
   if (!pageData) {
-    return (
-      <JsonSection
-        title="ROS Page 2"
-        description="Academic and engagement"
-        data={data}
-      />
-    );
+    return <JsonSection title="ROS Page 2" description="Academic and engagement" data={data} />;
   }
 
   const entityAnnotations = annotations?.page_2_entities || {};
@@ -69,7 +87,7 @@ export function ReviewPageTwoSection({
 
           return (
             <div key={key} className="space-y-3">
-              <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted">{label}</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[color:var(--muted)]">{label}</h3>
               <div className="space-y-3">
                 {items.map((item, index) => {
                   const entityId = typeof item.entity_id === "string" ? item.entity_id : undefined;
@@ -79,17 +97,17 @@ export function ReviewPageTwoSection({
                   return (
                     <article
                       key={`${key}-${entityId || index}`}
-                      className={`rounded-lg border p-4 transition-colors ${
+                      className={`rounded-[1.2rem] border p-4 transition-colors ${
                         highlighted
-                          ? "border-blue-300 bg-blue-50 shadow-sm"
-                          : "border-line bg-surface"
+                          ? "border-blue-300 bg-[linear-gradient(180deg,rgba(239,246,255,0.96),rgba(255,255,255,0.96))] shadow-[var(--card-shadow-soft)]"
+                          : "border-[color:var(--line)] bg-white/80 shadow-[var(--card-shadow-soft)]"
                       }`}
                       title={buildAnnotationTitle(annotation)}
                     >
                       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                        <p className="font-semibold text-ink">{derivePageTwoTitle(item, label)}</p>
+                        <p className="font-semibold text-[color:var(--ink)]">{derivePageTwoTitle(item, label)}</p>
                         {entityId ? (
-                          <span className="rounded-full bg-white px-2 py-1 text-xs font-semibold text-muted shadow-sm">
+                          <span className="rounded-full bg-white px-2 py-1 text-xs font-semibold text-[color:var(--muted)] shadow-sm">
                             {entityId}
                           </span>
                         ) : null}
@@ -100,12 +118,12 @@ export function ReviewPageTwoSection({
                           {annotation?.theme_ids?.length ? ` · ${annotation.theme_ids.join(", ")}` : ""}
                         </p>
                       ) : null}
-                      <dl className="grid gap-2 text-sm text-ink md:grid-cols-2">
+                      <dl className="grid gap-2 text-sm text-[color:var(--ink)] md:grid-cols-2">
                         {Object.entries(item)
                           .filter(([entryKey]) => entryKey !== "entity_id")
                           .map(([entryKey, value]) => (
                             <Fragment key={entryKey}>
-                              <dt className="font-medium capitalize text-muted">{formatKey(entryKey)}</dt>
+                              <dt className="font-medium capitalize text-[color:var(--muted)]">{formatKey(entryKey)}</dt>
                               <dd>{renderValue(value)}</dd>
                             </Fragment>
                           ))}
@@ -131,13 +149,7 @@ export function ReviewPageThreeSection({
 }) {
   const pageData = parsePageThreeData(data);
   if (!pageData) {
-    return (
-      <JsonSection
-        title="ROS Page 3"
-        description="Essays"
-        data={data}
-      />
-    );
+    return <JsonSection title="ROS Page 3" description="Essays" data={data} />;
   }
 
   const fragmentAnnotations = annotations?.page_3_fragments || {};
@@ -150,11 +162,14 @@ export function ReviewPageThreeSection({
           const essayAnnotations = normalizeEssayAnnotations(fragmentAnnotations[entityId] || []);
 
           return (
-            <article key={entityId} className="rounded-lg border border-line bg-surface p-4">
+            <article
+              key={entityId}
+              className="rounded-[1.2rem] border border-[color:var(--line)] bg-white/82 p-4 shadow-[var(--card-shadow-soft)]"
+            >
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <div className="space-y-1">
-                  <p className="text-sm font-semibold text-ink">{essay.prompt || "Essay"}</p>
-                  <p className="text-xs text-muted">
+                  <p className="text-sm font-semibold text-[color:var(--ink)]">{essay.prompt || "Essay"}</p>
+                  <p className="text-xs text-[color:var(--muted)]">
                     {essay.entity_id || "Unknown essay"} · {essay.word_count || 0} words
                   </p>
                 </div>
@@ -164,7 +179,7 @@ export function ReviewPageThreeSection({
                   </span>
                 ) : null}
               </div>
-              <div className="text-sm leading-7 text-ink">
+              <div className="text-sm leading-7 text-[color:var(--ink)]">
                 {renderEssayText(essay.full_text || "", essayAnnotations)}
               </div>
             </article>
@@ -264,28 +279,23 @@ function buildAnnotationTitle(annotation?: EntityAnnotation | FragmentAnnotation
 }
 
 function derivePageTwoTitle(item: Page2Record, label: string) {
-  const candidates = [
-    item.academic_level,
-    item.test_name,
-    item.activity_name,
-    item.position_title,
-  ];
+  const candidates = [item.academic_level, item.test_name, item.activity_name, item.position_title];
   const title = candidates.find((candidate) => typeof candidate === "string" && candidate.trim().length > 0);
   return typeof title === "string" ? title : label.slice(0, -1);
 }
 
 function renderValue(value: unknown): React.ReactNode {
   if (value == null) {
-    return <span className="text-muted">—</span>;
+    return <span className="text-[color:var(--muted)]">—</span>;
   }
   if (Array.isArray(value)) {
     if (!value.length) {
-      return <span className="text-muted">—</span>;
+      return <span className="text-[color:var(--muted)]">—</span>;
     }
     return (
       <div className="space-y-1">
         {value.map((item, index) => (
-          <div key={index} className="rounded bg-white px-2 py-1">
+          <div key={index} className="rounded-xl bg-slate-50/90 px-3 py-2">
             {isRecord(item) ? JSON.stringify(item) : String(item)}
           </div>
         ))}
@@ -293,7 +303,11 @@ function renderValue(value: unknown): React.ReactNode {
     );
   }
   if (typeof value === "object") {
-    return <pre className="rounded bg-white px-2 py-1 text-xs">{JSON.stringify(value, null, 2)}</pre>;
+    return (
+      <pre className="overflow-x-auto rounded-xl bg-slate-50/90 px-3 py-3 text-xs">
+        {JSON.stringify(value, null, 2)}
+      </pre>
+    );
   }
   return String(value);
 }

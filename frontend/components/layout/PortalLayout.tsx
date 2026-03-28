@@ -49,12 +49,27 @@ export function PortalLayout({ children, role, loginHref, title, navItems }: Por
   }
 
   return (
-    <div className="min-h-screen bg-[#fafaf9]">
-      <header className="border-b border-line bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted">AG Interview Standardiser</p>
-            <h1 className="text-xl font-semibold text-ink">{title}</h1>
+    <div className="min-h-screen text-[color:var(--ink)]">
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 px-6 py-4 backdrop-blur-md">
+        <div className="mx-auto flex max-w-[92rem] flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-brand-accent to-brand-hover shadow-sm">
+              <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                />
+              </svg>
+              <span className="absolute -bottom-1 -right-1 rounded border border-slate-200 bg-white px-1 text-[10px] font-bold text-brand-deep">
+                IS
+              </span>
+            </div>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--muted)]">AG Interview Standardiser</p>
+              <h1 className="text-xl font-semibold tracking-tight text-brand-deep">{title}</h1>
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <nav className="flex flex-wrap gap-2 text-sm">
@@ -63,7 +78,11 @@ export function PortalLayout({ children, role, loginHref, title, navItems }: Por
                 return (
                   <Link
                     key={item.href}
-                    className={`rounded px-3 py-2 ${active ? "bg-ink text-white" : "bg-surface text-muted"}`}
+                    className={`rounded-xl px-4 py-2.5 font-semibold transition duration-200 ${
+                      active
+                        ? "bg-brand-accent text-white shadow-[0_12px_24px_rgba(29,78,216,0.2)]"
+                        : "border border-slate-200 bg-white/80 text-slate-600 shadow-sm hover:text-brand-accent"
+                    }`}
                     href={item.href}
                   >
                     {item.label}
@@ -71,13 +90,17 @@ export function PortalLayout({ children, role, loginHref, title, navItems }: Por
                 );
               })}
             </nav>
-            <button className="text-sm text-muted underline" onClick={() => void handleSignOut()} type="button">
+            <button
+              className="rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition duration-200 hover:text-brand-accent"
+              onClick={() => void handleSignOut()}
+              type="button"
+            >
               Sign out
             </button>
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
+      <main className="mx-auto max-w-[92rem] px-6 py-8 md:py-10">{children}</main>
     </div>
   );
 }

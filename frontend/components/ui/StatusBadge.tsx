@@ -1,16 +1,18 @@
 const statusClasses: Record<string, string> = {
-  UPLOADED: "bg-stone-200 text-stone-800",
-  PROCESSING: "bg-amber-100 text-amber-800",
-  READY: "bg-blue-100 text-blue-800",
-  FAILED: "bg-red-100 text-red-800",
-  ASSIGNED: "bg-violet-100 text-violet-800",
-  DRAFT: "bg-orange-100 text-orange-800",
-  PUBLISHED: "bg-emerald-100 text-emerald-800",
+  UPLOADED: "border-stone-200 bg-stone-100/90 text-stone-700",
+  PROCESSING: "border-amber-200 bg-amber-100/90 text-amber-800",
+  READY: "border-blue-200 bg-blue-100/90 text-blue-800",
+  FAILED: "border-red-200 bg-red-100/90 text-red-700",
+  ASSIGNED: "border-violet-200 bg-violet-100/90 text-violet-800",
+  DRAFT: "border-orange-200 bg-orange-100/90 text-orange-800",
+  PUBLISHED: "border-emerald-200 bg-emerald-100/90 text-emerald-800",
 };
 
 export function StatusBadge({ status }: { status: string }) {
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClasses[status] || "bg-stone-200 text-stone-700"}`}>
+    <span
+      className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] ${statusClasses[status] || "border-stone-200 bg-stone-100 text-stone-700"}`}
+    >
       {status}
     </span>
   );

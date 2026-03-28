@@ -11,7 +11,7 @@ export function JsonSection({
 }) {
   return (
     <Card title={title} description={description}>
-      <div className="overflow-x-auto rounded border border-line bg-surface p-4 text-sm text-ink">
+      <div className="overflow-x-auto rounded-[1.2rem] border border-[color:var(--line)] bg-white/80 p-4 text-sm text-[color:var(--ink)] shadow-[var(--card-shadow-soft)]">
         <pre>{JSON.stringify(data, null, 2)}</pre>
       </div>
     </Card>

@@ -5,15 +5,18 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const buttonClasses: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  primary: "bg-ink text-white hover:bg-black",
-  secondary: "bg-surface text-ink hover:bg-stone-200",
-  danger: "bg-red-600 text-white hover:bg-red-700",
+  primary:
+    "clay-button-primary border border-blue-800/10 text-white",
+  secondary:
+    "border border-slate-200 bg-white/90 text-[color:var(--brand-deep)] shadow-[var(--nav-pill-shadow)] hover:bg-white",
+  danger:
+    "border border-red-700/10 bg-red-600 text-white shadow-[0_12px_24px_rgba(220,38,38,0.18)] hover:bg-red-700",
 };
 
 export function Button({ className = "", variant = "primary", ...props }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center rounded border border-transparent px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${buttonClasses[variant]} ${className}`}
+      className={`inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${buttonClasses[variant]} ${className}`}
       {...props}
     />
   );
@@ -30,7 +33,7 @@ export function ButtonLink({
 }) {
   return (
     <Link
-      className={`inline-flex items-center justify-center rounded px-4 py-2 text-sm transition ${buttonClasses[variant]}`}
+      className={`inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-200 ${buttonClasses[variant]}`}
       href={href}
     >
       {children}

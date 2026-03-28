@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { assignApplication, fetchApplications, fetchInterviewers, reassignApplication } from "@/lib/api";
 import type { ApplicationListItem, InterviewerListItem } from "@/lib/types";
-import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader } from "@/components/ui/Loader";
 import { SelectInput } from "@/components/ui/Input";
@@ -12,6 +11,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
 import { usePolling } from "@/lib/usePolling";
 import { AdminShell } from "@/components/layout/AdminShell";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 
 const REPORT_STATUSES = ["ALL", "READY", "ASSIGNED", "DRAFT", "PUBLISHED"] as const;
 
@@ -32,9 +32,7 @@ export default function AdminReportsPage() {
         fetchInterviewers(),
       ]);
       setItems(
-        applications.filter(
-          (item) => item.status !== "UPLOADED" && item.status !== "PROCESSING" && item.status !== "FAILED",
-        ),
+        applications.filter((item) => item.status !== "UPLOADED" && item.status !== "PROCESSING" && item.status !== "FAILED"),
       );
       setInterviewers(interviewerList);
       setError(null);
@@ -58,6 +56,7 @@ export default function AdminReportsPage() {
       setError("Choose an interviewer first.");
       return;
     }
+
     setBusyAppId(applicationId);
     try {
       if (mode === "assign") {
@@ -75,63 +74,93 @@ export default function AdminReportsPage() {
     }
   }
 
+  const metrics = useMemo(
+    () => ({
+      total: items.length,
+      ready: items.filter((item) => item.status === "READY").length,
+      live: items.filter((item) => item.status === "ASSIGNED" || item.status === "DRAFT").length,
+    }),
+    [items],
+  );
+
   return (
     <AdminShell>
       <div className="space-y-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-ink">Generated Reports</h1>
-            <p className="text-sm text-muted">Processed applications and assignment state.</p>
+        <section className="rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(228,245,241,0.9))] p-6 shadow-[var(--card-shadow)]">
+          <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr] xl:items-end">
+            <div className="space-y-4">
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">Admin review desk</p>
+              <h1 className="text-4xl font-semibold tracking-[-0.05em] text-[color:var(--ink)]">Generated Reports</h1>
+              <p className="max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
+                A compact lifecycle board for every review-ready application. Filter fast, assign inline, and open the
+                full workspace only when you need to go deep.
+              </p>
+            </div>
+            <div className="metric-strip">
+              <MetricCard label="Visible" value={String(metrics.total)} />
+              <MetricCard label="Ready to assign" value={String(metrics.ready)} />
+              <MetricCard label="In reviewer hands" value={String(metrics.live)} />
+            </div>
           </div>
-          <div className="w-full md:w-56">
-            <SelectInput
-              label="Filter by status"
-              value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value as (typeof REPORT_STATUSES)[number])}
-              options={REPORT_STATUSES.map((status) => ({ value: status, label: status }))}
-            />
+        </section>
+
+        <div className="grid gap-4 xl:grid-cols-[1fr_22rem] xl:items-start">
+          <SegmentedControl
+            label="Report lifecycle"
+            value={statusFilter}
+            onChange={setStatusFilter}
+            options={REPORT_STATUSES.map((status) => ({ value: status, label: status }))}
+          />
+          <div className="rounded-[1.4rem] border border-[color:var(--line)] bg-white/78 p-4 shadow-[var(--card-shadow-soft)]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Team capacity</p>
+            <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+              {interviewers.length} interviewers loaded for inline assignment and reassignment.
+            </p>
           </div>
         </div>
 
-        {message ? <p className="rounded border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">{message}</p> : null}
-        {error ? <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+        {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
+        {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
 
         {loading ? (
           <Loader label="Loading reports..." />
         ) : items.length === 0 ? (
           <EmptyState title="No processed applications yet." description="READY and later states will appear here." />
         ) : (
-          <div className="space-y-4">
+          <div className="data-table">
+            <div className="data-table-header md:grid-cols-[1.2fr_0.8fr_0.8fr_1.2fr_0.7fr]">
+              <span>Application</span>
+              <span>Status</span>
+              <span>Created</span>
+              <span>Assignment</span>
+              <span>Open</span>
+            </div>
             {items.map((item) => {
               const isBusy = busyAppId === item.id;
               const canAssign = item.status === "READY";
               const canReassign = item.status === "ASSIGNED" || item.status === "DRAFT";
 
               return (
-                <Card key={item.id} title={item.id} description={`Created ${new Date(item.created_at).toLocaleString()}`}>
-                  <div className="space-y-4">
-                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                      <div className="flex items-center gap-3">
-                        <StatusBadge status={item.status} />
-                        <span className="text-sm text-muted">
-                          {item.assigned_interviewer ? `Assigned to ${item.assigned_interviewer.name}` : "Unassigned"}
-                        </span>
-                      </div>
-                      <Link className="text-sm text-accent underline" href={`/admin/applications/${item.id}`}>
-                        View application
-                      </Link>
-                    </div>
-
+                <div key={item.id} className="data-table-row md:grid-cols-[1.2fr_0.8fr_0.8fr_1.2fr_0.7fr]">
+                  <div>
+                    <p className="display-font text-base font-semibold text-[color:var(--ink)]">{item.id}</p>
+                    <p className="mt-1 text-xs text-[color:var(--muted)]">
+                      {item.assigned_interviewer ? item.assigned_interviewer.email : "No interviewer attached yet"}
+                    </p>
+                  </div>
+                  <div>
+                    <StatusBadge status={item.status} />
+                  </div>
+                  <p className="text-sm text-[color:var(--muted)]">{new Date(item.created_at).toLocaleString()}</p>
+                  <div className="space-y-2">
                     {canAssign || canReassign ? (
-                      <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+                      <>
                         <SelectInput
-                          label={canAssign ? "Assign interviewer" : "Reassign interviewer"}
+                          className="py-2"
+                          label={canAssign ? "Assign" : "Reassign"}
                           value={selectedInterviewerByApp[item.id] || ""}
                           onChange={(event) =>
-                            setSelectedInterviewerByApp((current) => ({
-                              ...current,
-                              [item.id]: event.target.value,
-                            }))
+                            setSelectedInterviewerByApp((current) => ({ ...current, [item.id]: event.target.value }))
                           }
                           options={[
                             { value: "", label: "Choose interviewer" },
@@ -141,23 +170,41 @@ export default function AdminReportsPage() {
                             })),
                           ]}
                         />
-                        <div className="flex items-end">
-                          <Button
-                            disabled={isBusy || !selectedInterviewerByApp[item.id]}
-                            onClick={() => void mutateAssignment(item.id, canAssign ? "assign" : "reassign")}
-                          >
-                            {isBusy ? "Saving..." : canAssign ? "Assign" : "Reassign"}
-                          </Button>
-                        </div>
-                      </div>
-                    ) : null}
+                        <Button
+                          className="w-full"
+                          disabled={isBusy || !selectedInterviewerByApp[item.id]}
+                          onClick={() => void mutateAssignment(item.id, canAssign ? "assign" : "reassign")}
+                        >
+                          {isBusy ? "Saving..." : canAssign ? "Assign" : "Reassign"}
+                        </Button>
+                      </>
+                    ) : (
+                      <p className="text-sm text-[color:var(--muted)]">
+                        {item.assigned_interviewer ? `Owned by ${item.assigned_interviewer.name}` : "No action available"}
+                      </p>
+                    )}
                   </div>
-                </Card>
+                  <Link
+                    className="display-font text-sm font-semibold text-[color:var(--accent)] underline underline-offset-4"
+                    href={`/admin/applications/${item.id}`}
+                  >
+                    Open
+                  </Link>
+                </div>
               );
             })}
           </div>
         )}
       </div>
     </AdminShell>
+  );
+}
+
+function MetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-white/82 px-4 py-4 shadow-[var(--card-shadow-soft)]">
+      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
+      <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[color:var(--ink)]">{value}</p>
+    </div>
   );
 }

@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchMyApplications } from "@/lib/api";
 import type { ApplicationListItem } from "@/lib/types";
-import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -34,35 +33,80 @@ export default function InterviewerDashboardPage() {
 
   usePolling(loadApplications, 5000, !loading);
 
+  const metrics = useMemo(
+    () => ({
+      total: items.length,
+      drafts: items.filter((item) => item.status === "DRAFT").length,
+      published: items.filter((item) => item.status === "PUBLISHED").length,
+    }),
+    [items],
+  );
+
   return (
     <InterviewerShell>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-ink">Dashboard</h1>
-          <p className="text-sm text-muted">Assigned applications ready for generation or review.</p>
-        </div>
+        <section className="rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(224,240,242,0.9))] p-6 shadow-[var(--card-shadow)]">
+          <div className="grid gap-6 xl:grid-cols-[1.24fr_0.76fr] xl:items-end">
+            <div className="space-y-4">
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">Reviewer queue</p>
+              <h1 className="text-4xl font-semibold tracking-[-0.05em] text-[color:var(--ink)]">Dashboard</h1>
+              <p className="max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
+                Your assigned applications live in one dense workboard. Open a row when you need the full workspace;
+                otherwise stay in flow and monitor status changes here.
+              </p>
+            </div>
+            <div className="metric-strip">
+              <MetricCard label="Assigned" value={String(metrics.total)} />
+              <MetricCard label="Drafting" value={String(metrics.drafts)} />
+              <MetricCard label="Published" value={String(metrics.published)} />
+            </div>
+          </div>
+        </section>
 
-        {error ? <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+        {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
 
         {loading ? (
           <Loader label="Loading dashboard..." />
         ) : items.length === 0 ? (
           <EmptyState title="No applications assigned yet." description="Assigned, draft, and published work appears here." />
         ) : (
-          <div className="space-y-4">
+          <div className="data-table">
+            <div className="data-table-header md:grid-cols-[1.2fr_0.8fr_0.9fr_0.7fr]">
+              <span>Application</span>
+              <span>Status</span>
+              <span>Created</span>
+              <span>Open</span>
+            </div>
             {items.map((item) => (
-              <Card key={item.id} title={item.id} description={new Date(item.created_at).toLocaleString()}>
-                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                  <StatusBadge status={item.status} />
-                  <Link className="text-sm text-accent underline" href={`/interviewer/applications/${item.id}`}>
-                    Open application
-                  </Link>
+              <div key={item.id} className="data-table-row md:grid-cols-[1.2fr_0.8fr_0.9fr_0.7fr]">
+                <div>
+                  <p className="display-font text-base font-semibold text-[color:var(--ink)]">{item.id}</p>
+                  <p className="mt-1 text-xs text-[color:var(--muted)]">
+                    {item.assigned_interviewer ? `Assigned to ${item.assigned_interviewer.name}` : "Awaiting reviewer"}
+                  </p>
                 </div>
-              </Card>
+                <StatusBadge status={item.status} />
+                <p className="text-sm text-[color:var(--muted)]">{new Date(item.created_at).toLocaleString()}</p>
+                <Link
+                  className="display-font text-sm font-semibold text-[color:var(--accent)] underline underline-offset-4"
+                  href={`/interviewer/applications/${item.id}`}
+                >
+                  Open
+                </Link>
+              </div>
             ))}
           </div>
         )}
       </div>
     </InterviewerShell>
+  );
+}
+
+function MetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-white/82 px-4 py-4 shadow-[var(--card-shadow-soft)]">
+      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
+      <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[color:var(--ink)]">{value}</p>
+    </div>
   );
 }
