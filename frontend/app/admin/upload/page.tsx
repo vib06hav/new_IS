@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ArrowUpRight, FileUp, Sparkles } from "lucide-react";
 import { fetchApplications, retryApplication, uploadApplication } from "@/lib/api";
 import type { ApplicationListItem } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +11,9 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { usePolling } from "@/lib/usePolling";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/shadcn/badge";
+import { Button as ShadButton } from "@/components/shadcn/button";
+import { Separator } from "@/components/shadcn/separator";
 
 export default function AdminUploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -89,7 +93,7 @@ export default function AdminUploadPage() {
   return (
     <AdminShell>
       <div className="space-y-6">
-        <section className="rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(230,242,236,0.9))] p-6 shadow-[var(--card-shadow)]">
+        <section className="hero-panel p-6">
           <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr] xl:items-end">
             <div className="space-y-4">
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">Intake queue</p>
@@ -106,26 +110,57 @@ export default function AdminUploadPage() {
           </div>
         </section>
 
-        <div className="grid gap-6 xl:grid-cols-[24rem_1fr]">
-          <Card
-            title="Upload PDF"
-            description="Current backend upload still processes inline, so the returned state may already be READY or FAILED."
-          >
-            <div className="space-y-3">
-              <label className="block text-sm text-[color:var(--muted)]">
-                <span className="text-[11px] font-bold uppercase tracking-[0.18em]">PDF file</span>
+        <div className="grid gap-6 xl:grid-cols-[24rem_1fr] xl:items-start">
+          <div className="self-start">
+            <Card
+              title="Upload PDF"
+              description="Current backend upload still processes inline, so the returned state may already be READY or FAILED."
+            >
+              <div className="flex flex-col gap-4">
                 <input
-                  className="mt-2 block w-full rounded-xl border border-[color:var(--line)] bg-white/90 px-4 py-3 text-sm text-[color:var(--ink)]"
+                  id="application-pdf"
+                  className="sr-only"
                   type="file"
                   accept="application/pdf"
                   onChange={(event) => setFile(event.target.files?.[0] || null)}
                 />
-              </label>
-              <Button className="w-full" disabled={uploading || !file} onClick={() => void handleUpload()}>
-                {uploading ? "Uploading..." : "Upload PDF"}
-              </Button>
-            </div>
-          </Card>
+
+                <div className="upload-dropzone">
+                  <span className="upload-glyph" aria-hidden="true">
+                    <FileUp className="size-5" />
+                  </span>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-semibold text-[color:var(--ink)]">Drop in the next interview packet</p>
+                    <p className="text-xs leading-6 text-[color:var(--muted)]">
+                      PDFs only. The queue updates inline once the backend returns READY, PROCESSING, or FAILED.
+                    </p>
+                  </div>
+                  <Badge variant={file ? "secondary" : "outline"}>{file ? file.name : "No PDF selected yet"}</Badge>
+                  <label
+                    htmlFor="application-pdf"
+                    className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-[color:var(--surface-border)] bg-white px-3 py-2 text-sm font-medium text-[color:var(--brand-deep)] shadow-sm transition hover:border-blue-200 hover:bg-blue-50/70"
+                  >
+                    Choose PDF
+                  </label>
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between rounded-2xl border border-white/70 bg-white/70 px-4 py-3">
+                  <div className="flex items-center gap-2 text-sm text-[color:var(--muted)]">
+                    <Sparkles className="size-4 text-[color:var(--accent)]" />
+                    <span>{file ? "Ready to send into intake" : "Select a file to unlock upload"}</span>
+                  </div>
+                  {file ? <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">PDF ready</span> : null}
+                </div>
+
+                <ShadButton className="w-full justify-center" disabled={uploading || !file} onClick={() => void handleUpload()}>
+                  <ArrowUpRight data-icon="inline-end" />
+                  {uploading ? "Uploading..." : "Send to Queue"}
+                </ShadButton>
+              </div>
+            </Card>
+          </div>
 
           <div className="space-y-4">
             {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
@@ -168,7 +203,7 @@ export default function AdminUploadPage() {
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-white/82 px-4 py-4 shadow-[var(--card-shadow-soft)]">
+    <div className="metric-card px-4 py-4">
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
       <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[color:var(--ink)]">{value}</p>
     </div>

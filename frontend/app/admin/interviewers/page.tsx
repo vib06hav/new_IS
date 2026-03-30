@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ShieldCheck } from "lucide-react";
 import { createInterviewer, deleteInterviewer, fetchInterviewers } from "@/lib/api";
 import type { InterviewerListItem } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
@@ -9,6 +10,8 @@ import { Input } from "@/components/ui/Input";
 import { Loader } from "@/components/ui/Loader";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { Card } from "@/components/ui/Card";
+import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
+import { Badge } from "@/components/shadcn/badge";
 
 export default function AdminInterviewersPage() {
   const [items, setItems] = useState<InterviewerListItem[]>([]);
@@ -85,7 +88,7 @@ export default function AdminInterviewersPage() {
   return (
     <AdminShell>
       <div className="space-y-6">
-        <section className="rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(231,238,246,0.9))] p-6 shadow-[var(--card-shadow)]">
+        <section className="hero-panel p-6">
           <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-end">
             <div className="space-y-4">
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">People management</p>
@@ -97,42 +100,43 @@ export default function AdminInterviewersPage() {
             <div className="metric-strip">
               <MetricCard label="Interviewers" value={String(items.length)} />
               <MetricCard label="Active assignments" value={String(assignedLoad)} />
-              <MetricCard label="Average load" value={items.length ? (assignedLoad / items.length).toFixed(1) : "0"} />
             </div>
           </div>
         </section>
 
-        <div className="grid gap-6 xl:grid-cols-[22rem_1fr]">
-          <Card title="Create interviewer" description="Admin-only account creation">
-            <div className="space-y-3">
-              <Input
-                label="Name"
-                value={form.name}
-                onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-              />
-              <Input
-                label="Email"
-                type="email"
-                value={form.email}
-                onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-              />
-              <Input
-                label="Password"
-                type="password"
-                minLength={8}
-                value={form.password}
-                onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-              />
-              <p className="text-xs leading-6 text-[color:var(--muted)]">Use at least 8 characters for the interviewer password.</p>
-              <Button
-                className="w-full"
-                disabled={submitting || !form.name || !form.email || !form.password}
-                onClick={() => void handleCreate()}
-              >
-                {submitting ? "Creating..." : "Create interviewer"}
-              </Button>
-            </div>
-          </Card>
+        <div className="grid gap-6 xl:grid-cols-[22rem_1fr] xl:items-start">
+          <div className="self-start">
+            <Card title="Create interviewer" description="Admin-only account creation">
+              <div className="space-y-3">
+                <Input
+                  label="Name"
+                  value={form.name}
+                  onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+                />
+                <Input
+                  label="Email"
+                  type="email"
+                  value={form.email}
+                  onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
+                />
+                <Input
+                  label="Password"
+                  type="password"
+                  minLength={8}
+                  value={form.password}
+                  onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+                />
+                <p className="text-xs leading-6 text-[color:var(--muted)]">Use at least 8 characters for the interviewer password.</p>
+                <Button
+                  className="w-full"
+                  disabled={submitting || !form.name || !form.email || !form.password}
+                  onClick={() => void handleCreate()}
+                >
+                  {submitting ? "Creating..." : "Create interviewer"}
+                </Button>
+              </div>
+            </Card>
+          </div>
 
           <div className="space-y-4">
             {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
@@ -151,11 +155,24 @@ export default function AdminInterviewersPage() {
                 </div>
                 {items.map((item) => (
                   <div key={item.id} className="data-table-row md:grid-cols-[1fr_0.8fr_0.75fr]">
-                    <div>
-                      <p className="display-font text-base font-semibold text-[color:var(--ink)]">{item.name}</p>
-                      <p className="mt-1 text-xs text-[color:var(--muted)]">{item.email}</p>
+                    <div className="flex items-center gap-3">
+                      <Avatar>
+                        <AvatarFallback>{getInitials(item.name)}</AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="display-font text-base font-semibold text-[color:var(--ink)]">{item.name}</p>
+                        <p className="mt-1 truncate text-xs text-[color:var(--muted)]">{item.email}</p>
+                      </div>
                     </div>
-                    <p className="text-sm text-[color:var(--muted)]">{item.active_assignment_count} active assignments</p>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">{item.active_assignment_count} active</Badge>
+                      {item.active_assignment_count === 0 ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-[color:var(--muted)]">
+                          <ShieldCheck className="size-3.5 text-emerald-600" />
+                          removable
+                        </span>
+                      ) : null}
+                    </div>
                     <Button
                       disabled={busyUserId === item.id}
                       variant="danger"
@@ -174,9 +191,18 @@ export default function AdminInterviewersPage() {
   );
 }
 
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-white/82 px-4 py-4 shadow-[var(--card-shadow-soft)]">
+    <div className="metric-card px-4 py-4">
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
       <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[color:var(--ink)]">{value}</p>
     </div>

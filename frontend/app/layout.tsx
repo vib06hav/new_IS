@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AG Interview Standardiser",
+  title: "Interview Standardiser",
   description: "Structured interview preparation and review workspace.",
 };
 

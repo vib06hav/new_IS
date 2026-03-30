@@ -101,7 +101,7 @@ export default function InterviewerApplicationPage() {
   return (
     <InterviewerShell>
       <div className="space-y-6">
-        <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(226,242,255,0.92))] p-6 shadow-[var(--card-shadow)]">
+        <section className="hero-panel overflow-hidden p-6">
           <div className="grid gap-6 xl:grid-cols-[1.16fr_0.84fr] xl:items-end">
             <div className="space-y-4">
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">
@@ -204,7 +204,7 @@ export default function InterviewerApplicationPage() {
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-white/82 px-4 py-4 shadow-[var(--card-shadow-soft)]">
+    <div className="metric-card px-4 py-4">
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
       <p className="mt-2 text-sm leading-6 text-[color:var(--ink)]">{value}</p>
     </div>

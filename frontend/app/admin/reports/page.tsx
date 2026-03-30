@@ -2,16 +2,27 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { assignApplication, fetchApplications, fetchInterviewers, reassignApplication } from "@/lib/api";
 import type { ApplicationListItem, InterviewerListItem } from "@/lib/types";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader } from "@/components/ui/Loader";
-import { SelectInput } from "@/components/ui/Input";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
 import { usePolling } from "@/lib/usePolling";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
+import { Badge } from "@/components/shadcn/badge";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/shadcn/select";
 
 const REPORT_STATUSES = ["ALL", "READY", "ASSIGNED", "DRAFT", "PUBLISHED"] as const;
 
@@ -86,7 +97,7 @@ export default function AdminReportsPage() {
   return (
     <AdminShell>
       <div className="space-y-6">
-        <section className="rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(228,245,241,0.9))] p-6 shadow-[var(--card-shadow)]">
+        <section className="hero-panel p-6">
           <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr] xl:items-end">
             <div className="space-y-4">
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">Admin review desk</p>
@@ -104,19 +115,13 @@ export default function AdminReportsPage() {
           </div>
         </section>
 
-        <div className="grid gap-4 xl:grid-cols-[1fr_22rem] xl:items-start">
+        <div>
           <SegmentedControl
             label="Report lifecycle"
             value={statusFilter}
             onChange={setStatusFilter}
             options={REPORT_STATUSES.map((status) => ({ value: status, label: status }))}
           />
-          <div className="rounded-[1.4rem] border border-[color:var(--line)] bg-white/78 p-4 shadow-[var(--card-shadow-soft)]">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Team capacity</p>
-            <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
-              {interviewers.length} interviewers loaded for inline assignment and reassignment.
-            </p>
-          </div>
         </div>
 
         {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
@@ -152,29 +157,47 @@ export default function AdminReportsPage() {
                     <StatusBadge status={item.status} />
                   </div>
                   <p className="text-sm text-[color:var(--muted)]">{new Date(item.created_at).toLocaleString()}</p>
-                  <div className="space-y-2">
+                  <div className="flex flex-col gap-2">
                     {canAssign || canReassign ? (
                       <>
-                        <SelectInput
-                          className="py-2"
-                          label={canAssign ? "Assign" : "Reassign"}
-                          value={selectedInterviewerByApp[item.id] || ""}
-                          onChange={(event) =>
-                            setSelectedInterviewerByApp((current) => ({ ...current, [item.id]: event.target.value }))
-                          }
-                          options={[
-                            { value: "", label: "Choose interviewer" },
-                            ...interviewers.map((interviewer) => ({
-                              value: interviewer.id,
-                              label: `${interviewer.name} (${interviewer.active_assignment_count})`,
-                            })),
-                          ]}
-                        />
+                        <div className="rounded-2xl border border-white/80 bg-white/75 p-2 shadow-sm">
+                          <p className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">
+                            {canAssign ? "Assign interviewer" : "Reassign interviewer"}
+                          </p>
+                          <Select
+                            value={selectedInterviewerByApp[item.id] || ""}
+                            onValueChange={(value) =>
+                              setSelectedInterviewerByApp((current) => ({ ...current, [item.id]: value ?? "" }))
+                            }
+                          >
+                            <SelectTrigger className="h-auto w-full rounded-xl border-[color:var(--surface-border)] bg-white px-3 py-3">
+                              <SelectValue placeholder="Choose interviewer" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border border-[color:var(--surface-border)] shadow-[0_18px_38px_rgba(148,163,184,0.18)]">
+                              <SelectGroup>
+                                <SelectLabel>Available interviewers</SelectLabel>
+                                {interviewers.map((interviewer) => (
+                                  <SelectItem key={interviewer.id} value={interviewer.id}>
+                                    <Avatar size="sm">
+                                      <AvatarFallback>{getInitials(interviewer.name)}</AvatarFallback>
+                                    </Avatar>
+                                    <span className="min-w-0 flex-1">
+                                      <span className="truncate font-medium text-[color:var(--ink)]">{interviewer.name}</span>
+                                      <span className="truncate text-xs text-[color:var(--muted)]">{interviewer.email}</span>
+                                    </span>
+                                    <Badge variant="secondary">{interviewer.active_assignment_count} live</Badge>
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
                         <Button
                           className="w-full"
                           disabled={isBusy || !selectedInterviewerByApp[item.id]}
                           onClick={() => void mutateAssignment(item.id, canAssign ? "assign" : "reassign")}
                         >
+                          <ArrowUpRight />
                           {isBusy ? "Saving..." : canAssign ? "Assign" : "Reassign"}
                         </Button>
                       </>
@@ -200,9 +223,18 @@ export default function AdminReportsPage() {
   );
 }
 
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-white/82 px-4 py-4 shadow-[var(--card-shadow-soft)]">
+    <div className="metric-card px-4 py-4">
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
       <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[color:var(--ink)]">{value}</p>
     </div>

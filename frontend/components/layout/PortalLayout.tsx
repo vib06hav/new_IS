@@ -49,8 +49,8 @@ export function PortalLayout({ children, role, loginHref, title, navItems }: Por
   }
 
   return (
-    <div className="min-h-screen text-[color:var(--ink)]">
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 px-6 py-4 backdrop-blur-md">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_26%),radial-gradient(circle_at_top_right,rgba(219,234,254,0.55),transparent_20%),radial-gradient(circle_at_50%_100%,rgba(254,242,242,0.28),transparent_24%)] text-[color:var(--ink)]">
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.82))] px-6 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-[92rem] flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
             <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-brand-accent to-brand-hover shadow-sm">
@@ -67,7 +67,7 @@ export function PortalLayout({ children, role, loginHref, title, navItems }: Por
               </span>
             </div>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--muted)]">AG Interview Standardiser</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--muted)]">Interview Standardiser</p>
               <h1 className="text-xl font-semibold tracking-tight text-brand-deep">{title}</h1>
             </div>
           </div>
@@ -80,8 +80,8 @@ export function PortalLayout({ children, role, loginHref, title, navItems }: Por
                     key={item.href}
                     className={`rounded-xl px-4 py-2.5 font-semibold transition duration-200 ${
                       active
-                        ? "bg-brand-accent text-white shadow-[0_12px_24px_rgba(29,78,216,0.2)]"
-                        : "border border-slate-200 bg-white/80 text-slate-600 shadow-sm hover:text-brand-accent"
+                        ? "border border-blue-100 bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-slate-800 shadow-[0_10px_22px_rgba(148,163,184,0.16)]"
+                        : "border border-slate-200 bg-[linear-gradient(135deg,rgba(255,255,255,0.9),rgba(248,250,252,0.9))] text-slate-600 shadow-sm hover:text-brand-accent"
                     }`}
                     href={item.href}
                   >

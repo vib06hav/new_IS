@@ -4,7 +4,6 @@ const adminNav = [
   { href: "/admin/reports", label: "Reports" },
   { href: "/admin/upload", label: "Upload" },
   { href: "/admin/interviewers", label: "Interviewers" },
-  { href: "/admin/assignments", label: "Assignments" },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
