@@ -4,8 +4,13 @@ import type {
   ApplicationListItem,
   ApplicationUploadResponse,
   AssignmentListItem,
+  InterviewerAssignmentSavePayload,
+  InterviewerAssignmentSummary,
   DraftMutationResponse,
   InterviewerListItem,
+  InterviewerUpdatePayload,
+  PasswordChangePayload,
+  SelfPasswordChangePayload,
   SessionResponse,
 } from "@/lib/types";
 import { getCsrfToken } from "@/lib/csrf";
@@ -118,6 +123,24 @@ export async function retryApplication(applicationId: string) {
   });
 }
 
+export async function hideApplication(applicationId: string) {
+  return apiRequest<ApplicationListItem>(`/applications/${applicationId}/hide`, {
+    method: "POST",
+  });
+}
+
+export async function unhideApplication(applicationId: string) {
+  return apiRequest<ApplicationListItem>(`/applications/${applicationId}/unhide`, {
+    method: "POST",
+  });
+}
+
+export async function removeQueuedApplication(applicationId: string) {
+  return apiRequest<void>(`/applications/${applicationId}/queue`, {
+    method: "DELETE",
+  });
+}
+
 export async function assignApplication(applicationId: string, interviewerId: string) {
   return apiRequest<ApplicationListItem>(`/applications/${applicationId}/assign`, {
     method: "POST",
@@ -142,9 +165,43 @@ export async function fetchInterviewers() {
   return apiRequest<InterviewerListItem[]>("/users/interviewers");
 }
 
+export async function fetchInterviewerAssignmentSummary(userId: string) {
+  return apiRequest<InterviewerAssignmentSummary>(`/users/interviewers/${userId}/assignments`);
+}
+
+export async function saveInterviewerAssignments(userId: string, payload: InterviewerAssignmentSavePayload) {
+  return apiRequest<InterviewerAssignmentSummary>(`/users/interviewers/${userId}/assignments`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function deleteInterviewer(userId: string) {
   return apiRequest<void>(`/users/${userId}`, {
     method: "DELETE",
+  });
+}
+
+export async function updateInterviewer(userId: string, payload: InterviewerUpdatePayload) {
+  return apiRequest(`/users/interviewers/${userId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateInterviewerPassword(userId: string, payload: PasswordChangePayload) {
+  return apiRequest(`/users/interviewers/${userId}/password`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
   });
 }
 
@@ -165,5 +222,15 @@ export async function generateDraft(applicationId: string) {
 export async function publishDraft(applicationId: string) {
   return apiRequest<DraftMutationResponse>(`/applications/${applicationId}/publish`, {
     method: "POST",
+  });
+}
+
+export async function changeMyPassword(payload: SelfPasswordChangePayload) {
+  return apiRequest<SessionResponse>("/auth/change-password", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
   });
 }

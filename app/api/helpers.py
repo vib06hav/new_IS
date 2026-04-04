@@ -120,6 +120,7 @@ def build_application_list_item(
     return ApplicationListItem(
         id=application.id,
         status=application.status,
+        is_hidden=application.is_hidden,
         created_at=application.created_at,
         assigned_interviewer=build_user_summary(interviewer),
     )

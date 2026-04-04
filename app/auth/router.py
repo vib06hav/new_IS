@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from fastapi.security import OAuth2PasswordRequestForm
-from app.auth.schemas import SessionResponse, SessionUser, UserCreate, UserLogin, UserResponse
-from app.auth.service import authenticate_user, build_session_token, register_user
+from app.auth.schemas import SelfPasswordChange, SessionResponse, SessionUser, UserCreate, UserLogin, UserResponse
+from app.auth.service import authenticate_user, build_session_token, change_password, register_user
 from app.auth.dependencies import get_current_user, require_admin
 from app.config import settings
 from app.models.user import User
@@ -115,3 +115,24 @@ def logout(response: Response):
     clear_csrf_cookie(response)
     response.status_code = status.HTTP_204_NO_CONTENT
     return None
+
+
+@router.put("/change-password", response_model=SessionResponse)
+def update_my_password(
+    payload: SelfPasswordChange,
+    request: Request,
+    response: Response,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    user = change_password(db, current_user, payload)
+    if not request.cookies.get(settings.CSRF_COOKIE_NAME):
+        set_csrf_cookie(response, generate_csrf_token())
+    return {
+        "user": SessionUser(
+            id=str(user.id),
+            name=user.name,
+            email=user.email,
+            role=user.role,
+        )
+    }

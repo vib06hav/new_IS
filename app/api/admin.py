@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -37,7 +38,11 @@ def list_applications(
     current_user: User = Depends(require_admin),
 ):
     query = db.query(Application)
-    if status_filter:
+    if status_filter == "HIDDEN":
+        query = query.filter(Application.is_hidden.is_(True))
+    else:
+        query = query.filter(Application.is_hidden.is_(False))
+    if status_filter and status_filter != "HIDDEN":
         query = query.filter(Application.status == status_filter)
 
     applications = query.order_by(Application.created_at.desc()).all()
@@ -94,6 +99,67 @@ def assign_application(
     db.commit()
     db.refresh(application)
     return build_application_list_item(application, interviewer)
+
+
+@router.post("/applications/{application_id}/hide", response_model=ApplicationListItem)
+def hide_published_application(
+    application_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    application = get_application_or_404(db, application_id)
+    if application.status != "PUBLISHED":
+        raise HTTPException(status_code=409, detail="Only PUBLISHED applications can be hidden")
+
+    assignment = get_assignment_for_application(db, application_id)
+    interviewer = None
+    if assignment:
+        interviewer = db.query(User).filter(User.id == assignment.interviewer_id).first()
+
+    application.is_hidden = True
+    db.commit()
+    db.refresh(application)
+    return build_application_list_item(application, interviewer)
+
+
+@router.post("/applications/{application_id}/unhide", response_model=ApplicationListItem)
+def unhide_published_application(
+    application_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    application = get_application_or_404(db, application_id)
+    if application.status != "PUBLISHED":
+        raise HTTPException(status_code=409, detail="Only PUBLISHED applications can be unhidden")
+
+    assignment = get_assignment_for_application(db, application_id)
+    interviewer = None
+    if assignment:
+        interviewer = db.query(User).filter(User.id == assignment.interviewer_id).first()
+
+    application.is_hidden = False
+    db.commit()
+    db.refresh(application)
+    return build_application_list_item(application, interviewer)
+
+
+@router.delete("/applications/{application_id}/queue", status_code=status.HTTP_204_NO_CONTENT)
+def remove_application_from_queue(
+    application_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    application = get_application_or_404(db, application_id)
+    if application.status not in {"UPLOADED", "FAILED"}:
+        raise HTTPException(status_code=409, detail="Only UPLOADED or FAILED queue items can be removed")
+
+    file_path = application.file_path
+    db.delete(application)
+    db.commit()
+
+    if file_path and os.path.exists(file_path):
+        os.remove(file_path)
+    return None
 
 
 @router.put("/applications/{application_id}/assign", response_model=ApplicationListItem)

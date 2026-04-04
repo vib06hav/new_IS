@@ -19,7 +19,7 @@ def build_interview_messages(bundle: dict, entity_id_map: list) -> list[dict]:
     system_prompt = """
 You are preparing an interviewer who has never met this applicant but has read
 their application file. Your job is to produce question groups that give the
-interviewer access to the interior of what the application shows - not to audit
+interviewer access to the interior of what the application shows — not to audit
 gaps, but to understand how things actually work for this specific person.
 
 The themes and signals have already been defined for you. Do not invent, merge,
@@ -32,7 +32,7 @@ whose internal structure is not yet visible. All three are equally valid as
 sources of questions. Do not treat signals as gap reports.
 
 A theme defines the territory and direction of a portion of the interview. It
-is not a topic bucket. It carries a direction of understanding - what the
+is not a topic bucket. It carries a direction of understanding — what the
 interviewer is fundamentally trying to access in this conversation. Every
 question you write must serve that direction.
 
@@ -41,7 +41,7 @@ question you write must serve that direction.
 EVALUATIVE CONTEXT - what the interviewer is ultimately trying to assess:
 
 The interviewer enters this conversation with three evaluative lenses. These do
-not replace or override the themes and signals - question generation is still
+not replace or override the themes and signals — question generation is still
 driven by interview_direction and depth_opening. But as you build questions,
 be aware that the interviewer is trying to gather evidence on:
 
@@ -69,28 +69,27 @@ Each theme entry contains:
 
 Each signal contains these fields:
 - signal_id
-- theme_id
 - title
-- evidence_anchor
-- direct_read
-- depth_opening: the specific thing an interviewer would want to understand more deeply -
+- evidence_anchor: the specific thing in the application that creates this opening
+- direct_read: what the evidence shows without interpretation
+- depth_opening: the specific thing an interviewer would want to understand more deeply —
   this may be an unresolved unknown, an underdeveloped area, or the internal structure
   of something already strong. Treat all three equally.
-- why_it_matters
+- why_it_matters: why understanding this would materially change how the applicant is understood
 
 Each theme contains these fields:
 - theme_id
 - title
 - unifying_axis: the single underlying idea that explains why these signals belong together.
-  This is abstract and does not reference any signal - it characterizes something specific
+  This is abstract and does not reference any signal — it characterizes something specific
   to this applicant.
 - interview_direction: what the interviewer is trying to understand across these signals,
   stated as an actionable direction that stands independently of the signals.
 
 The primary drivers of question generation are:
-- interview_direction of the theme -> sets the direction and coherence frame for the group
-- depth_opening of each signal -> provides the specific opening that makes questions non-generic
-- evidence_anchor and direct_read -> ground every question in something particular to this applicant
+- interview_direction of the theme → sets the direction and coherence frame for the group
+- depth_opening of each signal → provides the specific opening that makes questions non-generic
+- evidence_anchor and direct_read → ground every question in something particular to this applicant
 
 The theme controls direction. The signals control specificity. Both constraints must be
 satisfied simultaneously in every question you write.
@@ -113,14 +112,14 @@ always a gap. It may be the internal structure of something strong, the groundin
 behind something stated, or the lived reality behind something asserted.
 evidence_anchor is what in the application makes it possible to ask a real question.
 Every question must contain a specific referent drawn from the evidence_anchor or
-direct_read - a named thing the applicant did, wrote, or chose. A question without
+direct_read — a named thing the applicant did, wrote, or chose. A question without
 a specific referent from this application is not acceptable.
 
 STEP 3 - Build the question group as a panorama, not a sequence.
 Each question must enter the theme's territory from a genuinely different angle.
 Different angle means: different entry point into the applicant's profile, or a
 different dimension of what interview_direction is trying to reach. Questions that
-probe the same thing from slightly different phrasings are redundant - discard one.
+probe the same thing from slightly different phrasings are redundant — discard one.
 
 A well-formed group covers at least three of these four angles:
 - GROUNDING: where in the applicant's life has this actually been practiced or lived,
@@ -128,7 +127,7 @@ A well-formed group covers at least three of these four angles:
 - REASONING: what was the actual logic or thinking behind a specific choice, direction,
   or commitment this applicant made?
 - CONNECTION: what is the relationship between two specific things in this applicant's
-  profile - between what they wrote and what they did, or between two activities, or
+  profile — between what they wrote and what they did, or between two activities, or
   between an academic direction and a stated goal?
 - DEPTH: for the signal most central to this theme, what does the depth_opening
   specifically require an interviewer to understand?
@@ -136,7 +135,7 @@ A well-formed group covers at least three of these four angles:
 STEP 4 - Test every question before including it.
 
 TEST 1 - SPECIFIC REFERENT
-Does this question name a specific thing from this application - something the
+Does this question name a specific thing from this application — something the
 applicant did, wrote, chose, or stated? If not, rewrite it.
 Naming a field or general category ("your interest in technology") does not pass.
 Naming something particular ("your essay's claim that X" or "your activity in Y") passes.
@@ -155,7 +154,7 @@ Does this question ask the applicant to reason, account for, or connect somethin
 If it effectively asks them to tell or elaborate, rewrite it.
 
 QUESTION TONE:
-The implicit stance is structural curiosity - you have read this application carefully
+The implicit stance is structural curiosity — you have read this application carefully
 and want to understand how things actually work for this person. Not skeptical. Not
 validating. Genuinely curious about the interior of what is already present.
 Do not frame questions as contradictions to resolve. Do not imply the interviewer
@@ -178,8 +177,8 @@ CONTRAST EXAMPLE - understand what makes a question pass all four tests:
 Signal context: applicant's essay presents computational thinking as central to their
 identity and future direction. Activity profile shows math olympiad participation and
 self-directed reading in algorithms. depth_opening: whether this computational identity
-is grounded in self-directed practice - actual building or problem-solving outside
-structured competition - or exists primarily as a stated orientation supported by
+is grounded in self-directed practice — actual building or problem-solving outside
+structured competition — or exists primarily as a stated orientation supported by
 formal achievement.
 
 Theme interview_direction: understanding whether this applicant's relationship to
@@ -188,23 +187,23 @@ achievement contexts.
 
 WRONG question (fails TEST 1 and TEST 2):
 "How has your interest in computing developed over time?"
--> No specific referent. Answerable by any applicant who mentioned computing.
--> Invites biography, not reasoning.
+→ No specific referent. Answerable by any applicant who mentioned computing.
+→ Invites biography, not reasoning.
 
-WRONG question (fails TEST 3 - interesting but drifts from interview_direction):
+WRONG question (fails TEST 3 — interesting but drifts from interview_direction):
 "What was the hardest problem you encountered in the math olympiad?"
--> Names something specific, but probes difficulty in competition - not whether
+→ Names something specific, but probes difficulty in competition — not whether
    practice is self-directed outside structured contexts.
 
 RIGHT question (passes all four tests):
 "Your essay frames computational thinking as the lens through which you approach
 problems, but your activities outside school sit almost entirely within structured
-competitions and reading - where outside those formats have you actually built or
+competitions and reading — where outside those formats have you actually built or
 created something, and what drove you to do it?"
--> Names specific referents: the essay's framing, the activity pattern.
--> Cannot be answered generically - requires accounting for the specific pattern named.
--> Directly serves interview_direction: self-directed vs. structured-context practice.
--> Forces reasoning, not elaboration.
+→ Names specific referents: the essay's framing, the activity pattern.
+→ Cannot be answered generically — requires accounting for the specific pattern named.
+→ Directly serves interview_direction: self-directed vs. structured-context practice.
+→ Forces reasoning, not elaboration.
 
 ---
 
@@ -222,7 +221,7 @@ OUTPUT SCHEMA - return exactly this structure, nothing else:
       "questions": [
         "Question 1 - specific, probing, names something from this application",
         "Question 2 - probes from a different angle",
-        "Question 3 - directly targets the most important depth opening"
+        "Question 3 - directly targets what remains open"
       ]
     }
   ]

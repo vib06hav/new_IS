@@ -8,8 +8,8 @@ from pydantic import BaseModel, ConfigDict
 class Theme(BaseModel):
     theme_id: str
     title: str
-    framing: str
-    what_this_theme_must_resolve: str
+    unifying_axis: str
+    interview_direction: str
     supporting_signal_ids: list[str]
     referenced_entity_ids: list[str]
 
@@ -20,7 +20,7 @@ class Signal(BaseModel):
     title: str
     evidence_anchor: str
     direct_read: str
-    what_remains_open: str
+    depth_opening: str
     why_it_matters: str
     referenced_entity_ids: list[str]
 
@@ -91,6 +91,7 @@ class ApplicationUploadResponse(BaseModel):
 class ApplicationListItem(BaseModel):
     id: UUID
     status: str
+    is_hidden: bool = False
     created_at: datetime
     assigned_interviewer: Optional[UserSummary] = None
 
@@ -135,3 +136,21 @@ class DraftMutationResponse(BaseModel):
     application_id: UUID
     status: str
     draft: DraftSummary
+
+
+class InterviewerAssignmentSummaryItem(BaseModel):
+    application_id: UUID
+    status: str
+    current_interviewer: Optional[UserSummary] = None
+
+
+class InterviewerAssignmentSummary(BaseModel):
+    interviewer_id: UUID
+    active_assignment_count: int
+    currently_assigned: list[InterviewerAssignmentSummaryItem]
+    available_to_assign: list[InterviewerAssignmentSummaryItem]
+    available_to_reassign: list[InterviewerAssignmentSummaryItem]
+
+
+class InterviewerAssignmentSaveRequest(BaseModel):
+    assigned_application_ids: list[UUID]

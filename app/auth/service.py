@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.models.user import User
-from app.auth.schemas import InterviewerCreate, UserCreate, UserLogin
+from app.auth.schemas import AdminPasswordChange, InterviewerCreate, InterviewerUpdate, SelfPasswordChange, UserCreate, UserLogin
 from app.auth.security import get_password_hash, verify_password, create_access_token
 from app.config import settings
 
@@ -41,6 +41,44 @@ def create_interviewer(db: Session, user_data: InterviewerCreate) -> User:
         password=user_data.password,
         role="interviewer",
     )
+
+
+def update_interviewer(db: Session, interviewer: User, user_data: InterviewerUpdate) -> User:
+    existing_user = db.query(User).filter(User.email == user_data.email, User.id != interviewer.id).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    interviewer.name = user_data.name
+    interviewer.email = user_data.email
+    db.commit()
+    db.refresh(interviewer)
+    return interviewer
+
+
+def admin_set_user_password(db: Session, user: User, password_data: AdminPasswordChange) -> User:
+    user.password_hash = get_password_hash(password_data.new_password)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def change_password(db: Session, user: User, password_data: SelfPasswordChange) -> User:
+    if not verify_password(password_data.current_password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
+
+    if verify_password(password_data.new_password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from the current password",
+        )
+
+    user.password_hash = get_password_hash(password_data.new_password)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 def create_admin(db: Session, *, name: str, email: str, password: str) -> User:

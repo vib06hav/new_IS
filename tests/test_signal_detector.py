@@ -8,6 +8,7 @@ from app.policy.guard import validate_question_groups, validate_signals
 
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "pipeline_stages"
+STAGE17_FIXTURE_DIR = Path(__file__).resolve().parent / "stage17_fake_llm_output"
 
 
 def _academic_entry(
@@ -350,7 +351,7 @@ def test_validate_signals_rejects_invented_det_ids_when_signal_set_is_empty():
                     "title": "Grounded title",
                     "evidence_anchor": "Quoted essay claim",
                     "direct_read": "Observed evidence",
-                    "what_remains_open": "Specific open question",
+                    "depth_opening": "Specific open question",
                     "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-999"],
@@ -379,7 +380,7 @@ def test_validate_signals_accepts_valid_supporting_fragment_ids():
                     "title": "Grounded title",
                     "evidence_anchor": "Quoted essay claim",
                     "direct_read": "Observed evidence",
-                    "what_remains_open": "Specific open question",
+                    "depth_opening": "Specific open question",
                     "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ESS-001"],
                     "supporting_det_signal_ids": [],
@@ -390,8 +391,8 @@ def test_validate_signals_accepts_valid_supporting_fragment_ids():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "framing": "Grounded theme framing",
-                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "unifying_axis": "Grounded theme unifying_axis",
+                    "interview_direction": "Grounded theme resolution",
                     "supporting_signal_ids": ["SIG-001"],
                 }
             ],
@@ -414,7 +415,7 @@ def test_validate_signals_rejects_invalid_supporting_fragment_ids():
         "title": "Grounded title",
         "evidence_anchor": "Quoted essay claim",
         "direct_read": "Observed evidence",
-        "what_remains_open": "Specific open question",
+        "depth_opening": "Specific open question",
         "why_it_matters": "Specific relevance",
         "referenced_entity_ids": ["ESS-001"],
         "supporting_det_signal_ids": [],
@@ -502,7 +503,7 @@ def test_validate_signals_accepts_themes_and_theme_linkage():
                     "title": "Grounded title",
                     "evidence_anchor": "Quoted essay claim",
                     "direct_read": "Observed evidence",
-                    "what_remains_open": "Specific open question",
+                    "depth_opening": "Specific open question",
                     "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-001"],
@@ -512,8 +513,8 @@ def test_validate_signals_accepts_themes_and_theme_linkage():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "framing": "Grounded theme framing",
-                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "unifying_axis": "Grounded theme unifying_axis",
+                    "interview_direction": "Grounded theme resolution",
                     "supporting_signal_ids": ["SIG-001"],
                 }
             ],
@@ -539,7 +540,7 @@ def test_validate_signals_rejects_theme_with_unknown_supporting_signal():
                     "title": "Grounded title",
                     "evidence_anchor": "Quoted essay claim",
                     "direct_read": "Observed evidence",
-                    "what_remains_open": "Specific open question",
+                    "depth_opening": "Specific open question",
                     "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-001"],
@@ -549,8 +550,8 @@ def test_validate_signals_rejects_theme_with_unknown_supporting_signal():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "framing": "Grounded theme framing",
-                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "unifying_axis": "Grounded theme unifying_axis",
+                    "interview_direction": "Grounded theme resolution",
                     "supporting_signal_ids": ["SIG-999"],
                 }
             ],
@@ -577,7 +578,7 @@ def test_validate_signals_rejects_orphan_theme():
                     "title": "Grounded title",
                     "evidence_anchor": "Quoted essay claim",
                     "direct_read": "Observed evidence",
-                    "what_remains_open": "Specific open question",
+                    "depth_opening": "Specific open question",
                     "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-001"],
@@ -587,15 +588,15 @@ def test_validate_signals_rejects_orphan_theme():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "framing": "Grounded theme framing",
-                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "unifying_axis": "Grounded theme unifying_axis",
+                    "interview_direction": "Grounded theme resolution",
                     "supporting_signal_ids": ["SIG-001"],
                 },
                 {
                     "theme_id": "THEME-002",
                     "title": "Orphan theme",
-                    "framing": "No member signals",
-                    "what_this_theme_must_resolve": "No member signals",
+                    "unifying_axis": "No member signals",
+                    "interview_direction": "No member signals",
                     "supporting_signal_ids": [],
                 },
             ],
@@ -622,7 +623,7 @@ def test_validate_signals_rejects_signal_pointing_to_unknown_theme():
                     "title": "Grounded title",
                     "evidence_anchor": "Quoted essay claim",
                     "direct_read": "Observed evidence",
-                    "what_remains_open": "Specific open question",
+                    "depth_opening": "Specific open question",
                     "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-001"],
@@ -632,8 +633,8 @@ def test_validate_signals_rejects_signal_pointing_to_unknown_theme():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "framing": "Grounded theme framing",
-                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "unifying_axis": "Grounded theme unifying_axis",
+                    "interview_direction": "Grounded theme resolution",
                     "supporting_signal_ids": ["SIG-001", "SIG-999"],
                 }
             ],
@@ -660,7 +661,7 @@ def test_validate_signals_rejects_signal_linked_to_multiple_themes():
                     "title": "Grounded title",
                     "evidence_anchor": "Quoted essay claim",
                     "direct_read": "Observed evidence",
-                    "what_remains_open": "Specific open question",
+                    "depth_opening": "Specific open question",
                     "why_it_matters": "Specific relevance",
                     "referenced_entity_ids": ["ACA-001"],
                     "supporting_det_signal_ids": ["DET-001"],
@@ -670,15 +671,15 @@ def test_validate_signals_rejects_signal_linked_to_multiple_themes():
                 {
                     "theme_id": "THEME-001",
                     "title": "Grounded theme",
-                    "framing": "Grounded theme framing",
-                    "what_this_theme_must_resolve": "Grounded theme resolution",
+                    "unifying_axis": "Grounded theme unifying_axis",
+                    "interview_direction": "Grounded theme resolution",
                     "supporting_signal_ids": ["SIG-001"],
                 },
                 {
                     "theme_id": "THEME-002",
                     "title": "Second theme",
-                    "framing": "Second theme framing",
-                    "what_this_theme_must_resolve": "Second theme resolution",
+                    "unifying_axis": "Second theme unifying_axis",
+                    "interview_direction": "Second theme resolution",
                     "supporting_signal_ids": ["SIG-001"],
                 }
             ],
@@ -718,8 +719,8 @@ def test_validate_question_groups_accepts_question_groups_only():
     )
     bundle = {
         "themes": [
-            {"theme_id": "THEME-001", "title": "Theme 1", "framing": "Frame 1", "what_this_theme_must_resolve": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
-            {"theme_id": "THEME-002", "title": "Theme 2", "framing": "Frame 2", "what_this_theme_must_resolve": "Resolve 2", "supporting_signal_ids": ["SIG-002"], "referenced_entity_ids": ["ACA-002"]},
+            {"theme_id": "THEME-001", "title": "Theme 1", "unifying_axis": "Frame 1", "interview_direction": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
+            {"theme_id": "THEME-002", "title": "Theme 2", "unifying_axis": "Frame 2", "interview_direction": "Resolve 2", "supporting_signal_ids": ["SIG-002"], "referenced_entity_ids": ["ACA-002"]},
         ]
     }
 
@@ -793,8 +794,8 @@ def test_validate_question_groups_rejects_missing_theme_coverage():
     )
     bundle = {
         "themes": [
-            {"theme_id": "THEME-001", "title": "Theme 1", "framing": "Frame 1", "what_this_theme_must_resolve": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
-            {"theme_id": "THEME-002", "title": "Theme 2", "framing": "Frame 2", "what_this_theme_must_resolve": "Resolve 2", "supporting_signal_ids": ["SIG-002"], "referenced_entity_ids": ["ACA-002"]},
+            {"theme_id": "THEME-001", "title": "Theme 1", "unifying_axis": "Frame 1", "interview_direction": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
+            {"theme_id": "THEME-002", "title": "Theme 2", "unifying_axis": "Frame 2", "interview_direction": "Resolve 2", "supporting_signal_ids": ["SIG-002"], "referenced_entity_ids": ["ACA-002"]},
         ]
     }
 
@@ -826,7 +827,7 @@ def test_validate_question_groups_rejects_duplicate_theme_groups():
     )
     bundle = {
         "themes": [
-            {"theme_id": "THEME-001", "title": "Theme 1", "framing": "Frame 1", "what_this_theme_must_resolve": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
+            {"theme_id": "THEME-001", "title": "Theme 1", "unifying_axis": "Frame 1", "interview_direction": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
         ]
     }
 
@@ -853,7 +854,7 @@ def test_validate_question_groups_rejects_invented_theme_ids():
     )
     bundle = {
         "themes": [
-            {"theme_id": "THEME-001", "title": "Theme 1", "framing": "Frame 1", "what_this_theme_must_resolve": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
+            {"theme_id": "THEME-001", "title": "Theme 1", "unifying_axis": "Frame 1", "interview_direction": "Resolve 1", "supporting_signal_ids": ["SIG-001"], "referenced_entity_ids": ["ACA-001"]},
         ]
     }
 
@@ -864,3 +865,31 @@ def test_validate_question_groups_rejects_invented_theme_ids():
         violation["type"] == "broken_linkage"
         for violation in result["violations_log"]
     )
+
+
+def test_validate_signals_matches_stage17_fixture_output():
+    projection_input = json.loads((STAGE17_FIXTURE_DIR / "01_call_1_projection_input.json").read_text(encoding="utf-8"))
+    raw_output = (STAGE17_FIXTURE_DIR / "03_call_1_fake_llm_response.json").read_text(encoding="utf-8")
+    expected = json.loads((STAGE17_FIXTURE_DIR / "04_call_1_sanitized_output.json").read_text(encoding="utf-8"))
+
+    result = validate_signals(
+        raw_output,
+        projection_input["entity_id_map"],
+        projection_input["deterministic_signals"],
+        essay_fragments=projection_input["essay_fragments"],
+    )
+
+    assert result["passed"] is True
+    assert result["sanitized_output"] == expected
+
+
+def test_validate_question_groups_matches_stage17_fixture_output():
+    bundle = json.loads((STAGE17_FIXTURE_DIR / "05_call_2_bundle_input.json").read_text(encoding="utf-8"))
+    raw_output = (STAGE17_FIXTURE_DIR / "07_call_2_fake_llm_response.json").read_text(encoding="utf-8")
+    expected = json.loads((STAGE17_FIXTURE_DIR / "08_call_2_sanitized_output.json").read_text(encoding="utf-8"))
+
+    result = validate_question_groups(raw_output, [], bundle)
+
+    assert result["passed"] is True
+    assert result["sanitized_output"] == expected
+

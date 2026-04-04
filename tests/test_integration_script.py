@@ -54,8 +54,8 @@ def run_integration_test():
                     {
                         "theme_id": "THEME-001",
                         "title": "Mock",
-                        "framing": "Mock framing",
-                        "what_this_theme_must_resolve": "Mock resolve",
+                        "unifying_axis": "Mock unifying_axis",
+                        "interview_direction": "Mock resolve",
                         "supporting_signal_ids": ["SIG-001"],
                         "referenced_entity_ids": []
                     }
@@ -67,7 +67,7 @@ def run_integration_test():
                         "title": "Mock signal",
                         "evidence_anchor": "Mock anchor",
                         "direct_read": "Mock direct read",
-                        "what_remains_open": "Mock open question",
+                        "depth_opening": "Mock open question",
                         "why_it_matters": "Mock matters",
                         "referenced_entity_ids": [],
                         "supporting_det_signal_ids": []
@@ -95,3 +95,4 @@ def run_integration_test():
             
 if __name__ == "__main__":
     run_integration_test()
+

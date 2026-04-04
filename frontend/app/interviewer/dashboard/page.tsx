@@ -46,7 +46,7 @@ export default function InterviewerDashboardPage() {
     <InterviewerShell>
       <div className="space-y-6">
         <section className="hero-panel p-6">
-          <div className="grid gap-6 xl:grid-cols-[1.24fr_0.76fr] xl:items-end">
+          <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
             <div className="space-y-4">
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">Reviewer queue</p>
               <h1 className="text-4xl font-semibold tracking-[-0.05em] text-[color:var(--ink)]">Dashboard</h1>
@@ -55,7 +55,7 @@ export default function InterviewerDashboardPage() {
                 otherwise stay in flow and monitor status changes here.
               </p>
             </div>
-            <div className="metric-strip">
+            <div className="metric-strip md:grid-cols-3 xl:self-start">
               <MetricCard label="Assigned" value={String(metrics.total)} />
               <MetricCard label="Drafting" value={String(metrics.drafts)} />
               <MetricCard label="Published" value={String(metrics.published)} />

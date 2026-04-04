@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, FileUp, Sparkles } from "lucide-react";
-import { fetchApplications, retryApplication, uploadApplication } from "@/lib/api";
+import { ArrowUpRight, FileUp, Sparkles, Trash2 } from "lucide-react";
+import { fetchApplications, removeQueuedApplication, retryApplication, uploadApplication } from "@/lib/api";
 import type { ApplicationListItem } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -21,6 +21,7 @@ export default function AdminUploadPage() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [busyRetryId, setBusyRetryId] = useState<string | null>(null);
+  const [busyRemoveId, setBusyRemoveId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -78,6 +79,25 @@ export default function AdminUploadPage() {
       setError(retryError instanceof Error ? retryError.message : "Retry failed.");
     } finally {
       setBusyRetryId(null);
+    }
+  }
+
+  async function handleRemove(applicationId: string) {
+    if (!window.confirm("Remove this PDF from the queue?")) {
+      return;
+    }
+
+    setMessage(null);
+    setError(null);
+    setBusyRemoveId(applicationId);
+    try {
+      await removeQueuedApplication(applicationId);
+      setMessage("Queue item removed.");
+      await loadUploads();
+    } catch (removeError) {
+      setError(removeError instanceof Error ? removeError.message : "Failed to remove queue item.");
+    } finally {
+      setBusyRemoveId(null);
     }
   }
 
@@ -183,13 +203,25 @@ export default function AdminUploadPage() {
                     <p className="display-font text-base font-semibold text-[color:var(--ink)]">{item.id}</p>
                     <StatusBadge status={item.status} />
                     <p className="text-sm text-[color:var(--muted)]">{new Date(item.created_at).toLocaleString()}</p>
-                    {item.status === "FAILED" ? (
-                      <Button disabled={busyRetryId === item.id} onClick={() => void handleRetry(item.id)}>
-                        {busyRetryId === item.id ? "Retrying..." : "Retry"}
-                      </Button>
-                    ) : (
-                      <span className="text-sm text-[color:var(--muted)]">Waiting</span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {item.status === "FAILED" ? (
+                        <Button disabled={busyRetryId === item.id} onClick={() => void handleRetry(item.id)}>
+                          {busyRetryId === item.id ? "Retrying..." : "Retry"}
+                        </Button>
+                      ) : (
+                        <span className="text-sm text-[color:var(--muted)]">Waiting</span>
+                      )}
+                      {(item.status === "UPLOADED" || item.status === "FAILED") ? (
+                        <Button
+                          variant="secondary"
+                          disabled={busyRemoveId === item.id}
+                          onClick={() => void handleRemove(item.id)}
+                        >
+                          <Trash2 className="size-4" />
+                          {busyRemoveId === item.id ? "Removing..." : "Remove"}
+                        </Button>
+                      ) : null}
+                    </div>
                   </div>
                 ))}
               </div>

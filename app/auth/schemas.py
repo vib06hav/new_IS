@@ -12,6 +12,20 @@ class InterviewerCreate(BaseModel):
     email: str
     password: str = Field(min_length=8)
 
+
+class InterviewerUpdate(BaseModel):
+    name: str = Field(min_length=1, max_length=255)
+    email: str
+
+
+class AdminPasswordChange(BaseModel):
+    new_password: str = Field(min_length=8)
+
+
+class SelfPasswordChange(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8)
+
 class UserLogin(BaseModel):
     email: str
     password: str

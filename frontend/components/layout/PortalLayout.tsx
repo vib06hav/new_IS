@@ -49,8 +49,11 @@ export function PortalLayout({ children, role, loginHref, title, navItems }: Por
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_26%),radial-gradient(circle_at_top_right,rgba(219,234,254,0.55),transparent_20%),radial-gradient(circle_at_50%_100%,rgba(254,242,242,0.28),transparent_24%)] text-[color:var(--ink)]">
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.82))] px-6 py-4 backdrop-blur-md">
+    <div
+      className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_26%),radial-gradient(circle_at_top_right,rgba(219,234,254,0.55),transparent_20%),radial-gradient(circle_at_50%_100%,rgba(254,242,242,0.28),transparent_24%)] text-[color:var(--ink)]"
+      style={{ ["--portal-header-height" as string]: "5.75rem" }}
+    >
+      <header className="sticky top-0 z-40 min-h-[var(--portal-header-height)] border-b border-slate-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.82))] px-6 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-[92rem] flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
             <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-brand-accent to-brand-hover shadow-sm">

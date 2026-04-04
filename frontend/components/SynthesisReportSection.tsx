@@ -49,100 +49,173 @@ export function SynthesisReportSection({
   draft,
   title = "Draft Report",
   description,
+  initialTab = "page4",
+  hideInternalTabs = false,
 }: {
   draft: Record<string, unknown>;
   title?: string;
   description?: string;
+  initialTab?: DraftTab;
+  hideInternalTabs?: boolean;
 }) {
   const parsed = draft as DraftLike;
-  const [activeTab, setActiveTab] = useState<DraftTab>("page4");
+  const [activeTab, setActiveTab] = useState<DraftTab>(initialTab);
   const themes = Array.isArray(parsed.page_4_focus_areas?.themes) ? parsed.page_4_focus_areas?.themes || [] : [];
   const signals = Array.isArray(parsed.page_4_focus_areas?.signals) ? parsed.page_4_focus_areas?.signals || [] : [];
+  const [selectedThemeKey, setSelectedThemeKey] = useState<string>(() => getThemeKey(themes[0], 0));
   const groups = Array.isArray(parsed.page_5_question_groups?.question_groups)
     ? parsed.page_5_question_groups?.question_groups || []
     : [];
   const annotationCount = countAnnotations(parsed.signal_data?.annotations);
+  const activeTheme =
+    themes.find((theme, index) => getThemeKey(theme, index) === selectedThemeKey) ||
+    themes[0] ||
+    null;
+  const activeThemeSignals = activeTheme
+    ? signals.filter(
+        (signal) =>
+          signal.theme_id === activeTheme.theme_id ||
+          activeTheme.supporting_signal_ids?.includes(signal.signal_id || ""),
+      )
+    : [];
 
   return (
     <div className="space-y-5">
-      <Card title={title} description={description || "Structured presentation of synthesized Pages 4-5."}>
-        <div className="metric-strip">
-          <MetricPill label="Themes" value={themes.length} />
-          <MetricPill label="Signals" value={signals.length} />
-          <MetricPill label="Annotations" value={annotationCount} />
-        </div>
-      </Card>
+      {!hideInternalTabs ? (
+        <Card title={title} description={description || "Structured presentation of synthesized Pages 4-5."}>
+          <div className="metric-strip">
+            <MetricPill label="Themes" value={themes.length} />
+            <MetricPill label="Signals" value={signals.length} />
+            <MetricPill label="Annotations" value={annotationCount} />
+          </div>
+        </Card>
+      ) : null}
 
       <Card
-        title={activeTab === "page4" ? "ROS Page 4" : "ROS Page 5"}
+        title={activeTab === "page4" ? "Focus Areas" : "Interview Questions"}
         description={
           activeTab === "page4"
-            ? "Focus areas, themes, and signal framing."
+            ? "Themes, signals, and open questions for the reviewer."
             : "Question groups generated from synthesized themes."
         }
+        eyebrow={null}
       >
         <div className="space-y-5">
-          <SegmentedControl
-            label="Synthesis pages"
-            value={activeTab}
-            onChange={setActiveTab}
-            options={[
-              { value: "page4", label: "Page 4", meta: "Themes and signals" },
-              { value: "page5", label: "Page 5", meta: "Question groups" },
-            ]}
-          />
+          {!hideInternalTabs ? (
+            <SegmentedControl
+              label="Synthesis pages"
+              value={activeTab}
+              onChange={setActiveTab}
+              options={[
+                { value: "page4", label: "Page 4", meta: "Themes and signals" },
+                { value: "page5", label: "Page 5", meta: "Question groups" },
+              ]}
+            />
+          ) : null}
 
           {activeTab === "page4" ? (
-            <div className="grid gap-5 xl:grid-cols-[0.88fr_1.12fr]">
+            <div className="grid gap-5 xl:grid-cols-[19rem_minmax(0,1fr)]">
               <section className="space-y-4">
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">Themes</p>
-                {themes.length ? (
-                  themes.map((theme) => (
-                    <article
-                      key={theme.theme_id || theme.title}
-                      className="rounded-[1.3rem] border border-[color:var(--line)] bg-white/82 p-4 shadow-[var(--card-shadow-soft)]"
-                    >
-                      <div className="flex flex-wrap items-center gap-2">
-                        {theme.theme_id ? <Tag>{theme.theme_id}</Tag> : null}
-                        <p className="text-base font-semibold text-[color:var(--ink)]">{theme.title || "Untitled theme"}</p>
-                      </div>
-                      {theme.framing ? <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">{theme.framing}</p> : null}
-                      {theme.what_this_theme_must_resolve ? (
-                        <div className="mt-4 rounded-[1rem] bg-[color:var(--accent-soft)] px-4 py-3 text-sm leading-6 text-[color:var(--ink)]">
-                          <span className="font-semibold">Must resolve:</span> {theme.what_this_theme_must_resolve}
-                        </div>
-                      ) : null}
-                      <MetaRow label="Signals" values={theme.supporting_signal_ids} />
-                      <MetaRow label="References" values={theme.referenced_entity_ids} />
-                    </article>
-                  ))
-                ) : (
-                  <EmptyDetail text="No synthesized themes yet." />
-                )}
+                <div className="space-y-2 xl:hidden">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">Themes</p>
+                  <label className="sr-only" htmlFor="focus-theme-select">
+                    Select theme
+                  </label>
+                  <select
+                    id="focus-theme-select"
+                    className="w-full rounded-[1rem] border border-[color:var(--line)] bg-white/90 px-4 py-3 text-sm text-[color:var(--ink)] shadow-sm"
+                    value={selectedThemeKey}
+                    onChange={(event) => setSelectedThemeKey(event.target.value)}
+                  >
+                    {themes.map((theme, index) => (
+                      <option key={getThemeKey(theme, index)} value={getThemeKey(theme, index)}>
+                        {getThemeTabLabel(theme, index)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="hidden space-y-3 xl:block">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">Themes</p>
+                  {themes.length ? (
+                    themes.map((theme, index) => {
+                      const themeKey = getThemeKey(theme, index);
+                      const active = activeTheme ? getThemeKey(activeTheme, themes.indexOf(activeTheme)) === themeKey : false;
+                      return (
+                        <button
+                          key={themeKey}
+                          type="button"
+                          onClick={() => setSelectedThemeKey(themeKey)}
+                          className={`block w-full rounded-[1.3rem] border p-4 text-left transition ${
+                            active
+                              ? "border-blue-300 bg-[linear-gradient(145deg,rgba(239,246,255,0.96),rgba(255,255,255,0.92))] shadow-[0_18px_34px_rgba(148,163,184,0.14)]"
+                              : "border-[color:var(--line)] bg-white/82 shadow-[var(--card-shadow-soft)] hover:bg-white/92"
+                          }`}
+                        >
+                          <p className="text-sm font-semibold leading-6 text-[color:var(--ink)]">
+                            {getThemeTabLabel(theme, index)}
+                          </p>
+                        </button>
+                      );
+                    })
+                  ) : (
+                    <EmptyDetail text="No synthesized themes yet." />
+                  )}
+                </div>
               </section>
 
               <section className="space-y-4">
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">Signals</p>
-                {signals.length ? (
-                  signals.map((signal) => (
-                    <article
-                      key={signal.signal_id || signal.title}
-                      className="rounded-[1.3rem] border border-[color:var(--line)] bg-white/82 p-4 shadow-[var(--card-shadow-soft)]"
-                    >
-                      <div className="flex flex-wrap items-center gap-2">
-                        {signal.signal_id ? <Tag>{signal.signal_id}</Tag> : null}
-                        {signal.theme_id ? <Tag tone="soft">{signal.theme_id}</Tag> : null}
-                        <p className="text-base font-semibold text-[color:var(--ink)]">{signal.title || "Untitled signal"}</p>
+                {activeTheme ? (
+                  <>
+                    <article className="rounded-[1.5rem] border border-[color:var(--line)] bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(239,246,255,0.86),rgba(224,231,255,0.68))] p-5 shadow-[0_18px_34px_rgba(148,163,184,0.12)]">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">
+                            Interview Focus
+                          </p>
+                          <h3 className="text-2xl font-semibold tracking-[-0.03em] text-[color:var(--ink)]">
+                            {activeTheme.title || "Untitled theme"}
+                          </h3>
+                        </div>
+                        {activeTheme.framing ? (
+                          <p className="text-sm leading-7 text-[color:var(--muted)]">{activeTheme.framing}</p>
+                        ) : null}
+                        {activeTheme.what_this_theme_must_resolve ? (
+                          <div className="rounded-[1rem] bg-[color:var(--accent-soft)] px-4 py-3 text-sm leading-7 text-[color:var(--ink)]">
+                            <span className="font-semibold">What this must resolve:</span>{" "}
+                            {activeTheme.what_this_theme_must_resolve}
+                          </div>
+                        ) : null}
                       </div>
-                      <SignalBlock label="Evidence anchor" value={signal.evidence_anchor} />
-                      <SignalBlock label="Direct read" value={signal.direct_read} />
-                      <SignalBlock label="What remains open" value={signal.what_remains_open} />
-                      <SignalBlock label="Why it matters" value={signal.why_it_matters} />
-                      <MetaRow label="Entity IDs" values={signal.referenced_entity_ids} />
                     </article>
-                  ))
+
+                    <div className="space-y-4">
+                      {activeThemeSignals.length ? (
+                        activeThemeSignals.map((signal, index) => (
+                          <article
+                            key={signal.signal_id || signal.title || index}
+                            className="rounded-[1.3rem] border border-[color:var(--line)] bg-white/84 p-5 shadow-[var(--card-shadow-soft)]"
+                          >
+                            <div className="space-y-4">
+                              <div className="space-y-2">
+                                <p className="text-base font-semibold text-[color:var(--ink)]">
+                                  {signal.title || `Signal ${index + 1}`}
+                                </p>
+                              </div>
+                              <SignalBlock label="Direct read" value={signal.direct_read} />
+                              <SignalBlock label="Why it matters" value={signal.why_it_matters} />
+                              <SignalBlock label="What remains open" value={signal.what_remains_open} />
+                              <EvidenceSources values={signal.referenced_entity_ids} />
+                            </div>
+                          </article>
+                        ))
+                      ) : (
+                        <EmptyDetail text="No signals are attached to this theme yet." />
+                      )}
+                    </div>
+                  </>
                 ) : (
-                  <EmptyDetail text="No synthesized signals yet." />
+                  <EmptyDetail text="No synthesized themes yet." />
                 )}
               </section>
             </div>
@@ -206,6 +279,55 @@ function SignalBlock({ label, value }: { label: string; value?: string }) {
   );
 }
 
+function EvidenceSources({ values }: { values?: string[] }) {
+  if (!values?.length) {
+    return null;
+  }
+
+  const grouped = groupEvidenceSources(values);
+  const bucketLabels = Object.keys(grouped);
+
+  return (
+    <details className="mt-4 rounded-[1rem] border border-[color:var(--line)] bg-slate-50/78 px-4 py-3">
+      <summary className="cursor-pointer list-none">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">
+            Evidence sources
+          </span>
+          {bucketLabels.map((label) => (
+            <BucketChip key={label} label={label} />
+          ))}
+        </div>
+      </summary>
+      <div className="mt-3 grid gap-3">
+        {Object.entries(grouped).map(([label, entries]) => (
+          <div key={label} className="space-y-2">
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)]">{label}</p>
+            <div className="flex flex-wrap gap-2">
+              {entries.map((entry) => (
+                <span
+                  key={`${label}-${entry}`}
+                  className="inline-flex rounded-full border border-[color:var(--line)] bg-white px-3 py-1.5 text-xs font-medium text-[color:var(--ink)] shadow-sm"
+                >
+                  {entry}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </details>
+  );
+}
+
+function BucketChip({ label }: { label: string }) {
+  return (
+    <span className="inline-flex rounded-full bg-[color:var(--accent-soft)] px-2.5 py-1 text-[11px] font-bold text-[color:var(--accent-strong)]">
+      {label}
+    </span>
+  );
+}
+
 function MetaRow({ label, values }: { label: string; values?: string[] }) {
   if (!values?.length) {
     return null;
@@ -261,4 +383,84 @@ function countAnnotations(annotations?: Record<string, unknown>) {
       : 0;
 
   return page2Count + page3Count;
+}
+
+function getThemeKey(theme: ThemeRecord | undefined, index: number) {
+  return theme?.theme_id || theme?.title || `theme-${index}`;
+}
+
+function getThemeTabLabel(theme: ThemeRecord, index: number) {
+  const title = theme.title?.trim();
+  if (!title) {
+    return `Theme ${index + 1}`;
+  }
+
+  const separators = [":", " or ", " and ", ","];
+  for (const separator of separators) {
+    if (title.includes(separator)) {
+      const leading = title.split(separator)[0]?.trim();
+      if (leading) {
+        return leading;
+      }
+    }
+  }
+
+  return title.length > 34 ? `${title.slice(0, 31).trimEnd()}...` : title;
+}
+
+function groupEvidenceSources(values: string[]) {
+  const grouped: Record<string, string[]> = {};
+
+  for (const value of values) {
+    const bucket = getEvidenceBucket(value);
+    const detail = getEvidenceDetail(value);
+    if (!grouped[bucket]) {
+      grouped[bucket] = [];
+    }
+    if (!grouped[bucket].includes(detail)) {
+      grouped[bucket].push(detail);
+    }
+  }
+
+  return grouped;
+}
+
+function getEvidenceBucket(value: string) {
+  if (value.startsWith("ACA-")) {
+    return "Academics";
+  }
+  if (value.startsWith("ACT-") || value.startsWith("LEAD-")) {
+    return "Activities";
+  }
+  if (value.startsWith("TEST-")) {
+    return "Tests";
+  }
+  if (value.startsWith("ESS-")) {
+    return "Writing";
+  }
+  return "Application";
+}
+
+function getEvidenceDetail(value: string) {
+  if (value.startsWith("ACA-")) {
+    const number = parseInt(value.replace("ACA-", ""), 10);
+    return Number.isFinite(number) ? `Academic record ${number}` : "Academic record";
+  }
+  if (value.startsWith("ACT-")) {
+    const number = parseInt(value.replace("ACT-", ""), 10);
+    return Number.isFinite(number) ? `Activity ${number}` : "Activity";
+  }
+  if (value.startsWith("LEAD-")) {
+    const number = parseInt(value.replace("LEAD-", ""), 10);
+    return Number.isFinite(number) ? `Leadership ${number}` : "Leadership";
+  }
+  if (value.startsWith("TEST-")) {
+    const number = parseInt(value.replace("TEST-", ""), 10);
+    return Number.isFinite(number) ? `Test ${number}` : "Test";
+  }
+  if (value.startsWith("ESS-")) {
+    const number = parseInt(value.replace("ESS-", ""), 10);
+    return Number.isFinite(number) ? `Essay ${number}` : "Essay";
+  }
+  return "Source detail";
 }

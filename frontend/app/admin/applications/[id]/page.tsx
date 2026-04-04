@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { fetchApplicationDetail } from "@/lib/api";
+import { fetchApplicationDetail, fetchSourcePdf } from "@/lib/api";
 import type { ApplicationDetailAdmin } from "@/lib/types";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { ReviewPackageSection } from "@/components/ReviewPackageSection";
-import { SynthesisReportSection } from "@/components/SynthesisReportSection";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ReviewPackageSection } from "@/components/ReviewPackageSection";
 import { usePolling } from "@/lib/usePolling";
 import { AdminShell } from "@/components/layout/AdminShell";
 
@@ -16,6 +16,7 @@ export default function AdminApplicationDetailPage() {
   const params = useParams<{ id: string }>();
   const [item, setItem] = useState<ApplicationDetailAdmin | null>(null);
   const [loading, setLoading] = useState(true);
+  const [openingPdf, setOpeningPdf] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function loadDetail() {
@@ -56,84 +57,73 @@ export default function AdminApplicationDetailPage() {
 
   const createdAt = new Date(item.created_at).toLocaleString();
   const assignee = item.assigned_interviewer?.name || "Not assigned";
-  const publishedVersion = item.published_draft?.version;
+
+  async function handleOpenPdf() {
+    const applicationId = item?.id;
+    if (!applicationId) return;
+    setOpeningPdf(true);
+    setError(null);
+    const popup = window.open("", "_blank");
+
+    try {
+      const blob = await fetchSourcePdf(applicationId);
+      const objectUrl = window.URL.createObjectURL(blob);
+      if (popup) {
+        popup.location.href = objectUrl;
+      } else {
+        window.open(objectUrl, "_blank", "noopener,noreferrer");
+      }
+      window.setTimeout(() => window.URL.revokeObjectURL(objectUrl), 60_000);
+    } catch (openError) {
+      popup?.close();
+      setError(openError instanceof Error ? openError.message : "Failed to open source PDF.");
+    } finally {
+      setOpeningPdf(false);
+    }
+  }
 
   return (
     <AdminShell>
       <div className="space-y-6">
-        <section className="hero-panel overflow-hidden p-6">
-          <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr] xl:items-end">
-            <div className="space-y-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">
-                Admin Application Review
-              </p>
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl font-semibold tracking-[-0.04em] text-[color:var(--ink)] md:text-4xl">
-                  {item.id}
-                </h1>
-                <StatusBadge status={item.status} />
-              </div>
-              <p className="max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
-                Deterministic Pages 1–3 remain the canonical review package. Published Pages 4–5 appear alongside
-                annotation overlays so admin can inspect what was finalized without stepping into draft ownership.
-              </p>
+        <section className="rounded-[1.35rem] border border-white/85 bg-white/75 px-4 py-3 shadow-[0_10px_24px_rgba(148,163,184,0.1)] backdrop-blur">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <StatusBadge status={item.status} />
+              <MetaPill label="Application ID" value={item.id} />
+              <MetaPill label="Created" value={createdAt} />
+              <MetaPill label="Interviewer" value={assignee} />
             </div>
-
-            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-              <MetricCard label="Created" value={createdAt} />
-              <MetricCard label="Assignee" value={assignee} />
-              <MetricCard label="Published draft" value={publishedVersion ? `v${publishedVersion}` : "None yet"} />
-            </div>
+            <Button variant="secondary" disabled={openingPdf} onClick={() => void handleOpenPdf()}>
+              {openingPdf ? "Opening PDF..." : "Open source PDF"}
+            </Button>
           </div>
         </section>
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(22rem,0.9fr)]">
-          <div className="space-y-6">
-            {item.review_package ? (
-              <ReviewPackageSection
-                applicationId={item.id}
-                reviewPackage={item.review_package}
-                roleLabel="admin"
-                annotationSource={item.published_draft?.content}
-              />
-            ) : null}
-          </div>
+        {item.status === "DRAFT" ? (
+          <Card title="Draft Status" description="Admin visibility before publish">
+            <p className="text-sm leading-7 text-[color:var(--muted)]">
+              An interviewer draft exists, but the written assessment remains private until publish. You can continue
+              reviewing the application summary and source material in the meantime.
+            </p>
+          </Card>
+        ) : null}
 
-          <aside className="space-y-6">
-            {item.status === "DRAFT" ? (
-              <Card title="Draft Status" description="Admin visibility before publish">
-                <p className="text-sm leading-7 text-[color:var(--muted)]">
-                  An interviewer draft exists, but Pages 4–5 remain private until publish. Admin can continue reviewing
-                  the canonical package and source material in the meantime.
-                </p>
-              </Card>
-            ) : null}
-
-            {item.published_draft ? (
-              <SynthesisReportSection
-                title={`Published Report · v${item.published_draft.version}`}
-                description="Pages 4–5 frozen at publish time."
-                draft={item.published_draft.content}
-              />
-            ) : (
-              <Card title="Published Report" description="No published synthesis yet">
-                <p className="text-sm leading-7 text-[color:var(--muted)]">
-                  Once the assigned interviewer publishes, the final focus areas and question groups will appear here.
-                </p>
-              </Card>
-            )}
-          </aside>
-        </div>
+        {item.review_package ? (
+          <ReviewPackageSection
+            reviewPackage={item.review_package}
+            annotationSource={item.published_draft?.content}
+          />
+        ) : null}
       </div>
     </AdminShell>
   );
 }
 
-function MetricCard({ label, value }: { label: string; value: string }) {
+function MetaPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="metric-card px-4 py-4">
-      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
-      <p className="mt-2 text-sm leading-6 text-[color:var(--ink)]">{value}</p>
+    <div className="rounded-full border border-[color:var(--line)] bg-white/88 px-3 py-2 shadow-sm">
+      <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)]">{label}: </span>
+      <span className="text-sm text-[color:var(--ink)]">{value}</span>
     </div>
   );
 }

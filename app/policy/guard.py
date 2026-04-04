@@ -97,12 +97,12 @@ def _normalize_theme_entries(raw_themes: Any, rules: List[str]) -> List[Dict[str
                 _first_present(theme, ["title", "theme_name", "name", "heading", "theme_title"], ""),
                 rules,
             ),
-            "framing": _rewrite_prohibited_phrasing(
-                _first_present(theme, ["framing", "description", "summary", "details", "theme_description"], ""),
+            "unifying_axis": _rewrite_prohibited_phrasing(
+                _first_present(theme, ["unifying_axis", "framing", "description", "summary", "details", "theme_description"], ""),
                 rules,
             ),
-            "what_this_theme_must_resolve": _rewrite_prohibited_phrasing(
-                _first_present(theme, ["what_this_theme_must_resolve", "resolution", "resolve", "interview_purpose"], ""),
+            "interview_direction": _rewrite_prohibited_phrasing(
+                _first_present(theme, ["interview_direction", "what_this_theme_must_resolve", "resolution", "resolve", "interview_purpose"], ""),
                 rules,
             ),
             "supporting_signal_ids": _first_present(
@@ -135,7 +135,7 @@ def _normalize_signal_output(data: Any, rules: List[str]) -> Any:
                 "theme_id": _first_present(sig, ["theme_id", "theme", "theme_ref"]),
                 "evidence_anchor": _first_present(sig, ["evidence_anchor"], ""),
                 "direct_read": _first_present(sig, ["direct_read"], ""),
-                "what_remains_open": _first_present(sig, ["what_remains_open"], ""),
+                "depth_opening": _first_present(sig, ["depth_opening", "what_remains_open"], ""),
                 "why_it_matters": _first_present(sig, ["why_it_matters"], ""),
                 "referenced_entity_ids": _first_present(sig, ["referenced_entity_ids", "entity_ids", "references"], []),
                 "supporting_det_signal_ids": _first_present(
@@ -319,7 +319,7 @@ def validate_signals(
             "title",
             "evidence_anchor",
             "direct_read",
-            "what_remains_open",
+            "depth_opening",
             "why_it_matters",
             "referenced_entity_ids",
             "supporting_det_signal_ids",
@@ -459,7 +459,7 @@ def validate_signals(
                     sig_passed = False
                     passed = False
 
-        for field in ["title", "evidence_anchor", "direct_read", "what_remains_open", "why_it_matters"]:
+        for field in ["title", "evidence_anchor", "direct_read", "depth_opening", "why_it_matters"]:
             if _append_text_violations(violations_log, f"signals[{idx}].{field}", sig.get(field, ""), rules):
                 sig_passed = False
                 passed = False
@@ -472,7 +472,7 @@ def validate_signals(
             "title": sig.get("title"),
             "evidence_anchor": sig.get("evidence_anchor"),
             "direct_read": sig.get("direct_read"),
-            "what_remains_open": sig.get("what_remains_open"),
+            "depth_opening": sig.get("depth_opening"),
             "why_it_matters": sig.get("why_it_matters"),
             "referenced_entity_ids": referenced_entity_ids,
             "supporting_det_signal_ids": supporting_det_signal_ids,
@@ -493,7 +493,7 @@ def validate_signals(
             continue
 
         theme_passed = True
-        required = ["theme_id", "title", "framing", "what_this_theme_must_resolve", "supporting_signal_ids"]
+        required = ["theme_id", "title", "unifying_axis", "interview_direction", "supporting_signal_ids"]
         for field in required:
             value = theme.get(field)
             if value is None or (isinstance(value, str) and not value.strip()):
@@ -550,7 +550,7 @@ def validate_signals(
                     theme_passed = False
                     passed = False
 
-        for field in ["title", "framing", "what_this_theme_must_resolve"]:
+        for field in ["title", "unifying_axis", "interview_direction"]:
             if _append_text_violations(violations_log, f"themes[{idx}].{field}", theme.get(field, ""), rules):
                 theme_passed = False
                 passed = False
@@ -570,8 +570,8 @@ def validate_signals(
         sanitized_themes.append({
             "theme_id": theme_id,
             "title": theme.get("title"),
-            "framing": theme.get("framing"),
-            "what_this_theme_must_resolve": theme.get("what_this_theme_must_resolve"),
+            "unifying_axis": theme.get("unifying_axis"),
+            "interview_direction": theme.get("interview_direction"),
             "supporting_signal_ids": supporting_signal_ids,
             "referenced_entity_ids": referenced_entity_ids,
         })

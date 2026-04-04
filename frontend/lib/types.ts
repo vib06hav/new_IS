@@ -45,6 +45,7 @@ export type DraftSummary = {
 export type ApplicationListItem = {
   id: string;
   status: string;
+  is_hidden: boolean;
   created_at: string;
   assigned_interviewer?: UserSummary | null;
 };
@@ -78,6 +79,38 @@ export type InterviewerListItem = {
   name: string;
   email: string;
   active_assignment_count: number;
+};
+
+export type InterviewerAssignmentSummaryItem = {
+  application_id: string;
+  status: string;
+  current_interviewer?: UserSummary | null;
+};
+
+export type InterviewerAssignmentSummary = {
+  interviewer_id: string;
+  active_assignment_count: number;
+  currently_assigned: InterviewerAssignmentSummaryItem[];
+  available_to_assign: InterviewerAssignmentSummaryItem[];
+  available_to_reassign: InterviewerAssignmentSummaryItem[];
+};
+
+export type InterviewerUpdatePayload = {
+  name: string;
+  email: string;
+};
+
+export type PasswordChangePayload = {
+  new_password: string;
+};
+
+export type InterviewerAssignmentSavePayload = {
+  assigned_application_ids: string[];
+};
+
+export type SelfPasswordChangePayload = {
+  current_password: string;
+  new_password: string;
 };
 
 export type AssignmentListItem = {

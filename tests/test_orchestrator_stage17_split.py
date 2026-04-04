@@ -38,7 +38,7 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
                 "title": "Signal title",
                 "evidence_anchor": "Evidence anchor",
                 "direct_read": "Direct read",
-                "what_remains_open": "What remains open",
+                "depth_opening": "What remains open",
                 "why_it_matters": "Why it matters",
                 "referenced_entity_ids": ["ACA-001"],
                 "supporting_det_signal_ids": ["DET-001"],
@@ -49,8 +49,8 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
             {
                 "theme_id": "THEME-001",
                 "title": "Theme title",
-                "framing": "Theme framing",
-                "what_this_theme_must_resolve": "Theme resolution",
+                "unifying_axis": "Theme unifying_axis",
+                "interview_direction": "Theme resolution",
                 "supporting_signal_ids": ["SIG-001"],
                 "referenced_entity_ids": ["ACA-001"],
             }
@@ -157,3 +157,4 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
         "page_2_entities": {"ACA-001": {"signal_ids": ["SIG-001"], "theme_ids": ["THEME-001"]}},
         "page_3_fragments": {},
     }
+

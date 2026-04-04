@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
-import { assignApplication, fetchApplications, fetchInterviewers, reassignApplication } from "@/lib/api";
+import { ArrowUpRight, EyeOff, Eye } from "lucide-react";
+import { assignApplication, fetchApplications, fetchInterviewers, hideApplication, reassignApplication, unhideApplication } from "@/lib/api";
 import type { ApplicationListItem, InterviewerListItem } from "@/lib/types";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader } from "@/components/ui/Loader";
@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/shadcn/select";
 
-const REPORT_STATUSES = ["ALL", "READY", "ASSIGNED", "DRAFT", "PUBLISHED"] as const;
+const REPORT_STATUSES = ["ALL", "READY", "ASSIGNED", "DRAFT", "PUBLISHED", "HIDDEN"] as const;
 
 export default function AdminReportsPage() {
   const [items, setItems] = useState<ApplicationListItem[]>([]);
@@ -32,6 +32,7 @@ export default function AdminReportsPage() {
   const [statusFilter, setStatusFilter] = useState<(typeof REPORT_STATUSES)[number]>("ALL");
   const [loading, setLoading] = useState(true);
   const [busyAppId, setBusyAppId] = useState<string | null>(null);
+  const [hiddenBusyAppId, setHiddenBusyAppId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [selectedInterviewerByApp, setSelectedInterviewerByApp] = useState<Record<string, string>>({});
@@ -69,6 +70,8 @@ export default function AdminReportsPage() {
     }
 
     setBusyAppId(applicationId);
+    setMessage(null);
+    setError(null);
     try {
       if (mode === "assign") {
         await assignApplication(applicationId, interviewerId);
@@ -85,11 +88,32 @@ export default function AdminReportsPage() {
     }
   }
 
+  async function toggleHidden(applicationId: string, nextHidden: boolean) {
+    setHiddenBusyAppId(applicationId);
+    setMessage(null);
+    setError(null);
+    try {
+      if (nextHidden) {
+        await hideApplication(applicationId);
+        setMessage("Published report hidden.");
+      } else {
+        await unhideApplication(applicationId);
+        setMessage("Hidden report restored.");
+      }
+      await loadData();
+    } catch (toggleError) {
+      setError(toggleError instanceof Error ? toggleError.message : "Failed to update report visibility.");
+    } finally {
+      setHiddenBusyAppId(null);
+    }
+  }
+
   const metrics = useMemo(
     () => ({
-      total: items.length,
       ready: items.filter((item) => item.status === "READY").length,
-      live: items.filter((item) => item.status === "ASSIGNED" || item.status === "DRAFT").length,
+      assigned: items.filter((item) => item.status === "ASSIGNED").length,
+      draft: items.filter((item) => item.status === "DRAFT").length,
+      published: items.filter((item) => item.status === "PUBLISHED").length,
     }),
     [items],
   );
@@ -98,26 +122,26 @@ export default function AdminReportsPage() {
     <AdminShell>
       <div className="space-y-6">
         <section className="hero-panel p-6">
-          <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr] xl:items-end">
+          <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr] xl:items-start">
             <div className="space-y-4">
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">Admin review desk</p>
               <h1 className="text-4xl font-semibold tracking-[-0.05em] text-[color:var(--ink)]">Generated Reports</h1>
               <p className="max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
-                A compact lifecycle board for every review-ready application. Filter fast, assign inline, and open the
-                full workspace only when you need to go deep.
+                Browse every review-ready application as a work card, assign ownership inline, and hide older published reports until you need them again.
               </p>
             </div>
-            <div className="metric-strip">
-              <MetricCard label="Visible" value={String(metrics.total)} />
-              <MetricCard label="Ready to assign" value={String(metrics.ready)} />
-              <MetricCard label="In reviewer hands" value={String(metrics.live)} />
+            <div className="metric-strip sm:grid-cols-2 xl:self-start">
+              <MetricCard label="Ready" value={String(metrics.ready)} />
+              <MetricCard label="Assigned" value={String(metrics.assigned)} />
+              <MetricCard label="Draft" value={String(metrics.draft)} />
+              <MetricCard label="Published" value={String(metrics.published)} />
             </div>
           </div>
         </section>
 
         <div>
           <SegmentedControl
-            label="Report lifecycle"
+            label="Report Status"
             value={statusFilter}
             onChange={setStatusFilter}
             options={REPORT_STATUSES.map((status) => ({ value: status, label: status }))}
@@ -132,38 +156,46 @@ export default function AdminReportsPage() {
         ) : items.length === 0 ? (
           <EmptyState title="No processed applications yet." description="READY and later states will appear here." />
         ) : (
-          <div className="data-table">
-            <div className="data-table-header md:grid-cols-[1.2fr_0.8fr_0.8fr_1.2fr_0.7fr]">
-              <span>Application</span>
-              <span>Status</span>
-              <span>Created</span>
-              <span>Assignment</span>
-              <span>Open</span>
-            </div>
+          <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
             {items.map((item) => {
               const isBusy = busyAppId === item.id;
+              const isHiddenBusy = hiddenBusyAppId === item.id;
               const canAssign = item.status === "READY";
               const canReassign = item.status === "ASSIGNED" || item.status === "DRAFT";
+              const canHide = item.status === "PUBLISHED" && !item.is_hidden;
+              const canUnhide = item.status === "PUBLISHED" && item.is_hidden;
+              const isPublished = item.status === "PUBLISHED";
 
               return (
-                <div key={item.id} className="data-table-row md:grid-cols-[1.2fr_0.8fr_0.8fr_1.2fr_0.7fr]">
-                  <div>
-                    <p className="display-font text-base font-semibold text-[color:var(--ink)]">{item.id}</p>
-                    <p className="mt-1 text-xs text-[color:var(--muted)]">
-                      {item.assigned_interviewer ? item.assigned_interviewer.email : "No interviewer attached yet"}
-                    </p>
+                <article
+                  key={item.id}
+                  className="fade-rise flex flex-col gap-5 rounded-[1.6rem] border border-white/80 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(239,246,255,0.82),rgba(233,225,255,0.6))] p-5 shadow-[0_18px_38px_rgba(148,163,184,0.12)]"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-2">
+                      <p className="display-font break-all text-lg font-semibold text-[color:var(--ink)]">{item.id}</p>
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={item.status} />
+                        {item.assigned_interviewer && !isPublished ? (
+                          <Badge variant="secondary">{item.assigned_interviewer.name}</Badge>
+                        ) : null}
+                        {item.is_hidden ? <Badge variant="outline">Hidden</Badge> : null}
+                      </div>
+                    </div>
+                    <Link
+                      className="inline-flex items-center gap-1 text-sm font-semibold text-[color:var(--accent)] underline underline-offset-4"
+                      href={`/admin/applications/${item.id}`}
+                    >
+                      Open
+                      <ArrowUpRight className="size-4" />
+                    </Link>
                   </div>
-                  <div>
-                    <StatusBadge status={item.status} />
-                  </div>
-                  <p className="text-sm text-[color:var(--muted)]">{new Date(item.created_at).toLocaleString()}</p>
-                  <div className="flex flex-col gap-2">
+
+                  <div className="rounded-2xl border border-white/75 bg-white/70 p-4 shadow-sm">
                     {canAssign || canReassign ? (
                       <>
-                        <div className="rounded-2xl border border-white/80 bg-white/75 p-2 shadow-sm">
-                          <p className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">
-                            {canAssign ? "Assign interviewer" : "Reassign interviewer"}
-                          </p>
+                        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Assignment</p>
+                        <div className="mt-3 space-y-3">
                           <Select
                             value={selectedInterviewerByApp[item.id] || ""}
                             onValueChange={(value) =>
@@ -171,7 +203,7 @@ export default function AdminReportsPage() {
                             }
                           >
                             <SelectTrigger className="h-auto w-full rounded-xl border-[color:var(--surface-border)] bg-white px-3 py-3">
-                              <SelectValue placeholder="Choose interviewer" />
+                              <SelectValue placeholder={canAssign ? "Choose interviewer" : "Choose new interviewer"} />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border border-[color:var(--surface-border)] shadow-[0_18px_38px_rgba(148,163,184,0.18)]">
                               <SelectGroup>
@@ -185,35 +217,44 @@ export default function AdminReportsPage() {
                                       <span className="truncate font-medium text-[color:var(--ink)]">{interviewer.name}</span>
                                       <span className="truncate text-xs text-[color:var(--muted)]">{interviewer.email}</span>
                                     </span>
-                                    <Badge variant="secondary">{interviewer.active_assignment_count} live</Badge>
+                                    <Badge variant="secondary">{interviewer.active_assignment_count} active</Badge>
                                   </SelectItem>
                                 ))}
                               </SelectGroup>
                             </SelectContent>
                           </Select>
+                          <Button
+                            className="w-full"
+                            disabled={isBusy || !selectedInterviewerByApp[item.id]}
+                            onClick={() => void mutateAssignment(item.id, canAssign ? "assign" : "reassign")}
+                          >
+                            {isBusy ? "Saving..." : canAssign ? "Assign interviewer" : "Reassign interviewer"}
+                          </Button>
                         </div>
-                        <Button
-                          className="w-full"
-                          disabled={isBusy || !selectedInterviewerByApp[item.id]}
-                          onClick={() => void mutateAssignment(item.id, canAssign ? "assign" : "reassign")}
-                        >
-                          <ArrowUpRight />
-                          {isBusy ? "Saving..." : canAssign ? "Assign" : "Reassign"}
-                        </Button>
                       </>
+                    ) : isPublished ? (
+                      <AssignedInterviewerArtifact interviewer={item.assigned_interviewer} />
                     ) : (
-                      <p className="text-sm text-[color:var(--muted)]">
-                        {item.assigned_interviewer ? `Owned by ${item.assigned_interviewer.name}` : "No action available"}
-                      </p>
+                      <>
+                        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Assignment</p>
+                        <p className="mt-2 text-sm text-[color:var(--muted)]">No action available</p>
+                      </>
                     )}
                   </div>
-                  <Link
-                    className="display-font text-sm font-semibold text-[color:var(--accent)] underline underline-offset-4"
-                    href={`/admin/applications/${item.id}`}
-                  >
-                    Open
-                  </Link>
-                </div>
+
+                  {canHide || canUnhide ? (
+                    <div className="mt-auto flex justify-end">
+                      <Button
+                        variant="secondary"
+                        disabled={isHiddenBusy}
+                        onClick={() => void toggleHidden(item.id, canHide)}
+                      >
+                        {canHide ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                        {isHiddenBusy ? "Saving..." : canHide ? "Hide report" : "Unhide report"}
+                      </Button>
+                    </div>
+                  ) : null}
+                </article>
               );
             })}
           </div>
@@ -230,6 +271,36 @@ function getInitials(name: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
+}
+
+function AssignedInterviewerArtifact({
+  interviewer,
+}: {
+  interviewer: ApplicationListItem["assigned_interviewer"];
+}) {
+  if (!interviewer) {
+    return (
+      <>
+        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Assigned interviewer</p>
+        <p className="mt-2 text-sm text-[color:var(--muted)]">No interviewer information available</p>
+      </>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Assigned interviewer</p>
+      <div className="flex items-center gap-3 rounded-[1rem] border border-white/80 bg-white/82 px-3 py-3 shadow-sm">
+        <Avatar size="sm">
+          <AvatarFallback>{getInitials(interviewer.name)}</AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 space-y-1">
+          <p className="truncate text-sm font-semibold text-[color:var(--ink)]">{interviewer.name}</p>
+          <p className="truncate text-xs text-[color:var(--muted)]">{interviewer.email}</p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function MetricCard({ label, value }: { label: string; value: string }) {

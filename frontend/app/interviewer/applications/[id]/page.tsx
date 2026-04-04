@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { fetchApplicationDetail, generateDraft, publishDraft } from "@/lib/api";
+import { fetchApplicationDetail, fetchSourcePdf, generateDraft, publishDraft } from "@/lib/api";
 import type { ApplicationDetailInterviewer } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { ReviewPackageSection } from "@/components/ReviewPackageSection";
-import { SynthesisReportSection } from "@/components/SynthesisReportSection";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ReviewPackageSection } from "@/components/ReviewPackageSection";
 import { usePolling } from "@/lib/usePolling";
 import { InterviewerShell } from "@/components/layout/InterviewerShell";
 
@@ -18,6 +17,7 @@ export default function InterviewerApplicationPage() {
   const [item, setItem] = useState<ApplicationDetailInterviewer | null>(null);
   const [loading, setLoading] = useState(true);
   const [busyAction, setBusyAction] = useState<"generate" | "publish" | null>(null);
+  const [openingPdf, setOpeningPdf] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -69,6 +69,29 @@ export default function InterviewerApplicationPage() {
     }
   }
 
+  async function handleOpenPdf() {
+    if (!item) return;
+    setOpeningPdf(true);
+    setError(null);
+    const popup = window.open("", "_blank");
+
+    try {
+      const blob = await fetchSourcePdf(item.id);
+      const objectUrl = window.URL.createObjectURL(blob);
+      if (popup) {
+        popup.location.href = objectUrl;
+      } else {
+        window.open(objectUrl, "_blank", "noopener,noreferrer");
+      }
+      window.setTimeout(() => window.URL.revokeObjectURL(objectUrl), 60_000);
+    } catch (openError) {
+      popup?.close();
+      setError(openError instanceof Error ? openError.message : "Failed to open source PDF.");
+    } finally {
+      setOpeningPdf(false);
+    }
+  }
+
   if (loading) {
     return (
       <InterviewerShell>
@@ -96,34 +119,21 @@ export default function InterviewerApplicationPage() {
   const canGenerate = item.status === "ASSIGNED" || item.status === "DRAFT";
   const canPublish = item.status === "DRAFT";
   const createdAt = new Date(item.created_at).toLocaleString();
-  const latestVersion = item.latest_draft?.version;
 
   return (
     <InterviewerShell>
       <div className="space-y-6">
-        <section className="hero-panel overflow-hidden p-6">
-          <div className="grid gap-6 xl:grid-cols-[1.16fr_0.84fr] xl:items-end">
-            <div className="space-y-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">
-                Interviewer Workspace
-              </p>
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl font-semibold tracking-[-0.04em] text-[color:var(--ink)] md:text-4xl">
-                  {item.id}
-                </h1>
-                <StatusBadge status={item.status} />
-              </div>
-              <p className="max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
-                Read the deterministic package, generate Pages 4–5 from canonical state, and inspect the resulting
-                annotation overlay before deciding whether the draft is ready to publish.
-              </p>
+        <section className="rounded-[1.35rem] border border-white/85 bg-white/75 px-4 py-3 shadow-[0_10px_24px_rgba(148,163,184,0.1)] backdrop-blur">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <StatusBadge status={item.status} />
+              <MetaPill label="Application ID" value={item.id} />
+              <MetaPill label="Created" value={createdAt} />
+              <MetaPill label="Interviewer" value={item.assigned_interviewer?.name || "Unassigned"} />
             </div>
-
-            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-              <MetricCard label="Created" value={createdAt} />
-              <MetricCard label="Assigned reviewer" value={item.assigned_interviewer?.name || "Unassigned"} />
-              <MetricCard label="Latest draft" value={latestVersion ? `v${latestVersion}` : "Not generated"} />
-            </div>
+            <Button variant="secondary" disabled={openingPdf} onClick={() => void handleOpenPdf()}>
+              {openingPdf ? "Opening PDF..." : "Open source PDF"}
+            </Button>
           </div>
         </section>
 
@@ -138,31 +148,15 @@ export default function InterviewerApplicationPage() {
           <div className="space-y-6">
             {item.review_package ? (
               <ReviewPackageSection
-                applicationId={item.id}
                 reviewPackage={item.review_package}
-                roleLabel="interviewer"
                 annotationSource={item.latest_draft?.content}
               />
             ) : null}
           </div>
 
           <aside className="space-y-6">
-            {item.latest_draft ? (
-              <SynthesisReportSection
-                title={`Latest Draft · v${item.latest_draft.version}`}
-                description="Pages 4–5 synthesized from canonical state."
-                draft={item.latest_draft.content}
-              />
-            ) : (
-              <Card title="Latest Draft" description="No draft yet">
-                <p className="text-sm leading-7 text-[color:var(--muted)]">
-                  Generate a draft to populate synthesized focus areas, signal framing, and interview question groups.
-                </p>
-              </Card>
-            )}
-
             {canGenerate ? (
-              <Card title="Draft Actions" description="Generation affects Pages 4–5 only">
+              <Card title="Draft Actions" description="Generation affects Pages 4-5 only">
                 <div className="space-y-3">
                   <Button className="w-full" disabled={busyAction !== null} onClick={() => void handleGenerate()}>
                     {busyAction === "generate"
@@ -182,7 +176,7 @@ export default function InterviewerApplicationPage() {
                     {busyAction === "publish" ? "Publishing..." : "Publish draft"}
                   </Button>
                   <p className="text-xs leading-6 text-[color:var(--muted)]">
-                    Publishing freezes Pages 4–5 for admin visibility while leaving canonical Pages 1–3 unchanged.
+                    Publishing freezes the written assessment for admin visibility while leaving the application summary unchanged.
                   </p>
                 </div>
               </Card>
@@ -202,11 +196,11 @@ export default function InterviewerApplicationPage() {
   );
 }
 
-function MetricCard({ label, value }: { label: string; value: string }) {
+function MetaPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="metric-card px-4 py-4">
-      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
-      <p className="mt-2 text-sm leading-6 text-[color:var(--ink)]">{value}</p>
+    <div className="rounded-full border border-[color:var(--line)] bg-white/88 px-3 py-2 shadow-sm">
+      <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)]">{label}: </span>
+      <span className="text-sm text-[color:var(--ink)]">{value}</span>
     </div>
   );
 }
