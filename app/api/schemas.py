@@ -84,12 +84,14 @@ class ApplicationUploadResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
+    display_id: str
     status: str
     created_at: datetime
 
 
 class ApplicationListItem(BaseModel):
     id: UUID
+    display_id: str
     status: str
     is_hidden: bool = False
     created_at: datetime
@@ -98,6 +100,7 @@ class ApplicationListItem(BaseModel):
 
 class ApplicationDetailAdmin(BaseModel):
     id: UUID
+    display_id: str
     status: str
     created_at: datetime
     assigned_interviewer: Optional[UserSummary] = None
@@ -107,6 +110,7 @@ class ApplicationDetailAdmin(BaseModel):
 
 class ApplicationDetailInterviewer(BaseModel):
     id: UUID
+    display_id: str
     status: str
     created_at: datetime
     assigned_interviewer: Optional[UserSummary] = None
@@ -118,8 +122,13 @@ class AssignmentUpsertRequest(BaseModel):
     interviewer_id: UUID
 
 
+class ApplicationDisplayIdUpdateRequest(BaseModel):
+    display_id: str
+
+
 class AssignmentListItem(BaseModel):
     application_id: UUID
+    application_display_id: str
     status: str
     assigned_at: datetime
     interviewer: UserSummary
@@ -140,6 +149,7 @@ class DraftMutationResponse(BaseModel):
 
 class InterviewerAssignmentSummaryItem(BaseModel):
     application_id: UUID
+    application_display_id: str
     status: str
     current_interviewer: Optional[UserSummary] = None
 

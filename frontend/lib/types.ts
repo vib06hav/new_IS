@@ -44,6 +44,7 @@ export type DraftSummary = {
 
 export type ApplicationListItem = {
   id: string;
+  display_id: string;
   status: string;
   is_hidden: boolean;
   created_at: string;
@@ -52,12 +53,14 @@ export type ApplicationListItem = {
 
 export type ApplicationUploadResponse = {
   id: string;
+  display_id: string;
   status: string;
   created_at: string;
 };
 
 export type ApplicationDetailAdmin = {
   id: string;
+  display_id: string;
   status: string;
   created_at: string;
   assigned_interviewer?: UserSummary | null;
@@ -67,6 +70,7 @@ export type ApplicationDetailAdmin = {
 
 export type ApplicationDetailInterviewer = {
   id: string;
+  display_id: string;
   status: string;
   created_at: string;
   assigned_interviewer?: UserSummary | null;
@@ -83,6 +87,7 @@ export type InterviewerListItem = {
 
 export type InterviewerAssignmentSummaryItem = {
   application_id: string;
+  application_display_id: string;
   status: string;
   current_interviewer?: UserSummary | null;
 };
@@ -115,9 +120,14 @@ export type SelfPasswordChangePayload = {
 
 export type AssignmentListItem = {
   application_id: string;
+  application_display_id: string;
   status: string;
   assigned_at: string;
   interviewer: UserSummary;
+};
+
+export type ApplicationDisplayIdUpdatePayload = {
+  display_id: string;
 };
 
 export type DraftMutationResponse = {

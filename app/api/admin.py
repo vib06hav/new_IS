@@ -3,6 +3,7 @@ import os
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.agents.orchestrator import run_deterministic_pipeline
@@ -12,7 +13,12 @@ from app.api.helpers import (
     get_application_or_404,
     get_assignment_for_application,
 )
-from app.api.schemas import ApplicationListItem, AssignmentListItem, AssignmentUpsertRequest
+from app.api.schemas import (
+    ApplicationDisplayIdUpdateRequest,
+    ApplicationListItem,
+    AssignmentListItem,
+    AssignmentUpsertRequest,
+)
 from app.auth.dependencies import require_admin
 from app.database import get_db
 from app.models.application import Application
@@ -184,6 +190,42 @@ def reassign_application(
     assignment.assigned_at = datetime.utcnow()
     application.status = "ASSIGNED"
     db.commit()
+    db.refresh(application)
+    return build_application_list_item(application, interviewer)
+
+
+@router.put("/applications/{application_id}/display-id", response_model=ApplicationListItem)
+def update_application_display_id(
+    application_id: UUID,
+    payload: ApplicationDisplayIdUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    application = get_application_or_404(db, application_id)
+    if not payload.display_id:
+        raise HTTPException(status_code=400, detail="Display ID cannot be empty")
+
+    existing_application = (
+        db.query(Application)
+        .filter(Application.display_id == payload.display_id, Application.id != application_id)
+        .first()
+    )
+    if existing_application:
+        raise HTTPException(status_code=409, detail="Application display ID already exists")
+
+    application.display_id = payload.display_id
+
+    assignment = get_assignment_for_application(db, application_id)
+    interviewer = None
+    if assignment:
+        interviewer = db.query(User).filter(User.id == assignment.interviewer_id).first()
+
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Application display ID already exists") from exc
+
     db.refresh(application)
     return build_application_list_item(application, interviewer)
 

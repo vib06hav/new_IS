@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReviewPageOneSection, ReviewPageThreeSection, ReviewPageTwoSection } from "@/components/ReviewPackagePages";
 import { SynthesisReportSection } from "@/components/SynthesisReportSection";
 import type { ReviewPackageSummary } from "@/lib/types";
@@ -17,22 +17,34 @@ export function ReviewPackageSection({
 }) {
   const [activeTab, setActiveTab] = useState<ReviewPageTab>("page1");
   const annotations = extractAnnotations(annotationSource);
+  const hasSynthesisContent = Boolean(annotationSource);
+  const navOptions: Array<{ value: ReviewPageTab; label: string; meta: string }> = [
+    { value: "page1", label: "Overview", meta: "Applicant profile" },
+    { value: "page2", label: "Academics & Activities", meta: "Study and engagement" },
+    { value: "page3", label: "Writing", meta: "Essays and excerpts" },
+    ...(hasSynthesisContent
+      ? [
+          { value: "page4" as const, label: "Focus Areas", meta: "Themes and signals" },
+          { value: "page5" as const, label: "Questions", meta: "Interview prompts" },
+        ]
+      : []),
+  ];
+
+  useEffect(() => {
+    if (!hasSynthesisContent && (activeTab === "page4" || activeTab === "page5")) {
+      setActiveTab("page1");
+    }
+  }, [activeTab, hasSynthesisContent]);
 
   return (
     <div className="-mt-8 space-y-5 md:-mt-10">
       <div className="sticky top-[calc(var(--portal-header-height)-1px)] z-30 -mx-6 px-6 pt-0">
         <div className="mx-auto flex max-w-[92rem] justify-end">
-          <div className="inline-flex rounded-[1.6rem] border border-[rgba(191,219,254,0.95)] bg-[linear-gradient(135deg,rgba(219,234,254,0.96),rgba(239,246,255,0.94),rgba(224,231,255,0.9))] px-3 py-3 shadow-[0_18px_36px_rgba(148,163,184,0.18),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur">
+          <div className="max-w-full rounded-[1.6rem] border border-[rgba(191,219,254,0.95)] bg-[linear-gradient(135deg,rgba(219,234,254,0.96),rgba(239,246,255,0.94),rgba(224,231,255,0.9))] px-3 py-3 shadow-[0_18px_36px_rgba(148,163,184,0.18),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur">
             <SegmentedControl
               value={activeTab}
               onChange={setActiveTab}
-              options={[
-                { value: "page1", label: "Overview", meta: "Applicant profile" },
-                { value: "page2", label: "Academics & Activities", meta: "Study and engagement" },
-                { value: "page3", label: "Writing", meta: "Essays and excerpts" },
-                { value: "page4", label: "Focus Areas", meta: "Themes and signals" },
-                { value: "page5", label: "Questions", meta: "Interview prompts" },
-              ]}
+              options={navOptions}
             />
           </div>
         </div>

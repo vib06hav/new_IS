@@ -7,8 +7,8 @@ import { SegmentedControl } from "@/components/ui/SegmentedControl";
 type ThemeRecord = {
   theme_id?: string;
   title?: string;
-  framing?: string;
-  what_this_theme_must_resolve?: string;
+  unifying_axis?: string;
+  interview_direction?: string;
   supporting_signal_ids?: string[];
   referenced_entity_ids?: string[];
 };
@@ -19,7 +19,7 @@ type SignalRecord = {
   title?: string;
   evidence_anchor?: string;
   direct_read?: string;
-  what_remains_open?: string;
+  depth_opening?: string;
   why_it_matters?: string;
   referenced_entity_ids?: string[];
 };
@@ -95,7 +95,7 @@ export function SynthesisReportSection({
         title={activeTab === "page4" ? "Focus Areas" : "Interview Questions"}
         description={
           activeTab === "page4"
-            ? "Themes, signals, and open questions for the reviewer."
+            ? "Themes, signals, and deeper interview openings for the reviewer."
             : "Question groups generated from synthesized themes."
         }
         eyebrow={null}
@@ -177,13 +177,13 @@ export function SynthesisReportSection({
                             {activeTheme.title || "Untitled theme"}
                           </h3>
                         </div>
-                        {activeTheme.framing ? (
-                          <p className="text-sm leading-7 text-[color:var(--muted)]">{activeTheme.framing}</p>
+                        {activeTheme.unifying_axis ? (
+                          <p className="text-sm leading-7 text-[color:var(--muted)]">{activeTheme.unifying_axis}</p>
                         ) : null}
-                        {activeTheme.what_this_theme_must_resolve ? (
+                        {activeTheme.interview_direction ? (
                           <div className="rounded-[1rem] bg-[color:var(--accent-soft)] px-4 py-3 text-sm leading-7 text-[color:var(--ink)]">
-                            <span className="font-semibold">What this must resolve:</span>{" "}
-                            {activeTheme.what_this_theme_must_resolve}
+                            <span className="font-semibold">Interview direction:</span>{" "}
+                            {activeTheme.interview_direction}
                           </div>
                         ) : null}
                       </div>
@@ -204,7 +204,7 @@ export function SynthesisReportSection({
                               </div>
                               <SignalBlock label="Direct read" value={signal.direct_read} />
                               <SignalBlock label="Why it matters" value={signal.why_it_matters} />
-                              <SignalBlock label="What remains open" value={signal.what_remains_open} />
+                              <SignalBlock label="Depth opening" value={signal.depth_opening} />
                               <EvidenceSources values={signal.referenced_entity_ids} />
                             </div>
                           </article>

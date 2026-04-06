@@ -1,4 +1,5 @@
 const statusClasses: Record<string, string> = {
+  QUEUED: "border-sky-200 bg-sky-100/90 text-sky-800",
   UPLOADED: "border-stone-200 bg-stone-100/90 text-stone-700",
   PROCESSING: "border-amber-200 bg-amber-100/90 text-amber-800",
   READY: "border-blue-200 bg-blue-100/90 text-blue-800",

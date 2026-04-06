@@ -4,6 +4,7 @@ import uuid
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 import fitz
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.agents.orchestrator import run_deterministic_pipeline
@@ -34,6 +35,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/applications", tags=["Applications"])
+
+
+def derive_display_id(filename: str) -> str:
+    if filename.lower().endswith(".pdf"):
+        return filename[:-4]
+    return filename
 
 
 def validate_uploaded_pdf(file_path: str) -> None:
@@ -79,6 +86,12 @@ def upload_application(
 ):
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported")
+    display_id = derive_display_id(file.filename)
+    if not display_id:
+        raise HTTPException(status_code=400, detail="Uploaded PDF filename must produce a non-empty display ID")
+    existing_application = db.query(Application).filter(Application.display_id == display_id).first()
+    if existing_application:
+        raise HTTPException(status_code=409, detail="Application display ID already exists")
 
     application_id = uuid.uuid4()
     file_path = os.path.join(settings.UPLOAD_DIRECTORY, f"{application_id}.pdf")
@@ -100,12 +113,19 @@ def upload_application(
 
     db_app = Application(
         id=application_id,
+        display_id=display_id,
         uploaded_by=current_user.id,
         file_path=file_path,
         status="UPLOADED",
     )
     db.add(db_app)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        raise HTTPException(status_code=409, detail="Application display ID already exists") from exc
     db.refresh(db_app)
 
     try:
@@ -114,7 +134,12 @@ def upload_application(
         run_deterministic_pipeline(str(application_id), file_path, db)
         db.refresh(db_app)
         logger.info(f"Upload pipeline completed for {application_id} with status {db_app.status}")
-        return ApplicationUploadResponse(id=db_app.id, status=db_app.status, created_at=db_app.created_at)
+        return ApplicationUploadResponse(
+            id=db_app.id,
+            display_id=db_app.display_id,
+            status=db_app.status,
+            created_at=db_app.created_at,
+        )
     except HTTPException:
         db.rollback()
         if os.path.exists(file_path):
@@ -175,5 +200,5 @@ def get_application_source_pdf(
     return FileResponse(
         path=application.file_path,
         media_type="application/pdf",
-        filename=f"{application_id}.pdf",
+        filename=f"{application.display_id}.pdf",
     )

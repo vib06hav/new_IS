@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/Input";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminShell } from "@/components/layout/AdminShell";
+import { HeroPanel } from "@/components/ui/HeroPanel";
 import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
 import { Badge } from "@/components/shadcn/badge";
 import {
@@ -415,29 +416,20 @@ export default function AdminInterviewersPage() {
   return (
     <AdminShell>
       <div className="space-y-6">
-        <section className="hero-panel p-6">
-          <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="space-y-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">People management</p>
-                  <h1 className="text-4xl font-semibold tracking-[-0.05em] text-[color:var(--ink)]">Interviewer Manager</h1>
-                  <p className="max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
-                    Review the active roster, manage ownership without leaving the page, and keep identity edits separate from assignment operations.
-                  </p>
-                </div>
-                <Button className="shrink-0" onClick={() => setCreateOpen(true)}>
-                  <Plus className="size-4" />
-                  Add interviewer
-                </Button>
-              </div>
-            </div>
-            <div className="metric-strip sm:grid-cols-2 xl:self-start">
-              <MetricCard label="Interviewers" value={String(metrics.interviewers)} />
-              <MetricCard label="Active assignments" value={String(metrics.activeAssignments)} />
-            </div>
-          </div>
-        </section>
+        <HeroPanel
+          eyebrow="Assignment control"
+          title="Interviewer Manager"
+          action={
+            <Button className="shrink-0" onClick={() => setCreateOpen(true)}>
+              <Plus className="size-4" />
+              Add interviewer
+            </Button>
+          }
+          metrics={[
+            { label: "Interviewers", value: String(metrics.interviewers) },
+            { label: "Active assignments", value: String(metrics.activeAssignments) },
+          ]}
+        />
 
         {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
         {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
@@ -490,7 +482,7 @@ export default function AdminInterviewersPage() {
             <DialogHeader>
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--muted)]">New interviewer</p>
               <DialogTitle>Add interviewer</DialogTitle>
-              <DialogDescription>Create a new interviewer account without leaving the roster.</DialogDescription>
+              <DialogDescription>Create a new interviewer account</DialogDescription>
             </DialogHeader>
 
             <div className="mt-6 space-y-4">
@@ -539,7 +531,7 @@ export default function AdminInterviewersPage() {
                   <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--muted)]">Assignment manager</p>
                   <DialogTitle>{assignmentInterviewer ? `Manage assignments for ${assignmentInterviewer.name}` : "Manage assignments"}</DialogTitle>
                   <DialogDescription>
-                    Stage assignment changes across three buckets, then save once when the mix looks right. Published reports never appear here.
+                    Review the buckets, stage changes, then save once.
                   </DialogDescription>
                 </DialogHeader>
               </div>
@@ -564,10 +556,10 @@ export default function AdminInterviewersPage() {
                       <div className="grid min-h-0 gap-4 xl:grid-cols-3">
                         <AssignmentBucket
                           title="Currently assigned"
-                          description=""
+                          description="Active reports assigned to this interviewer."
                           items={assignmentBuckets.currentlyAssigned}
                           emptyTitle="No active reports here."
-                          emptyDescription="Use the right-hand lists to add new work or pull reports from another interviewer."
+                          emptyDescription="Add work from the other buckets."
                           actionLabel="Remove"
                           onAction={(applicationId) => removeAssignment(applicationId)}
                           className="xl:h-[28rem]"
@@ -576,10 +568,10 @@ export default function AdminInterviewersPage() {
 
                         <AssignmentBucket
                           title="Available to assign"
-                          description=""
+                          description="Unassigned READY reports."
                           items={assignmentBuckets.availableToAssign}
                           emptyTitle="Nothing ready right now."
-                          emptyDescription="READY reports will appear here when they are unassigned."
+                          emptyDescription="Unassigned READY reports appear here."
                           actionLabel="Add"
                           onAction={(applicationId) => addAssignment(applicationId)}
                           className="xl:h-[28rem]"
@@ -588,10 +580,10 @@ export default function AdminInterviewersPage() {
 
                         <AssignmentBucket
                           title="Available to reassign"
-                          description=""
+                          description="Assigned or draft work owned by others."
                           items={assignmentBuckets.availableToReassign}
                           emptyTitle="No other owned reports available."
-                          emptyDescription="ASSIGNED and DRAFT work from other interviewers will show up here."
+                          emptyDescription="Other interviewers' ASSIGNED and DRAFT work appears here."
                           actionLabel="Add"
                           onAction={(applicationId) => addAssignment(applicationId)}
                           showCurrentOwner
@@ -628,16 +620,13 @@ export default function AdminInterviewersPage() {
         <Dialog open={selectedInterviewer !== null} onOpenChange={(open) => !open && closeManageDrawer()}>
           <DialogDrawerContent>
             {selectedInterviewer ? (
-              <div className="space-y-8">
+              <div className="space-y-6">
                 <DialogHeader className="space-y-3 pr-12">
                   <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--muted)]">Manage interviewer</p>
                   <DialogTitle>{selectedInterviewer.name}</DialogTitle>
-                  <DialogDescription>
-                    Update account details carefully. Identity, security, and removal are kept behind this drawer instead of the roster itself.
-                  </DialogDescription>
                 </DialogHeader>
 
-                <section className="rounded-[1.4rem] border border-white/80 bg-white/72 p-5 shadow-sm">
+                <section className="rounded-[1.4rem] border border-white/80 bg-white/72 p-4 shadow-sm">
                   <div className="flex items-center gap-4">
                     <Avatar size="lg">
                       <AvatarFallback>{getInitials(selectedInterviewer.name)}</AvatarFallback>
@@ -653,7 +642,7 @@ export default function AdminInterviewersPage() {
                 <DrawerSection
                   icon={<UserRound className="size-4" />}
                   title="Profile"
-                  description="Name is the only profile field editable from this section."
+                  description="Update the display name."
                 >
                   <Input
                     label="Name"
@@ -670,7 +659,7 @@ export default function AdminInterviewersPage() {
                 <DrawerSection
                   icon={<Mail className="size-4" />}
                   title="Account"
-                  description="Email changes require explicit confirmation because they affect how the interviewer signs in."
+                  description="Change the sign-in email."
                 >
                   <Input
                     label="Email"
@@ -688,7 +677,7 @@ export default function AdminInterviewersPage() {
                 <DrawerSection
                   icon={<KeyRound className="size-4" />}
                   title="Security"
-                  description="Admin-triggered password change requires a matching confirmation before it can be submitted."
+                  description="Set a new password."
                 >
                   <Input
                     label="New password"
@@ -717,7 +706,7 @@ export default function AdminInterviewersPage() {
                   </div>
                 </DrawerSection>
 
-                <section className="rounded-[1.4rem] border border-red-200 bg-red-50/88 p-5 shadow-sm">
+                <section className="rounded-[1.4rem] border border-red-200 bg-red-50/88 p-4 shadow-sm">
                   <div className="flex items-start gap-3">
                     <span className="mt-0.5 inline-flex rounded-full bg-red-100 p-2 text-red-700">
                       <ShieldAlert className="size-4" />
@@ -726,7 +715,7 @@ export default function AdminInterviewersPage() {
                       <div>
                         <p className="text-lg font-semibold text-red-900">Danger zone</p>
                         <p className="mt-1 text-sm leading-6 text-red-800">
-                          Removing an interviewer stays hidden here. The deletion still fails if they have active assignments.
+                          Removal fails if this interviewer has active assignments.
                         </p>
                       </div>
                       <Button variant="danger" disabled={removeSubmitting} onClick={() => void handleRemove()}>
@@ -792,8 +781,8 @@ function AssignmentBucket({
               <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <StatusBadge status={item.status} />
-                  <p className="truncate text-sm font-semibold text-[color:var(--ink)]" title={item.application_id}>
-                    {formatApplicationLabel(item.application_id)}
+                  <p className="truncate text-sm font-semibold text-[color:var(--ink)]" title={item.application_display_id}>
+                    {item.application_display_id}
                   </p>
                 </div>
                 {showCurrentOwner && item.current_interviewer ? (
@@ -825,15 +814,15 @@ function DrawerSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[1.4rem] border border-white/80 bg-white/72 p-5 shadow-sm">
-      <div className="mb-4 flex items-start gap-3">
+    <section className="rounded-[1.4rem] border border-white/80 bg-white/72 p-4 shadow-sm">
+      <div className="mb-3 flex items-start gap-3">
         <span className="inline-flex rounded-full bg-[color:var(--accent-soft)] p-2 text-[color:var(--accent)]">{icon}</span>
         <div className="space-y-1">
           <p className="text-lg font-semibold text-[color:var(--ink)]">{title}</p>
-          <p className="text-sm leading-6 text-[color:var(--muted)]">{description}</p>
+          {description ? <p className="text-sm leading-6 text-[color:var(--muted)]">{description}</p> : null}
         </div>
       </div>
-      <div className="space-y-4">{children}</div>
+      <div className="space-y-3">{children}</div>
     </section>
   );
 }
@@ -847,10 +836,6 @@ function getInitials(name: string) {
     .join("");
 }
 
-function formatApplicationLabel(applicationId: string) {
-  return applicationId.length > 12 ? `${applicationId.slice(0, 8)}...${applicationId.slice(-4)}` : applicationId;
-}
-
 function getAssignmentItemClassName(item: AssignmentModalItem) {
   if (item.source === "assigned") {
     return "flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-3 shadow-[inset_0_0_0_1px_rgba(251,191,36,0.14)]";
@@ -861,13 +846,4 @@ function getAssignmentItemClassName(item: AssignmentModalItem) {
   }
 
   return "flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/80 bg-[color:var(--surface)]/72 px-4 py-3";
-}
-
-function MetricCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="metric-card px-4 py-4">
-      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
-      <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[color:var(--ink)]">{value}</p>
-    </div>
-  );
 }

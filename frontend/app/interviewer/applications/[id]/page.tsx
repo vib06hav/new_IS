@@ -127,7 +127,7 @@ export default function InterviewerApplicationPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={item.status} />
-              <MetaPill label="Application ID" value={item.id} />
+              <MetaPill label="Application ID" value={item.display_id} />
               <MetaPill label="Created" value={createdAt} />
               <MetaPill label="Interviewer" value={item.assigned_interviewer?.name || "Unassigned"} />
             </div>
@@ -144,53 +144,54 @@ export default function InterviewerApplicationPage() {
           <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         ) : null}
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.28fr)_minmax(22rem,0.92fr)]">
-          <div className="space-y-6">
-            {item.review_package ? (
-              <ReviewPackageSection
-                reviewPackage={item.review_package}
-                annotationSource={item.latest_draft?.content}
-              />
-            ) : null}
-          </div>
-
-          <aside className="space-y-6">
-            {canGenerate ? (
-              <Card title="Draft Actions" description="Generation affects Pages 4-5 only">
-                <div className="space-y-3">
-                  <Button className="w-full" disabled={busyAction !== null} onClick={() => void handleGenerate()}>
-                    {busyAction === "generate"
-                      ? item.status === "DRAFT"
-                        ? "Regenerating..."
-                        : "Generating..."
-                      : item.status === "DRAFT"
-                        ? "Regenerate draft"
-                        : "Generate draft"}
-                  </Button>
-                  <Button
-                    className="w-full"
-                    disabled={busyAction !== null || !canPublish || !item.latest_draft}
-                    variant="secondary"
-                    onClick={() => void handlePublish()}
-                  >
-                    {busyAction === "publish" ? "Publishing..." : "Publish draft"}
-                  </Button>
-                  <p className="text-xs leading-6 text-[color:var(--muted)]">
-                    Publishing freezes the written assessment for admin visibility while leaving the application summary unchanged.
-                  </p>
-                </div>
-              </Card>
-            ) : null}
-
-            {item.status === "PUBLISHED" ? (
-              <Card title="Published" description="Read-only state">
+        {canGenerate ? (
+          <section className="rounded-[1.6rem] border border-[rgba(191,219,254,0.9)] bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(239,246,255,0.95),rgba(224,231,255,0.84))] px-5 py-5 shadow-[0_18px_36px_rgba(148,163,184,0.14),inset_0_1px_0_rgba(255,255,255,0.62)] backdrop-blur-sm">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-3xl space-y-2">
+                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-sky-700">Draft Workflow</p>
+                <h2 className="text-xl font-semibold tracking-[-0.03em] text-[color:var(--ink)]">Draft actions</h2>
                 <p className="text-sm leading-7 text-[color:var(--muted)]">
-                  This application has already been published. The synthesized report is now fixed for downstream review.
+                  Generate updates Pages 4-5. Publish locks the draft for admin review.
                 </p>
-              </Card>
-            ) : null}
-          </aside>
-        </div>
+              </div>
+
+              <div className="flex w-full flex-col gap-3 sm:w-auto sm:min-w-[23rem] sm:flex-row lg:justify-end">
+                <Button className="sm:flex-1" disabled={busyAction !== null} onClick={() => void handleGenerate()}>
+                  {busyAction === "generate"
+                    ? item.status === "DRAFT"
+                      ? "Regenerating..."
+                      : "Generating..."
+                    : item.status === "DRAFT"
+                      ? "Regenerate draft"
+                      : "Generate draft"}
+                </Button>
+                <Button
+                  className="sm:flex-1"
+                  disabled={busyAction !== null || !canPublish || !item.latest_draft}
+                  variant="secondary"
+                  onClick={() => void handlePublish()}
+                >
+                  {busyAction === "publish" ? "Publishing..." : "Publish draft"}
+                </Button>
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        {item.status === "PUBLISHED" ? (
+          <Card title="Published" description="Read-only state">
+            <p className="text-sm leading-7 text-[color:var(--muted)]">
+              This application has already been published. The synthesized report is now fixed for downstream review.
+            </p>
+          </Card>
+        ) : null}
+
+        {item.review_package ? (
+          <ReviewPackageSection
+            reviewPackage={item.review_package}
+            annotationSource={item.latest_draft?.content}
+          />
+        ) : null}
       </div>
     </InterviewerShell>
   );

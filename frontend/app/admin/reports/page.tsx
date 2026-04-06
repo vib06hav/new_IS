@@ -2,16 +2,26 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, EyeOff, Eye } from "lucide-react";
-import { assignApplication, fetchApplications, fetchInterviewers, hideApplication, reassignApplication, unhideApplication } from "@/lib/api";
+import { ArrowUpRight, EyeOff, Eye, PencilLine } from "lucide-react";
+import {
+  assignApplication,
+  fetchApplications,
+  fetchInterviewers,
+  hideApplication,
+  reassignApplication,
+  unhideApplication,
+  updateApplicationDisplayId,
+} from "@/lib/api";
 import type { ApplicationListItem, InterviewerListItem } from "@/lib/types";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Input } from "@/components/ui/Input";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
 import { usePolling } from "@/lib/usePolling";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { HeroPanel } from "@/components/ui/HeroPanel";
 import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
 import { Badge } from "@/components/shadcn/badge";
 import {
@@ -21,7 +31,6 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
 } from "@/components/shadcn/select";
 
 const REPORT_STATUSES = ["ALL", "READY", "ASSIGNED", "DRAFT", "PUBLISHED", "HIDDEN"] as const;
@@ -36,6 +45,9 @@ export default function AdminReportsPage() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [selectedInterviewerByApp, setSelectedInterviewerByApp] = useState<Record<string, string>>({});
+  const [editingDisplayIdAppId, setEditingDisplayIdAppId] = useState<string | null>(null);
+  const [draftDisplayIdByApp, setDraftDisplayIdByApp] = useState<Record<string, string>>({});
+  const [savingDisplayIdAppId, setSavingDisplayIdAppId] = useState<string | null>(null);
 
   async function loadData() {
     try {
@@ -108,6 +120,44 @@ export default function AdminReportsPage() {
     }
   }
 
+  function startEditingDisplayId(item: ApplicationListItem) {
+    setEditingDisplayIdAppId(item.id);
+    setDraftDisplayIdByApp((current) => ({ ...current, [item.id]: item.display_id }));
+    setMessage(null);
+    setError(null);
+  }
+
+  function cancelEditingDisplayId(applicationId: string) {
+    setEditingDisplayIdAppId((current) => (current === applicationId ? null : current));
+    setDraftDisplayIdByApp((current) => {
+      const next = { ...current };
+      delete next[applicationId];
+      return next;
+    });
+  }
+
+  async function saveDisplayId(applicationId: string) {
+    const displayId = draftDisplayIdByApp[applicationId];
+    if (!displayId) {
+      setError("Display ID cannot be empty.");
+      return;
+    }
+
+    setSavingDisplayIdAppId(applicationId);
+    setMessage(null);
+    setError(null);
+    try {
+      await updateApplicationDisplayId(applicationId, { display_id: displayId });
+      setEditingDisplayIdAppId(null);
+      setMessage("Application ID updated.");
+      await loadData();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Failed to update application ID.");
+    } finally {
+      setSavingDisplayIdAppId(null);
+    }
+  }
+
   const metrics = useMemo(
     () => ({
       ready: items.filter((item) => item.status === "READY").length,
@@ -121,23 +171,16 @@ export default function AdminReportsPage() {
   return (
     <AdminShell>
       <div className="space-y-6">
-        <section className="hero-panel p-6">
-          <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr] xl:items-start">
-            <div className="space-y-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">Admin review desk</p>
-              <h1 className="text-4xl font-semibold tracking-[-0.05em] text-[color:var(--ink)]">Generated Reports</h1>
-              <p className="max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
-                Browse every review-ready application as a work card, assign ownership inline, and hide older published reports until you need them again.
-              </p>
-            </div>
-            <div className="metric-strip sm:grid-cols-2 xl:self-start">
-              <MetricCard label="Ready" value={String(metrics.ready)} />
-              <MetricCard label="Assigned" value={String(metrics.assigned)} />
-              <MetricCard label="Draft" value={String(metrics.draft)} />
-              <MetricCard label="Published" value={String(metrics.published)} />
-            </div>
-          </div>
-        </section>
+        <HeroPanel
+          eyebrow="Admin review desk"
+          title="Generated Reports"
+          metrics={[
+            { label: "Ready", value: String(metrics.ready) },
+            { label: "Assigned", value: String(metrics.assigned) },
+            { label: "Draft", value: String(metrics.draft) },
+            { label: "Published", value: String(metrics.published) },
+          ]}
+        />
 
         <div>
           <SegmentedControl
@@ -160,11 +203,16 @@ export default function AdminReportsPage() {
             {items.map((item) => {
               const isBusy = busyAppId === item.id;
               const isHiddenBusy = hiddenBusyAppId === item.id;
+              const isEditingDisplayId = editingDisplayIdAppId === item.id;
+              const isSavingDisplayId = savingDisplayIdAppId === item.id;
               const canAssign = item.status === "READY";
               const canReassign = item.status === "ASSIGNED" || item.status === "DRAFT";
               const canHide = item.status === "PUBLISHED" && !item.is_hidden;
               const canUnhide = item.status === "PUBLISHED" && item.is_hidden;
               const isPublished = item.status === "PUBLISHED";
+              const selectedInterviewer = interviewers.find(
+                (interviewer) => interviewer.id === selectedInterviewerByApp[item.id],
+              );
 
               return (
                 <article
@@ -173,7 +221,46 @@ export default function AdminReportsPage() {
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-2">
-                      <p className="display-font break-all text-lg font-semibold text-[color:var(--ink)]">{item.id}</p>
+                      {isEditingDisplayId ? (
+                        <div className="space-y-2">
+                          <Input
+                            label="Application ID"
+                            autoFocus
+                            className="mt-0"
+                            value={draftDisplayIdByApp[item.id] ?? ""}
+                            onChange={(event) =>
+                              setDraftDisplayIdByApp((current) => ({ ...current, [item.id]: event.target.value }))
+                            }
+                          />
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              size="sm"
+                              disabled={isSavingDisplayId}
+                              onClick={() => void saveDisplayId(item.id)}
+                            >
+                              {isSavingDisplayId ? "Saving..." : "Save ID"}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              disabled={isSavingDisplayId}
+                              onClick={() => cancelEditingDisplayId(item.id)}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="display-font break-all text-lg font-semibold text-[color:var(--ink)]">
+                            {item.display_id}
+                          </p>
+                          <Button size="sm" variant="ghost" onClick={() => startEditingDisplayId(item)}>
+                            <PencilLine className="size-4" />
+                            Edit
+                          </Button>
+                        </div>
+                      )}
                       <div className="flex items-center gap-2">
                         <StatusBadge status={item.status} />
                         {item.assigned_interviewer && !isPublished ? (
@@ -203,7 +290,25 @@ export default function AdminReportsPage() {
                             }
                           >
                             <SelectTrigger className="h-auto w-full rounded-xl border-[color:var(--surface-border)] bg-white px-3 py-3">
-                              <SelectValue placeholder={canAssign ? "Choose interviewer" : "Choose new interviewer"} />
+                              {selectedInterviewer ? (
+                                <div className="flex min-w-0 flex-1 items-center gap-2">
+                                  <Avatar size="sm">
+                                    <AvatarFallback>{getInitials(selectedInterviewer.name)}</AvatarFallback>
+                                  </Avatar>
+                                  <span className="min-w-0 flex-1">
+                                    <span className="block truncate font-medium text-[color:var(--ink)]">
+                                      {selectedInterviewer.name}
+                                    </span>
+                                    <span className="block truncate text-xs text-[color:var(--muted)]">
+                                      {selectedInterviewer.email}
+                                    </span>
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-sm text-[color:var(--muted)]">
+                                  {canAssign ? "Choose interviewer" : "Choose new interviewer"}
+                                </span>
+                              )}
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border border-[color:var(--surface-border)] shadow-[0_18px_38px_rgba(148,163,184,0.18)]">
                               <SelectGroup>
@@ -299,15 +404,6 @@ function AssignedInterviewerArtifact({
           <p className="truncate text-xs text-[color:var(--muted)]">{interviewer.email}</p>
         </div>
       </div>
-    </div>
-  );
-}
-
-function MetricCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="metric-card px-4 py-4">
-      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
-      <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[color:var(--ink)]">{value}</p>
     </div>
   );
 }

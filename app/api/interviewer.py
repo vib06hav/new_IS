@@ -25,6 +25,17 @@ from app.security.rate_limit import limiter
 router = APIRouter(tags=["Interviewer"])
 
 
+def _build_generation_error_detail(synthesis_result: dict) -> str:
+    validation_result = synthesis_result.get("validation_result") or {}
+    violations = validation_result.get("violations_log") or []
+    if violations:
+        first = violations[0]
+        violation_type = first.get("type") or "generation_error"
+        context = first.get("context") or "Draft generation failed before a report was produced."
+        return f"{violation_type}: {context}"
+    return "Draft generation failed before a report was produced."
+
+
 def _require_assigned_application(db: Session, application_id: UUID, current_user: User) -> Application:
     application = get_application_or_404(db, application_id)
     assignment = get_assignment_for_application(db, application_id)
@@ -79,10 +90,14 @@ def generate_draft(
         db=None,
         persisted_review=canonical_record,
     )
+    ros_output = synthesis_result.get("ros_v1")
+    if not isinstance(ros_output, dict):
+        raise HTTPException(status_code=502, detail=_build_generation_error_detail(synthesis_result))
+
     draft = Draft(
         application_id=application_id,
         version=next_version,
-        content=synthesis_result["ros_v1"],
+        content=ros_output,
         generated_by=current_user.id,
         is_published=False,
     )

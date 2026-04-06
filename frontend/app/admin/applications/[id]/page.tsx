@@ -89,7 +89,7 @@ export default function AdminApplicationDetailPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={item.status} />
-              <MetaPill label="Application ID" value={item.id} />
+              <MetaPill label="Application ID" value={item.display_id} />
               <MetaPill label="Created" value={createdAt} />
               <MetaPill label="Interviewer" value={assignee} />
             </div>

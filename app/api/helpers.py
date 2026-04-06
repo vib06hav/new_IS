@@ -36,21 +36,29 @@ def get_assignment_for_application(db: Session, application_id: UUID) -> Optiona
 
 
 def get_latest_draft(db: Session, application_id: UUID) -> Optional[Draft]:
-    return (
+    drafts = (
         db.query(Draft)
         .filter(Draft.application_id == application_id)
         .order_by(Draft.version.desc(), Draft.created_at.desc())
-        .first()
+        .all()
     )
+    for draft in drafts:
+        if isinstance(draft.content, dict):
+            return draft
+    return None
 
 
 def get_published_draft(db: Session, application_id: UUID) -> Optional[Draft]:
-    return (
+    drafts = (
         db.query(Draft)
         .filter(Draft.application_id == application_id, Draft.is_published.is_(True))
         .order_by(Draft.version.desc(), Draft.created_at.desc())
-        .first()
+        .all()
     )
+    for draft in drafts:
+        if isinstance(draft.content, dict):
+            return draft
+    return None
 
 
 def get_canonical_summary(db: Session, application_id: UUID) -> Optional[CanonicalSummary]:
@@ -102,7 +110,7 @@ def build_user_summary(user: Optional[User]) -> Optional[UserSummary]:
 
 
 def build_draft_summary(draft: Optional[Draft]) -> Optional[DraftSummary]:
-    if not draft:
+    if not draft or not isinstance(draft.content, dict):
         return None
     return DraftSummary(
         id=draft.id,
@@ -119,6 +127,7 @@ def build_application_list_item(
 ) -> ApplicationListItem:
     return ApplicationListItem(
         id=application.id,
+        display_id=application.display_id,
         status=application.status,
         is_hidden=application.is_hidden,
         created_at=application.created_at,
@@ -134,6 +143,7 @@ def build_admin_detail(
 ) -> ApplicationDetailAdmin:
     return ApplicationDetailAdmin(
         id=application.id,
+        display_id=application.display_id,
         status=application.status,
         created_at=application.created_at,
         assigned_interviewer=build_user_summary(interviewer),
@@ -150,6 +160,7 @@ def build_interviewer_detail(
 ) -> ApplicationDetailInterviewer:
     return ApplicationDetailInterviewer(
         id=application.id,
+        display_id=application.display_id,
         status=application.status,
         created_at=application.created_at,
         assigned_interviewer=build_user_summary(interviewer),
@@ -165,6 +176,7 @@ def build_assignment_list_item(
 ) -> AssignmentListItem:
     return AssignmentListItem(
         application_id=assignment.application_id,
+        application_display_id=application.display_id,
         status=application.status,
         assigned_at=assignment.assigned_at,
         interviewer=UserSummary(id=interviewer.id, name=interviewer.name, email=interviewer.email),

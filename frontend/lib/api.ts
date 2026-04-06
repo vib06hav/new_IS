@@ -1,6 +1,7 @@
 import type {
   ApplicationDetailAdmin,
   ApplicationDetailInterviewer,
+  ApplicationDisplayIdUpdatePayload,
   ApplicationListItem,
   ApplicationUploadResponse,
   AssignmentListItem,
@@ -158,6 +159,16 @@ export async function reassignApplication(applicationId: string, interviewerId: 
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ interviewer_id: interviewerId }),
+  });
+}
+
+export async function updateApplicationDisplayId(applicationId: string, payload: ApplicationDisplayIdUpdatePayload) {
+  return apiRequest<ApplicationListItem>(`/applications/${applicationId}/display-id`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
   });
 }
 

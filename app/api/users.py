@@ -61,6 +61,7 @@ def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssi
             available_to_assign.append(
                 InterviewerAssignmentSummaryItem(
                     application_id=application.id,
+                    application_display_id=application.display_id,
                     status=application.status,
                 )
             )
@@ -73,6 +74,7 @@ def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssi
             currently_assigned.append(
                 InterviewerAssignmentSummaryItem(
                     application_id=application.id,
+                    application_display_id=application.display_id,
                     status=application.status,
                 )
             )
@@ -82,6 +84,7 @@ def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssi
         available_to_reassign.append(
             InterviewerAssignmentSummaryItem(
                 application_id=application.id,
+                application_display_id=application.display_id,
                 status=application.status,
                 current_interviewer=build_user_summary(current_owner),
             )
