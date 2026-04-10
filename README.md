@@ -99,6 +99,40 @@ Open `.env` and set:
 - your real `OPENROUTER` API key in `LLM_API_KEY`
 - the OpenRouter model you want in `LLM_MODEL_NAME`
 
+Here is a working starter template you can paste into `.env`:
+
+```env
+DATABASE_URL=postgresql+psycopg2://postgres:postgres_password@db:5432/ag_db
+DB_POOL_SIZE=5
+DB_MAX_OVERFLOW=10
+JWT_SECRET=this-is-a-local-dev-secret-change-me-12345
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
+SESSION_COOKIE_NAME=agis_session
+SESSION_COOKIE_SAMESITE=lax
+CSRF_COOKIE_NAME=agis_csrf
+CSRF_HEADER_NAME=X-CSRF-Token
+CSRF_TRUSTED_ORIGINS=
+LLM_PROVIDER=openrouter
+LLM_ENDPOINT=https://openrouter.ai/api/v1/chat/completions
+LLM_MODEL_NAME=openai/gpt-4.1-mini
+LLM_API_KEY=sk-or-v1-your-real-openrouter-key
+BRAINTRUST_API_KEY=
+LLM_TIMEOUT_SECONDS=60
+LLM_TEMPERATURE=0.0
+LLM_JSON_MODE=true
+LLM_PAYLOAD_MODE=full
+UPLOAD_DIRECTORY=/app/uploads
+MAX_UPLOAD_SIZE_MB=10
+APP_ENV=development
+LOG_LEVEL=DEBUG
+DEV_BOOTSTRAP_ADMIN=true
+DEV_ADMIN_EMAIL=admin@example.com
+DEV_ADMIN_PASSWORD=AdminPass123!
+DEV_ADMIN_NAME=Local Admin
+LLM_DISABLE_LIVE_CALLS=false
+```
+
 Replace:
 
 ```env
