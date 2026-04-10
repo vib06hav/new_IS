@@ -2,6 +2,7 @@
 .env.local
 __pycache__/
 *.pyc
+*.log
 .pytest_cache/
 uploads/
 alembic/versions/*.pyc
