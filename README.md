@@ -29,7 +29,7 @@ Notes:
 
 - `npm` and `npx` come with `Node.js`. Do not install `npx` separately.
 - `docker compose` comes with modern `Docker Desktop`.
-- This project currently assumes Docker for the backend stack.
+- This project uses Docker for the backend stack and OpenRouter for LLM calls.
 
 ## Recommended Windows Setup
 
@@ -93,24 +93,38 @@ Copy-Item frontend\.env.example frontend\.env.local
 
 ## Edit `.env`
 
-Open `.env` and set a real JWT secret.
+Open `.env` and set:
+
+- a real `JWT_SECRET`
+- your real `OPENROUTER` API key in `LLM_API_KEY`
+- the OpenRouter model you want in `LLM_MODEL_NAME`
 
 Replace:
 
 ```env
 JWT_SECRET=<set-a-strong-random-secret-at-least-32-characters-long>
+LLM_PROVIDER=openrouter
+LLM_ENDPOINT=https://openrouter.ai/api/v1/chat/completions
+LLM_MODEL_NAME=<your-openrouter-model-slug>
+LLM_API_KEY=<your-openrouter-api-key>
 ```
 
 With something real, for example:
 
 ```env
 JWT_SECRET=this-is-a-local-dev-secret-change-me-12345
+LLM_PROVIDER=openrouter
+LLM_ENDPOINT=https://openrouter.ai/api/v1/chat/completions
+LLM_MODEL_NAME=openai/gpt-4.1-mini
+LLM_API_KEY=sk-or-v1-your-real-openrouter-key
 ```
 
 Important:
 
 - `JWT_SECRET` must be at least 32 characters long.
 - Do not leave placeholder values in place.
+- `LLM_API_KEY` must be your real OpenRouter key.
+- `LLM_PROVIDER` should stay `openrouter`.
 
 ## Easiest Local Admin Setup
 
@@ -137,27 +151,11 @@ This starts:
 
 - the API
 - PostgreSQL
-- Ollama
 
 When it works, the backend should be available at:
 
 - `http://localhost:8000`
 - health check: `http://localhost:8000/health`
-
-## Important Ollama / GPU Note
-
-The current `docker-compose.yml` includes an `ollama` container with an NVIDIA GPU reservation.
-
-That means:
-
-- if the machine has Docker and NVIDIA GPU support configured, this is the intended path
-- if the machine does not have compatible NVIDIA GPU support, the current Docker setup may fail
-
-So the safest statement is:
-
-- this repo is easiest to run on a machine with Docker Desktop and working NVIDIA container support
-
-If the machine does not have that, this repo may need a follow-up packaging change to make Ollama optional.
 
 ## Start The Frontend
 
@@ -210,12 +208,14 @@ Use this exact order:
 5. Copy `.env.example` to `.env`
 6. Copy `frontend/.env.example` to `frontend/.env.local`
 7. Edit `.env` and set a valid `JWT_SECRET`
-8. Optionally enable `DEV_BOOTSTRAP_ADMIN=true`
-9. Run `docker compose up --build`
-10. In a new terminal run `cd frontend`
-11. Run `npm install`
-12. Run `npm run dev`
-13. Open `http://localhost:3000`
+8. Set `LLM_API_KEY` to your OpenRouter key
+9. Set `LLM_MODEL_NAME` to the OpenRouter model you want
+10. Optionally enable `DEV_BOOTSTRAP_ADMIN=true`
+11. Run `docker compose up --build`
+12. In a new terminal run `cd frontend`
+13. Run `npm install`
+14. Run `npm run dev`
+15. Open `http://localhost:3000`
 
 ## Useful Commands
 
@@ -268,11 +268,9 @@ This project is not yet true one-click setup for a blank machine because:
 
 - backend uses Docker
 - frontend still runs through local Node.js
-- current Ollama setup assumes NVIDIA GPU container support
+- OpenRouter requires a real API key in `.env`
 
 If you want, the next improvement should be:
 
 - dockerize the frontend too
-- make Ollama optional
 - reduce startup to one command
-

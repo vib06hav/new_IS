@@ -54,18 +54,14 @@ class Settings:
         self.JWT_SECRET = os.environ.get("JWT_SECRET")
         self.JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM")
         self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get("JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
-        self.LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "ollama")
+        self.LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openrouter")
         self.LLM_ENDPOINT = os.environ.get("LLM_ENDPOINT")
         self.LLM_MODEL_NAME = os.environ.get("LLM_MODEL_NAME")
         self.LLM_API_KEY = os.environ.get("LLM_API_KEY")
         self.LLM_TIMEOUT_SECONDS = os.environ.get("LLM_TIMEOUT_SECONDS")
-        self.LLM_OLLAMA_TIMEOUT_SECONDS = os.environ.get("LLM_OLLAMA_TIMEOUT_SECONDS", "180")
         self.LLM_TEMPERATURE = os.environ.get("LLM_TEMPERATURE", "0.0")
         self.LLM_JSON_MODE = os.environ.get("LLM_JSON_MODE", "true")
         self.LLM_PAYLOAD_MODE = os.environ.get("LLM_PAYLOAD_MODE", "full")
-        self.LLM_KEEP_ALIVE = os.environ.get("LLM_KEEP_ALIVE", "10m")
-        self.LLM_LOAD_WAIT_TIMEOUT_SECONDS = os.environ.get("LLM_LOAD_WAIT_TIMEOUT_SECONDS", "120")
-        self.LLM_LOAD_POLL_INTERVAL_SECONDS = os.environ.get("LLM_LOAD_POLL_INTERVAL_SECONDS", "5")
         self.PARSER_ENGINE_VERSION = os.environ.get("PARSER_ENGINE_VERSION", "v2")
         self.UPLOAD_DIRECTORY = os.environ.get("UPLOAD_DIRECTORY")
         self.MAX_UPLOAD_SIZE_MB = os.environ.get("MAX_UPLOAD_SIZE_MB")
@@ -96,9 +92,8 @@ class Settings:
             if val is None or val.strip() == "":
                 errors.append(f"Missing required environment variable: {name}")
 
-        if self.LLM_PROVIDER in {"openai", "openrouter", "openai_compatible"}:
-            if self.LLM_API_KEY is None or self.LLM_API_KEY.strip() == "":
-                errors.append("Missing required environment variable: LLM_API_KEY")
+        if self.LLM_API_KEY is None or self.LLM_API_KEY.strip() == "":
+            errors.append("Missing required environment variable: LLM_API_KEY")
 
         # OPTIONAL VARIABLES
         raw_db_pool = os.environ.get("DB_POOL_SIZE")
@@ -128,8 +123,8 @@ class Settings:
         if self.JWT_ALGORITHM and self.JWT_ALGORITHM not in {"HS256", "HS384", "HS512"}:
             errors.append("JWT_ALGORITHM must be one of {HS256, HS384, HS512}")
 
-        if self.LLM_PROVIDER not in {"ollama", "openai", "openrouter", "openai_compatible"}:
-            errors.append("LLM_PROVIDER must be one of {ollama, openai, openrouter, openai_compatible}")
+        if self.LLM_PROVIDER != "openrouter":
+            errors.append("LLM_PROVIDER must be 'openrouter'")
 
         if self.LLM_PAYLOAD_MODE not in {"full", "compact"}:
             errors.append("LLM_PAYLOAD_MODE must be one of {full, compact}")
@@ -146,11 +141,8 @@ class Settings:
             except ValueError:
                 errors.append("JWT_ACCESS_TOKEN_EXPIRE_MINUTES must be an integer")
 
-        if self.LLM_ENDPOINT:
-            if self.APP_ENV == "development" and self.LLM_ENDPOINT.startswith("http://"):
-                pass  # Allowed in development for local/containerized Ollama
-            elif not self.LLM_ENDPOINT.startswith("https://"):
-                errors.append("LLM_ENDPOINT must be an HTTPS URL (unless in development)")
+        if self.LLM_ENDPOINT and not self.LLM_ENDPOINT.startswith("https://"):
+            errors.append("LLM_ENDPOINT must be an HTTPS URL")
 
         if self.LLM_TIMEOUT_SECONDS:
             try:
@@ -161,32 +153,11 @@ class Settings:
                 errors.append("LLM_TIMEOUT_SECONDS must be an integer")
 
         try:
-            self.LLM_OLLAMA_TIMEOUT_SECONDS = int(self.LLM_OLLAMA_TIMEOUT_SECONDS)
-            if self.LLM_OLLAMA_TIMEOUT_SECONDS <= 0:
-                errors.append("LLM_OLLAMA_TIMEOUT_SECONDS must be > 0")
-        except ValueError:
-            errors.append("LLM_OLLAMA_TIMEOUT_SECONDS must be an integer")
-
-        try:
             self.LLM_TEMPERATURE = float(self.LLM_TEMPERATURE)
         except ValueError:
             errors.append("LLM_TEMPERATURE must be a float")
 
         self.LLM_JSON_MODE = str(self.LLM_JSON_MODE).strip().lower() in {"1", "true", "yes", "on"}
-
-        try:
-            self.LLM_LOAD_WAIT_TIMEOUT_SECONDS = int(self.LLM_LOAD_WAIT_TIMEOUT_SECONDS)
-            if self.LLM_LOAD_WAIT_TIMEOUT_SECONDS <= 0:
-                errors.append("LLM_LOAD_WAIT_TIMEOUT_SECONDS must be > 0")
-        except ValueError:
-            errors.append("LLM_LOAD_WAIT_TIMEOUT_SECONDS must be an integer")
-
-        try:
-            self.LLM_LOAD_POLL_INTERVAL_SECONDS = int(self.LLM_LOAD_POLL_INTERVAL_SECONDS)
-            if self.LLM_LOAD_POLL_INTERVAL_SECONDS <= 0:
-                errors.append("LLM_LOAD_POLL_INTERVAL_SECONDS must be > 0")
-        except ValueError:
-            errors.append("LLM_LOAD_POLL_INTERVAL_SECONDS must be an integer")
 
         if self.MAX_UPLOAD_SIZE_MB:
             try:

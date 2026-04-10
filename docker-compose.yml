@@ -13,8 +13,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      ollama:
-        condition: service_healthy
 
   db:
     image: postgres:15-alpine
@@ -32,24 +30,6 @@ services:
       timeout: 5s
       retries: 5
 
-  ollama:
-    image: ollama/ollama:0.16.2
-    volumes:
-      - ollama_volume:/root/.ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
-    healthcheck:
-      test: [ "CMD", "ollama", "list" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
 volumes:
   database_volume:
   uploads_volume:
-  ollama_volume:
