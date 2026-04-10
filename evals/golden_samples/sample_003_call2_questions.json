@@ -1,0 +1,34 @@
+{
+  "applicant_id": "sample_003",
+  "applicant_label": "Rohan Sinha - Telangana Board, Hyderabad",
+  "call_label": "call_2",
+  "question_groups": [
+    {
+      "theme_id": "THEME-001",
+      "group_title": "The Applicant the Application Has Not Declared",
+      "questions": [
+        "You've built three games over three years - a platformer, a tower defence clone, and a physics sandbox - and your essay says you want to study Economics or Public Administration. When you picture what you're actually going to spend the next four years learning, which of those two directions do you land on first?",
+        "Your 12th grade Physics score was your highest subject score. Your physics sandbox is the only one of your three projects where you described what the technical challenge actually was. What is your relationship to physics specifically - is it the subject you find most interesting, or is it the one you perform best in, and are those the same thing for you?",
+        "Looking at the three games - the platformer, the tower defence, and the physics sandbox - what problem did you identify in each one that you hadn't solved before, and which of the three forced you to think in a way you hadn't before?"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "group_title": "Thinking Without Formation",
+      "questions": [
+        "Your second essay makes a specific argument about platform labour markets and urban wage compression. You don't have Economics as a school subject and there's no activity on your list connected to economics or policy. Where did that argument actually come from - what did you read, see, or think through that produced that specific line of reasoning?",
+        "The essay engages with a real phenomenon - platform labour and wage depression - at a level of specificity that would usually require some engagement with the domain. Have you read anything in economics or social policy seriously, and if so, what?",
+        "Is the essay's argument something you've continued thinking about, or was it a piece of reasoning you developed specifically for this essay and haven't returned to?"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "group_title": "A Practice Built Entirely in Private",
+      "questions": [
+        "None of the three games you built have been shared with anyone, entered in a competition, or published. Is that a deliberate choice, and if so, what is the reason?",
+        "When something in your build process broke in a way you couldn't immediately fix - which presumably happened across three projects over three years - what did you actually do, given that there was no one to ask and no external feedback to draw on?",
+        "If you were going to show one of the three projects to someone whose technical opinion you respected, which one would you show and what specifically would you want them to evaluate?"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "applicant_id": "sample_002",
+  "applicant_label": "Priya Nair - CBSE, Mumbai",
+  "call_label": "call_2",
+  "question_groups": [
+    {
+      "theme_id": "THEME-001",
+      "group_title": "What Is Self-Directed and What Is Structure-Enabled",
+      "questions": [
+        "The microplastics paper you listed in 10th grade - who initiated that project, what was your specific role in collecting or analysing the data, and how was it different from a school assignment?",
+        "You've written about wanting to work on ocean health as a career direction and performed at the top of your Biology and Environmental Science classes - but outside school, I can't see any investigation you ran yourself, any data you collected independently, or any problem you chased because you wanted to. Where has that self-directed curiosity actually operated?",
+        "You describe your swimming training as teaching you to commit to long cycles of practice without guaranteed outcome - what specifically was uncertain during that training cycle, and how did you actually handle periods where the outcome wasn't clear?"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "group_title": "The Narrative the Application Has Chosen Not to Tell",
+      "questions": [
+        "You hold a Visharad in Kathak, which is a serious multi-year certification - your application doesn't mention it in any essay and gives it one line in additional information. What was the decision behind not discussing it?",
+        "Your essay uses swimming as the primary evidence for a character claim about discipline. When you chose what to write about, what made swimming the right example for that claim rather than the Kathak practice, which involved a comparably long commitment?",
+        "Looking at your two essays together - one about the ocean and one about discipline through sport - is there something significant about who you are or how you work that neither essay gets close to?"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "applicant_id": "sample_001",
+  "applicant_label": "Arjun Mehta - CBSE, Delhi",
+  "call_label": "call_1",
+  "signals": [
+    {
+      "signal_id": "SIG-001",
+      "title": "Policy Advocacy Without Institutional Anchor",
+      "evidence_anchor": "Essay 1 frames the applicant as someone who 'works at the intersection of technology and public policy' - yet the activity profile shows no direct engagement with a policy body, think tank, or advocacy organisation.",
+      "direct_read": "The applicant self-describes a policy-facing identity, but every listed activity is either competitive (MUN, debate) or technical (coding club, hackathon). There is no activity where policy influence was an actual aim.",
+      "depth_opening": "Whether the applicant's policy orientation is a lived, practiced mode of engagement or a framing layer applied to competitive activity in hindsight - and if it is lived, where and how that has actually operated.",
+      "why_it_matters": "The answer changes whether this applicant is building toward something specific or projecting a coherent narrative onto a diffuse activity set.",
+      "referenced_entity_ids": ["ESS-001", "ACT-001", "ACT-002", "ACT-003"],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": ["ESS-001:F02", "ESS-001:F05"]
+    },
+    {
+      "signal_id": "SIG-002",
+      "title": "Grade Trajectory That Reverses at the Subject That Matters Most",
+      "evidence_anchor": "12th grade Economics score (88%) sits below the applicant's own 11th grade score (93%) and below the class average, specifically in the subject the applicant names as their intended major.",
+      "direct_read": "The academic record shows a subject-specific dip in the final year, in the domain the applicant has declared as their primary direction.",
+      "depth_opening": "What actually happened in 12th Economics specifically - whether this reflects a change in pedagogy, syllabus difficulty, personal circumstance, or something about the subject itself that was more difficult than expected - and what the applicant's relationship to that difficulty looks like from the inside.",
+      "why_it_matters": "Whether the dip signals disengagement, externally caused friction, or a genuine encounter with difficulty in this domain - and how the applicant processed it - materially changes what 'interest in Economics' means for this person.",
+      "referenced_entity_ids": ["ACA-003", "ACA-006"],
+      "supporting_det_signal_ids": ["DET-004"],
+      "supporting_fragment_ids": []
+    },
+    {
+      "signal_id": "SIG-003",
+      "title": "Self-Taught Data Skill Set Disconnected From Any Visible Output",
+      "evidence_anchor": "The applicant lists Python, SQL, and 'data analysis' as self-acquired skills in the additional information section. The activity profile and essays contain no project, output, or application of these skills.",
+      "direct_read": "A stated technical skill set exists in isolation from any evidence of what it has been used to build, analyse, or produce.",
+      "depth_opening": "Whether these skills have been applied to anything concrete - a personal project, an analysis the applicant ran, a problem they tried to solve with data - and what that application looked like in practice, including where it broke down.",
+      "why_it_matters": "The presence or absence of applied output determines whether this is a functional technical capability or a listed credential. For a policy-facing direction, data skills are only informative if they have been used to understand something.",
+      "referenced_entity_ids": ["ADD-001", "ACT-004"],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": []
+    },
+    {
+      "signal_id": "SIG-004",
+      "title": "Two-Year MUN Commitment That Produced Neither Visible Growth Nor Leadership",
+      "evidence_anchor": "MUN appears across 9th and 10th grade activity records with consistent participation, but no progression in role, no committee chair or secretariat position, and no essay reference.",
+      "direct_read": "The applicant participated in MUN for two years at the same level of involvement without apparent escalation of scope, responsibility, or reflection.",
+      "depth_opening": "What MUN actually gave this applicant across two years - whether it was the activity itself, the community, the specific topic areas engaged, or a context for something else - and why there was no visible push toward deeper ownership within it.",
+      "why_it_matters": "Two years of sustained participation without visible progression is either evidence of deliberate lateral engagement or a pattern of low-investment continuation. Understanding which one tells you something about how this applicant operates within structures over time.",
+      "referenced_entity_ids": ["ACT-005", "ACT-006"],
+      "supporting_det_signal_ids": ["DET-002"],
+      "supporting_fragment_ids": []
+    },
+    {
+      "signal_id": "SIG-005",
+      "title": "Family Background as Undeclared Shaping Force",
+      "evidence_anchor": "Father listed as IAS officer (senior civil servant). Essay 1 claims the applicant arrived at public policy interest 'through reading and observation'. No essay mentions family context.",
+      "direct_read": "The biographical context contains an obvious and direct pathway to the stated interest that the applicant has not acknowledged.",
+      "depth_opening": "Whether the family context has actively shaped - or actively been set aside from - the applicant's engagement with policy, and what the applicant's actual account of that relationship is.",
+      "why_it_matters": "The applicant's relationship to an obvious formative context - whether they are extending it, reacting against it, or genuinely operating independently of it - changes how the rest of the profile is read.",
+      "referenced_entity_ids": ["ESS-001", "PER-001"],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": ["ESS-001:F01"]
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "Stated Direction vs. Practiced Engagement",
+      "unifying_axis": "This applicant's self-described orientation - policy, technology, public impact - is articulated with clarity but does not yet have a visible footprint of lived, applied engagement beneath it.",
+      "interview_direction": "Understanding where, concretely, this applicant has moved from stated interest into actual practice - and what that movement looks like when it encounters friction or requires output.",
+      "supporting_signal_ids": ["SIG-001", "SIG-003"]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "How This Applicant Operates Within Structures Over Time",
+      "unifying_axis": "Across academic and activity contexts, this applicant shows a pattern of sustained participation without visible escalation - a consistency whose internal logic has not been made legible by the application.",
+      "interview_direction": "Understanding what sustained, level engagement means for this applicant specifically - whether it reflects deliberate choice, limited access to progression pathways, or a mode of operating that the applicant has not yet named.",
+      "supporting_signal_ids": ["SIG-002", "SIG-004"]
+    },
+    {
+      "theme_id": "THEME-003",
+      "title": "The Undeclared Context",
+      "unifying_axis": "A significant biographical fact - the applicant's family environment - sits entirely outside the application's self-narrative, creating an unresolved gap between what is present and what has been accounted for.",
+      "interview_direction": "Understanding the applicant's actual relationship to the most obvious formative context in their background, and what that relationship looks like from the inside.",
+      "supporting_signal_ids": ["SIG-005"]
+    }
+  ]
+}

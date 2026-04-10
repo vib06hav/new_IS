@@ -64,6 +64,7 @@ def test_admin_assignments_and_interviewer_listing():
     )
     application = Application(
         id=uuid.uuid4(),
+        display_id="APP-ADM-001",
         uploaded_by=admin.id,
         file_path="demo.pdf",
         status="READY",
@@ -93,6 +94,8 @@ def test_admin_assignments_and_interviewer_listing():
     assert assign_response.status_code == 200
     assert assign_response.json()["status"] == "ASSIGNED"
     assert assign_response.json()["assigned_interviewer"]["email"] == interviewer_email
+    assert assign_response.json()["is_hidden_for_interviewer"] is False
+    assert "last_activity_at" in assign_response.json()
 
     assignments_response = client.get("/assignments", headers=headers)
     assert assignments_response.status_code == 200
@@ -120,6 +123,7 @@ def test_delete_interviewer_blocks_when_user_uploaded_applications():
     )
     application = Application(
         id=uuid.uuid4(),
+        display_id="APP-ADM-002",
         uploaded_by=interviewer.id,
         file_path="uploaded-by-interviewer.pdf",
         status="READY",
@@ -158,6 +162,7 @@ def test_delete_interviewer_blocks_when_active_assignments_exist():
     )
     application = Application(
         id=uuid.uuid4(),
+        display_id="APP-ADM-003",
         uploaded_by=admin.id,
         file_path="assigned.pdf",
         status="ASSIGNED",
@@ -181,3 +186,47 @@ def test_delete_interviewer_blocks_when_active_assignments_exist():
     delete_response = client.delete(f"/users/{interviewer_id}", headers=headers)
     assert delete_response.status_code == 409
     assert delete_response.json()["detail"] == "Cannot remove interviewer while they still have active assignments"
+
+
+def test_admin_hide_sets_global_flag_without_affecting_personal_flag():
+    db = TestingSessionLocal()
+    db.query(Assignment).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-hide-flag@example.com", password_hash="x", role="admin")
+    interviewer = User(
+        id=uuid.uuid4(),
+        name="Interviewer",
+        email="interviewer-hide-flag@example.com",
+        password_hash="x",
+        role="interviewer",
+    )
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-ADM-004",
+        uploaded_by=admin.id,
+        file_path="demo.pdf",
+        status="DRAFT",
+    )
+    assignment = Assignment(
+        application_id=application.id,
+        interviewer_id=interviewer.id,
+        assigned_by=admin.id,
+        is_hidden_for_interviewer=True,
+    )
+    db.add_all([admin, interviewer, application, assignment])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    hide_response = client.post(f"/applications/{application_id}/hide", headers=headers)
+    assert hide_response.status_code == 200
+    assert hide_response.json()["is_hidden"] is True
+    assert hide_response.json()["is_hidden_for_interviewer"] is True

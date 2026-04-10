@@ -1,0 +1,74 @@
+{
+  "applicant_id": "sample_003",
+  "applicant_label": "Rohan Sinha - Telangana Board, Hyderabad",
+  "call_label": "call_1",
+  "signals": [
+    {
+      "signal_id": "SIG-001",
+      "title": "Game Development Practice That Contradicts the Stated Academic Direction",
+      "evidence_anchor": "The applicant lists three self-built games (a 2D platformer, a tower defence clone, a physics sandbox) developed over three years in the additional information and activity sections. Essay 1 declares an intent to study Economics or Public Administration.",
+      "direct_read": "A substantial, multi-year self-directed technical practice is present in the application, pointing in an entirely different direction from the declared academic intention.",
+      "depth_opening": "What the game development practice actually represents to this applicant - whether it is a genuine intellectual direction that the declared major does not capture, a hobby that operates separately from academic intent, or a context the applicant has not yet thought through in terms of where it is taking them.",
+      "why_it_matters": "The relationship between what an applicant spends serious unsupervised time building and what they claim to want to study is one of the most informative tensions in any application. Whether this is a live tension or a resolved one changes the picture significantly.",
+      "referenced_entity_ids": ["ADD-001", "ACT-002", "ACT-003", "ACT-004", "ESS-001"],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": ["ESS-001:F01"]
+    },
+    {
+      "signal_id": "SIG-002",
+      "title": "Physics Performance as an Outlier the Application Has Not Acknowledged",
+      "evidence_anchor": "Physics score sits at 98% in 12th grade, the applicant's highest single subject score, in a Telangana Board context where full marks in Physics are rare. No essay, activity, or additional information entry references Physics or a physics-related interest.",
+      "direct_read": "The applicant's strongest academic performance occurs in a subject that is entirely absent from their self-narrative.",
+      "depth_opening": "What the applicant's relationship to Physics actually is - whether the score reflects genuine investment in physics thinking or disciplined test performance, and how it relates to the game development work where physics simulation is an explicit component.",
+      "why_it_matters": "A 98% in Physics paired with a self-built physics sandbox game is a configuration the application has not named. Whether that connection is meaningful to the applicant changes how both the academic record and the technical practice should be read.",
+      "referenced_entity_ids": ["ACA-005", "ADD-001", "ACT-004"],
+      "supporting_det_signal_ids": ["DET-003"],
+      "supporting_fragment_ids": []
+    },
+    {
+      "signal_id": "SIG-003",
+      "title": "Essay Argument About Economic Inequality Built Without Any Engagement With Economics",
+      "evidence_anchor": "Essay 2 makes a sustained argument about urban wage inequality and platform labour markets. The academic record contains no Economics subject. No activity engages with economics, policy, or social research.",
+      "direct_read": "The applicant constructs an argument in an academic register about an economics topic without any visible formation in that domain - no coursework, no reading list, no club or research engagement.",
+      "depth_opening": "Where this thinking actually came from - what the applicant has read, observed, or engaged with that produced this specific line of argument, and whether there is a real intellectual interest in economics operating here or whether the essay represents a one-off piece of reasoning.",
+      "why_it_matters": "An essay argument in a domain the applicant has no recorded engagement with is either evidence of genuine self-formed intellectual curiosity or a well-constructed essay exercise. Understanding which one determines how much weight to give the declared major.",
+      "referenced_entity_ids": ["ESS-002"],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": ["ESS-002:F01", "ESS-002:F02", "ESS-002:F04"]
+    },
+    {
+      "signal_id": "SIG-004",
+      "title": "Three-Year Coding Practice With No Collaboration and No External Output",
+      "evidence_anchor": "All three game projects are solo-built according to the descriptions. There is no mention of sharing code, contributing to open source, showing work to others, entering a game jam, or publishing anything.",
+      "direct_read": "A serious multi-year technical practice has operated entirely in private, without external engagement, feedback, or output.",
+      "depth_opening": "Whether the private, solo nature of this practice is a deliberate choice - and what it means to this applicant that none of this work has been shown to others or tested against external feedback.",
+      "why_it_matters": "How and whether an applicant has sought external engagement with their work - or chosen not to - tells you something real about how they understand what they are doing and what they are trying to get out of it.",
+      "referenced_entity_ids": ["ACT-002", "ACT-003", "ACT-004"],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": []
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "The Applicant the Application Has Not Declared",
+      "unifying_axis": "What this applicant has actually spent serious time building and thinking about - a technical practice, a specific physics intuition, a private creative output - is systematically absent from the declared direction the application presents.",
+      "interview_direction": "Understanding whether the declared direction is where this applicant's actual intellectual energy lives, or whether there is a genuine self - more technical, more physics-oriented, more maker-facing - that the application has not named.",
+      "supporting_signal_ids": ["SIG-001", "SIG-002"]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "Thinking Without Formation",
+      "unifying_axis": "This applicant reasons about economics and urban systems in their essay without any visible intellectual pathway into those ideas - creating an unresolved question about where real formation exists versus where reasoning is outpacing exposure.",
+      "interview_direction": "Understanding the actual intellectual grounding behind the applicant's economics essay - what produced this line of thinking, how far it extends, and whether this represents a genuine domain interest or an isolated piece of reasoning.",
+      "supporting_signal_ids": ["SIG-003"]
+    },
+    {
+      "theme_id": "THEME-003",
+      "title": "A Practice Built Entirely in Private",
+      "unifying_axis": "The applicant's most substantial self-directed work has operated without external testing, collaboration, or visibility - a pattern whose internal logic has not been accounted for in the application.",
+      "interview_direction": "Understanding what the private, solo structure of this practice means to the applicant, and what they understand their own relationship to external feedback and visibility to be.",
+      "supporting_signal_ids": ["SIG-004"]
+    }
+  ]
+}

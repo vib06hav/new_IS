@@ -8,11 +8,15 @@ import {
   PencilLine,
   Plus,
   ShieldAlert,
+  Stars,
   UserRound,
+  X,
 } from "lucide-react";
+import { Cormorant_Garamond, IBM_Plex_Sans, Space_Grotesk } from "next/font/google";
 import {
   createInterviewer,
   deleteInterviewer,
+  fetchApplications,
   fetchInterviewerAssignmentSummary,
   fetchInterviewers,
   saveInterviewerAssignments,
@@ -24,28 +28,46 @@ import type {
   InterviewerAssignmentSummaryItem,
   InterviewerListItem,
 } from "@/lib/types";
-import { Button } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { Input } from "@/components/ui/Input";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminShell } from "@/components/layout/AdminShell";
-import { HeroPanel } from "@/components/ui/HeroPanel";
+import { AdminSessionLogPanel } from "@/components/layout/AdminSessionLogPanel";
+import { useAdminSessionHistory } from "@/components/layout/AdminSessionHistory";
 import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
 import { Badge } from "@/components/shadcn/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogDrawerContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/shadcn/dialog";
 
 type AssignmentSource = "assigned" | "available" | "reassign";
 type AssignmentModalItem = InterviewerAssignmentSummaryItem & { source: AssignmentSource };
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-reports-space",
+});
+
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-reports-plex",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-reports-cormorant",
+});
+
 export default function AdminInterviewersPage() {
+  return (
+    <AdminShell>
+      <AdminInterviewersContent />
+    </AdminShell>
+  );
+}
+
+function AdminInterviewersContent() {
   const [items, setItems] = useState<InterviewerListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,20 +86,21 @@ export default function AdminInterviewersPage() {
   const [accountSubmitting, setAccountSubmitting] = useState(false);
   const [passwordSubmitting, setPasswordSubmitting] = useState(false);
   const [removeSubmitting, setRemoveSubmitting] = useState(false);
-  const [createForm, setCreateForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [readyPoolCount, setReadyPoolCount] = useState(0);
+  const [createForm, setCreateForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [profileForm, setProfileForm] = useState({ name: "" });
   const [accountForm, setAccountForm] = useState({ email: "" });
   const [passwordForm, setPasswordForm] = useState({ password: "", confirmPassword: "" });
+  const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
 
   async function loadInterviewers() {
     try {
-      const data = await fetchInterviewers();
-      setItems(data);
+      const [interviewers, readyApplications] = await Promise.all([
+        fetchInterviewers(),
+        fetchApplications("READY"),
+      ]);
+      setItems(interviewers);
+      setReadyPoolCount(readyApplications.length);
       setError(null);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Failed to load interviewers.");
@@ -90,7 +113,17 @@ export default function AdminInterviewersPage() {
     void loadInterviewers();
   }, []);
 
-  function openManageDrawer(interviewer: InterviewerListItem) {
+  const hasOverlayOpen = createOpen || assignmentInterviewer !== null || selectedInterviewer !== null;
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    if (hasOverlayOpen) document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [hasOverlayOpen]);
+
+  function openEditSheet(interviewer: InterviewerListItem) {
     setSelectedInterviewer(interviewer);
     setProfileForm({ name: interviewer.name });
     setAccountForm({ email: interviewer.email });
@@ -120,17 +153,13 @@ export default function AdminInterviewersPage() {
     }
   }
 
-  function closeManageDrawer() {
-    if (profileSubmitting || accountSubmitting || passwordSubmitting || removeSubmitting) {
-      return;
-    }
+  function closeEditSheet() {
+    if (profileSubmitting || accountSubmitting || passwordSubmitting || removeSubmitting) return;
     setSelectedInterviewer(null);
   }
 
   function closeAssignmentModal() {
-    if (assignmentSubmitting) {
-      return;
-    }
+    if (assignmentSubmitting) return;
     setAssignmentInterviewer(null);
     setAssignmentSummary(null);
     setAssignmentError(null);
@@ -144,18 +173,25 @@ export default function AdminInterviewersPage() {
       return;
     }
 
+    const interviewerName = createForm.name.trim();
     setCreateSubmitting(true);
     setMessage(null);
     setError(null);
     try {
       await createInterviewer({
-        name: createForm.name.trim(),
+        name: interviewerName,
         email: createForm.email.trim(),
         password: createForm.password,
       });
       setCreateOpen(false);
       setCreateForm({ name: "", email: "", password: "", confirmPassword: "" });
       setMessage("Interviewer created.");
+      addEntry({
+        action: "Created",
+        reportId: interviewerName,
+        detail: "New interviewer account added and made available for assignment.",
+        tone: "lime",
+      });
       await loadInterviewers();
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : "Failed to create interviewer.");
@@ -166,21 +202,26 @@ export default function AdminInterviewersPage() {
 
   async function handleProfileUpdate() {
     if (!selectedInterviewer) return;
-    if (!window.confirm(`Change interviewer name to "${profileForm.name.trim()}"?`)) return;
+    const nextName = profileForm.name.trim();
+    if (!window.confirm(`Change interviewer name to "${nextName}"?`)) return;
 
     setProfileSubmitting(true);
     setMessage(null);
     setError(null);
     try {
       await updateInterviewer(selectedInterviewer.id, {
-        name: profileForm.name.trim(),
+        name: nextName,
         email: selectedInterviewer.email,
       });
       setMessage("Interviewer name updated.");
+      addEntry({
+        action: "Edited",
+        reportId: selectedInterviewer.name,
+        detail: `Display name updated to ${nextName}.`,
+        tone: "cyan",
+      });
       await loadInterviewers();
-      setSelectedInterviewer((current) =>
-        current ? { ...current, name: profileForm.name.trim() } : current,
-      );
+      setSelectedInterviewer((current) => (current ? { ...current, name: nextName } : current));
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Failed to update interviewer name.");
     } finally {
@@ -190,7 +231,8 @@ export default function AdminInterviewersPage() {
 
   async function handleEmailUpdate() {
     if (!selectedInterviewer) return;
-    if (!window.confirm(`Change interviewer email to "${accountForm.email.trim()}"?`)) return;
+    const nextEmail = accountForm.email.trim();
+    if (!window.confirm(`Change interviewer email to "${nextEmail}"?`)) return;
 
     setAccountSubmitting(true);
     setMessage(null);
@@ -198,13 +240,17 @@ export default function AdminInterviewersPage() {
     try {
       await updateInterviewer(selectedInterviewer.id, {
         name: selectedInterviewer.name,
-        email: accountForm.email.trim(),
+        email: nextEmail,
       });
       setMessage("Interviewer email updated.");
+      addEntry({
+        action: "Edited",
+        reportId: selectedInterviewer.name,
+        detail: `Account email updated to ${nextEmail}.`,
+        tone: "cyan",
+      });
       await loadInterviewers();
-      setSelectedInterviewer((current) =>
-        current ? { ...current, email: accountForm.email.trim() } : current,
-      );
+      setSelectedInterviewer((current) => (current ? { ...current, email: nextEmail } : current));
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Failed to update interviewer email.");
     } finally {
@@ -229,6 +275,12 @@ export default function AdminInterviewersPage() {
       });
       setPasswordForm({ password: "", confirmPassword: "" });
       setMessage("Interviewer password updated.");
+      addEntry({
+        action: "Password",
+        reportId: selectedInterviewer.name,
+        detail: "Password reset requested through the edit sheet.",
+        tone: "orange",
+      });
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Failed to update interviewer password.");
     } finally {
@@ -253,9 +305,22 @@ export default function AdminInterviewersPage() {
       await deleteInterviewer(selectedInterviewer.id);
       setSelectedInterviewer(null);
       setMessage("Interviewer removed.");
+      addEntry({
+        action: "Removed",
+        reportId: selectedInterviewer.name,
+        detail: "Interviewer account removed from the active roster.",
+        tone: "slate",
+      });
       await loadInterviewers();
     } catch (removeError) {
-      setError(removeError instanceof Error ? removeError.message : "Failed to remove interviewer.");
+      const detail = removeError instanceof Error ? removeError.message : "Failed to remove interviewer.";
+      setError(detail);
+      addEntry({
+        action: "Blocked",
+        reportId: "Remove interviewer",
+        detail,
+        tone: "pink",
+      });
     } finally {
       setRemoveSubmitting(false);
     }
@@ -265,8 +330,9 @@ export default function AdminInterviewersPage() {
     () => ({
       interviewers: items.length,
       activeAssignments: items.reduce((sum, item) => sum + item.active_assignment_count, 0),
+      readyPool: readyPoolCount,
     }),
-    [items],
+    [items, readyPoolCount],
   );
 
   const createPasswordMismatch =
@@ -328,15 +394,11 @@ export default function AdminInterviewersPage() {
 
       if (item.source === "assigned") {
         availableToAssign.push(item);
-        continue;
-      }
-
-      if (item.source === "reassign") {
+      } else if (item.source === "reassign") {
         availableToReassign.push(item);
-        continue;
+      } else {
+        availableToAssign.push(item);
       }
-
-      availableToAssign.push(item);
     }
 
     return {
@@ -352,9 +414,7 @@ export default function AdminInterviewersPage() {
     for (const applicationId of allIds) {
       const originallyAssigned = assignmentItems.originalAssignedSet.has(applicationId);
       const stagedAssigned = stagedAssignedSet.has(applicationId);
-      if (originallyAssigned !== stagedAssigned) {
-        count += 1;
-      }
+      if (originallyAssigned !== stagedAssigned) count += 1;
     }
     return count;
   }, [assignmentItems.originalAssignedSet, assignmentOriginalIds, stagedAssignedIds, stagedAssignedSet]);
@@ -389,6 +449,13 @@ export default function AdminInterviewersPage() {
       return;
     }
 
+    const reassignedApplications = assignmentBuckets.currentlyAssigned.filter(
+      (item) =>
+        item.source === "reassign" &&
+        !assignmentItems.originalAssignedSet.has(item.application_id) &&
+        stagedAssignedSet.has(item.application_id),
+    );
+
     setAssignmentSubmitting(true);
     setAssignmentError(null);
     setMessage(null);
@@ -396,15 +463,30 @@ export default function AdminInterviewersPage() {
       const summary = await saveInterviewerAssignments(assignmentInterviewer.id, {
         assigned_application_ids: stagedAssignedIds,
       });
-      const refreshedInterviewer = {
-        ...assignmentInterviewer,
-        active_assignment_count: summary.active_assignment_count,
-      };
-      setAssignmentInterviewer(refreshedInterviewer);
+      setAssignmentInterviewer({ ...assignmentInterviewer, active_assignment_count: summary.active_assignment_count });
       setAssignmentSummary(summary);
       setAssignmentOriginalIds(summary.currently_assigned.map((item) => item.application_id));
       setStagedAssignedIds(summary.currently_assigned.map((item) => item.application_id));
       setMessage("Assignments updated.");
+
+      if (reassignedApplications.length > 0) {
+        reassignedApplications.forEach((item) => {
+          addEntry({
+            action: "Reassigned",
+            reportId: item.application_display_id,
+            detail: `Moved from ${item.current_interviewer?.name ?? "another interviewer"} to ${assignmentInterviewer.name}.`,
+            tone: "blue",
+          });
+        });
+      } else if (stagedChangeCount > 0) {
+        addEntry({
+          action: "Edited",
+          reportId: assignmentInterviewer.name,
+          detail: `Assignment buckets updated with ${stagedChangeCount} change${stagedChangeCount === 1 ? "" : "s"}.`,
+          tone: "cyan",
+        });
+      }
+
       await loadInterviewers();
     } catch (saveError) {
       setAssignmentError(saveError instanceof Error ? saveError.message : "Failed to update assignments.");
@@ -414,417 +496,428 @@ export default function AdminInterviewersPage() {
   }
 
   return (
-    <AdminShell>
-      <div className="space-y-6">
-        <HeroPanel
-          eyebrow="Assignment control"
-          title="Interviewer Manager"
-          action={
-            <Button className="shrink-0" onClick={() => setCreateOpen(true)}>
-              <Plus className="size-4" />
-              Add interviewer
-            </Button>
-          }
-          metrics={[
-            { label: "Interviewers", value: String(metrics.interviewers) },
-            { label: "Active assignments", value: String(metrics.activeAssignments) },
-          ]}
-        />
-
-        {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
-        {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
-
-        {loading ? (
-          <Loader label="Loading interviewers..." />
-        ) : items.length === 0 ? (
-          <EmptyState title="No interviewers yet." description="Add an interviewer to start assigning applications." />
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {items.map((item) => (
-              <article
-                key={item.id}
-                className="fade-rise flex h-full flex-col gap-4 rounded-[1.6rem] border border-white/80 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(239,246,255,0.82),rgba(233,225,255,0.6))] p-5 shadow-[0_18px_38px_rgba(148,163,184,0.12)]"
-              >
-                <div className="flex min-w-0 items-center gap-4">
-                  <Avatar size="lg">
-                    <AvatarFallback>{getInitials(item.name)}</AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 space-y-1">
-                    <p className="display-font text-lg font-semibold text-[color:var(--ink)]">{item.name}</p>
-                    <p className="truncate text-sm text-[color:var(--muted)]">{item.email}</p>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-white/75 bg-white/70 px-4 py-3 text-sm shadow-sm">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Active assignments</p>
-                  <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[color:var(--ink)]">
-                    {item.active_assignment_count}
-                  </p>
-                </div>
-
-                <div className="mt-auto grid gap-2">
-                  <Button className="w-full min-w-0 justify-center" variant="secondary" onClick={() => void openAssignmentModal(item)}>
-                    <ArrowLeftRight className="size-4" />
-                    Manage assignments
-                  </Button>
-                  <Button className="w-full min-w-0 justify-center" variant="outline" onClick={() => openManageDrawer(item)}>
-                    <PencilLine className="size-4" />
-                    Edit interviewer
-                  </Button>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-
-        <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-          <DialogContent className="max-w-xl">
-            <DialogHeader>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--muted)]">New interviewer</p>
-              <DialogTitle>Add interviewer</DialogTitle>
-              <DialogDescription>Create a new interviewer account</DialogDescription>
-            </DialogHeader>
-
-            <div className="mt-6 space-y-4">
-              <Input label="Name" value={createForm.name} onChange={(event) => setCreateForm((current) => ({ ...current, name: event.target.value }))} />
-              <Input label="Email" type="email" value={createForm.email} onChange={(event) => setCreateForm((current) => ({ ...current, email: event.target.value }))} />
-              <Input
-                label="Password"
-                type="password"
-                minLength={8}
-                value={createForm.password}
-                onChange={(event) => setCreateForm((current) => ({ ...current, password: event.target.value }))}
-              />
-              <Input
-                label="Confirm password"
-                type="password"
-                minLength={8}
-                value={createForm.confirmPassword}
-                onChange={(event) => setCreateForm((current) => ({ ...current, confirmPassword: event.target.value }))}
-              />
-              {createPasswordMismatch ? (
-                <p className="text-sm text-red-700">Passwords must match before the interviewer can be created.</p>
-              ) : null}
-              <div className="flex justify-end">
-                <Button
-                  disabled={
-                    createSubmitting ||
-                    !createForm.name.trim() ||
-                    !createForm.email.trim() ||
-                    !createForm.password ||
-                    createPasswordMismatch
-                  }
-                  onClick={() => void handleCreate()}
-                >
-                  {createSubmitting ? "Creating..." : "Create interviewer"}
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={assignmentInterviewer !== null} onOpenChange={(open) => !open && closeAssignmentModal()}>
-          <DialogContent className="max-w-[72rem] overflow-hidden p-0 sm:p-0">
-            <div className="flex max-h-[min(88dvh,56rem)] flex-col">
-              <div className="border-b border-white/80 px-6 py-6 sm:px-7">
-                <DialogHeader>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--muted)]">Assignment manager</p>
-                  <DialogTitle>{assignmentInterviewer ? `Manage assignments for ${assignmentInterviewer.name}` : "Manage assignments"}</DialogTitle>
-                  <DialogDescription>
-                    Review the buckets, stage changes, then save once.
-                  </DialogDescription>
-                </DialogHeader>
-              </div>
-
-              {assignmentLoading ? (
-                <div className="px-6 py-10 sm:px-7">
-                  <Loader label="Loading assignment manager..." />
-                </div>
-              ) : assignmentSummary && assignmentInterviewer ? (
-                <>
-                  <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5 sm:px-7">
-                    <div className="space-y-5">
-                      {assignmentError ? (
-                        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{assignmentError}</p>
-                      ) : null}
-
-                      <div className="flex flex-wrap items-center justify-end gap-2">
-                        <Badge variant="secondary">{assignmentBuckets.currentlyAssigned.length} staged active</Badge>
-                        <Badge variant="outline">{stagedChangeCount} pending change{stagedChangeCount === 1 ? "" : "s"}</Badge>
-                      </div>
-
-                      <div className="grid min-h-0 gap-4 xl:grid-cols-3">
-                        <AssignmentBucket
-                          title="Currently assigned"
-                          description="Active reports assigned to this interviewer."
-                          items={assignmentBuckets.currentlyAssigned}
-                          emptyTitle="No active reports here."
-                          emptyDescription="Add work from the other buckets."
-                          actionLabel="Remove"
-                          onAction={(applicationId) => removeAssignment(applicationId)}
-                          className="xl:h-[28rem]"
-                          showCurrentOwner
-                        />
-
-                        <AssignmentBucket
-                          title="Available to assign"
-                          description="Unassigned READY reports."
-                          items={assignmentBuckets.availableToAssign}
-                          emptyTitle="Nothing ready right now."
-                          emptyDescription="Unassigned READY reports appear here."
-                          actionLabel="Add"
-                          onAction={(applicationId) => addAssignment(applicationId)}
-                          className="xl:h-[28rem]"
-                          listClassName="xl:max-h-[18.5rem]"
-                        />
-
-                        <AssignmentBucket
-                          title="Available to reassign"
-                          description="Assigned or draft work owned by others."
-                          items={assignmentBuckets.availableToReassign}
-                          emptyTitle="No other owned reports available."
-                          emptyDescription="Other interviewers' ASSIGNED and DRAFT work appears here."
-                          actionLabel="Add"
-                          onAction={(applicationId) => addAssignment(applicationId)}
-                          showCurrentOwner
-                          className="xl:h-[28rem]"
-                          listClassName="xl:max-h-[18.5rem]"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-white/80 px-6 py-4 sm:px-7">
-                    <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                      <Button variant="secondary" disabled={assignmentSubmitting} onClick={closeAssignmentModal}>
-                        Close
-                      </Button>
-                      <Button disabled={assignmentSubmitting || stagedChangeCount === 0} onClick={() => void handleAssignmentSave()}>
-                        {assignmentSubmitting ? "Saving..." : `Save changes${stagedChangeCount > 0 ? ` (${stagedChangeCount})` : ""}`}
-                      </Button>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="px-6 py-6 sm:px-7">
-                  <EmptyState
-                    title="Assignment manager unavailable."
-                    description="We couldn’t load the interviewer assignment summary just yet."
-                  />
-                </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={selectedInterviewer !== null} onOpenChange={(open) => !open && closeManageDrawer()}>
-          <DialogDrawerContent>
-            {selectedInterviewer ? (
-              <div className="space-y-6">
-                <DialogHeader className="space-y-3 pr-12">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[color:var(--muted)]">Manage interviewer</p>
-                  <DialogTitle>{selectedInterviewer.name}</DialogTitle>
-                </DialogHeader>
-
-                <section className="rounded-[1.4rem] border border-white/80 bg-white/72 p-4 shadow-sm">
-                  <div className="flex items-center gap-4">
-                    <Avatar size="lg">
-                      <AvatarFallback>{getInitials(selectedInterviewer.name)}</AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <p className="display-font text-lg font-semibold text-[color:var(--ink)]">{selectedInterviewer.name}</p>
-                      <p className="truncate text-sm text-[color:var(--muted)]">{selectedInterviewer.email}</p>
-                    </div>
-                    <Badge variant="secondary">{selectedInterviewer.active_assignment_count} active</Badge>
-                  </div>
-                </section>
-
-                <DrawerSection
-                  icon={<UserRound className="size-4" />}
-                  title="Profile"
-                  description="Update the display name."
-                >
-                  <Input
-                    label="Name"
-                    value={profileForm.name}
-                    onChange={(event) => setProfileForm({ name: event.target.value })}
-                  />
-                  <div className="flex justify-end">
-                    <Button disabled={profileSubmitting || !profileForm.name.trim() || !profileChanged} onClick={() => void handleProfileUpdate()}>
-                      {profileSubmitting ? "Saving..." : "Save name"}
-                    </Button>
-                  </div>
-                </DrawerSection>
-
-                <DrawerSection
-                  icon={<Mail className="size-4" />}
-                  title="Account"
-                  description="Change the sign-in email."
-                >
-                  <Input
-                    label="Email"
-                    type="email"
-                    value={accountForm.email}
-                    onChange={(event) => setAccountForm({ email: event.target.value })}
-                  />
-                  <div className="flex justify-end">
-                    <Button disabled={accountSubmitting || !accountForm.email.trim() || !emailChanged} onClick={() => void handleEmailUpdate()}>
-                      {accountSubmitting ? "Saving..." : "Update email"}
-                    </Button>
-                  </div>
-                </DrawerSection>
-
-                <DrawerSection
-                  icon={<KeyRound className="size-4" />}
-                  title="Security"
-                  description="Set a new password."
-                >
-                  <Input
-                    label="New password"
-                    type="password"
-                    minLength={8}
-                    value={passwordForm.password}
-                    onChange={(event) => setPasswordForm((current) => ({ ...current, password: event.target.value }))}
-                  />
-                  <Input
-                    label="Confirm new password"
-                    type="password"
-                    minLength={8}
-                    value={passwordForm.confirmPassword}
-                    onChange={(event) => setPasswordForm((current) => ({ ...current, confirmPassword: event.target.value }))}
-                  />
-                  {updatePasswordMismatch ? (
-                    <p className="text-sm text-red-700">Passwords must match before the update can be confirmed.</p>
-                  ) : null}
-                  <div className="flex justify-end">
-                    <Button
-                      disabled={passwordSubmitting || !passwordForm.password || updatePasswordMismatch}
-                      onClick={() => void handlePasswordUpdate()}
-                    >
-                      {passwordSubmitting ? "Saving..." : "Change password"}
-                    </Button>
-                  </div>
-                </DrawerSection>
-
-                <section className="rounded-[1.4rem] border border-red-200 bg-red-50/88 p-4 shadow-sm">
-                  <div className="flex items-start gap-3">
-                    <span className="mt-0.5 inline-flex rounded-full bg-red-100 p-2 text-red-700">
-                      <ShieldAlert className="size-4" />
+    <div
+      className={`${spaceGrotesk.variable} ${plexSans.variable} ${cormorant.variable} space-y-6`}
+      style={{ fontFamily: "var(--font-reports-plex)" }}
+    >
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="space-y-6">
+          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
+            <div className="overflow-hidden rounded-[2rem] border border-[#727D97] bg-[linear-gradient(135deg,#c9d0dc_0%,#d8dbe2_40%,#ced4df_100%)] p-6 xl:h-full">
+              <div className="flex h-full flex-col justify-between gap-6">
+                <div>
+                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-[#5F6C86]">
+                    <span className="inline-flex items-center gap-2 text-[#111111]">
+                      <Stars className="size-3.5" />
+                      Interview operations
                     </span>
-                    <div className="min-w-0 flex-1 space-y-3">
-                      <div>
-                        <p className="text-lg font-semibold text-red-900">Danger zone</p>
-                        <p className="mt-1 text-sm leading-6 text-red-800">
-                          Removal fails if this interviewer has active assignments.
-                        </p>
-                      </div>
-                      <Button variant="danger" disabled={removeSubmitting} onClick={() => void handleRemove()}>
+                  </div>
+                  <div className="mt-5 space-y-4">
+                    <h1
+                      className="max-w-4xl text-[3rem] leading-[0.92] tracking-[-0.07em] text-[#111111] md:text-[3.85rem]"
+                      style={{ fontFamily: "var(--font-reports-cormorant)" }}
+                    >
+                      Interviewer Manager
+                    </h1>
+                    <p className="max-w-3xl text-sm leading-7 text-[#49536B]">
+                      Review the active interviewer roster, open assignment buckets when work needs to move, and manage
+                      interviewer account details without leaving the page context.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    className="inline-flex items-center gap-2 rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444]"
+                    onClick={() => setCreateOpen(true)}
+                    type="button"
+                  >
+                    <Plus className="size-4" />
+                    Add interviewer
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] p-4 xl:h-full">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6C86]">Status totals</p>
+              <div className="mt-4 space-y-3">
+                <MetricStrip label="Interviewers" value={metrics.interviewers} />
+                <MetricStrip label="Active assignments" value={metrics.activeAssignments} />
+                <MetricStrip label="Ready pool" value={metrics.readyPool} />
+              </div>
+            </div>
+          </section>
+
+          {message ? <p className="rounded-[1.2rem] border border-[#198FF0]/35 bg-[#EAF4FD] px-4 py-3 text-sm text-[#24527A]">{message}</p> : null}
+          {error ? <p className="rounded-[1.2rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">{error}</p> : null}
+
+          {loading ? (
+            <Loader label="Loading interviewers..." />
+          ) : items.length === 0 ? (
+            <div className="rounded-[1.9rem] border border-[#727D97] bg-[#F7F7F1] px-6 py-10 text-center">
+              <p className="text-base font-semibold text-[#111111]">No interviewers yet.</p>
+              <p className="mt-2 text-sm text-[#5F6C86]">Add an interviewer to start assigning applications.</p>
+            </div>
+          ) : (
+            <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {items.map((item) => (
+                <InterviewerCard
+                  key={item.id}
+                  item={item}
+                  onEdit={() => openEditSheet(item)}
+                  onManageAssignments={() => void openAssignmentModal(item)}
+                />
+              ))}
+            </section>
+          )}
+        </div>
+
+        <aside className="grid gap-5 self-start">
+          <AdminSessionLogPanel entries={sessionHistoryEntries} />
+        </aside>
+      </div>
+
+      {createOpen ? (
+        <CenteredOverlay onClose={() => !createSubmitting && setCreateOpen(false)}>
+          <div className="rounded-[1.9rem] border border-[#727D97] bg-[#F7F7F1] p-6 shadow-[0_24px_70px_rgba(114,125,151,0.24)]">
+            <SurfaceHeader eyebrow="Create interviewer" title="Add interviewer" onClose={() => setCreateOpen(false)} />
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-[#49536B]">
+              Create a new interviewer account with the same core fields used in the live frontend.
+            </p>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <FieldEditor icon={UserRound} label="Display name" value={createForm.name} onChange={(value) => setCreateForm((current) => ({ ...current, name: value }))} />
+              <FieldEditor icon={Mail} label="Email" type="email" value={createForm.email} onChange={(value) => setCreateForm((current) => ({ ...current, email: value }))} />
+              <FieldEditor icon={KeyRound} label="Password" type="password" value={createForm.password} onChange={(value) => setCreateForm((current) => ({ ...current, password: value }))} />
+              <FieldEditor icon={KeyRound} label="Confirm password" type="password" value={createForm.confirmPassword} onChange={(value) => setCreateForm((current) => ({ ...current, confirmPassword: value }))} />
+            </div>
+            {createPasswordMismatch ? (
+              <p className="mt-4 rounded-[1rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">
+                Passwords must match before the interviewer can be created.
+              </p>
+            ) : null}
+            <div className="mt-6 flex justify-end">
+              <button
+                className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={createSubmitting || !createForm.name.trim() || !createForm.email.trim() || !createForm.password || createPasswordMismatch}
+                onClick={() => void handleCreate()}
+                type="button"
+              >
+                {createSubmitting ? "Creating..." : "Create interviewer"}
+              </button>
+            </div>
+          </div>
+        </CenteredOverlay>
+      ) : null}
+
+      {assignmentInterviewer ? (
+        <CenteredOverlay onClose={closeAssignmentModal}>
+          <div className="rounded-[1.9rem] border border-[#727D97] bg-[#F7F7F1] p-6 shadow-[0_24px_70px_rgba(114,125,151,0.24)]">
+            <SurfaceHeader eyebrow="Assignment buckets" title={`Manage assignments · ${assignmentInterviewer.name}`} onClose={closeAssignmentModal} />
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#49536B]">
+              Keep the bucket logic from the real frontend, but present it inside the same mock system as the other admin pages.
+            </p>
+            {assignmentLoading ? (
+              <div className="mt-6 rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] px-4 py-10">
+                <Loader label="Loading assignment manager..." />
+              </div>
+            ) : assignmentSummary ? (
+              <>
+                {assignmentError ? <p className="mt-6 rounded-[1.2rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">{assignmentError}</p> : null}
+                <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
+                  <Badge variant="secondary">{assignmentBuckets.currentlyAssigned.length} staged active</Badge>
+                  <Badge variant="outline">{stagedChangeCount} pending change{stagedChangeCount === 1 ? "" : "s"}</Badge>
+                </div>
+                <div className="mt-6 grid gap-4 xl:grid-cols-3">
+                  <AssignmentBucket title="Currently assigned" items={assignmentBuckets.currentlyAssigned} actionLabel="Remove" onAction={(applicationId) => removeAssignment(applicationId)} showCurrentOwner={false} />
+                  <AssignmentBucket title="Available to assign" items={assignmentBuckets.availableToAssign} actionLabel="Add" onAction={(applicationId) => addAssignment(applicationId)} showCurrentOwner={false} />
+                  <AssignmentBucket title="Available to reassign" items={assignmentBuckets.availableToReassign} actionLabel="Add" onAction={(applicationId) => addAssignment(applicationId)} showCurrentOwner />
+                </div>
+                <div className="mt-6 flex items-center justify-end gap-3 border-t border-[#727D97]/45 pt-5">
+                  <button className="inline-flex items-center justify-center rounded-full border border-[#727D97] bg-[#F7F7F1] px-4 py-3 text-sm font-semibold text-[#111111] transition hover:bg-[#E6E9F0]" disabled={assignmentSubmitting} onClick={closeAssignmentModal} type="button">Close</button>
+                  <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={assignmentSubmitting || stagedChangeCount === 0} onClick={() => void handleAssignmentSave()} type="button">
+                    {assignmentSubmitting ? "Saving..." : `Save changes${stagedChangeCount > 0 ? ` (${stagedChangeCount})` : ""}`}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="mt-6 rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] px-4 py-10 text-center">
+                <p className="text-base font-semibold text-[#111111]">Assignment manager unavailable.</p>
+                <p className="mt-2 text-sm text-[#5F6C86]">We couldn’t load the interviewer assignment summary just yet.</p>
+              </div>
+            )}
+          </div>
+        </CenteredOverlay>
+      ) : null}
+
+      {selectedInterviewer ? (
+        <FloatingSheet onClose={closeEditSheet}>
+          <div className="overflow-hidden rounded-[2rem] border border-[#727D97] bg-[#F7F7F1] shadow-[0_28px_80px_rgba(114,125,151,0.28)]">
+            <div className="interviewer-sheet-scroll max-h-[calc(100vh-3rem)] overflow-y-auto px-6 py-6">
+              <SurfaceHeader eyebrow="Edit interviewer" title={selectedInterviewer.name} onClose={closeEditSheet} />
+              <div className="mt-5 flex items-center gap-4 rounded-[1.4rem] border border-[#727D97] bg-[#E6E9F0] p-4">
+                <InterviewerAvatar item={selectedInterviewer} sizeClassName="size-14" />
+                <div className="min-w-0">
+                  <p className="truncate text-lg font-semibold text-[#111111]">{selectedInterviewer.name}</p>
+                  <p className="truncate text-sm text-[#49536B]">{selectedInterviewer.email}</p>
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-4">
+                <EditSection icon={UserRound} title="Display name">
+                  <Input label="Display name" value={profileForm.name} onChange={(event) => setProfileForm({ name: event.target.value })} />
+                  <div className="mt-4 flex justify-end">
+                    <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={profileSubmitting || !profileForm.name.trim() || !profileChanged} onClick={() => void handleProfileUpdate()} type="button">
+                      {profileSubmitting ? "Saving..." : "Save name"}
+                    </button>
+                  </div>
+                </EditSection>
+
+                <EditSection icon={Mail} title="Email">
+                  <Input label="Email" type="email" value={accountForm.email} onChange={(event) => setAccountForm({ email: event.target.value })} />
+                  <div className="mt-4 flex justify-end">
+                    <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={accountSubmitting || !accountForm.email.trim() || !emailChanged} onClick={() => void handleEmailUpdate()} type="button">
+                      {accountSubmitting ? "Saving..." : "Update email"}
+                    </button>
+                  </div>
+                </EditSection>
+
+                <EditSection icon={KeyRound} title="Password">
+                  <Input label="New password" type="password" minLength={8} value={passwordForm.password} onChange={(event) => setPasswordForm((current) => ({ ...current, password: event.target.value }))} />
+                  <Input label="Confirm new password" type="password" minLength={8} value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, confirmPassword: event.target.value }))} />
+                  {updatePasswordMismatch ? <p className="mt-3 rounded-[1rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">Passwords must match before the update can be confirmed.</p> : null}
+                  <div className="mt-4 flex justify-end">
+                    <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={passwordSubmitting || !passwordForm.password || updatePasswordMismatch} onClick={() => void handlePasswordUpdate()} type="button">
+                      {passwordSubmitting ? "Saving..." : "Change password"}
+                    </button>
+                  </div>
+                </EditSection>
+              </div>
+
+              <div className="mt-6 rounded-[1.4rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] p-4">
+                <div className="flex items-start gap-3">
+                  <span className="inline-flex rounded-full bg-[#FF6B9D]/18 p-2 text-[#9A315A]">
+                    <ShieldAlert className="size-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-base font-semibold text-[#7F2247]">Danger zone</p>
+                    <p className="mt-2 text-sm leading-6 text-[#9A315A]">Removal fails if this interviewer still has active assignments.</p>
+                    <div className="mt-4">
+                      <button className="inline-flex items-center justify-center rounded-full bg-[#AF3030] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#932626] disabled:cursor-not-allowed disabled:opacity-60" disabled={removeSubmitting} onClick={() => void handleRemove()} type="button">
                         {removeSubmitting ? "Removing..." : "Remove interviewer"}
-                      </Button>
+                      </button>
                     </div>
                   </div>
-                </section>
+                </div>
               </div>
-            ) : null}
-          </DialogDrawerContent>
-        </Dialog>
+            </div>
+          </div>
+        </FloatingSheet>
+      ) : null}
+
+      <style jsx global>{`
+        .interviewer-sheet-scroll {
+          scrollbar-width: thin;
+          scrollbar-color: #8a94a6 transparent;
+          scrollbar-gutter: stable;
+        }
+        .interviewer-sheet-scroll::-webkit-scrollbar { width: 12px; }
+        .interviewer-sheet-scroll::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
+        .interviewer-sheet-scroll::-webkit-scrollbar-track { background: transparent; margin: 16px 0; }
+        .interviewer-sheet-scroll::-webkit-scrollbar-thumb {
+          border: 3px solid transparent;
+          border-radius: 999px;
+          background-clip: padding-box;
+          background-color: #8a94a6;
+        }
+        .interviewer-sheet-scroll::-webkit-scrollbar-thumb:hover { background-color: #727d97; }
+      `}</style>
+    </div>
+  );
+}
+
+function InterviewerCard({
+  item,
+  onManageAssignments,
+  onEdit,
+}: {
+  item: InterviewerListItem;
+  onManageAssignments: () => void;
+  onEdit: () => void;
+}) {
+  return (
+    <article className="rounded-[1.8rem] border border-[#727D97] bg-white text-[#121212] shadow-[0_18px_50px_rgba(114,125,151,0.14)]">
+      <div className="space-y-4 px-5 py-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <InterviewerAvatar item={item} sizeClassName="size-12" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <h4 className="text-[2rem] leading-none tracking-[-0.07em] text-[#111111]" style={{ fontFamily: "var(--font-reports-space)" }}>
+              {item.name}
+            </h4>
+            <p className="truncate text-sm text-[#66685D]">{item.email}</p>
+          </div>
+        </div>
+
+        <div className="rounded-[1.3rem] border border-[#111111]/10 bg-[#FAFAF6] p-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6C6C64]">Active assignments</p>
+          <p className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-[#111111]">{item.active_assignment_count}</p>
+        </div>
+
+        <div className="grid gap-2">
+          <button className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444]" onClick={onManageAssignments} type="button">
+            <ArrowLeftRight className="size-4" />
+            Manage assignments
+          </button>
+          <button className="inline-flex items-center justify-center gap-2 rounded-full border border-[#727D97] bg-[#F7F7F1] px-4 py-3 text-sm font-semibold text-[#111111] transition hover:bg-[#E6E9F0]" onClick={onEdit} type="button">
+            <PencilLine className="size-4" />
+            Edit interviewer
+          </button>
+        </div>
       </div>
-    </AdminShell>
+    </article>
+  );
+}
+
+function InterviewerAvatar({ item, sizeClassName }: { item: InterviewerListItem; sizeClassName: string }) {
+  return (
+    <Avatar className={`${sizeClassName} overflow-hidden border border-[#727D97] bg-[#E6E9F0]`}>
+      <AvatarFallback className="bg-[#AAB4C8] text-[#111111]">{getInitials(item.name)}</AvatarFallback>
+    </Avatar>
+  );
+}
+
+function CenteredOverlay({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-40 grid place-items-center bg-[#111111]/42 px-5 py-8 backdrop-blur-[10px]" onClick={onClose} role="presentation">
+      <div className="w-full max-w-[72rem]" onClick={(event) => event.stopPropagation()} role="presentation">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function FloatingSheet({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-40 overflow-y-auto bg-[#111111]/34 backdrop-blur-[8px]" onClick={onClose} role="presentation">
+      <div className="flex min-h-screen justify-end p-4 md:p-6">
+        <div className="w-full max-w-[34rem] self-start" onClick={(event) => event.stopPropagation()} role="presentation">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SurfaceHeader({ eyebrow, title, onClose }: { eyebrow: string; title: string; onClose: () => void }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#5F6C86]">{eyebrow}</p>
+        <h2 className="mt-3 text-[2.4rem] leading-[0.96] tracking-[-0.06em] text-[#111111]" style={{ fontFamily: "var(--font-reports-cormorant)" }}>
+          {title}
+        </h2>
+      </div>
+      <button className="grid size-10 place-items-center rounded-full border border-[#727D97] bg-[#E6E9F0] text-[#111111] transition hover:bg-[#D8DBE2]" onClick={onClose} type="button">
+        <X className="size-4" />
+      </button>
+    </div>
+  );
+}
+
+function FieldEditor({
+  icon: Icon,
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  icon: typeof UserRound;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: string;
+}) {
+  return (
+    <div className="rounded-[1.3rem] border border-[#727D97] bg-[#E6E9F0] p-4">
+      <div className="mb-4 flex items-center gap-2">
+        <span className="inline-flex rounded-full bg-[#198FF0]/14 p-2 text-[#198FF0]">
+          <Icon className="size-4" />
+        </span>
+        <p className="text-sm font-semibold text-[#111111]">{label}</p>
+      </div>
+      <Input label={label} type={type} value={value} onChange={(event) => onChange(event.target.value)} />
+    </div>
+  );
+}
+
+function EditSection({ icon: Icon, title, children }: { icon: typeof UserRound; title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-[1.4rem] border border-[#727D97] bg-[#E6E9F0] p-4">
+      <div className="mb-4 flex items-start gap-3">
+        <span className="inline-flex rounded-full bg-[#198FF0]/14 p-2 text-[#198FF0]">
+          <Icon className="size-4" />
+        </span>
+        <p className="text-base font-semibold text-[#111111]">{title}</p>
+      </div>
+      <div className="space-y-3">{children}</div>
+    </div>
   );
 }
 
 function AssignmentBucket({
   title,
-  description,
   items,
-  emptyTitle,
-  emptyDescription,
   actionLabel,
   onAction,
-  showCurrentOwner = false,
-  className,
-  listClassName,
+  showCurrentOwner,
 }: {
   title: string;
-  description: string;
   items: AssignmentModalItem[];
-  emptyTitle: string;
-  emptyDescription: string;
   actionLabel: string;
   onAction: (applicationId: string) => void;
-  showCurrentOwner?: boolean;
-  className?: string;
-  listClassName?: string;
+  showCurrentOwner: boolean;
 }) {
   return (
-    <section className={`rounded-[1.4rem] border border-white/80 bg-white/74 p-5 shadow-sm ${className ?? ""}`}>
-      <div className="mb-4 space-y-1">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-lg font-semibold text-[color:var(--ink)]">{title}</p>
-          <Badge variant="outline">{items.length}</Badge>
-        </div>
-        {description ? <p className="text-sm leading-6 text-[color:var(--muted)]">{description}</p> : null}
+    <section className="rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] p-4 shadow-[0_12px_34px_rgba(114,125,151,0.12)]">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <p className="text-lg font-semibold tracking-[-0.03em] text-[#111111]">{title}</p>
+        <Badge variant="outline">{items.length}</Badge>
       </div>
-
-      {items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[color:var(--line)] bg-white/60 px-4 py-8 text-center">
-          <p className="text-sm font-semibold text-[color:var(--ink)]">{emptyTitle}</p>
-          <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">{emptyDescription}</p>
-        </div>
-      ) : (
-        <div className={`space-y-3 xl:overflow-y-auto xl:pr-1 ${listClassName ?? "xl:max-h-[calc(100%-4.75rem)]"}`}>
-          {items.map((item) => (
-            <div
-              key={item.application_id}
-              className={getAssignmentItemClassName(item)}
-            >
+      <div className="space-y-3">
+        {items.map((item) => (
+          <div key={item.application_id} className={getAssignmentClassName(item)}>
+            <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <StatusBadge status={item.status} />
-                  <p className="truncate text-sm font-semibold text-[color:var(--ink)]" title={item.application_display_id}>
-                    {item.application_display_id}
-                  </p>
+                  <p className="text-sm font-semibold text-[#111111]">{item.application_display_id}</p>
                 </div>
-                {showCurrentOwner && item.current_interviewer ? (
-                  <p className="truncate text-sm text-[color:var(--muted)]">
-                    Current interviewer: {item.current_interviewer.name}
-                  </p>
-                ) : null}
+                {showCurrentOwner && item.current_interviewer ? <p className="text-sm text-[#49536B]">Current interviewer: {item.current_interviewer.name}</p> : null}
               </div>
-              <Button size="sm" variant="secondary" onClick={() => onAction(item.application_id)}>
+              <button className="inline-flex items-center justify-center rounded-full border border-[#727D97] bg-[#F7F7F1] px-3 py-2 text-sm font-semibold text-[#111111] transition hover:bg-[#E6E9F0]" onClick={() => onAction(item.application_id)} type="button">
                 {actionLabel}
-              </Button>
+              </button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
 
-function DrawerSection({
-  icon,
-  title,
-  description,
-  children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  children: React.ReactNode;
-}) {
+function MetricStrip({ label, value }: { label: string; value: number }) {
   return (
-    <section className="rounded-[1.4rem] border border-white/80 bg-white/72 p-4 shadow-sm">
-      <div className="mb-3 flex items-start gap-3">
-        <span className="inline-flex rounded-full bg-[color:var(--accent-soft)] p-2 text-[color:var(--accent)]">{icon}</span>
-        <div className="space-y-1">
-          <p className="text-lg font-semibold text-[color:var(--ink)]">{title}</p>
-          {description ? <p className="text-sm leading-6 text-[color:var(--muted)]">{description}</p> : null}
-        </div>
-      </div>
-      <div className="space-y-3">{children}</div>
-    </section>
+    <div className="flex items-center justify-between gap-3 rounded-[1rem] border border-[#727D97] bg-[#CBD2DE] px-3 py-3">
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86]">{label}</span>
+      <span className="text-sm font-semibold text-[#111111]">{value}</span>
+    </div>
   );
+}
+
+function getAssignmentClassName(item: AssignmentModalItem) {
+  if (item.source === "assigned") return "rounded-[1.15rem] border border-[#FFB347]/45 bg-[#FFF1DF] px-4 py-3";
+  if (item.source === "reassign") return "rounded-[1.15rem] border border-[#198FF0]/28 bg-[#EAF4FD] px-4 py-3";
+  return "rounded-[1.15rem] border border-[#727D97] bg-[#F7F7F1] px-4 py-3";
 }
 
 function getInitials(name: string) {
@@ -834,16 +927,4 @@ function getInitials(name: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
-}
-
-function getAssignmentItemClassName(item: AssignmentModalItem) {
-  if (item.source === "assigned") {
-    return "flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-3 shadow-[inset_0_0_0_1px_rgba(251,191,36,0.14)]";
-  }
-
-  if (item.source === "reassign") {
-    return "flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-violet-200 bg-violet-50/70 px-4 py-3";
-  }
-
-  return "flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/80 bg-[color:var(--surface)]/72 px-4 py-3";
 }

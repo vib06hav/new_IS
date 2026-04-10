@@ -1,0 +1,67 @@
+{
+  "applicant_id": "sample_002",
+  "applicant_label": "Priya Nair - CBSE, Mumbai",
+  "call_label": "call_1",
+  "signals": [
+    {
+      "signal_id": "SIG-001",
+      "title": "Research Authorship Claimed at an Age Where Independent Research Is Unusual",
+      "evidence_anchor": "The applicant lists a 'co-authored research paper on marine microplastic distribution' under activities (10th grade, age 15-16), with no institutional sponsor, no faculty mentor named, and no publication venue specified.",
+      "direct_read": "A research output is claimed at a point in the academic timeline where independent research would require exceptional access, mentorship, or circumstance - none of which are accounted for in the application.",
+      "depth_opening": "What the actual structure of this research was - who initiated it, what the applicant's specific contribution was, how data was collected, and what 'co-authored' means in terms of the division of intellectual work.",
+      "why_it_matters": "The weight this activity carries in the applicant's profile depends entirely on whether it represents independent scientific thinking or a structured school programme contribution. These are not equivalent.",
+      "referenced_entity_ids": ["ACT-001"],
+      "supporting_det_signal_ids": ["DET-001"],
+      "supporting_fragment_ids": []
+    },
+    {
+      "signal_id": "SIG-002",
+      "title": "Environmental Science Identity With No Science Outside School",
+      "evidence_anchor": "The applicant's essay claims the ocean is 'the problem I want to spend my career on' and lists Biology (96%) and Environmental Science as top subjects. The activity profile outside school contains no science club, citizen science work, field study, or independent investigation.",
+      "direct_read": "A strong academic performance in science and a career-facing claim about environmental focus are not accompanied by any visible self-directed scientific engagement beyond the school curriculum.",
+      "depth_opening": "Whether the applicant's relationship to environmental science is practiced and self-directed or primarily demonstrates well within structured academic contexts - and if there is self-directed work, what it has actually looked like.",
+      "why_it_matters": "For a science-facing academic direction, the presence or absence of self-directed investigation beyond curriculum is the primary signal of genuine versus performed interest.",
+      "referenced_entity_ids": ["ESS-002", "ACA-002", "ACA-005"],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": ["ESS-002:F01", "ESS-002:F03"]
+    },
+    {
+      "signal_id": "SIG-003",
+      "title": "Kathak Commitment at a Serious Level That Goes Entirely Unaccounted For",
+      "evidence_anchor": "The applicant holds a Visharad (advanced certification) in Kathak, listed in the additional information section with no further elaboration. No essay addresses it. No activity entry names a teacher, school, or progression pathway.",
+      "direct_read": "A multi-year, externally certified commitment to classical dance sits entirely outside the application's narrative.",
+      "depth_opening": "What the Kathak practice has actually consisted of across the years, and what - if anything - the applicant experiences as the relationship between that practice and the scientific direction they describe. Not whether these must connect, but whether the applicant has ever thought about whether they do.",
+      "why_it_matters": "A Visharad-level commitment is a significant life practice. Its complete absence from the applicant's self-narrative raises a genuine question about how the applicant is choosing to present themselves and what they consider worth accounting for.",
+      "referenced_entity_ids": ["ADD-002", "ACT-007"],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": []
+    },
+    {
+      "signal_id": "SIG-004",
+      "title": "National-Level Swimming Participation Framed as Discipline Evidence in the Essay",
+      "evidence_anchor": "Essay 2 cites national-level swimming as evidence of the applicant's 'ability to commit to long cycles of practice without guaranteed outcome.' The activity entry for swimming is a single line with no context about how long, at what level, or what the training involved.",
+      "direct_read": "A significant athletic achievement is deployed as a character claim in the essay but is listed in the activity section with minimal factual grounding.",
+      "depth_opening": "What the swimming commitment actually looked like in practice - what the training cycle was, when the national-level participation occurred, and whether the framing in the essay (discipline through uncertain outcome) reflects the applicant's actual experience of it or is a constructed retrospective narrative.",
+      "why_it_matters": "Whether the essay's characterisation accurately reflects what the swimming experience was internally determines whether 'discipline under uncertainty' is something this applicant has genuinely practised or is a narrative frame applied to an achievement.",
+      "referenced_entity_ids": ["ESS-002", "ACT-003"],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": ["ESS-002:F04"]
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "What Is Self-Directed and What Is Structure-Enabled",
+      "unifying_axis": "Across the application, notable outputs and commitments appear in contexts where the applicant's precise role and ownership are not visible - creating an unresolved question about what this applicant initiates versus what they perform well within.",
+      "interview_direction": "Understanding where this applicant has actually driven something themselves - chosen the problem, sustained the effort, and encountered the friction of working without guaranteed support - versus where external structure has been the primary enabling condition.",
+      "supporting_signal_ids": ["SIG-001", "SIG-002"]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "The Narrative the Application Has Chosen Not to Tell",
+      "unifying_axis": "Two significant commitments - the Kathak practice and the swimming history - are either absent from the applicant's self-narrative or deployed instrumentally, raising a real question about how this applicant chooses what to account for and why.",
+      "interview_direction": "Understanding how this applicant constructs their own story - what they consider worth naming, what they consider private or irrelevant, and whether the choices reflect genuine self-understanding or strategic presentation.",
+      "supporting_signal_ids": ["SIG-003", "SIG-004"]
+    }
+  ]
+}

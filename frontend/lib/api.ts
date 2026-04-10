@@ -11,6 +11,7 @@ import type {
   InterviewerListItem,
   InterviewerUpdatePayload,
   PasswordChangePayload,
+  SelfProfileUpdatePayload,
   SelfPasswordChangePayload,
   SessionResponse,
 } from "@/lib/types";
@@ -142,6 +143,12 @@ export async function removeQueuedApplication(applicationId: string) {
   });
 }
 
+export async function deleteApplication(applicationId: string) {
+  return apiRequest<void>(`/applications/${applicationId}`, {
+    method: "DELETE",
+  });
+}
+
 export async function assignApplication(applicationId: string, interviewerId: string) {
   return apiRequest<ApplicationListItem>(`/applications/${applicationId}/assign`, {
     method: "POST",
@@ -224,6 +231,18 @@ export async function fetchMyApplications() {
   return apiRequest<ApplicationListItem[]>("/me/applications");
 }
 
+export async function hideMyApplication(applicationId: string) {
+  return apiRequest<ApplicationListItem>(`/me/applications/${applicationId}/hide`, {
+    method: "POST",
+  });
+}
+
+export async function unhideMyApplication(applicationId: string) {
+  return apiRequest<ApplicationListItem>(`/me/applications/${applicationId}/unhide`, {
+    method: "POST",
+  });
+}
+
 export async function generateDraft(applicationId: string) {
   return apiRequest<DraftMutationResponse>(`/applications/${applicationId}/generate`, {
     method: "POST",
@@ -238,6 +257,16 @@ export async function publishDraft(applicationId: string) {
 
 export async function changeMyPassword(payload: SelfPasswordChangePayload) {
   return apiRequest<SessionResponse>("/auth/change-password", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateMyProfile(payload: SelfProfileUpdatePayload) {
+  return apiRequest<SessionResponse>("/auth/profile", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

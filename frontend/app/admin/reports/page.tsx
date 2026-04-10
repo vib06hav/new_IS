@@ -1,10 +1,15 @@
 "use client";
 
-import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, EyeOff, Eye, PencilLine } from "lucide-react";
+import { Stars } from "lucide-react";
+import {
+  Cormorant_Garamond,
+  IBM_Plex_Sans,
+} from "next/font/google";
 import {
   assignApplication,
+  deleteApplication,
   fetchApplications,
   fetchInterviewers,
   hideApplication,
@@ -13,50 +18,68 @@ import {
   updateApplicationDisplayId,
 } from "@/lib/api";
 import type { ApplicationListItem, InterviewerListItem } from "@/lib/types";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { Input } from "@/components/ui/Input";
 import { Loader } from "@/components/ui/Loader";
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { Button } from "@/components/ui/Button";
 import { usePolling } from "@/lib/usePolling";
-import { AdminShell } from "@/components/layout/AdminShell";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
-import { HeroPanel } from "@/components/ui/HeroPanel";
-import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
-import { Badge } from "@/components/shadcn/badge";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-} from "@/components/shadcn/select";
+  useAdminSessionHistory,
+} from "@/components/layout/AdminSessionHistory";
+import { AdminSessionLogPanel } from "@/components/layout/AdminSessionLogPanel";
+import { AdminShell } from "@/components/layout/AdminShell";
+import { AdminReportCard } from "@/components/admin/AdminReportCard";
 
 const REPORT_STATUSES = ["ALL", "READY", "ASSIGNED", "DRAFT", "PUBLISHED", "HIDDEN"] as const;
 
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-reports-plex",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-reports-cormorant",
+});
+
 export default function AdminReportsPage() {
+  return (
+    <AdminShell>
+      <AdminReportsContent />
+    </AdminShell>
+  );
+}
+
+function AdminReportsContent() {
   const [items, setItems] = useState<ApplicationListItem[]>([]);
   const [interviewers, setInterviewers] = useState<InterviewerListItem[]>([]);
   const [statusFilter, setStatusFilter] = useState<(typeof REPORT_STATUSES)[number]>("ALL");
   const [loading, setLoading] = useState(true);
   const [busyAppId, setBusyAppId] = useState<string | null>(null);
   const [hiddenBusyAppId, setHiddenBusyAppId] = useState<string | null>(null);
+  const [deletingAppId, setDeletingAppId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [selectedInterviewerByApp, setSelectedInterviewerByApp] = useState<Record<string, string>>({});
   const [editingDisplayIdAppId, setEditingDisplayIdAppId] = useState<string | null>(null);
   const [draftDisplayIdByApp, setDraftDisplayIdByApp] = useState<Record<string, string>>({});
   const [savingDisplayIdAppId, setSavingDisplayIdAppId] = useState<string | null>(null);
+  const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
 
   async function loadData() {
     try {
-      const [applications, interviewerList] = await Promise.all([
-        fetchApplications(statusFilter === "ALL" ? undefined : statusFilter),
+      const [visibleApplications, hiddenApplications, interviewerList] = await Promise.all([
+        fetchApplications(),
+        fetchApplications("HIDDEN"),
         fetchInterviewers(),
       ]);
+
+      const applications = [...visibleApplications, ...hiddenApplications]
+        .filter((item) => item.status !== "UPLOADED" && item.status !== "PROCESSING" && item.status !== "FAILED")
+        .sort((left, right) => new Date(right.last_activity_at).getTime() - new Date(left.last_activity_at).getTime());
+
       setItems(
-        applications.filter((item) => item.status !== "UPLOADED" && item.status !== "PROCESSING" && item.status !== "FAILED"),
+        applications,
       );
       setInterviewers(interviewerList);
       setError(null);
@@ -70,7 +93,7 @@ export default function AdminReportsPage() {
   useEffect(() => {
     setLoading(true);
     void loadData();
-  }, [statusFilter]);
+  }, []);
 
   usePolling(loadData, 5000, !loading);
 
@@ -85,6 +108,9 @@ export default function AdminReportsPage() {
     setMessage(null);
     setError(null);
     try {
+      const report = items.find((item) => item.id === applicationId);
+      const nextInterviewer = interviewers.find((interviewer) => interviewer.id === interviewerId);
+
       if (mode === "assign") {
         await assignApplication(applicationId, interviewerId);
         setMessage("Application assigned.");
@@ -92,6 +118,21 @@ export default function AdminReportsPage() {
         await reassignApplication(applicationId, interviewerId);
         setMessage("Application reassigned.");
       }
+
+      if (report && nextInterviewer) {
+        addEntry({
+          action: mode === "assign" ? "Assigned" : "Reassigned",
+          reportId: report.display_id,
+          detail:
+            mode === "assign"
+              ? `${nextInterviewer.name} added as first interviewer`
+              : report.assigned_interviewer
+                ? `${report.assigned_interviewer.name} -> ${nextInterviewer.name}`
+                : `${nextInterviewer.name} selected as interviewer`,
+          tone: mode === "assign" ? "lime" : "blue",
+        });
+      }
+
       await loadData();
     } catch (mutationError) {
       setError(mutationError instanceof Error ? mutationError.message : "Assignment update failed.");
@@ -105,18 +146,62 @@ export default function AdminReportsPage() {
     setMessage(null);
     setError(null);
     try {
+      const report = items.find((item) => item.id === applicationId);
+
       if (nextHidden) {
         await hideApplication(applicationId);
-        setMessage("Published report hidden.");
+        setMessage("Report hidden.");
       } else {
         await unhideApplication(applicationId);
-        setMessage("Hidden report restored.");
+        setMessage("Report restored.");
       }
+
+      if (report) {
+        addEntry({
+          action: nextHidden ? "Hidden" : "Unhidden",
+          reportId: report.display_id,
+          detail: nextHidden
+            ? "Removed from visible list for this session"
+            : "Restored to the visible report list",
+          tone: nextHidden ? "orange" : "pink",
+        });
+      }
+
       await loadData();
     } catch (toggleError) {
       setError(toggleError instanceof Error ? toggleError.message : "Failed to update report visibility.");
     } finally {
       setHiddenBusyAppId(null);
+    }
+  }
+
+  async function removeReport(applicationId: string) {
+    const report = items.find((item) => item.id === applicationId);
+    if (!report) {
+      return;
+    }
+
+    if (!window.confirm(`Delete report ${report.display_id}? This cannot be undone.`)) {
+      return;
+    }
+
+    setDeletingAppId(applicationId);
+    setMessage(null);
+    setError(null);
+    try {
+      await deleteApplication(applicationId);
+      addEntry({
+        action: "Deleted",
+        reportId: report.display_id,
+        detail: "Removed report from the current review set",
+        tone: "slate",
+      });
+      setMessage("Report deleted.");
+      await loadData();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Failed to delete report.");
+    } finally {
+      setDeletingAppId(null);
     }
   }
 
@@ -147,9 +232,20 @@ export default function AdminReportsPage() {
     setMessage(null);
     setError(null);
     try {
+      const report = items.find((item) => item.id === applicationId);
       await updateApplicationDisplayId(applicationId, { display_id: displayId });
       setEditingDisplayIdAppId(null);
       setMessage("Application ID updated.");
+
+      if (report) {
+        addEntry({
+          action: "Updated ID",
+          reportId: report.display_id,
+          detail: `Updated reporting identifier to ${displayId}`,
+          tone: "cyan",
+        });
+      }
+
       await loadData();
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Failed to update application ID.");
@@ -164,246 +260,223 @@ export default function AdminReportsPage() {
       assigned: items.filter((item) => item.status === "ASSIGNED").length,
       draft: items.filter((item) => item.status === "DRAFT").length,
       published: items.filter((item) => item.status === "PUBLISHED").length,
+      hidden: items.filter((item) => item.is_hidden).length,
     }),
     [items],
   );
 
+  const filteredItems = useMemo(() => {
+    if (statusFilter === "ALL") {
+      return items.filter((item) => !item.is_hidden);
+    }
+
+    if (statusFilter === "HIDDEN") {
+      return items.filter((item) => item.is_hidden);
+    }
+
+    return items.filter((item) => !item.is_hidden && item.status === statusFilter);
+  }, [items, statusFilter]);
+
   return (
-    <AdminShell>
-      <div className="space-y-6">
-        <HeroPanel
-          eyebrow="Admin review desk"
-          title="Generated Reports"
-          metrics={[
-            { label: "Ready", value: String(metrics.ready) },
-            { label: "Assigned", value: String(metrics.assigned) },
-            { label: "Draft", value: String(metrics.draft) },
-            { label: "Published", value: String(metrics.published) },
-          ]}
-        />
+    <div
+      className={`${plexSans.variable} ${cormorant.variable} space-y-6`}
+      style={{ fontFamily: "var(--font-reports-plex)" }}
+    >
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_22rem]">
+        <div className="space-y-6">
+            <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
+              <div className="space-y-4 xl:flex xl:h-full xl:flex-col xl:gap-4 xl:space-y-0">
+                <div className="overflow-hidden rounded-[2rem] border border-[#727D97] bg-[linear-gradient(135deg,#c9d0dc_0%,#d8dbe2_40%,#ced4df_100%)] p-6 xl:flex-1">
+                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-[#5F6C86]">
+                    <span className="inline-flex items-center gap-2 text-[#111111]">
+                      <Stars className="size-3.5" />
+                      Admin review desk
+                    </span>
+                  </div>
+                  <div className="mt-5 space-y-4">
+                    <h3
+                      className="max-w-4xl text-[3rem] leading-[0.92] tracking-[-0.07em] text-[#111111] md:text-[3.85rem]"
+                      style={{ fontFamily: "var(--font-reports-cormorant)" }}
+                    >
+                      Generated Reports
+                    </h3>
+                    <p className="max-w-3xl text-sm leading-7 text-[#49536B]">
+                      Open generated reports, update report IDs, assign or reassign interviewers, manage visibility, and
+                      remove reports when necessary.
+                    </p>
+                  </div>
+                </div>
 
-        <div>
-          <SegmentedControl
-            label="Report Status"
-            value={statusFilter}
-            onChange={setStatusFilter}
-            options={REPORT_STATUSES.map((status) => ({ value: status, label: status }))}
-          />
-        </div>
+                <div className="rounded-[1.9rem] border border-[#727D97] bg-[#CBD2DE] p-4">
+                  <div className="rounded-[1.4rem] border border-[#727D97] bg-[#E6E9F0] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {REPORT_STATUSES.map((status) => (
+                        <button
+                          key={status}
+                          className={`rounded-[1rem] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 ${
+                            statusFilter === status
+                              ? getFilterActiveClasses(status)
+                              : "border border-transparent bg-transparent text-[#49536B] hover:border-[#727D97] hover:bg-[#F7F7F1] hover:text-[#111111]"
+                          }`}
+                          onClick={() => setStatusFilter(status)}
+                          type="button"
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-        {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
-        {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
+              <div className="rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] p-4 xl:flex xl:h-full xl:flex-col">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6C86]">Status totals</p>
+                <div className="mt-4 flex flex-1 flex-col gap-3">
+                  <StatusTotal className="flex-1" label="Ready" value={metrics.ready} />
+                  <StatusTotal className="flex-1" label="Assigned" value={metrics.assigned} />
+                  <StatusTotal className="flex-1" label="Draft" value={metrics.draft} />
+                  <StatusTotal className="flex-1" label="Published" value={metrics.published} />
+                  <StatusTotal className="flex-1" label="Hidden" value={metrics.hidden} />
+                </div>
+              </div>
+            </section>
+
+            {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
+            {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
 
         {loading ? (
           <Loader label="Loading reports..." />
-        ) : items.length === 0 ? (
-          <EmptyState title="No processed applications yet." description="READY and later states will appear here." />
+        ) : filteredItems.length === 0 ? (
+          <ReportsEmptyState statusFilter={statusFilter} />
         ) : (
-          <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
-            {items.map((item) => {
-              const isBusy = busyAppId === item.id;
-              const isHiddenBusy = hiddenBusyAppId === item.id;
-              const isEditingDisplayId = editingDisplayIdAppId === item.id;
-              const isSavingDisplayId = savingDisplayIdAppId === item.id;
-              const canAssign = item.status === "READY";
-              const canReassign = item.status === "ASSIGNED" || item.status === "DRAFT";
-              const canHide = item.status === "PUBLISHED" && !item.is_hidden;
-              const canUnhide = item.status === "PUBLISHED" && item.is_hidden;
-              const isPublished = item.status === "PUBLISHED";
-              const selectedInterviewer = interviewers.find(
-                (interviewer) => interviewer.id === selectedInterviewerByApp[item.id],
-              );
-
-              return (
-                <article
-                  key={item.id}
-                  className="fade-rise flex flex-col gap-5 rounded-[1.6rem] border border-white/80 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(239,246,255,0.82),rgba(233,225,255,0.6))] p-5 shadow-[0_18px_38px_rgba(148,163,184,0.12)]"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-2">
-                      {isEditingDisplayId ? (
-                        <div className="space-y-2">
-                          <Input
-                            label="Application ID"
-                            autoFocus
-                            className="mt-0"
-                            value={draftDisplayIdByApp[item.id] ?? ""}
-                            onChange={(event) =>
-                              setDraftDisplayIdByApp((current) => ({ ...current, [item.id]: event.target.value }))
-                            }
-                          />
-                          <div className="flex flex-wrap gap-2">
-                            <Button
-                              size="sm"
-                              disabled={isSavingDisplayId}
-                              onClick={() => void saveDisplayId(item.id)}
-                            >
-                              {isSavingDisplayId ? "Saving..." : "Save ID"}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              disabled={isSavingDisplayId}
-                              onClick={() => cancelEditingDisplayId(item.id)}
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="display-font break-all text-lg font-semibold text-[color:var(--ink)]">
-                            {item.display_id}
-                          </p>
-                          <Button size="sm" variant="ghost" onClick={() => startEditingDisplayId(item)}>
-                            <PencilLine className="size-4" />
-                            Edit
-                          </Button>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2">
-                        <StatusBadge status={item.status} />
-                        {item.assigned_interviewer && !isPublished ? (
-                          <Badge variant="secondary">{item.assigned_interviewer.name}</Badge>
-                        ) : null}
-                        {item.is_hidden ? <Badge variant="outline">Hidden</Badge> : null}
-                      </div>
-                    </div>
-                    <Link
-                      className="inline-flex items-center gap-1 text-sm font-semibold text-[color:var(--accent)] underline underline-offset-4"
-                      href={`/admin/applications/${item.id}`}
-                    >
-                      Open
-                      <ArrowUpRight className="size-4" />
-                    </Link>
-                  </div>
-
-                  <div className="rounded-2xl border border-white/75 bg-white/70 p-4 shadow-sm">
-                    {canAssign || canReassign ? (
-                      <>
-                        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Assignment</p>
-                        <div className="mt-3 space-y-3">
-                          <Select
-                            value={selectedInterviewerByApp[item.id] || ""}
-                            onValueChange={(value) =>
-                              setSelectedInterviewerByApp((current) => ({ ...current, [item.id]: value ?? "" }))
-                            }
-                          >
-                            <SelectTrigger className="h-auto w-full rounded-xl border-[color:var(--surface-border)] bg-white px-3 py-3">
-                              {selectedInterviewer ? (
-                                <div className="flex min-w-0 flex-1 items-center gap-2">
-                                  <Avatar size="sm">
-                                    <AvatarFallback>{getInitials(selectedInterviewer.name)}</AvatarFallback>
-                                  </Avatar>
-                                  <span className="min-w-0 flex-1">
-                                    <span className="block truncate font-medium text-[color:var(--ink)]">
-                                      {selectedInterviewer.name}
-                                    </span>
-                                    <span className="block truncate text-xs text-[color:var(--muted)]">
-                                      {selectedInterviewer.email}
-                                    </span>
-                                  </span>
-                                </div>
-                              ) : (
-                                <span className="text-sm text-[color:var(--muted)]">
-                                  {canAssign ? "Choose interviewer" : "Choose new interviewer"}
-                                </span>
-                              )}
-                            </SelectTrigger>
-                            <SelectContent className="rounded-2xl border border-[color:var(--surface-border)] shadow-[0_18px_38px_rgba(148,163,184,0.18)]">
-                              <SelectGroup>
-                                <SelectLabel>Available interviewers</SelectLabel>
-                                {interviewers.map((interviewer) => (
-                                  <SelectItem key={interviewer.id} value={interviewer.id}>
-                                    <Avatar size="sm">
-                                      <AvatarFallback>{getInitials(interviewer.name)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="min-w-0 flex-1">
-                                      <span className="truncate font-medium text-[color:var(--ink)]">{interviewer.name}</span>
-                                      <span className="truncate text-xs text-[color:var(--muted)]">{interviewer.email}</span>
-                                    </span>
-                                    <Badge variant="secondary">{interviewer.active_assignment_count} active</Badge>
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                          <Button
-                            className="w-full"
-                            disabled={isBusy || !selectedInterviewerByApp[item.id]}
-                            onClick={() => void mutateAssignment(item.id, canAssign ? "assign" : "reassign")}
-                          >
-                            {isBusy ? "Saving..." : canAssign ? "Assign interviewer" : "Reassign interviewer"}
-                          </Button>
-                        </div>
-                      </>
-                    ) : isPublished ? (
-                      <AssignedInterviewerArtifact interviewer={item.assigned_interviewer} />
-                    ) : (
-                      <>
-                        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Assignment</p>
-                        <p className="mt-2 text-sm text-[color:var(--muted)]">No action available</p>
-                      </>
-                    )}
-                  </div>
-
-                  {canHide || canUnhide ? (
-                    <div className="mt-auto flex justify-end">
-                      <Button
-                        variant="secondary"
-                        disabled={isHiddenBusy}
-                        onClick={() => void toggleHidden(item.id, canHide)}
-                      >
-                        {canHide ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                        {isHiddenBusy ? "Saving..." : canHide ? "Hide report" : "Unhide report"}
-                      </Button>
-                    </div>
-                  ) : null}
-                </article>
-              );
-            })}
-          </div>
+          <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {filteredItems.map((item) => (
+              <AdminReportCard
+                key={item.id}
+                item={item}
+                interviewers={interviewers}
+                selectedInterviewerId={selectedInterviewerByApp[item.id] ?? ""}
+                onSelectedInterviewerChange={(value) =>
+                  setSelectedInterviewerByApp((current) => ({ ...current, [item.id]: value }))
+                }
+                onAssign={(mode) => void mutateAssignment(item.id, mode)}
+                onToggleHidden={() => void toggleHidden(item.id, !item.is_hidden)}
+                onDelete={() => void removeReport(item.id)}
+                onStartEdit={() => startEditingDisplayId(item)}
+                onCancelEdit={() => cancelEditingDisplayId(item.id)}
+                onSaveEdit={() => void saveDisplayId(item.id)}
+                onDraftDisplayIdChange={(value) =>
+                  setDraftDisplayIdByApp((current) => ({ ...current, [item.id]: value }))
+                }
+                draftDisplayId={draftDisplayIdByApp[item.id] ?? ""}
+                isBusy={busyAppId === item.id}
+                isHiddenBusy={hiddenBusyAppId === item.id}
+                isDeleting={deletingAppId === item.id}
+                isEditingDisplayId={editingDisplayIdAppId === item.id}
+                isSavingDisplayId={savingDisplayIdAppId === item.id}
+              />
+            ))}
+          </section>
         )}
+          </div>
+
+        <aside className="grid gap-5 self-start">
+          <AdminSessionLogPanel entries={sessionHistoryEntries} />
+        </aside>
       </div>
-    </AdminShell>
+    </div>
   );
 }
 
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
+function getFilterActiveClasses(status: (typeof REPORT_STATUSES)[number]) {
+  if (status === "ALL") return "bg-[#198FF0] text-[#111111] shadow-[0_8px_20px_rgba(25,143,240,0.28)]";
+  if (status === "READY") return "bg-[#d7ff53] text-[#111111] shadow-[0_8px_20px_rgba(215,255,83,0.28)]";
+  if (status === "ASSIGNED") return "bg-[#7cf0ff] text-[#111111] shadow-[0_8px_20px_rgba(124,240,255,0.22)]";
+  if (status === "DRAFT") return "bg-[#ffb347] text-[#111111] shadow-[0_8px_20px_rgba(255,179,71,0.24)]";
+  if (status === "PUBLISHED") return "bg-[#ff6b9d] text-[#111111] shadow-[0_8px_20px_rgba(255,107,157,0.22)]";
+  return "bg-[#8A94A6] text-[#111111] shadow-[0_8px_20px_rgba(138,148,166,0.24)]";
 }
 
-function AssignedInterviewerArtifact({
-  interviewer,
-}: {
-  interviewer: ApplicationListItem["assigned_interviewer"];
-}) {
-  if (!interviewer) {
-    return (
-      <>
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Assigned interviewer</p>
-        <p className="mt-2 text-sm text-[color:var(--muted)]">No interviewer information available</p>
-      </>
-    );
+function getEmptyStateBorderClasses(status: (typeof REPORT_STATUSES)[number]) {
+  return "border-[#727D97] shadow-[0_18px_44px_rgba(114,125,151,0.14)]";
+}
+
+function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
+  if (status === "ALL") {
+    return {
+      title: "No visible reports right now.",
+      description: "Generated reports will appear here once they move into review-ready states.",
+    };
   }
 
+  if (status === "READY") {
+    return {
+      title: "No ready reports yet.",
+      description: "Reports waiting for first assignment will appear here.",
+    };
+  }
+
+  if (status === "ASSIGNED") {
+    return {
+      title: "No assigned reports yet.",
+      description: "Reports currently owned by an interviewer will appear here.",
+    };
+  }
+
+  if (status === "DRAFT") {
+    return {
+      title: "No draft reports yet.",
+      description: "Reports being refined before publishing will appear here.",
+    };
+  }
+
+  if (status === "PUBLISHED") {
+    return {
+      title: "No published reports yet.",
+      description: "Published reports will appear here once they are live and visible.",
+    };
+  }
+
+  return {
+    title: "No hidden reports yet.",
+    description: "Reports you hide from the main view will appear here.",
+  };
+}
+
+function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STATUSES)[number] }) {
+  const copy = getEmptyStateCopy(statusFilter);
+
   return (
-    <div className="space-y-3">
-      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">Assigned interviewer</p>
-      <div className="flex items-center gap-3 rounded-[1rem] border border-white/80 bg-white/82 px-3 py-3 shadow-sm">
-        <Avatar size="sm">
-          <AvatarFallback>{getInitials(interviewer.name)}</AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 space-y-1">
-          <p className="truncate text-sm font-semibold text-[color:var(--ink)]">{interviewer.name}</p>
-          <p className="truncate text-xs text-[color:var(--muted)]">{interviewer.email}</p>
+    <div
+      className={`rounded-[1.9rem] border bg-[#F7F7F1] px-6 py-10 text-center ${getEmptyStateBorderClasses(statusFilter)}`}
+    >
+      <div className="mx-auto flex max-w-md flex-col items-center">
+        <div className="grid size-16 place-items-center overflow-hidden rounded-2xl border border-[#198FF0]/25 bg-[#EAF4FD] shadow-[0_0_40px_rgba(25,143,240,0.2)]">
+          <Image
+            alt="Interview Standardiser logo"
+            className="h-14 w-14 scale-[1.28] object-cover"
+            height={56}
+            src="/Logo-removebg-preview.png"
+            width={56}
+          />
         </div>
+        <h4
+          className="mt-5 text-[2.1rem] leading-[0.95] tracking-[-0.05em] text-[#111111]"
+          style={{ fontFamily: "var(--font-reports-cormorant)" }}
+        >
+          {copy.title}
+        </h4>
+        <p className="mt-3 text-sm leading-7 text-[#49536B]">{copy.description}</p>
       </div>
+    </div>
+  );
+}
+
+function StatusTotal({ label, value, className }: { label: string; value: number; className?: string }) {
+  return (
+    <div className={`${className ?? ""} flex items-center justify-between gap-3 rounded-[1rem] border border-[#727D97] bg-[#E6E9F0] px-3 py-3`}>
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86]">{label}</span>
+      <span className="text-sm font-semibold text-[#111111]">{value}</span>
     </div>
   );
 }

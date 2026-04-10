@@ -35,14 +35,16 @@ async def enforce_csrf(request: Request, call_next):
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     response: Response = await call_next(request)
-    script_sources = ["'self'"]
-    style_sources = ["'self'", "'unsafe-inline'"]
+    script_sources = ["'self'", "https://cdn.jsdelivr.net"]
+    style_sources = ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"]
+    font_sources = ["'self'", "data:", "https://fonts.gstatic.com"]
+    img_sources = ["'self'", "data:", "blob:", "https://fastapi.tiangolo.com"]
     if settings.APP_ENV == "development":
         script_sources.extend(["'unsafe-inline'", "'unsafe-eval'"])
     csp = [
         "default-src 'self'",
-        "img-src 'self' data: blob:",
-        "font-src 'self' data:",
+        f"img-src {' '.join(img_sources)}",
+        f"font-src {' '.join(font_sources)}",
         f"style-src {' '.join(style_sources)}",
         f"script-src {' '.join(script_sources)}",
         "connect-src 'self' http: https: ws: wss:",

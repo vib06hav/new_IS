@@ -94,7 +94,9 @@ class ApplicationListItem(BaseModel):
     display_id: str
     status: str
     is_hidden: bool = False
+    is_hidden_for_interviewer: bool = False
     created_at: datetime
+    last_activity_at: datetime
     assigned_interviewer: Optional[UserSummary] = None
 
 
@@ -103,6 +105,7 @@ class ApplicationDetailAdmin(BaseModel):
     display_id: str
     status: str
     created_at: datetime
+    last_activity_at: datetime
     assigned_interviewer: Optional[UserSummary] = None
     review_package: Optional[ReviewPackageSummary] = None
     published_draft: Optional[DraftSummary] = None
@@ -113,6 +116,8 @@ class ApplicationDetailInterviewer(BaseModel):
     display_id: str
     status: str
     created_at: datetime
+    last_activity_at: datetime
+    is_hidden_for_interviewer: bool = False
     assigned_interviewer: Optional[UserSummary] = None
     review_package: Optional[ReviewPackageSummary] = None
     latest_draft: Optional[DraftSummary] = None

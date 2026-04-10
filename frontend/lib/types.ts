@@ -47,7 +47,9 @@ export type ApplicationListItem = {
   display_id: string;
   status: string;
   is_hidden: boolean;
+  is_hidden_for_interviewer: boolean;
   created_at: string;
+  last_activity_at: string;
   assigned_interviewer?: UserSummary | null;
 };
 
@@ -63,6 +65,7 @@ export type ApplicationDetailAdmin = {
   display_id: string;
   status: string;
   created_at: string;
+  last_activity_at: string;
   assigned_interviewer?: UserSummary | null;
   review_package?: ReviewPackageSummary | null;
   published_draft?: DraftSummary | null;
@@ -73,6 +76,8 @@ export type ApplicationDetailInterviewer = {
   display_id: string;
   status: string;
   created_at: string;
+  last_activity_at: string;
+  is_hidden_for_interviewer: boolean;
   assigned_interviewer?: UserSummary | null;
   review_package?: ReviewPackageSummary | null;
   latest_draft?: DraftSummary | null;
@@ -116,6 +121,10 @@ export type InterviewerAssignmentSavePayload = {
 export type SelfPasswordChangePayload = {
   current_password: string;
   new_password: string;
+};
+
+export type SelfProfileUpdatePayload = {
+  name: string;
 };
 
 export type AssignmentListItem = {

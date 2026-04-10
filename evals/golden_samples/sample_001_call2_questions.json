@@ -1,0 +1,33 @@
+{
+  "applicant_id": "sample_001",
+  "applicant_label": "Arjun Mehta - CBSE, Delhi",
+  "call_label": "call_2",
+  "question_groups": [
+    {
+      "theme_id": "THEME-001",
+      "group_title": "Stated Direction vs. Practiced Engagement",
+      "questions": [
+        "Your first essay frames your work as sitting at the intersection of technology and public policy - but the closest your activity list gets to that intersection is a hackathon and a debate competition. Where, specifically, have you actually tried to do something with data or technology that was aimed at a policy question, and what did that look like in practice?",
+        "You've listed Python and SQL as skills you taught yourself. What problem were you trying to solve when you started learning them, and what is the most concrete thing you've analysed or built using them so far?",
+        "In the essay you describe arriving at your interest in public policy through 'reading and observation' - what specifically did you read or observe that changed how you thought about a policy problem, and what did you do with that change?"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "group_title": "How This Applicant Operates Within Structures Over Time",
+      "questions": [
+        "You participated in MUN in both 9th and 10th grade at the same level - no committee chair, no secretariat role. What was your reason for continuing without moving into a different kind of ownership within it?",
+        "Your 12th grade Economics score dropped relative to both your 11th grade performance and your other subjects in the same year. What was your experience of 12th grade Economics specifically - what was harder than you expected, and how did you work with that?",
+        "Looking at your 11th and 12th grade subject choices alongside your activity set, where did you actually invest the most time and attention - and does that match what the application says about your direction?"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "group_title": "The Undeclared Context",
+      "questions": [
+        "Your father is a senior IAS officer and your essay claims you arrived at your interest in public policy independently through reading. How do you actually understand the relationship between that home environment and the direction you're describing?",
+        "Has being inside a household with direct exposure to how policy is made shaped what you think the real constraints on policy work are - and if so, how has that shaped what you're interested in studying?"
+      ]
+    }
+  ]
+}

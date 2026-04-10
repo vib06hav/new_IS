@@ -178,7 +178,7 @@ def get_application(
         raise HTTPException(status_code=403, detail="Not authorized to view this application")
 
     latest_draft = get_latest_draft(db, application_id)
-    return build_interviewer_detail(application, assigned_user, review_package, latest_draft)
+    return build_interviewer_detail(application, assignment, assigned_user, review_package, latest_draft)
 
 
 @router.get("/{application_id}/source-pdf")

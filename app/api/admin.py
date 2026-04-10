@@ -23,6 +23,7 @@ from app.auth.dependencies import require_admin
 from app.database import get_db
 from app.models.application import Application
 from app.models.assignment import Assignment
+from app.models.canonical_record import CanonicalRecord
 from app.models.draft import Draft
 from app.models.user import User
 
@@ -35,6 +36,13 @@ def _get_interviewer_or_400(db: Session, interviewer_id: UUID) -> User:
     if not interviewer:
         raise HTTPException(status_code=400, detail="Interviewer not found")
     return interviewer
+
+
+def _delete_application_with_related_data(db: Session, application: Application) -> None:
+    db.query(Draft).filter(Draft.application_id == application.id).delete()
+    db.query(CanonicalRecord).filter(CanonicalRecord.application_id == application.id).delete()
+    db.query(Assignment).filter(Assignment.application_id == application.id).delete()
+    db.delete(application)
 
 
 @router.get("/applications", response_model=list[ApplicationListItem])
@@ -51,14 +59,14 @@ def list_applications(
     if status_filter and status_filter != "HIDDEN":
         query = query.filter(Application.status == status_filter)
 
-    applications = query.order_by(Application.created_at.desc()).all()
+    applications = query.order_by(Application.last_activity_at.desc(), Application.created_at.desc()).all()
     items: list[ApplicationListItem] = []
     for application in applications:
         assignment = get_assignment_for_application(db, application.id)
         interviewer = None
         if assignment:
             interviewer = db.query(User).filter(User.id == assignment.interviewer_id).first()
-        items.append(build_application_list_item(application, interviewer))
+        items.append(build_application_list_item(application, interviewer, assignment))
     return items
 
 
@@ -73,6 +81,7 @@ def retry_application(
         raise HTTPException(status_code=409, detail="Only FAILED applications can be retried")
 
     application.status = "PROCESSING"
+    application.last_activity_at = datetime.utcnow()
     db.commit()
     run_deterministic_pipeline(str(application_id), application.file_path, db)
     db.refresh(application)
@@ -102,20 +111,19 @@ def assign_application(
     )
     db.add(assignment)
     application.status = "ASSIGNED"
+    application.last_activity_at = datetime.utcnow()
     db.commit()
     db.refresh(application)
-    return build_application_list_item(application, interviewer)
+    return build_application_list_item(application, interviewer, assignment)
 
 
 @router.post("/applications/{application_id}/hide", response_model=ApplicationListItem)
-def hide_published_application(
+def hide_application(
     application_id: UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status != "PUBLISHED":
-        raise HTTPException(status_code=409, detail="Only PUBLISHED applications can be hidden")
 
     assignment = get_assignment_for_application(db, application_id)
     interviewer = None
@@ -123,20 +131,19 @@ def hide_published_application(
         interviewer = db.query(User).filter(User.id == assignment.interviewer_id).first()
 
     application.is_hidden = True
+    application.last_activity_at = datetime.utcnow()
     db.commit()
     db.refresh(application)
-    return build_application_list_item(application, interviewer)
+    return build_application_list_item(application, interviewer, assignment)
 
 
 @router.post("/applications/{application_id}/unhide", response_model=ApplicationListItem)
-def unhide_published_application(
+def unhide_application(
     application_id: UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status != "PUBLISHED":
-        raise HTTPException(status_code=409, detail="Only PUBLISHED applications can be unhidden")
 
     assignment = get_assignment_for_application(db, application_id)
     interviewer = None
@@ -144,9 +151,10 @@ def unhide_published_application(
         interviewer = db.query(User).filter(User.id == assignment.interviewer_id).first()
 
     application.is_hidden = False
+    application.last_activity_at = datetime.utcnow()
     db.commit()
     db.refresh(application)
-    return build_application_list_item(application, interviewer)
+    return build_application_list_item(application, interviewer, assignment)
 
 
 @router.delete("/applications/{application_id}/queue", status_code=status.HTTP_204_NO_CONTENT)
@@ -160,7 +168,24 @@ def remove_application_from_queue(
         raise HTTPException(status_code=409, detail="Only UPLOADED or FAILED queue items can be removed")
 
     file_path = application.file_path
-    db.delete(application)
+    _delete_application_with_related_data(db, application)
+    db.commit()
+
+    if file_path and os.path.exists(file_path):
+        os.remove(file_path)
+    return None
+
+
+@router.delete("/applications/{application_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_application(
+    application_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    application = get_application_or_404(db, application_id)
+    file_path = application.file_path
+
+    _delete_application_with_related_data(db, application)
     db.commit()
 
     if file_path and os.path.exists(file_path):
@@ -188,10 +213,12 @@ def reassign_application(
     assignment.interviewer_id = interviewer.id
     assignment.assigned_by = current_user.id
     assignment.assigned_at = datetime.utcnow()
+    assignment.is_hidden_for_interviewer = False
     application.status = "ASSIGNED"
+    application.last_activity_at = datetime.utcnow()
     db.commit()
     db.refresh(application)
-    return build_application_list_item(application, interviewer)
+    return build_application_list_item(application, interviewer, assignment)
 
 
 @router.put("/applications/{application_id}/display-id", response_model=ApplicationListItem)
@@ -221,13 +248,14 @@ def update_application_display_id(
         interviewer = db.query(User).filter(User.id == assignment.interviewer_id).first()
 
     try:
+        application.last_activity_at = datetime.utcnow()
         db.commit()
     except IntegrityError as exc:
         db.rollback()
         raise HTTPException(status_code=409, detail="Application display ID already exists") from exc
 
     db.refresh(application)
-    return build_application_list_item(application, interviewer)
+    return build_application_list_item(application, interviewer, assignment)
 
 
 @router.get("/assignments", response_model=list[AssignmentListItem])

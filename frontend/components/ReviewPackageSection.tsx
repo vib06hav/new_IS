@@ -6,18 +6,24 @@ import { SynthesisReportSection } from "@/components/SynthesisReportSection";
 import type { ReviewPackageSummary } from "@/lib/types";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 
-type ReviewPageTab = "page1" | "page2" | "page3" | "page4" | "page5";
+export type ReviewPageTab = "page1" | "page2" | "page3" | "page4" | "page5";
 
 export function ReviewPackageSection({
   reviewPackage,
   annotationSource,
+  activeTab: controlledActiveTab,
+  onActiveTabChange,
 }: {
   reviewPackage: ReviewPackageSummary;
   annotationSource?: Record<string, unknown> | null;
+  activeTab?: ReviewPageTab;
+  onActiveTabChange?: (tab: ReviewPageTab) => void;
 }) {
-  const [activeTab, setActiveTab] = useState<ReviewPageTab>("page1");
+  const [internalActiveTab, setInternalActiveTab] = useState<ReviewPageTab>("page1");
   const annotations = extractAnnotations(annotationSource);
   const hasSynthesisContent = Boolean(annotationSource);
+  const activeTab = controlledActiveTab ?? internalActiveTab;
+  const setActiveTab = onActiveTabChange ?? setInternalActiveTab;
   const navOptions: Array<{ value: ReviewPageTab; label: string; meta: string }> = [
     { value: "page1", label: "Overview", meta: "Applicant profile" },
     { value: "page2", label: "Academics & Activities", meta: "Study and engagement" },
@@ -37,19 +43,14 @@ export function ReviewPackageSection({
   }, [activeTab, hasSynthesisContent]);
 
   return (
-    <div className="-mt-8 space-y-5 md:-mt-10">
-      <div className="sticky top-[calc(var(--portal-header-height)-1px)] z-30 -mx-6 px-6 pt-0">
-        <div className="mx-auto flex max-w-[92rem] justify-end">
+    <div className="space-y-5">
+      {controlledActiveTab === undefined && !onActiveTabChange ? (
+        <div className="flex justify-end">
           <div className="max-w-full rounded-[1.6rem] border border-[rgba(191,219,254,0.95)] bg-[linear-gradient(135deg,rgba(219,234,254,0.96),rgba(239,246,255,0.94),rgba(224,231,255,0.9))] px-3 py-3 shadow-[0_18px_36px_rgba(148,163,184,0.18),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur">
-            <SegmentedControl
-              value={activeTab}
-              onChange={setActiveTab}
-              options={navOptions}
-            />
+            <SegmentedControl value={activeTab} onChange={setActiveTab} options={navOptions} />
           </div>
         </div>
-      </div>
-
+      ) : null}
       <div className="fade-rise">
         {activeTab === "page1" ? (
           <ReviewPageOneSection data={reviewPackage.pages_1_3.page_1_background_profile} />

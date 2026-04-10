@@ -1,7 +1,15 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.models.user import User
-from app.auth.schemas import AdminPasswordChange, InterviewerCreate, InterviewerUpdate, SelfPasswordChange, UserCreate, UserLogin
+from app.auth.schemas import (
+    AdminPasswordChange,
+    InterviewerCreate,
+    InterviewerUpdate,
+    SelfPasswordChange,
+    SelfProfileUpdate,
+    UserCreate,
+    UserLogin,
+)
 from app.auth.security import get_password_hash, verify_password, create_access_token
 from app.config import settings
 
@@ -76,6 +84,13 @@ def change_password(db: Session, user: User, password_data: SelfPasswordChange) 
         )
 
     user.password_hash = get_password_hash(password_data.new_password)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def update_self_profile(db: Session, user: User, profile_data: SelfProfileUpdate) -> User:
+    user.name = profile_data.name.strip()
     db.commit()
     db.refresh(user)
     return user

@@ -293,6 +293,36 @@ def test_cookie_session_mutation_succeeds_with_matching_csrf_header():
     assert response.status_code == 201
 
 
+def test_cookie_session_can_update_own_profile_name():
+    client = make_client()
+    db = TestingSessionLocal()
+    db.query(User).delete()
+    db.add(
+        User(
+            name="Original Interviewer",
+            email="profile-update@example.com",
+            password_hash=get_password_hash("securepassword123"),
+            role="interviewer",
+        )
+    )
+    db.commit()
+
+    login_response = client.post(
+        "/auth/login",
+        data={"username": "profile-update@example.com", "password": "securepassword123"},
+    )
+    assert login_response.status_code == 200
+
+    response = client.put(
+        "/auth/profile",
+        json={"name": "Updated Interviewer"},
+        headers=session_csrf_headers(client),
+    )
+    assert response.status_code == 200
+    assert response.json()["user"]["name"] == "Updated Interviewer"
+    assert client.get("/auth/session").json()["user"]["name"] == "Updated Interviewer"
+
+
 def test_cookie_session_rejects_cross_site_origin_even_with_csrf_token():
     client = make_client()
     db = TestingSessionLocal()

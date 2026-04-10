@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, DateTime, ForeignKey
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 
@@ -14,3 +14,4 @@ class Assignment(Base):
     interviewer_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     assigned_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     assigned_at = Column(DateTime, nullable=False, server_default=func.now())
+    is_hidden_for_interviewer = Column(Boolean, nullable=False, default=False, server_default="false")

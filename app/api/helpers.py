@@ -124,13 +124,16 @@ def build_draft_summary(draft: Optional[Draft]) -> Optional[DraftSummary]:
 def build_application_list_item(
     application: Application,
     interviewer: Optional[User] = None,
+    assignment: Optional[Assignment] = None,
 ) -> ApplicationListItem:
     return ApplicationListItem(
         id=application.id,
         display_id=application.display_id,
         status=application.status,
         is_hidden=application.is_hidden,
+        is_hidden_for_interviewer=assignment.is_hidden_for_interviewer if assignment else False,
         created_at=application.created_at,
+        last_activity_at=application.last_activity_at,
         assigned_interviewer=build_user_summary(interviewer),
     )
 
@@ -146,6 +149,7 @@ def build_admin_detail(
         display_id=application.display_id,
         status=application.status,
         created_at=application.created_at,
+        last_activity_at=application.last_activity_at,
         assigned_interviewer=build_user_summary(interviewer),
         review_package=review_package,
         published_draft=build_draft_summary(published_draft),
@@ -154,6 +158,7 @@ def build_admin_detail(
 
 def build_interviewer_detail(
     application: Application,
+    assignment: Optional[Assignment],
     interviewer: Optional[User],
     review_package: Optional[ReviewPackageSummary],
     latest_draft: Optional[Draft],
@@ -163,6 +168,8 @@ def build_interviewer_detail(
         display_id=application.display_id,
         status=application.status,
         created_at=application.created_at,
+        last_activity_at=application.last_activity_at,
+        is_hidden_for_interviewer=assignment.is_hidden_for_interviewer if assignment else False,
         assigned_interviewer=build_user_summary(interviewer),
         review_package=review_package,
         latest_draft=build_draft_summary(latest_draft),
