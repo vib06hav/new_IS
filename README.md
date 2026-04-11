@@ -306,7 +306,7 @@ What this seed gives you:
 - real Pages 1-3 review package data
 - real final Pages 4-5 report data
 - signal highlights and annotations in the writing and evidence views
-- assignment to interviewer `vib`
+- unassigned-by-default final artifact that works in any local environment
 - a source PDF copied into the live uploads directory
 
 This is meant for frontend development when someone needs to see the current published/interviewer behavior end to end instead of working only from design-lab mocks.
@@ -321,15 +321,28 @@ docker exec ag_interviewstandardiser-api-1 python scripts/seed_dummy_published_r
 
 This command is idempotent for the same seeded application ID. Running it again refreshes the same record instead of creating a new random one.
 
+By default this creates a `COMPLETE` final artifact with no interviewer assignment.
+
+If you want to test the interviewer-assigned flow too, pass an interviewer name or email explicitly:
+
+```powershell
+docker exec ag_interviewstandardiser-api-1 python scripts/seed_dummy_published_report.py --interviewer vib
+```
+
 ### What It Seeds
 
 The script creates or updates:
 
 - application UUID: `11111111-1111-1111-1111-111111111111`
 - display ID: `Dummy App (5)_v8_filled`
-- status: `ASSIGNED`
-- interviewer: `vib <vib@example.com>`
+- default status: `COMPLETE`
+- default interviewer state: unassigned
 - final report version: `ROS_v1`
+
+If `--interviewer <name-or-email>` is provided, the same artifact is switched into:
+
+- status: `ASSIGNED`
+- interviewer: the matched or created interviewer user
 
 Source assets used by the seed:
 
@@ -343,10 +356,13 @@ After seeding, use these routes to inspect the real current behavior:
 
 - admin application detail:
   `http://localhost:3000/admin/applications/11111111-1111-1111-1111-111111111111`
-- interviewer application detail:
-  `http://localhost:3000/interviewer/applications/11111111-1111-1111-1111-111111111111`
 - design-lab visual reference:
   `http://localhost:3000/design-lab/published-report`
+
+If you seed with `--interviewer <name-or-email>`, you can also open:
+
+- interviewer application detail:
+  `http://localhost:3000/interviewer/applications/11111111-1111-1111-1111-111111111111`
 
 ### When To Use Which Route
 
@@ -355,6 +371,18 @@ Use the real application routes when:
 - you are fixing production/frontend behavior
 - you need to test the actual admin or interviewer shells
 - you want to verify real report highlighting and assignment behavior
+
+Use the default unassigned seed when:
+
+- you need a universal final artifact any teammate can create
+- you are mostly working on final-report rendering in admin flows
+- you do not want setup to depend on a local interviewer account already existing
+
+Use the optional `--interviewer` seed when:
+
+- you are specifically working on interviewer-shell behavior
+- you need the assigned/interviewer route
+- you want to test hide/review interactions from the interviewer side
 
 Use the design-lab route when:
 
@@ -371,8 +399,15 @@ For a frontend contributor, the smallest useful workflow is:
 3. Seed the final artifact with:
    `docker exec ag_interviewstandardiser-api-1 python scripts/seed_dummy_published_report.py`
 4. Open:
+   `http://localhost:3000/admin/applications/11111111-1111-1111-1111-111111111111`
+5. Make frontend changes against that real final report
+
+If interviewer-flow work is needed too:
+
+6. Re-run the seed with an explicit interviewer:
+   `docker exec ag_interviewstandardiser-api-1 python scripts/seed_dummy_published_report.py --interviewer vib`
+7. Open:
    `http://localhost:3000/interviewer/applications/11111111-1111-1111-1111-111111111111`
-5. Make frontend changes against that real assigned final report
 
 ### Important Note About Universality
 

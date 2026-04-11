@@ -24,7 +24,7 @@ SEED_APPLICATION_ID = UUID("11111111-1111-1111-1111-111111111111")
 SEED_DISPLAY_ID = "Dummy App (5)_v8_filled"
 SEED_ADMIN_EMAIL = "seed.admin@example.com"
 SEED_ADMIN_PASSWORD = "SeedAdminPass123!"
-SEED_INTERVIEWER_LOOKUP = "vib"
+SEED_INTERVIEWER_LOOKUP = ""
 SEED_INTERVIEWER_EMAIL = "seed.interviewer@example.com"
 SEED_INTERVIEWER_PASSWORD = "SeedInterviewerPass123!"
 
@@ -51,7 +51,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--interviewer",
         default=SEED_INTERVIEWER_LOOKUP,
-        help="Existing interviewer email or display name to assign and attribute the published draft to.",
+        help="Optional interviewer email or display name to assign the seeded final artifact to.",
     )
     parser.add_argument(
         "--interviewer-email",
@@ -135,7 +135,7 @@ def upsert_seed_application(
     *,
     application_id: UUID,
     admin_user: User,
-    interviewer_user: User,
+    interviewer_user: User | None,
     file_path: str,
     display_id: str,
     canonical_data: dict,
@@ -148,7 +148,7 @@ def upsert_seed_application(
             display_id=display_id,
             uploaded_by=admin_user.id,
             file_path=file_path,
-            status="ASSIGNED",
+            status="ASSIGNED" if interviewer_user else "COMPLETE",
             is_hidden=False,
         )
         db.add(application)
@@ -157,7 +157,7 @@ def upsert_seed_application(
         application.display_id = display_id
         application.uploaded_by = admin_user.id
         application.file_path = file_path
-        application.status = "ASSIGNED"
+        application.status = "ASSIGNED" if interviewer_user else "COMPLETE"
         application.is_hidden = False
     application.last_activity_at = datetime.utcnow()
 
@@ -204,17 +204,21 @@ def upsert_seed_application(
         final_report.report_version = report_version
 
     assignment = db.query(Assignment).filter(Assignment.application_id == application_id).first()
-    if assignment is None:
-        assignment = Assignment(
-            application_id=application_id,
-            interviewer_id=interviewer_user.id,
-            assigned_by=admin_user.id,
-        )
-        db.add(assignment)
+    if interviewer_user is None:
+        if assignment is not None:
+            db.delete(assignment)
     else:
-        assignment.interviewer_id = interviewer_user.id
-        assignment.assigned_by = admin_user.id
-    assignment.is_hidden_for_interviewer = False
+        if assignment is None:
+            assignment = Assignment(
+                application_id=application_id,
+                interviewer_id=interviewer_user.id,
+                assigned_by=admin_user.id,
+            )
+            db.add(assignment)
+        else:
+            assignment.interviewer_id = interviewer_user.id
+            assignment.assigned_by = admin_user.id
+        assignment.is_hidden_for_interviewer = False
 
     db.flush()
     return application
@@ -233,7 +237,7 @@ def main() -> int:
 
     db = SessionLocal()
     seeded_application_id = str(application_id)
-    seeded_interviewer_label = ""
+    seeded_interviewer_label = "Unassigned"
     try:
         admin_user = ensure_user(
             db,
@@ -243,7 +247,7 @@ def main() -> int:
             role="admin",
         )
         interviewer_user = find_existing_interviewer(db, args.interviewer)
-        if interviewer_user is None:
+        if args.interviewer.strip() and interviewer_user is None:
             interviewer_user = ensure_user(
                 db,
                 email=args.interviewer_email,
@@ -251,7 +255,8 @@ def main() -> int:
                 name=args.interviewer,
                 role="interviewer",
             )
-        seeded_interviewer_label = f"{interviewer_user.name} <{interviewer_user.email}>"
+        if interviewer_user is not None:
+            seeded_interviewer_label = f"{interviewer_user.name} <{interviewer_user.email}>"
         application = upsert_seed_application(
             db,
             application_id=application_id,
@@ -274,8 +279,12 @@ def main() -> int:
     print(f"Application ID: {seeded_application_id}")
     print(f"Admin: {args.admin_email}")
     print(f"Interviewer: {seeded_interviewer_label}")
+    print(f"Status: {'ASSIGNED' if args.interviewer.strip() else 'COMPLETE'}")
     print(f"PDF path: {file_path}")
-    print("The seeded report is visible in admin reports and interviewer application views.")
+    if args.interviewer.strip():
+        print("The seeded report is visible in admin reports and interviewer application views.")
+    else:
+        print("The seeded report is visible in admin reports and admin application detail views.")
     return 0
 
 
