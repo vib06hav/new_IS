@@ -7,10 +7,14 @@ import type {
   AssignmentListItem,
   InterviewerAssignmentSavePayload,
   InterviewerAssignmentSummary,
+  InterviewWorkspaceContent,
+  InterviewWorkspaceSummary,
   FinalReportMutationResponse,
   InterviewerListItem,
   InterviewerUpdatePayload,
   PasswordChangePayload,
+  ReportChatRequestPayload,
+  ReportChatResponse,
   SelfProfileUpdatePayload,
   SelfPasswordChangePayload,
   SessionResponse,
@@ -246,6 +250,66 @@ export async function unhideMyApplication(applicationId: string) {
 export async function generateReport(applicationId: string) {
   return apiRequest<FinalReportMutationResponse>(`/applications/${applicationId}/generate-report`, {
     method: "POST",
+  });
+}
+
+export async function askReportChat(applicationId: string, payload: ReportChatRequestPayload) {
+  return apiRequest<ReportChatResponse>(`/applications/${applicationId}/report-chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function createInterviewWorkspace(applicationId: string) {
+  return apiRequest<InterviewWorkspaceSummary>(`/me/applications/${applicationId}/workspace`, {
+    method: "POST",
+  });
+}
+
+export async function fetchInterviewWorkspace(applicationId: string) {
+  return apiRequest<InterviewWorkspaceSummary>(`/me/applications/${applicationId}/workspace`);
+}
+
+export async function saveInterviewWorkspace(applicationId: string, content: InterviewWorkspaceContent) {
+  return apiRequest<InterviewWorkspaceSummary>(`/me/applications/${applicationId}/workspace`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ content }),
+  });
+}
+
+export async function launchInterviewWorkspace(applicationId: string, content: InterviewWorkspaceContent) {
+  return apiRequest<InterviewWorkspaceSummary>(`/me/applications/${applicationId}/workspace/launch`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ content }),
+  });
+}
+
+export async function finishInterviewWorkspace(applicationId: string, content: InterviewWorkspaceContent) {
+  return apiRequest<InterviewWorkspaceSummary>(`/me/applications/${applicationId}/workspace/finish`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ content }),
+  });
+}
+
+export async function completeInterviewWorkspace(applicationId: string, content: InterviewWorkspaceContent) {
+  return apiRequest<InterviewWorkspaceSummary>(`/me/applications/${applicationId}/workspace/complete`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ content }),
   });
 }
 

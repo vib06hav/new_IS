@@ -16,17 +16,21 @@ from app.api.helpers import (
     get_assignment_for_application,
     get_canonical_record,
     get_final_report,
+    get_interview_workspace,
 )
 from app.api.schemas import (
     ApplicationDetailAdmin,
     ApplicationDetailInterviewer,
     ApplicationUploadResponse,
+    ReportChatRequest,
+    ReportChatResponse,
 )
 from app.auth.dependencies import get_current_user, require_admin
 from app.config import settings
 from app.database import get_db
 from app.models.application import Application
 from app.models.user import User
+from app.report_chat import ReportChatError, answer_report_question, build_report_chat_context
 from app.security.rate_limit import limiter
 
 import logging
@@ -176,16 +180,17 @@ def get_application(
 
     canonical_record = get_canonical_record(db, application_id)
     review_package = build_review_package_summary(application, canonical_record)
+    interview_workspace = get_interview_workspace(db, application_id)
 
     if current_user.role == "admin":
         final_report = get_final_report(db, application_id)
-        return build_admin_detail(application, assigned_user, review_package, final_report)
+        return build_admin_detail(application, assigned_user, review_package, final_report, interview_workspace)
 
     if not assignment or assignment.interviewer_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to view this application")
 
     final_report = get_final_report(db, application_id)
-    return build_interviewer_detail(application, assignment, assigned_user, review_package, final_report)
+    return build_interviewer_detail(application, assignment, assigned_user, review_package, final_report, interview_workspace)
 
 
 @router.get("/{application_id}/source-pdf")
@@ -209,3 +214,35 @@ def get_application_source_pdf(
         media_type="application/pdf",
         filename=f"{application.display_id}.pdf",
     )
+
+
+@router.post("/{application_id}/report-chat", response_model=ReportChatResponse)
+def ask_report_chat(
+    application_id: uuid.UUID,
+    payload: ReportChatRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    question = payload.question.strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="Question cannot be empty")
+
+    application = get_application_or_404(db, application_id)
+    assignment = get_assignment_for_application(db, application_id)
+
+    if current_user.role != "admin" and (not assignment or assignment.interviewer_id != current_user.id):
+        raise HTTPException(status_code=403, detail="Not authorized to view this application")
+
+    canonical_record = get_canonical_record(db, application_id)
+    review_package = build_review_package_summary(application, canonical_record)
+    if not review_package:
+        raise HTTPException(status_code=409, detail="Report content is not available for this application")
+
+    final_report = get_final_report(db, application_id)
+    final_report_content = final_report.content if final_report and isinstance(final_report.content, dict) else None
+    context = build_report_chat_context(review_package.pages_1_3.model_dump(), final_report_content)
+
+    try:
+        return answer_report_question(question, context)
+    except ReportChatError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc

@@ -266,7 +266,7 @@ def run_pipeline(
 
             db_app = db.query(Application).filter(Application.id == app_uuid).first()
             if db_app:
-                db_app.status = "READY"
+                db_app.status = "PROCESSED"
 
             db.commit()
             logger.info(f"Canonical persisted for {application_id} before LLM boundary")

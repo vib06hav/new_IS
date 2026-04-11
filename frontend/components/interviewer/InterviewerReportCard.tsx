@@ -96,7 +96,10 @@ export function InterviewerReportCard({
         <BlacklineMeta label="Last updated" value={formatDateTime(item.last_activity_at)} />
 
         <div className="flex justify-end">
-          <PrimaryLink href={`/interviewer/applications/${item.id}`} label="Open" />
+          <PrimaryLink
+            href={`/interviewer/applications/${item.id}`}
+            label={item.status === "COMPLETE" ? "View final interview report" : "Open"}
+          />
         </div>
       </div>
     </article>
@@ -124,6 +127,7 @@ function PrimaryLink({ href, label }: { href: string; label: string }) {
 function StatusMark({ status }: { status: string }) {
   const styles = {
     ASSIGNED: "border-sky-200 bg-sky-100 text-sky-900",
+    COMPLETE: "border-emerald-200 bg-emerald-100 text-emerald-900",
     HIDDEN: "border-slate-200 bg-slate-100 text-slate-700",
   };
 

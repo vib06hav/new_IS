@@ -108,7 +108,7 @@ def retry_application(
                     report_version=report_version,
                 )
             )
-            application.status = "COMPLETE"
+            application.status = "READY"
             application.last_activity_at = datetime.utcnow()
             db.commit()
         else:
@@ -140,8 +140,8 @@ def generate_final_report(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status != "READY":
-        raise HTTPException(status_code=409, detail="Only READY applications can generate a final report")
+    if application.status != "PROCESSED":
+        raise HTTPException(status_code=409, detail="Only PROCESSED applications can generate a final report")
 
     canonical_record = get_canonical_record(db, application_id)
     if not canonical_record:
@@ -169,7 +169,7 @@ def generate_final_report(
             report_version=report_version,
         )
         db.add(final_report)
-        application.status = "COMPLETE"
+        application.status = "READY"
         application.last_activity_at = datetime.utcnow()
         db.commit()
         db.refresh(final_report)
@@ -200,8 +200,8 @@ def assign_application(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status != "COMPLETE":
-        raise HTTPException(status_code=409, detail="Only COMPLETE applications can be assigned")
+    if application.status != "READY":
+        raise HTTPException(status_code=409, detail="Only READY applications can be assigned")
 
     interviewer = _get_interviewer_or_400(db, payload.interviewer_id)
     existing_assignment = get_assignment_for_application(db, application_id)

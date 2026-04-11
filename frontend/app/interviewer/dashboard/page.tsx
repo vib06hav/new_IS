@@ -18,7 +18,7 @@ import { usePolling } from "@/lib/usePolling";
 import { InterviewerShell } from "@/components/layout/InterviewerShell";
 import { InterviewerReportCard } from "@/components/interviewer/InterviewerReportCard";
 
-const REPORT_STATUSES = ["ALL", "ASSIGNED", "HIDDEN"] as const;
+const REPORT_STATUSES = ["ALL", "ASSIGNED", "COMPLETE", "HIDDEN"] as const;
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -63,6 +63,7 @@ export default function InterviewerDashboardPage() {
     () => ({
       all: items.filter((item) => !item.is_hidden_for_interviewer).length,
       assigned: items.filter((item) => !item.is_hidden_for_interviewer && item.status === "ASSIGNED").length,
+      complete: items.filter((item) => !item.is_hidden_for_interviewer && item.status === "COMPLETE").length,
       hidden: items.filter((item) => item.is_hidden_for_interviewer).length,
     }),
     [items],
@@ -153,6 +154,7 @@ export default function InterviewerDashboardPage() {
             <div className="mt-4 flex flex-1 flex-col gap-3">
               <StatusTotal className="flex-1" label="All" value={metrics.all} />
               <StatusTotal className="flex-1" label="Assigned" value={metrics.assigned} />
+              <StatusTotal className="flex-1" label="Complete" value={metrics.complete} />
               <StatusTotal className="flex-1" label="Hidden" value={metrics.hidden} />
             </div>
           </div>
@@ -194,6 +196,7 @@ function StatusTotal({ label, value, className }: { label: string; value: number
 function getFilterActiveClasses(status: (typeof REPORT_STATUSES)[number]) {
   if (status === "ALL") return "border border-blue-100 bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-slate-800 shadow-[0_10px_22px_rgba(148,163,184,0.16)]";
   if (status === "ASSIGNED") return "border border-sky-200 bg-sky-100 text-sky-900 shadow-[0_8px_20px_rgba(186,230,253,0.28)]";
+  if (status === "COMPLETE") return "border border-emerald-200 bg-emerald-100 text-emerald-900 shadow-[0_8px_20px_rgba(167,243,208,0.28)]";
   return "border border-slate-200 bg-slate-100 text-slate-700 shadow-[0_8px_20px_rgba(226,232,240,0.24)]";
 }
 
@@ -209,6 +212,13 @@ function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
     return {
       title: "No assigned reports yet.",
       description: "Reports currently routed to you will appear here.",
+    };
+  }
+
+  if (status === "COMPLETE") {
+    return {
+      title: "No completed reports yet.",
+      description: "Finalized interview reports will appear here once your post-interview workflow is done.",
     };
   }
 

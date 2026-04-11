@@ -148,7 +148,7 @@ def upsert_seed_application(
             display_id=display_id,
             uploaded_by=admin_user.id,
             file_path=file_path,
-            status="ASSIGNED" if interviewer_user else "COMPLETE",
+            status="ASSIGNED" if interviewer_user else "READY",
             is_hidden=False,
         )
         db.add(application)
@@ -157,7 +157,7 @@ def upsert_seed_application(
         application.display_id = display_id
         application.uploaded_by = admin_user.id
         application.file_path = file_path
-        application.status = "ASSIGNED" if interviewer_user else "COMPLETE"
+        application.status = "ASSIGNED" if interviewer_user else "READY"
         application.is_hidden = False
     application.last_activity_at = datetime.utcnow()
 
@@ -279,7 +279,7 @@ def main() -> int:
     print(f"Application ID: {seeded_application_id}")
     print(f"Admin: {args.admin_email}")
     print(f"Interviewer: {seeded_interviewer_label}")
-    print(f"Status: {'ASSIGNED' if args.interviewer.strip() else 'COMPLETE'}")
+    print(f"Status: {'ASSIGNED' if args.interviewer.strip() else 'READY'}")
     print(f"PDF path: {file_path}")
     if args.interviewer.strip():
         print("The seeded report is visible in admin reports and interviewer application views.")

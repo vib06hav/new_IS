@@ -67,7 +67,7 @@ def test_admin_assignments_and_interviewer_listing():
         display_id="APP-ADM-001",
         uploaded_by=admin.id,
         file_path="demo.pdf",
-        status="COMPLETE",
+        status="READY",
     )
     db.add_all([admin, interviewer, application])
     db.commit()
@@ -84,7 +84,7 @@ def test_admin_assignments_and_interviewer_listing():
 
     list_response = client.get("/applications", headers=headers)
     assert list_response.status_code == 200
-    assert list_response.json()[0]["status"] == "COMPLETE"
+    assert list_response.json()[0]["status"] == "READY"
 
     assign_response = client.post(
         f"/applications/{application_id}/assign",
@@ -126,7 +126,7 @@ def test_delete_interviewer_blocks_when_user_uploaded_applications():
         display_id="APP-ADM-002",
         uploaded_by=interviewer.id,
         file_path="uploaded-by-interviewer.pdf",
-        status="COMPLETE",
+        status="READY",
     )
     db.add_all([admin, interviewer, application])
     db.commit()

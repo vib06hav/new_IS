@@ -68,11 +68,15 @@ const PAGE_2_SECTIONS: Array<{ key: string; label: string }> = [
 export function ReviewPageOneSection({ data }: { data: unknown }) {
   const pageData = parsePageOneData(data);
   if (!pageData) {
-    return <JsonSection title="Application Overview" description="Applicant summary" data={data} />;
+    return (
+      <div id="report-page1-overview">
+        <JsonSection title="Application Overview" description="Applicant summary" data={data} />
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-4">
+    <div id="report-page1-overview" className="space-y-4">
       <section className="rounded-[1.8rem] border border-slate-200 bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(239,246,255,0.88),rgba(255,255,255,0.9))] p-5 shadow-[0_20px_42px_rgba(15,23,42,0.08)]">
         <div className="max-w-4xl space-y-3">
           <div className="space-y-2">
@@ -239,7 +243,11 @@ export function ReviewPageTwoSection({
 }) {
   const pageData = parsePageTwoDisplayData(data);
   if (!pageData) {
-    return <JsonSection title="Academics & Activities" description="Academic and engagement" data={data} />;
+    return (
+      <div id="report-page2-academics">
+        <JsonSection title="Academics & Activities" description="Academic and engagement" data={data} />
+      </div>
+    );
   }
 
   const entityAnnotations = annotations?.page_2_entities || {};
@@ -257,6 +265,7 @@ export function ReviewPageTwoSection({
     <Card title="Academics & Activities" description="Study and engagement" eyebrow={null}>
       <div className="grid gap-4 xl:grid-cols-2">
         <PageTwoPanel
+          anchorId="report-page2-academics"
           title="Academic Records"
           description=""
           tabs={pageData.academicRecords.map((record, index) => ({
@@ -337,6 +346,7 @@ export function ReviewPageTwoSection({
         </PageTwoPanel>
 
         <PageTwoPanel
+          anchorId="report-page2-activities"
           title="Activities"
           description=""
           tabs={pageData.activities.map((activity, index) => ({
@@ -406,6 +416,7 @@ export function ReviewPageTwoSection({
         </PageTwoPanel>
 
         <PageTwoPanel
+          anchorId="report-page2-leadership"
           title="Leadership"
           description=""
           tabs={pageData.leadership.map((entry, index) => ({
@@ -469,6 +480,7 @@ export function ReviewPageTwoSection({
         </PageTwoPanel>
 
         <PageTwoPanel
+          anchorId="report-page2-tests"
           title="Tests"
           description=""
           tabs={pageData.tests.map((entry, index) => ({
@@ -542,14 +554,19 @@ export function ReviewPageThreeSection({
 }) {
   const pageData = parsePageThreeData(data);
   if (!pageData) {
-    return <JsonSection title="Writing" description="Essays and highlighted excerpts" data={data} />;
+    return (
+      <div id="report-page3-essays">
+        <JsonSection title="Writing" description="Essays and highlighted excerpts" data={data} />
+      </div>
+    );
   }
 
   const fragmentAnnotations = annotations?.page_3_fragments || {};
 
   return (
-    <Card title="Writing" description="Essays and highlighted excerpts" eyebrow={null}>
-      <div className="space-y-6">
+    <div id="report-page3-essays">
+      <Card title="Writing" description="Essays and highlighted excerpts" eyebrow={null}>
+      <div className="space-y-5">
         {pageData.essays.map((essay, index) => {
           const entityId = essay.entity_id || `essay-${index}`;
           const essayAnnotations = normalizeEssayAnnotations(fragmentAnnotations[entityId] || []);
@@ -585,7 +602,8 @@ export function ReviewPageThreeSection({
           );
         })}
       </div>
-    </Card>
+      </Card>
+    </div>
   );
 }
 
@@ -959,6 +977,7 @@ function CompactMetric({ label, value }: { label: string; value?: string }) {
 }
 
 function PageTwoPanel({
+  anchorId,
   title,
   description,
   tabs,
@@ -968,6 +987,7 @@ function PageTwoPanel({
   annotationTitle,
   children,
 }: {
+  anchorId?: string;
   title: string;
   description: string;
   tabs: Array<{ key: string; label: string; highlighted?: boolean; title?: string }>;
@@ -979,7 +999,9 @@ function PageTwoPanel({
 }) {
   return (
     <section
-      className={`isolate overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_18px_36px_rgba(15,23,42,0.08)] transition-colors ${highlighted
+      id={anchorId}
+      className={`isolate overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_18px_36px_rgba(15,23,42,0.08)] transition-colors ${
+        highlighted
           ? "border-blue-200 shadow-[0_18px_32px_rgba(59,130,246,0.12)]"
           : "border-slate-200"
         }`}

@@ -41,6 +41,75 @@ export type FinalReportSummary = {
   content: Record<string, unknown>;
 };
 
+export type InterviewWorkspaceStatus = "draft" | "launched" | "postgame" | "completed";
+export type InterviewQuestionStatus = "unasked" | "satisfactory" | "mixed" | "unsatisfactory";
+
+export type InterviewWorkspaceQuestion = {
+  id: string;
+  text: string;
+  source: "generated" | "custom";
+  status: InterviewQuestionStatus;
+  note: string;
+  order: number;
+};
+
+export type InterviewWorkspaceTheme = {
+  id: string;
+  source: "generated" | "custom";
+  title: string;
+  unifying_axis: string;
+  interview_direction: string;
+  question_group_title: string;
+  questions: InterviewWorkspaceQuestion[];
+};
+
+export type InterviewWorkspaceContent = {
+  themes: InterviewWorkspaceTheme[];
+  final_summary: string;
+};
+
+export type InterviewWorkspaceSummary = {
+  id: string;
+  application_id: string;
+  interviewer_id: string;
+  status: InterviewWorkspaceStatus;
+  content: InterviewWorkspaceContent;
+  created_at: string;
+  updated_at: string;
+  launched_at?: string | null;
+  completed_at?: string | null;
+};
+
+export type ReportChatTargetTab = "page1" | "page2" | "page3" | "page4" | "page5";
+
+export type ReportChatSectionKey =
+  | "page1_overview"
+  | "page2_academics"
+  | "page2_tests"
+  | "page2_activities"
+  | "page2_leadership"
+  | "page3_essays"
+  | "page4_focus_areas"
+  | "page5_question_groups";
+
+export type ReportChatRequestPayload = {
+  question: string;
+};
+
+export type ReportChatResult = {
+  label: string;
+  value: string;
+  target_tab: ReportChatTargetTab;
+  section_key: ReportChatSectionKey;
+  anchor_id: string;
+};
+
+export type ReportChatResponse = {
+  answer_summary: string;
+  results: ReportChatResult[];
+  not_found: boolean;
+};
+
 export type ApplicationListItem = {
   id: string;
   display_id: string;
@@ -68,6 +137,7 @@ export type ApplicationDetailAdmin = {
   assigned_interviewer?: UserSummary | null;
   review_package?: ReviewPackageSummary | null;
   final_report?: FinalReportSummary | null;
+  interview_workspace?: InterviewWorkspaceSummary | null;
 };
 
 export type ApplicationDetailInterviewer = {
@@ -80,6 +150,7 @@ export type ApplicationDetailInterviewer = {
   assigned_interviewer?: UserSummary | null;
   review_package?: ReviewPackageSummary | null;
   final_report?: FinalReportSummary | null;
+  interview_workspace?: InterviewWorkspaceSummary | null;
 };
 
 export type InterviewerListItem = {

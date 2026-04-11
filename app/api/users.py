@@ -38,7 +38,7 @@ def _get_interviewer_or_404(db: Session, user_id: UUID) -> User:
 def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssignmentSummary:
     applications = (
         db.query(Application)
-        .filter(Application.status.in_(["COMPLETE", "ASSIGNED"]))
+        .filter(Application.status.in_(["READY", "ASSIGNED"]))
         .order_by(Application.created_at.desc())
         .all()
     )
@@ -56,7 +56,7 @@ def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssi
 
     for application in applications:
         assignment = assignments_by_application.get(application.id)
-        if application.status == "COMPLETE" and not assignment:
+        if application.status == "READY" and not assignment:
             available_to_assign.append(
                 InterviewerAssignmentSummaryItem(
                     application_id=application.id,
@@ -184,13 +184,13 @@ def save_interviewer_assignments(
         application = applications_by_id.get(application_id)
         if not application:
             raise HTTPException(status_code=404, detail=f"Application {application_id} not found")
-        if application.status not in {"COMPLETE", "ASSIGNED"}:
-            raise HTTPException(status_code=409, detail="Only COMPLETE or ASSIGNED applications can be staged")
+        if application.status not in {"READY", "ASSIGNED"}:
+            raise HTTPException(status_code=409, detail="Only READY or ASSIGNED applications can be staged")
 
         assignment = assignments_by_application.get(application_id)
         if not assignment:
-            if application.status != "COMPLETE":
-                raise HTTPException(status_code=409, detail="Only COMPLETE applications can be newly assigned")
+            if application.status != "READY":
+                raise HTTPException(status_code=409, detail="Only READY applications can be newly assigned")
             new_assignment = Assignment(
                 application_id=application.id,
                 interviewer_id=interviewer.id,
@@ -214,7 +214,7 @@ def save_interviewer_assignments(
 
         application = applications_by_id.get(assignment.application_id)
         if application and application.status in ACTIVE_ASSIGNMENT_STATUSES:
-            application.status = "COMPLETE"
+            application.status = "READY"
         db.delete(assignment)
 
     db.commit()

@@ -78,9 +78,10 @@ export function SynthesisReportSection({
           activeTheme.supporting_signal_ids?.includes(signal.signal_id || ""),
       )
     : [];
+  const rootAnchorId = initialTab === "page5" ? "report-page5-question-groups" : "report-page4-focus-areas";
 
   return (
-    <div className="space-y-5">
+    <div id={rootAnchorId} className="space-y-5">
       {!hideInternalTabs ? (
         <Card title={title} description={description || "Structured presentation of synthesized Pages 4-5."}>
           <div className="metric-strip">

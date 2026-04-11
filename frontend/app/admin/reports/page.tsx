@@ -12,6 +12,7 @@ import {
   deleteApplication,
   fetchApplications,
   fetchInterviewers,
+  generateReport,
   hideApplication,
   reassignApplication,
   unhideApplication,
@@ -27,7 +28,7 @@ import { AdminSessionLogPanel } from "@/components/layout/AdminSessionLogPanel";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { AdminReportCard } from "@/components/admin/AdminReportCard";
 
-const REPORT_STATUSES = ["ALL", "READY", "COMPLETE", "ASSIGNED", "HIDDEN"] as const;
+const REPORT_STATUSES = ["ALL", "PROCESSED", "READY", "ASSIGNED", "COMPLETE", "HIDDEN"] as const;
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -55,6 +56,7 @@ function AdminReportsContent() {
   const [statusFilter, setStatusFilter] = useState<(typeof REPORT_STATUSES)[number]>("ALL");
   const [loading, setLoading] = useState(true);
   const [busyAppId, setBusyAppId] = useState<string | null>(null);
+  const [generatingAppId, setGeneratingAppId] = useState<string | null>(null);
   const [hiddenBusyAppId, setHiddenBusyAppId] = useState<string | null>(null);
   const [deletingAppId, setDeletingAppId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -159,6 +161,31 @@ function AdminReportsContent() {
     }
   }
 
+  async function handleGenerate(applicationId: string) {
+    setGeneratingAppId(applicationId);
+    setMessage(null);
+    setError(null);
+    try {
+      const report = items.find((item) => item.id === applicationId);
+      await generateReport(applicationId);
+      setMessage("Final report generated.");
+
+      if (report) {
+        addEntry({
+          action: "Generated",
+          reportId: report.display_id,
+          detail: "Pages 4-5 and annotations were created, and the report is now ready for assignment.",
+          tone: "lime",
+        });
+      }
+
+      await loadData();
+    } catch (generationError) {
+      setError(generationError instanceof Error ? generationError.message : "Final report generation failed.");
+    } finally {
+      setGeneratingAppId(null);
+    }
+  }
   async function toggleHidden(applicationId: string, nextHidden: boolean) {
     setHiddenBusyAppId(applicationId);
     setMessage(null);
@@ -275,6 +302,7 @@ function AdminReportsContent() {
   const metrics = useMemo(
     () => ({
       ready: items.filter((item) => item.status === "READY").length,
+      processed: items.filter((item) => item.status === "PROCESSED").length,
       complete: items.filter((item) => item.status === "COMPLETE").length,
       assigned: items.filter((item) => item.status === "ASSIGNED").length,
       hidden: items.filter((item) => item.is_hidden).length,
@@ -316,17 +344,36 @@ function AdminReportsContent() {
                   </button>
                 </div>
 
-                <div className="space-y-3">
-                  <h3
-                    className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
-                    style={{ fontFamily: "var(--font-reports-display)" }}
-                  >
-                    Generated Reports
-                  </h3>
-                  <p className="max-w-3xl text-sm text-slate-600 leading-relaxed">
-                    Open generated reports, update report IDs, assign or reassign interviewers, manage visibility, and
-                    remove reports when necessary.
-                  </p>
+                <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm">
+                  <div className="rounded-[1.4rem] border border-slate-200 bg-white/70 p-1.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {REPORT_STATUSES.map((status) => (
+                        <button
+                          key={status}
+                          className={`rounded-[1rem] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 ${
+                            statusFilter === status
+                              ? getFilterActiveClasses(status)
+                              : "border border-transparent bg-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-blue-700"
+                          }`}
+                          onClick={() => setStatusFilter(status)}
+                          type="button"
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm xl:flex xl:h-full xl:flex-col">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Status totals</p>
+                <div className="mt-4 flex flex-1 flex-col gap-3">
+                  <StatusTotal className="flex-1" label="Processed" value={metrics.processed} />
+                  <StatusTotal className="flex-1" label="Ready" value={metrics.ready} />
+                  <StatusTotal className="flex-1" label="Assigned" value={metrics.assigned} />
+                  <StatusTotal className="flex-1" label="Complete" value={metrics.complete} />
+                  <StatusTotal className="flex-1" label="Hidden" value={metrics.hidden} />
                 </div>
               </div>
             </section>
@@ -371,6 +418,7 @@ function AdminReportsContent() {
                   setSelectedInterviewerByApp((current) => ({ ...current, [item.id]: value }))
                 }
                 onAssign={(mode) => void mutateAssignment(item.id, mode)}
+                onGenerate={() => void handleGenerate(item.id)}
                 onToggleHidden={() => void toggleHidden(item.id, !item.is_hidden)}
                 onDelete={() => void removeReport(item.id)}
                 onStartEdit={() => startEditingDisplayId(item)}
@@ -381,6 +429,7 @@ function AdminReportsContent() {
                 }
                 pendingDisplayId={pendingDisplayIdByApp[item.id] ?? ""}
                 isBusy={busyAppId === item.id}
+                isGenerating={generatingAppId === item.id}
                 isHiddenBusy={hiddenBusyAppId === item.id}
                 isDeleting={deletingAppId === item.id}
                 isEditingDisplayId={editingDisplayIdAppId === item.id}
@@ -414,11 +463,12 @@ function AdminReportsContent() {
 }
 
 function getFilterActiveClasses(status: (typeof REPORT_STATUSES)[number]) {
-  if (status === "ALL") return "bg-blue-600 text-white shadow-md";
-  if (status === "READY") return "bg-lime-500 text-white shadow-md";
-  if (status === "COMPLETE") return "bg-amber-500 text-white shadow-md";
-  if (status === "ASSIGNED") return "bg-sky-500 text-white shadow-md";
-  return "bg-slate-400 text-white shadow-md";
+  if (status === "ALL") return "border border-blue-100 bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-slate-800 shadow-[0_10px_22px_rgba(148,163,184,0.16)]";
+  if (status === "PROCESSED") return "border border-violet-200 bg-violet-100 text-violet-900 shadow-[0_8px_20px_rgba(221,214,254,0.32)]";
+  if (status === "READY") return "border border-lime-200 bg-lime-100 text-lime-900 shadow-[0_8px_20px_rgba(190,242,100,0.28)]";
+  if (status === "COMPLETE") return "border border-emerald-200 bg-emerald-100 text-emerald-900 shadow-[0_8px_20px_rgba(167,243,208,0.26)]";
+  if (status === "ASSIGNED") return "border border-sky-200 bg-sky-100 text-sky-900 shadow-[0_8px_20px_rgba(186,230,253,0.28)]";
+  return "border border-slate-200 bg-slate-100 text-slate-700 shadow-[0_8px_20px_rgba(226,232,240,0.24)]";
 }
 
 function getEmptyStateBorderClasses(status: (typeof REPORT_STATUSES)[number]) {
@@ -433,10 +483,17 @@ function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
     };
   }
 
+  if (status === "PROCESSED") {
+    return {
+      title: "No processed reports yet.",
+      description: "Reports with Pages 1-3 ready and waiting for synthesis will appear here.",
+    };
+  }
+
   if (status === "READY") {
     return {
       title: "No ready reports yet.",
-      description: "Reports waiting for first assignment will appear here.",
+      description: "Reports ready for assignment will appear here.",
     };
   }
 
@@ -450,7 +507,7 @@ function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
   if (status === "COMPLETE") {
     return {
       title: "No complete reports yet.",
-      description: "Reports ready for assignment will appear here.",
+      description: "Finalized post-interview reports will appear here.",
     };
   }
 

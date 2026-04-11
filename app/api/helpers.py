@@ -11,6 +11,8 @@ from app.api.schemas import (
     AssignmentListItem,
     CanonicalSummary,
     FinalReportSummary,
+    InterviewWorkspaceContent,
+    InterviewWorkspaceSummary,
     InterviewerListItem,
     ReviewPackageSummary,
     ReviewPages123,
@@ -20,8 +22,10 @@ from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
 from app.models.final_report import FinalReport
+from app.models.interview_workspace import InterviewWorkspace
 from app.models.user import User
 from app.projection.ros_projector import project_ros
+from app.interview_workspace import normalize_workspace_content
 
 
 def get_application_or_404(db: Session, application_id: UUID) -> Application:
@@ -43,6 +47,13 @@ def get_final_report(db: Session, application_id: UUID) -> Optional[FinalReport]
     )
     if final_report and isinstance(final_report.content, dict):
         return final_report
+    return None
+
+
+def get_interview_workspace(db: Session, application_id: UUID) -> Optional[InterviewWorkspace]:
+    workspace = db.query(InterviewWorkspace).filter(InterviewWorkspace.application_id == application_id).first()
+    if workspace and isinstance(workspace.content, dict):
+        return workspace
     return None
 
 
@@ -105,6 +116,23 @@ def build_final_report_summary(final_report: Optional[FinalReport]) -> Optional[
     )
 
 
+def build_interview_workspace_summary(workspace: Optional[InterviewWorkspace]) -> Optional[InterviewWorkspaceSummary]:
+    if not workspace or not isinstance(workspace.content, dict):
+        return None
+    normalized_content = normalize_workspace_content(workspace.content)
+    return InterviewWorkspaceSummary(
+        id=workspace.id,
+        application_id=workspace.application_id,
+        interviewer_id=workspace.interviewer_id,
+        status=workspace.status,
+        content=InterviewWorkspaceContent.model_validate(normalized_content),
+        created_at=workspace.created_at,
+        updated_at=workspace.updated_at,
+        launched_at=workspace.launched_at,
+        completed_at=workspace.completed_at,
+    )
+
+
 def build_application_list_item(
     application: Application,
     interviewer: Optional[User] = None,
@@ -127,6 +155,7 @@ def build_admin_detail(
     interviewer: Optional[User],
     review_package: Optional[ReviewPackageSummary],
     final_report: Optional[FinalReport],
+    interview_workspace: Optional[InterviewWorkspace] = None,
 ) -> ApplicationDetailAdmin:
     return ApplicationDetailAdmin(
         id=application.id,
@@ -137,6 +166,7 @@ def build_admin_detail(
         assigned_interviewer=build_user_summary(interviewer),
         review_package=review_package,
         final_report=build_final_report_summary(final_report),
+        interview_workspace=build_interview_workspace_summary(interview_workspace),
     )
 
 
@@ -146,6 +176,7 @@ def build_interviewer_detail(
     interviewer: Optional[User],
     review_package: Optional[ReviewPackageSummary],
     final_report: Optional[FinalReport],
+    interview_workspace: Optional[InterviewWorkspace] = None,
 ) -> ApplicationDetailInterviewer:
     return ApplicationDetailInterviewer(
         id=application.id,
@@ -157,6 +188,7 @@ def build_interviewer_detail(
         assigned_interviewer=build_user_summary(interviewer),
         review_package=review_package,
         final_report=build_final_report_summary(final_report),
+        interview_workspace=build_interview_workspace_summary(interview_workspace),
     )
 
 

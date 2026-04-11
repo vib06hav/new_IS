@@ -9,9 +9,13 @@ import type { ApplicationDetailAdmin } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { ReviewPackageSection } from "@/components/ReviewPackageSection";
+import { ReviewPackageSection, type ReviewPageTab } from "@/components/ReviewPackageSection";
 import { usePolling } from "@/lib/usePolling";
 import { AdminShell } from "@/components/layout/AdminShell";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { ReportChatWidget } from "@/components/ReportChatWidget";
+import { navigateToReportResult } from "@/lib/reportChat";
+import { FinalInterviewReportSection } from "@/components/interviewer/FinalInterviewReportSection";
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -32,6 +36,7 @@ export default function AdminApplicationDetailPage() {
   const [loading, setLoading] = useState(true);
   const [openingPdf, setOpeningPdf] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activePageTab, setActivePageTab] = useState<ReviewPageTab>("page1");
 
   async function loadDetail() {
     try {
@@ -50,6 +55,13 @@ export default function AdminApplicationDetailPage() {
   }, [params.id]);
 
   usePolling(loadDetail, 5000, !loading);
+
+  useEffect(() => {
+    const hasFinalReportPages = Boolean(item?.final_report?.content);
+    if (!hasFinalReportPages && (activePageTab === "page4" || activePageTab === "page5")) {
+      setActivePageTab("page1");
+    }
+  }, [activePageTab, item]);
 
   if (loading) {
     return (
@@ -71,6 +83,18 @@ export default function AdminApplicationDetailPage() {
 
   const createdAt = new Date(item.created_at).toLocaleString();
   const assignee = item.assigned_interviewer?.name || "Not assigned";
+  const hasFinalReportPages = Boolean(item.final_report?.content);
+  const pageOptions: Array<{ value: ReviewPageTab; label: string; meta: string }> = [
+    { value: "page1", label: "Overview", meta: "Applicant profile" },
+    { value: "page2", label: "Academics & Activities", meta: "Study and engagement" },
+    { value: "page3", label: "Writing", meta: "Essays and excerpts" },
+    ...(hasFinalReportPages
+      ? [
+          { value: "page4" as const, label: "Focus Areas", meta: "Themes and signals" },
+          { value: "page5" as const, label: "Questions", meta: "Interview prompts" },
+        ]
+      : []),
+  ];
 
   async function handleOpenPdf() {
     const applicationId = item?.id;
@@ -129,20 +153,46 @@ export default function AdminApplicationDetailPage() {
           </div>
         </section>
 
-        {item.status === "READY" ? (
+        {item.status === "PROCESSED" ? (
           <Card title="Report Generation" description="Admin-controlled completion step" eyebrow={null}>
             <p className="text-sm leading-7 text-[color:var(--muted)]">
-              Pages 1-3 are ready. Generate the final report from the reports dashboard to unlock assignment and full
-              review visibility.
+              Pages 1-3 are processed. Generate the full report from the reports dashboard to unlock assignment and
+              Pages 4-5 review visibility.
             </p>
           </Card>
         ) : null}
 
+        <section className="rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+          <div className="space-y-1">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Report pages</p>
+            <h2 className="text-[1.05rem] font-semibold tracking-[0] text-slate-800">Page controls</h2>
+            <p className="text-sm leading-5 text-slate-600">
+              Use the page controls to move across the review package and synthesized final-report sections.
+            </p>
+          </div>
+
+          <div className="mt-2.5 rounded-[1.1rem] border border-slate-200 bg-white/70 p-1.5">
+            <SegmentedControl value={activePageTab} onChange={setActivePageTab} options={pageOptions} />
+          </div>
+        </section>
+
         {item.review_package ? (
-          <ReviewPackageSection
-            reviewPackage={item.review_package}
-            annotationSource={item.final_report?.content}
-          />
+          <>
+            <ReviewPackageSection
+              reviewPackage={item.review_package}
+              annotationSource={item.final_report?.content}
+              activeTab={activePageTab}
+              onActiveTabChange={setActivePageTab}
+            />
+            <ReportChatWidget
+              applicationId={item.id}
+              onNavigateResult={(result) => navigateToReportResult(result, setActivePageTab)}
+            />
+          </>
+        ) : null}
+
+        {item.interview_workspace?.status === "completed" ? (
+          <FinalInterviewReportSection workspace={item.interview_workspace} />
         ) : null}
       </div>
     </AdminShell>

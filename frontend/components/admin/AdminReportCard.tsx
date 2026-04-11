@@ -36,6 +36,7 @@ export function AdminReportCard({
   selectedInterviewerId,
   onSelectedInterviewerChange,
   onAssign,
+  onGenerate,
   onToggleHidden,
   onDelete,
   onStartEdit,
@@ -44,6 +45,7 @@ export function AdminReportCard({
   onPendingDisplayIdChange,
   pendingDisplayId,
   isBusy,
+  isGenerating,
   isHiddenBusy,
   isDeleting,
   isEditingDisplayId,
@@ -54,6 +56,7 @@ export function AdminReportCard({
   selectedInterviewerId: string;
   onSelectedInterviewerChange: (value: string) => void;
   onAssign: (mode: "assign" | "reassign") => void;
+  onGenerate: () => void;
   onToggleHidden: () => void;
   onDelete: () => void;
   onStartEdit: () => void;
@@ -62,6 +65,7 @@ export function AdminReportCard({
   onPendingDisplayIdChange: (value: string) => void;
   pendingDisplayId: string;
   isBusy: boolean;
+  isGenerating: boolean;
   isHiddenBusy: boolean;
   isDeleting: boolean;
   isEditingDisplayId: boolean;
@@ -70,8 +74,9 @@ export function AdminReportCard({
   const [overflowOpen, setOverflowOpen] = useState(false);
   const overflowRef = useRef<HTMLDivElement | null>(null);
   const selectedInterviewer = interviewers.find((interviewer) => interviewer.id === selectedInterviewerId);
+  const canGenerate = item.status === "PROCESSED";
   const canAssign = item.status === "READY";
-  const canReassign = item.status === "ASSIGNED" || item.status === "COMPLETE";
+  const canReassign = item.status === "ASSIGNED";
   const canMutateAssignment = canAssign || canReassign;
 
   useEffect(() => {
@@ -159,7 +164,10 @@ export function AdminReportCard({
         <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
           <BlacklineMeta label="Last updated" value={formatDateTime(item.last_activity_at)} />
           <div className="sm:pt-0.5">
-            <PrimaryLink href={`/admin/applications/${item.id}`} label="Open" />
+            <PrimaryLink
+              href={`/admin/applications/${item.id}`}
+              label={item.status === "COMPLETE" ? "View final interview report" : "Open"}
+            />
           </div>
         </div>
 
@@ -188,10 +196,16 @@ export function AdminReportCard({
           )}
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6c6c64]">Assignment</p>
+        <div className="rounded-[1.3rem] border border-slate-200 bg-white/70 p-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+            {canGenerate ? "Report generation" : item.status === "COMPLETE" ? "Final interview report" : "Assignment"}
+          </p>
           <div className="mt-3 space-y-3">
-            {canMutateAssignment ? (
+            {canGenerate ? (
+                <div className="flex w-full items-center rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-500">
+                  Generate Pages 4-5 to move this report into the ready queue.
+                </div>
+            ) : canMutateAssignment ? (
               <Select value={selectedInterviewerId} onValueChange={(value) => onSelectedInterviewerChange(value ?? "")}>
                 <SelectTrigger className="h-auto w-full rounded-xl border-slate-200 bg-white px-3 py-3 transition-all duration-200 hover:border-blue-300 hover:shadow-sm">
                   {selectedInterviewer ? (
@@ -227,12 +241,30 @@ export function AdminReportCard({
                 </SelectContent>
               </Select>
             ) : (
-              <div className="flex w-full items-center rounded-xl border border-[#111111]/10 bg-[#fdfcf8] px-3 py-3 text-sm text-[#66685d]">Assignment locked</div>
+              <div className="flex w-full items-center rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-500">
+                {item.status === "COMPLETE" ? "Interview complete. Open the report to review the final postgame summary." : "Assignment locked"}
+              </div>
             )}
 
-            <button className="w-full rounded-full bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-45" disabled={isBusy || !selectedInterviewerId || !canMutateAssignment} onClick={() => onAssign(canAssign ? "assign" : "reassign")} type="button">
-              {isBusy ? "Saving..." : getAssignmentActionLabel(item)}
-            </button>
+            {canGenerate ? (
+              <button
+                className="w-full rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-45"
+                disabled={isGenerating}
+                onClick={onGenerate}
+                type="button"
+              >
+                {isGenerating ? "Generating..." : "Generate report"}
+              </button>
+            ) : item.status === "COMPLETE" ? null : (
+              <button
+                className="w-full rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-45"
+                disabled={isBusy || !selectedInterviewerId || !canMutateAssignment}
+                onClick={() => onAssign(canAssign ? "assign" : "reassign")}
+                type="button"
+              >
+                {isBusy ? "Saving..." : getAssignmentActionLabel(item)}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -260,11 +292,11 @@ function PrimaryLink({ href, label }: { href: string; label: string }) {
 
 function StatusMark({ status }: { status: string }) {
   const styles = {
-    READY: "bg-[#d7ff53] text-[#111111]",
-    ASSIGNED: "bg-[#7cf0ff] text-[#111111]",
-    DRAFT: "bg-[#ffb347] text-[#111111]",
-    PUBLISHED: "bg-[#ff6b9d] text-[#111111]",
-    HIDDEN: "bg-[#8A94A6] text-[#111111]",
+    PROCESSED: "border-violet-200 bg-violet-100 text-violet-900",
+    READY: "border-lime-200 bg-lime-100 text-lime-900",
+    COMPLETE: "border-emerald-200 bg-emerald-100 text-emerald-900",
+    ASSIGNED: "border-sky-200 bg-sky-100 text-sky-900",
+    HIDDEN: "border-slate-200 bg-slate-100 text-slate-700",
   };
 
   return <span className={`inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${styles[status as keyof typeof styles] ?? "bg-[#E6E9F0] text-[#111111]"}`}>{status}</span>;
@@ -286,6 +318,6 @@ function formatDateTime(value: string) {
 
 function getAssignmentActionLabel(item: ApplicationListItem) {
   if (item.status === "READY") return "Assign interviewer";
-  if (item.status === "ASSIGNED" || item.status === "DRAFT") return "Reassign interviewer";
+  if (item.status === "ASSIGNED") return "Reassign interviewer";
   return "Assignment locked";
 }

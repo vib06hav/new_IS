@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Literal, Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -62,6 +62,46 @@ class FinalReportSummary(BaseModel):
     content: Dict[str, Any]
 
 
+InterviewWorkspaceStatus = Literal["draft", "launched", "postgame", "completed"]
+InterviewQuestionStatus = Literal["unasked", "satisfactory", "mixed", "unsatisfactory"]
+
+
+class InterviewWorkspaceQuestion(BaseModel):
+    id: str
+    text: str
+    source: Literal["generated", "custom"]
+    status: InterviewQuestionStatus = "unasked"
+    note: str = ""
+    order: int = 0
+
+
+class InterviewWorkspaceTheme(BaseModel):
+    id: str
+    source: Literal["generated", "custom"]
+    title: str
+    unifying_axis: str
+    interview_direction: str
+    question_group_title: str
+    questions: list[InterviewWorkspaceQuestion]
+
+
+class InterviewWorkspaceContent(BaseModel):
+    themes: list[InterviewWorkspaceTheme]
+    final_summary: str = ""
+
+
+class InterviewWorkspaceSummary(BaseModel):
+    id: UUID
+    application_id: UUID
+    interviewer_id: UUID
+    status: InterviewWorkspaceStatus
+    content: InterviewWorkspaceContent
+    created_at: datetime
+    updated_at: datetime
+    launched_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+
 class CanonicalSummary(BaseModel):
     canonical_version: str
     canonical_data: Dict[str, Any]
@@ -108,6 +148,7 @@ class ApplicationDetailAdmin(BaseModel):
     assigned_interviewer: Optional[UserSummary] = None
     review_package: Optional[ReviewPackageSummary] = None
     final_report: Optional[FinalReportSummary] = None
+    interview_workspace: Optional[InterviewWorkspaceSummary] = None
 
 
 class ApplicationDetailInterviewer(BaseModel):
@@ -120,6 +161,7 @@ class ApplicationDetailInterviewer(BaseModel):
     assigned_interviewer: Optional[UserSummary] = None
     review_package: Optional[ReviewPackageSummary] = None
     final_report: Optional[FinalReportSummary] = None
+    interview_workspace: Optional[InterviewWorkspaceSummary] = None
 
 
 class AssignmentUpsertRequest(BaseModel):
@@ -149,6 +191,41 @@ class FinalReportMutationResponse(BaseModel):
     application_id: UUID
     status: str
     final_report: FinalReportSummary
+
+
+ReportChatTargetTab = Literal["page1", "page2", "page3", "page4", "page5"]
+ReportChatSectionKey = Literal[
+    "page1_overview",
+    "page2_academics",
+    "page2_tests",
+    "page2_activities",
+    "page2_leadership",
+    "page3_essays",
+    "page4_focus_areas",
+    "page5_question_groups",
+]
+
+
+class ReportChatRequest(BaseModel):
+    question: str
+
+
+class ReportChatResult(BaseModel):
+    label: str
+    value: str
+    target_tab: ReportChatTargetTab
+    section_key: ReportChatSectionKey
+    anchor_id: str
+
+
+class ReportChatResponse(BaseModel):
+    answer_summary: str
+    results: list[ReportChatResult]
+    not_found: bool
+
+
+class InterviewWorkspaceUpsertRequest(BaseModel):
+    content: InterviewWorkspaceContent
 
 
 class InterviewerAssignmentSummaryItem(BaseModel):

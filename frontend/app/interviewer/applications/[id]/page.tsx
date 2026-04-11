@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowUpRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowUpRight, NotebookPen, Rocket } from "lucide-react";
 import { IBM_Plex_Sans } from "next/font/google";
-import { fetchApplicationDetail, fetchSourcePdf } from "@/lib/api";
+import { createInterviewWorkspace, fetchApplicationDetail, fetchSourcePdf } from "@/lib/api";
 import type { ApplicationDetailInterviewer } from "@/lib/types";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -13,6 +14,10 @@ import { ReviewPackageSection, type ReviewPageTab } from "@/components/ReviewPac
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { usePolling } from "@/lib/usePolling";
 import { InterviewerShell } from "@/components/layout/InterviewerShell";
+import { ReportChatWidget } from "@/components/ReportChatWidget";
+import { navigateToReportResult } from "@/lib/reportChat";
+import { FinalInterviewReportSection } from "@/components/interviewer/FinalInterviewReportSection";
+import { openInterviewPopup } from "@/lib/interviewPopup";
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -22,12 +27,14 @@ const plexSans = IBM_Plex_Sans({
 
 export default function InterviewerApplicationPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const [item, setItem] = useState<ApplicationDetailInterviewer | null>(null);
   const [loading, setLoading] = useState(true);
   const [openingPdf, setOpeningPdf] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [activePageTab, setActivePageTab] = useState<ReviewPageTab>("page1");
+  const [workspaceBusy, setWorkspaceBusy] = useState(false);
 
   async function loadDetail() {
     try {
@@ -70,6 +77,28 @@ export default function InterviewerApplicationPage() {
     }
   }
 
+  async function handleOpenConfigure() {
+    if (!item) return;
+    setWorkspaceBusy(true);
+    setError(null);
+    try {
+      await createInterviewWorkspace(item.id);
+      router.push(`/interviewer/applications/${item.id}/configure`);
+    } catch (workspaceError) {
+      setError(workspaceError instanceof Error ? workspaceError.message : "Unable to open interview workspace.");
+    } finally {
+      setWorkspaceBusy(false);
+    }
+  }
+
+  function handleOpenOverlayPopup() {
+    if (!item) return;
+    const popup = openInterviewPopup(item.id);
+    if (!popup) {
+      router.push(`/interviewer/applications/${item.id}/overlay`);
+    }
+  }
+
   useEffect(() => {
     const hasFinalReportPages = Boolean(item?.final_report?.content);
     if (!hasFinalReportPages && (activePageTab === "page4" || activePageTab === "page5")) {
@@ -104,6 +133,17 @@ export default function InterviewerApplicationPage() {
 
   const lastUpdatedAt = new Date(item.last_activity_at).toLocaleString();
   const hasFinalReportPages = Boolean(item.final_report?.content);
+  const workspace = item.interview_workspace;
+  const workspaceActionLabel =
+    workspace?.status === "completed"
+      ? "View final interview report"
+      : workspace?.status === "postgame"
+        ? "Continue postgame review"
+        : workspace?.status === "launched"
+        ? "Rejoin overlay"
+        : workspace
+          ? "Continue prep"
+          : "Configure interview";
   const pageOptions: Array<{ value: ReviewPageTab; label: string; meta: string }> = [
     { value: "page1", label: "Overview", meta: "Applicant profile" },
     { value: "page2", label: "Academics & Activities", meta: "Study and engagement" },
@@ -144,10 +184,8 @@ export default function InterviewerApplicationPage() {
           <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p>
         ) : null}
 
-        <section>
-          <article
-            className="flex min-h-[8.9rem] flex-col rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm"
-          >
+        <section className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(21rem,0.92fr)]">
+          <article className="flex min-h-[8.9rem] flex-col rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
             <div className="space-y-1">
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Report pages</p>
               <h2 className="text-[1.05rem] font-semibold tracking-[0] text-slate-800">Page controls</h2>
@@ -162,16 +200,83 @@ export default function InterviewerApplicationPage() {
               </div>
             </div>
           </article>
+
+          <article className="flex min-h-[8.9rem] flex-col justify-between rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-700">Report workflow</p>
+              <div className="space-y-1">
+                <h2 className="text-[1.05rem] font-semibold tracking-[-0.03em] text-slate-800">
+                  {item.status === "COMPLETE" ? "Final interview report" : "Assigned report"}
+                </h2>
+                <p className="max-w-2xl text-sm leading-5 text-slate-600">
+                  {item.status === "COMPLETE"
+                    ? "The interview has been finalized. You can review the full Pages 1-5 package alongside the completed post-interview workspace."
+                    : "This report was generated by admin before assignment. You can review the full Pages 1-5 package and run the interview workflow from here."}
+                </p>
+              </div>
+            </div>
+
+            {hasFinalReportPages ? (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {workspace?.status === "completed" ? (
+                  <Link
+                    className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-blue-800"
+                    href={`/interviewer/applications/${item.id}`}
+                  >
+                    <Rocket className="size-3.5" />
+                    {workspaceActionLabel}
+                  </Link>
+                ) : workspace?.status === "postgame" ? (
+                  <Link
+                    className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-blue-800"
+                    href={`/interviewer/applications/${item.id}/postgame`}
+                  >
+                    <Rocket className="size-3.5" />
+                    {workspaceActionLabel}
+                  </Link>
+                ) : workspace?.status === "launched" ? (
+                  <button
+                    className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    onClick={handleOpenOverlayPopup}
+                    type="button"
+                  >
+                    <Rocket className="size-3.5" />
+                    {workspaceActionLabel}
+                  </button>
+                ) : (
+                  <button
+                    className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={workspaceBusy}
+                    onClick={() => void handleOpenConfigure()}
+                    type="button"
+                  >
+                    <NotebookPen className="size-3.5" />
+                    {workspaceBusy ? "Opening..." : workspaceActionLabel}
+                  </button>
+                )}
+              </div>
+            ) : null}
+          </article>
         </section>
 
 
         {item.review_package ? (
-          <ReviewPackageSection
-            reviewPackage={item.review_package}
-            annotationSource={item.final_report?.content}
-            activeTab={activePageTab}
-            onActiveTabChange={setActivePageTab}
-          />
+          <>
+            <ReviewPackageSection
+              reviewPackage={item.review_package}
+              annotationSource={item.final_report?.content}
+              activeTab={activePageTab}
+              onActiveTabChange={setActivePageTab}
+            />
+            <ReportChatWidget
+              applicationId={item.id}
+              onNavigateResult={(result) => navigateToReportResult(result, setActivePageTab)}
+            />
+          </>
+        ) : null}
+
+        {item.interview_workspace?.status === "completed" ? (
+          <FinalInterviewReportSection workspace={item.interview_workspace} />
         ) : null}
       </div>
     </InterviewerShell>
