@@ -296,6 +296,96 @@ python scripts/bootstrap_admin.py --name "Local Admin" --email "admin@example.co
 
 This should be run from the repo root.
 
+## Seed A Real Published Final Report
+
+There is a reproducible seed for one fully completed final artifact that frontend work can use as a stable reference.
+
+What this seed gives you:
+
+- one real application record in the live dev database
+- real Pages 1-3 review package data
+- real final Pages 4-5 report data
+- signal highlights and annotations in the writing and evidence views
+- assignment to interviewer `vib`
+- a source PDF copied into the live uploads directory
+
+This is meant for frontend development when someone needs to see the current published/interviewer behavior end to end instead of working only from design-lab mocks.
+
+### Seed Command
+
+Run this from the repo root after `docker compose up --build` is already running:
+
+```powershell
+docker exec ag_interviewstandardiser-api-1 python scripts/seed_dummy_published_report.py
+```
+
+This command is idempotent for the same seeded application ID. Running it again refreshes the same record instead of creating a new random one.
+
+### What It Seeds
+
+The script creates or updates:
+
+- application UUID: `11111111-1111-1111-1111-111111111111`
+- display ID: `Dummy App (5)_v8_filled`
+- status: `ASSIGNED`
+- interviewer: `vib <vib@example.com>`
+- final report version: `ROS_v1`
+
+Source assets used by the seed:
+
+- canonical data: `tests/pipeline_stages/11_canonical_assembled.json`
+- final artifact data: `tests/stage17_fake_llm_output/09_final_ros.json`
+- source PDF: `tests/pdfs/Dummy App (5)_v8_filled.pdf`
+
+### Routes To Open
+
+After seeding, use these routes to inspect the real current behavior:
+
+- admin application detail:
+  `http://localhost:3000/admin/applications/11111111-1111-1111-1111-111111111111`
+- interviewer application detail:
+  `http://localhost:3000/interviewer/applications/11111111-1111-1111-1111-111111111111`
+- design-lab visual reference:
+  `http://localhost:3000/design-lab/published-report`
+
+### When To Use Which Route
+
+Use the real application routes when:
+
+- you are fixing production/frontend behavior
+- you need to test the actual admin or interviewer shells
+- you want to verify real report highlighting and assignment behavior
+
+Use the design-lab route when:
+
+- you only want the visual sandbox reference
+- you are comparing presentation ideas quickly
+- you do not need the actual backend-driven route context
+
+### Modular Frontend Workflow
+
+For a frontend contributor, the smallest useful workflow is:
+
+1. Start the backend with `docker compose up --build`
+2. Start the frontend with `cd frontend` then `npm install` and `npm run dev`
+3. Seed the final artifact with:
+   `docker exec ag_interviewstandardiser-api-1 python scripts/seed_dummy_published_report.py`
+4. Open:
+   `http://localhost:3000/interviewer/applications/11111111-1111-1111-1111-111111111111`
+5. Make frontend changes against that real assigned final report
+
+### Important Note About Universality
+
+The seed script is on `main`, so any teammate can use it.
+
+The seeded database record itself is not automatically shared across every environment. A teammate will only see the seeded artifact if they run the seed command in their own local or shared environment database.
+
+So:
+
+- the setup is universal
+- the seeded data is reproducible
+- but each environment must run the seed once
+
 ## Current Limitation
 
 This project is not yet true one-click setup for a blank machine because:
