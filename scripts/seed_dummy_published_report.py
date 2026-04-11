@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 import json
 import shutil
 import sys
@@ -15,11 +16,12 @@ from app.database import SessionLocal
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
-from app.models.draft import Draft
+from app.models.final_report import FinalReport
 from app.models.user import User
 
 
 SEED_APPLICATION_ID = UUID("11111111-1111-1111-1111-111111111111")
+SEED_DISPLAY_ID = "Dummy App (5)_v8_filled"
 SEED_ADMIN_EMAIL = "seed.admin@example.com"
 SEED_ADMIN_PASSWORD = "SeedAdminPass123!"
 SEED_INTERVIEWER_LOOKUP = "vib"
@@ -117,7 +119,7 @@ def find_existing_interviewer(db, lookup: str) -> User | None:
 
 
 def copy_source_pdf(application_id: UUID) -> str:
-    source_pdf = PROJECT_ROOT / "tests" / "pdfs" / "Dummy App (1)_v8_filled.pdf"
+    source_pdf = PROJECT_ROOT / "tests" / "pdfs" / f"{SEED_DISPLAY_ID}.pdf"
     if not source_pdf.exists():
         raise FileNotFoundError(f"Seed PDF not found: {source_pdf}")
 
@@ -135,6 +137,7 @@ def upsert_seed_application(
     admin_user: User,
     interviewer_user: User,
     file_path: str,
+    display_id: str,
     canonical_data: dict,
     ros_content: dict,
 ) -> Application:
@@ -142,18 +145,21 @@ def upsert_seed_application(
     if application is None:
         application = Application(
             id=application_id,
+            display_id=display_id,
             uploaded_by=admin_user.id,
             file_path=file_path,
-            status="PUBLISHED",
+            status="ASSIGNED",
             is_hidden=False,
         )
         db.add(application)
         db.flush()
     else:
+        application.display_id = display_id
         application.uploaded_by = admin_user.id
         application.file_path = file_path
-        application.status = "PUBLISHED"
+        application.status = "ASSIGNED"
         application.is_hidden = False
+    application.last_activity_at = datetime.utcnow()
 
     canonical_record = (
         db.query(CanonicalRecord)
@@ -178,6 +184,25 @@ def upsert_seed_application(
         canonical_record.canonical_data = canonical_data
         canonical_record.pages_1_3 = pages_1_3
 
+    final_report = (
+        db.query(FinalReport)
+        .filter(FinalReport.application_id == application_id)
+        .first()
+    )
+    report_version = str((ros_content.get("report_metadata") or {}).get("report_version") or "ROS_v1")
+    if final_report is None:
+        final_report = FinalReport(
+            application_id=application_id,
+            content=ros_content,
+            generated_by=admin_user.id,
+            report_version=report_version,
+        )
+        db.add(final_report)
+    else:
+        final_report.content = ros_content
+        final_report.generated_by = admin_user.id
+        final_report.report_version = report_version
+
     assignment = db.query(Assignment).filter(Assignment.application_id == application_id).first()
     if assignment is None:
         assignment = Assignment(
@@ -189,31 +214,7 @@ def upsert_seed_application(
     else:
         assignment.interviewer_id = interviewer_user.id
         assignment.assigned_by = admin_user.id
-
-    draft = (
-        db.query(Draft)
-        .filter(Draft.application_id == application_id, Draft.version == 1)
-        .first()
-    )
-    if draft is None:
-        draft = Draft(
-            application_id=application_id,
-            version=1,
-            content=ros_content,
-            generated_by=interviewer_user.id,
-            is_published=True,
-        )
-        db.add(draft)
-    else:
-        draft.content = ros_content
-        draft.generated_by = interviewer_user.id
-        draft.is_published = True
-
-    (
-        db.query(Draft)
-        .filter(Draft.application_id == application_id, Draft.version != 1)
-        .update({"is_published": False}, synchronize_session=False)
-    )
+    assignment.is_hidden_for_interviewer = False
 
     db.flush()
     return application
@@ -257,6 +258,7 @@ def main() -> int:
             admin_user=admin_user,
             interviewer_user=interviewer_user,
             file_path=file_path,
+            display_id=SEED_DISPLAY_ID,
             canonical_data=canonical_data,
             ros_content=ros_content,
         )
