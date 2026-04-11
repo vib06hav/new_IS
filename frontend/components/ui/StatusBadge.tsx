@@ -5,7 +5,7 @@ const statusClasses: Record<string, string> = {
   READY: "border-blue-200 bg-blue-100/90 text-blue-800",
   COMPLETE: "border-emerald-200 bg-emerald-100/90 text-emerald-800",
   FAILED: "border-red-200 bg-red-100/90 text-red-700",
-  ASSIGNED: "border-[#7CF0FF] bg-[#7CF0FF] text-[#111111]",
+  ASSIGNED: "border-sky-200 bg-sky-100/90 text-sky-900",
 };
 
 export function StatusBadge({ status }: { status: string }) {

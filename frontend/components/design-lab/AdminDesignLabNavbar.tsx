@@ -4,7 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { LogOut, UserRound } from "lucide-react";
+import { IBM_Plex_Sans } from "next/font/google";
 import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
+
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 const navItems = [
   { label: "Reports", href: "/design-lab/reports-dashboard-playground" },
@@ -35,12 +43,15 @@ export function AdminDesignLabNavbar({
   }, [menuOpen]);
 
   return (
-    <div className="border-b border-[#727D97] bg-[radial-gradient(circle_at_top_left,rgba(25,143,240,0.22),transparent_28%),linear-gradient(180deg,#c7d6e9_0%,#d8dbe2_100%)]">
+    <div
+      className={`${ibmPlexSans.variable} sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md`}
+      style={{ fontFamily: "var(--font-body)" }}
+    >
       <div className="mx-auto max-w-[106rem] px-5 py-4 md:px-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex items-center gap-5">
             <div className="flex items-center gap-3">
-              <div className="grid size-11 place-items-center overflow-hidden rounded-2xl border border-[#198FF0]/25 bg-[#EAF4FD] shadow-[0_0_40px_rgba(25,143,240,0.2)]">
+              <div className="grid size-11 place-items-center overflow-hidden rounded-xl border border-blue-200 bg-blue-50 shadow-sm">
                 <Image
                   alt="Interview Standardiser logo"
                   className="h-10 w-10 scale-[1.28] object-cover"
@@ -50,7 +61,7 @@ export function AdminDesignLabNavbar({
                 />
               </div>
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#111111]">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-800">
                   Interview Standardiser
                 </p>
               </div>
@@ -60,10 +71,10 @@ export function AdminDesignLabNavbar({
               {navItems.map((item) => (
                 <Link
                   key={item.label}
-                  className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${
+                  className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${
                     item.label === activeItem
-                      ? "bg-[#F7F7F1] text-[#111111]"
-                      : "text-[#5F6C86] hover:text-[#111111]"
+                      ? "border-blue-100 bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-slate-800 shadow-[0_10px_22px_rgba(148,163,184,0.16)]"
+                      : "border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-blue-700"
                   }`}
                   href={item.href}
                 >
@@ -79,18 +90,18 @@ export function AdminDesignLabNavbar({
               onClick={() => setMenuOpen((current) => !current)}
               type="button"
             >
-              <Avatar className="size-11 border border-[#727D97] bg-[#E6E9F0]">
-                <AvatarFallback className="bg-[#AAB4C8] text-[#111111]">IS</AvatarFallback>
+              <Avatar className="size-11 border border-slate-200 bg-slate-100">
+                <AvatarFallback className="bg-slate-200 text-slate-700">IS</AvatarFallback>
               </Avatar>
             </button>
 
             {menuOpen ? (
-              <div className="absolute right-0 top-[calc(100%+0.6rem)] z-30 min-w-48 rounded-[1.2rem] border border-[#727D97] bg-[#F7F7F1] p-2 shadow-[0_18px_44px_rgba(114,125,151,0.2)]">
+              <div className="absolute right-0 top-[calc(100%+0.6rem)] z-30 min-w-48 rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_18px_44px_rgba(15,23,42,0.12)]">
                 <Link
                   className={`flex items-center justify-between rounded-[0.9rem] px-3 py-2 text-sm font-medium transition-colors ${
                     activeItem === "Profile"
-                      ? "bg-[#E6E9F0] text-[#111111]"
-                      : "text-[#49536B] hover:bg-[#E6E9F0]"
+                      ? "bg-blue-50 text-slate-800"
+                      : "text-slate-600 hover:bg-slate-50"
                   }`}
                   href="/design-lab/admin-profile"
                   onClick={() => setMenuOpen(false)}
@@ -99,7 +110,7 @@ export function AdminDesignLabNavbar({
                   <UserRound className="size-4" />
                 </Link>
                 <button
-                  className="flex w-full items-center justify-between rounded-[0.9rem] px-3 py-2 text-left text-sm font-medium text-[#AF3030] transition-colors hover:bg-[#F4DDDD]"
+                  className="flex w-full items-center justify-between rounded-[0.9rem] px-3 py-2 text-left text-sm font-medium text-rose-700 transition-colors hover:bg-rose-50"
                   onClick={() => setMenuOpen(false)}
                   type="button"
                 >

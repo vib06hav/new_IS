@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { Stars } from "lucide-react";
 import {
-  Cormorant_Garamond,
   IBM_Plex_Sans,
+  Libre_Franklin,
 } from "next/font/google";
 import {
   assignApplication,
@@ -36,11 +36,11 @@ const plexSans = IBM_Plex_Sans({
   variable: "--font-reports-plex",
 });
 
-const cormorant = Cormorant_Garamond({
+const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-reports-cormorant",
+  weight: ["900"],
+  variable: "--font-display",
+  display: "swap",
 });
 
 export default function AdminReportsPage() {
@@ -306,36 +306,36 @@ function AdminReportsContent() {
 
   return (
     <div
-      className={`${plexSans.variable} ${cormorant.variable} space-y-6`}
+      className={`${plexSans.variable} ${libreFranklin.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_22rem]">
         <div className="space-y-6">
             <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
               <div className="space-y-4 xl:flex xl:h-full xl:flex-col xl:gap-4 xl:space-y-0">
-                <div className="overflow-hidden rounded-[2rem] border border-[#727D97] bg-[linear-gradient(135deg,#c9d0dc_0%,#d8dbe2_40%,#ced4df_100%)] p-6 xl:flex-1">
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-[#5F6C86]">
-                    <span className="inline-flex items-center gap-2 text-[#111111]">
+                <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm xl:flex-1">
+                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-slate-500">
+                    <span className="inline-flex items-center gap-2 text-slate-800">
                       <Stars className="size-3.5" />
                       Admin review desk
                     </span>
                   </div>
                   <div className="mt-5 space-y-4">
                     <h3
-                      className="max-w-4xl text-[3rem] leading-[0.92] tracking-[-0.07em] text-[#111111] md:text-[3.85rem]"
-                      style={{ fontFamily: "var(--font-reports-cormorant)" }}
+                      className="max-w-4xl text-5xl font-black leading-[1.04] tracking-tight text-slate-800 md:text-[3.5rem]"
+                      style={{ fontFamily: "var(--font-display)" }}
                     >
                       Generated Reports
                     </h3>
-                    <p className="max-w-3xl text-sm leading-7 text-[#49536B]">
+                    <p className="max-w-3xl text-base leading-[1.6] text-slate-600">
                       Open generated reports, update report IDs, assign or reassign interviewers, manage visibility, and
                       remove reports when necessary.
                     </p>
                   </div>
                 </div>
 
-                <div className="rounded-[1.9rem] border border-[#727D97] bg-[#CBD2DE] p-4">
-                  <div className="rounded-[1.4rem] border border-[#727D97] bg-[#E6E9F0] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]">
+                <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm">
+                  <div className="rounded-[1.4rem] border border-slate-200 bg-white/70 p-1.5">
                     <div className="flex flex-wrap items-center gap-1.5">
                       {REPORT_STATUSES.map((status) => (
                         <button
@@ -343,7 +343,7 @@ function AdminReportsContent() {
                           className={`rounded-[1rem] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 ${
                             statusFilter === status
                               ? getFilterActiveClasses(status)
-                              : "border border-transparent bg-transparent text-[#49536B] hover:border-[#727D97] hover:bg-[#F7F7F1] hover:text-[#111111]"
+                              : "border border-transparent bg-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-blue-700"
                           }`}
                           onClick={() => setStatusFilter(status)}
                           type="button"
@@ -356,8 +356,8 @@ function AdminReportsContent() {
                 </div>
               </div>
 
-              <div className="rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] p-4 xl:flex xl:h-full xl:flex-col">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6C86]">Status totals</p>
+              <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm xl:flex xl:h-full xl:flex-col">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Status totals</p>
                 <div className="mt-4 flex flex-1 flex-col gap-3">
                   <StatusTotal className="flex-1" label="Ready" value={metrics.ready} />
                   <StatusTotal className="flex-1" label="Complete" value={metrics.complete} />
@@ -367,8 +367,8 @@ function AdminReportsContent() {
               </div>
             </section>
 
-            {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
-            {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
+            {message ? <p className="rounded-[1.2rem] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{message}</p> : null}
+            {error ? <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p> : null}
 
         {loading ? (
           <Loader label="Loading reports..." />
@@ -417,15 +417,15 @@ function AdminReportsContent() {
 }
 
 function getFilterActiveClasses(status: (typeof REPORT_STATUSES)[number]) {
-  if (status === "ALL") return "bg-[#198FF0] text-[#111111] shadow-[0_8px_20px_rgba(25,143,240,0.28)]";
-  if (status === "READY") return "bg-[#d7ff53] text-[#111111] shadow-[0_8px_20px_rgba(215,255,83,0.28)]";
-  if (status === "COMPLETE") return "bg-[#9af5b4] text-[#111111] shadow-[0_8px_20px_rgba(154,245,180,0.24)]";
-  if (status === "ASSIGNED") return "bg-[#7cf0ff] text-[#111111] shadow-[0_8px_20px_rgba(124,240,255,0.22)]";
-  return "bg-[#8A94A6] text-[#111111] shadow-[0_8px_20px_rgba(138,148,166,0.24)]";
+  if (status === "ALL") return "border border-blue-100 bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-slate-800 shadow-[0_10px_22px_rgba(148,163,184,0.16)]";
+  if (status === "READY") return "border border-lime-200 bg-lime-100 text-lime-900 shadow-[0_8px_20px_rgba(190,242,100,0.28)]";
+  if (status === "COMPLETE") return "border border-amber-200 bg-amber-100 text-amber-900 shadow-[0_8px_20px_rgba(253,230,138,0.26)]";
+  if (status === "ASSIGNED") return "border border-sky-200 bg-sky-100 text-sky-900 shadow-[0_8px_20px_rgba(186,230,253,0.28)]";
+  return "border border-slate-200 bg-slate-100 text-slate-700 shadow-[0_8px_20px_rgba(226,232,240,0.24)]";
 }
 
 function getEmptyStateBorderClasses(status: (typeof REPORT_STATUSES)[number]) {
-  return "border-[#727D97] shadow-[0_18px_44px_rgba(114,125,151,0.14)]";
+  return "border-slate-200 shadow-[0_18px_36px_rgba(15,23,42,0.08)]";
 }
 
 function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
@@ -468,10 +468,10 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
 
   return (
     <div
-      className={`rounded-[1.9rem] border bg-[#F7F7F1] px-6 py-10 text-center ${getEmptyStateBorderClasses(statusFilter)}`}
+      className={`rounded-[1.9rem] border bg-white/80 px-6 py-10 text-center backdrop-blur-sm ${getEmptyStateBorderClasses(statusFilter)}`}
     >
       <div className="mx-auto flex max-w-md flex-col items-center">
-        <div className="grid size-16 place-items-center overflow-hidden rounded-2xl border border-[#198FF0]/25 bg-[#EAF4FD] shadow-[0_0_40px_rgba(25,143,240,0.2)]">
+        <div className="grid size-16 place-items-center overflow-hidden rounded-2xl border border-blue-200 bg-blue-50 shadow-sm">
           <Image
             alt="Interview Standardiser logo"
             className="h-14 w-14 scale-[1.28] object-cover"
@@ -481,12 +481,12 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
           />
         </div>
         <h4
-          className="mt-5 text-[2.1rem] leading-[0.95] tracking-[-0.05em] text-[#111111]"
-          style={{ fontFamily: "var(--font-reports-cormorant)" }}
+          className="mt-5 text-[2.1rem] font-black leading-[0.98] tracking-tight text-slate-800"
+          style={{ fontFamily: "var(--font-display)" }}
         >
           {copy.title}
         </h4>
-        <p className="mt-3 text-sm leading-7 text-[#49536B]">{copy.description}</p>
+        <p className="mt-3 text-sm leading-7 text-slate-600">{copy.description}</p>
       </div>
     </div>
   );
@@ -494,9 +494,9 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
 
 function StatusTotal({ label, value, className }: { label: string; value: number; className?: string }) {
   return (
-    <div className={`${className ?? ""} flex items-center justify-between gap-3 rounded-[1rem] border border-[#727D97] bg-[#E6E9F0] px-3 py-3`}>
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86]">{label}</span>
-      <span className="text-sm font-semibold text-[#111111]">{value}</span>
+    <div className={`${className ?? ""} flex items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-white px-3 py-3`}>
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{label}</span>
+      <span className="text-sm font-semibold text-slate-800">{value}</span>
     </div>
   );
 }

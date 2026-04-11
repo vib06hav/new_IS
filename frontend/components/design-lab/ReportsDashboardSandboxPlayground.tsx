@@ -1,13 +1,8 @@
-﻿"use client";
+"use client";
 
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import {
-  Cormorant_Garamond,
-  IBM_Plex_Sans,
-  Space_Grotesk,
-} from "next/font/google";
-import Image from "next/image";
+import { IBM_Plex_Sans, Libre_Franklin } from "next/font/google";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -36,26 +31,22 @@ import {
 import { AdminDesignLabNavbar } from "@/components/design-lab/AdminDesignLabNavbar";
 import type { ApplicationListItem } from "@/lib/types";
 
-const spaceGrotesk = Space_Grotesk({
+const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-reports-space",
+  weight: ["900"],
+  variable: "--font-display",
+  display: "swap",
 });
 
-const plexSans = IBM_Plex_Sans({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-reports-plex",
+  weight: ["400", "600"],
+  variable: "--font-body",
+  display: "swap",
 });
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-reports-cormorant",
-});
+const dashboardCards = reportsDashboardItems;
 
-const blacklineCards = reportsDashboardItems;
 const sessionLogEntries = [
   {
     id: "log-1",
@@ -63,8 +54,8 @@ const sessionLogEntries = [
     reportId: "PLK-2026-0171",
     detail: "Priya Sharma added as first interviewer",
     time: "Just now",
-    accent: "#D7FF53",
-    badgeText: "#111111",
+    accent: "#d9f99d",
+    badgeText: "#365314",
   },
   {
     id: "log-2",
@@ -72,8 +63,8 @@ const sessionLogEntries = [
     reportId: "PLK-2026-0169",
     detail: "Rhea Kapoor -> Aanya Sen",
     time: "2 min ago",
-    accent: "#198FF0",
-    badgeText: "#F7F7F1",
+    accent: "#dbeafe",
+    badgeText: "#1e3a8a",
   },
   {
     id: "log-3",
@@ -81,8 +72,8 @@ const sessionLogEntries = [
     reportId: "PLK-2026-0148",
     detail: "Revised reporting identifier to match export record",
     time: "6 min ago",
-    accent: "#7CF0FF",
-    badgeText: "#111111",
+    accent: "#e0f2fe",
+    badgeText: "#0c4a6e",
   },
   {
     id: "log-4",
@@ -90,8 +81,8 @@ const sessionLogEntries = [
     reportId: "PLK-2026-0163",
     detail: "Removed from visible list while review is pending",
     time: "9 min ago",
-    accent: "#FFB347",
-    badgeText: "#111111",
+    accent: "#f1f5f9",
+    badgeText: "#475569",
   },
   {
     id: "log-5",
@@ -99,8 +90,8 @@ const sessionLogEntries = [
     reportId: "PLK-2026-0157",
     detail: "Pages 4-5 generated and report moved to assignment-ready",
     time: "14 min ago",
-    accent: "#FFB347",
-    badgeText: "#111111",
+    accent: "#fef3c7",
+    badgeText: "#92400e",
   },
   {
     id: "log-6",
@@ -108,35 +99,30 @@ const sessionLogEntries = [
     reportId: "PLK-2026-0142",
     detail: "Removed duplicate report from current session",
     time: "21 min ago",
-    accent: "#5F6C86",
-    badgeText: "#F7F7F1",
+    accent: "#fee2e2",
+    badgeText: "#9f1239",
   },
 ] as const;
 
 export function ReportsDashboardSandboxPlayground() {
   return (
     <div
-      className={[
-        spaceGrotesk.variable,
-        plexSans.variable,
-        cormorant.variable,
-        "min-h-screen bg-white text-[#111111]",
-      ].join(" ")}
-      style={{ fontFamily: "var(--font-reports-plex)" }}
+      className={`${libreFranklin.variable} ${ibmPlexSans.variable} min-h-screen text-slate-900`}
+      style={pageCanvasStyle}
     >
       <div className="min-h-screen">
-        <BlacklineReviewDashboard />
+        <LandingStyledReviewDashboard />
       </div>
     </div>
   );
 }
 
-function BlacklineReviewDashboard() {
+function LandingStyledReviewDashboard() {
   const [statusFilter, setStatusFilter] = useState<(typeof reportsDashboardStatuses)[number]>("ALL");
   const filteredCards =
     statusFilter === "ALL"
-      ? blacklineCards
-      : blacklineCards.filter((item) => {
+      ? dashboardCards
+      : dashboardCards.filter((item) => {
           if (statusFilter === "HIDDEN") return item.is_hidden;
           return !item.is_hidden && item.status === statusFilter;
         });
@@ -144,7 +130,7 @@ function BlacklineReviewDashboard() {
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-white text-[#111111]"
+      className="min-h-screen text-slate-900"
       initial={{ opacity: 0, y: 26 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
     >
@@ -155,37 +141,37 @@ function BlacklineReviewDashboard() {
           <div className="space-y-6">
             <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
               <div className="space-y-4">
-                <div className="overflow-hidden rounded-[2rem] border border-[#727D97] bg-[linear-gradient(135deg,#ffffff_0%,#f8fafc_38%,#f5f8fb_100%)] p-6">
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-[#5F6C86]">
-                    <span className="inline-flex items-center gap-2 text-[#111111]">
+                <div className="rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-slate-500">
+                    <span className="inline-flex items-center gap-2 text-slate-800">
                       <Stars className="size-3.5" />
                       Admin review desk
                     </span>
                   </div>
                   <div className="mt-5 space-y-4">
                     <h3
-                      className="max-w-4xl text-[3rem] leading-[0.92] tracking-[-0.07em] text-[#111111] md:text-[3.85rem]"
-                      style={{ fontFamily: "var(--font-reports-space)" }}
+                      className="max-w-4xl text-5xl font-black leading-[1.04] tracking-tight text-slate-800 md:text-[3.5rem]"
+                      style={{ fontFamily: "var(--font-display)" }}
                     >
                       Generated Reports
                     </h3>
-                    <p className="max-w-3xl text-sm leading-7 text-[#49536B]">
+                    <p className="max-w-3xl text-base leading-[1.6] text-slate-600" style={{ fontFamily: "var(--font-body)" }}>
                       Open generated reports, update report IDs, assign or reassign interviewers, manage visibility, and
                       remove reports when necessary.
                     </p>
                   </div>
                 </div>
 
-                <div className="rounded-[1.9rem] border border-[#727D97] bg-white p-4">
-                  <div className="rounded-[1.4rem] border border-[#727D97] bg-white p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]">
+                <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm">
+                  <div className="rounded-[1.4rem] border border-slate-200 bg-white/70 p-1.5">
                     <div className="flex flex-wrap items-center gap-1.5">
                       {reportsDashboardStatuses.map((status) => (
                         <button
                           key={status}
-                          className={`rounded-[1rem] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 ${
+                          className={`rounded-[1rem] border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 ${
                             statusFilter === status
                               ? getFilterActiveClasses(status)
-                              : "border border-transparent bg-transparent text-[#49536B] hover:border-[#727D97] hover:bg-[#F7F7F1] hover:text-[#111111]"
+                              : "border-transparent bg-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-blue-700"
                           }`}
                           onClick={() => setStatusFilter(status)}
                           type="button"
@@ -198,32 +184,32 @@ function BlacklineReviewDashboard() {
                 </div>
               </div>
 
-              <div className="rounded-[1.6rem] border border-[#727D97] bg-white p-4 xl:h-full">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6C86]">Status totals</p>
+              <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm xl:h-full">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Status totals</p>
                 <div className="mt-4 space-y-3">
-                  <BlacklineMetric label="Ready" value={reportsDashboardMetrics.ready} />
-                  <BlacklineMetric label="Complete" value={reportsDashboardMetrics.complete} />
-                  <BlacklineMetric label="Assigned" value={reportsDashboardMetrics.assigned} />
+                  <DashboardMetric label="Ready" value={reportsDashboardMetrics.ready} />
+                  <DashboardMetric label="Complete" value={reportsDashboardMetrics.complete} />
+                  <DashboardMetric label="Assigned" value={reportsDashboardMetrics.assigned} />
                 </div>
               </div>
             </section>
 
             <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {filteredCards.map((item, index) => (
-                <BlacklineSheet key={item.id} item={item} priority={index === 0 ? "sharp" : "standard"} />
+              {filteredCards.map((item) => (
+                <DashboardCard key={item.id} item={item} />
               ))}
             </section>
           </div>
 
           <aside className="grid gap-5 self-start">
-            <div className="rounded-[1.9rem] border border-[#727D97] bg-white p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#5F6C86]">Session log</p>
-              <p className="mt-3 text-sm leading-6 text-[#49536B]">Actions taken during this session appear here in order.</p>
-              <div className="mt-5 rounded-[1.4rem] border border-[#727D97] bg-white">
-                <div className="border-b border-[#727D97] px-4 py-3">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86]">Current session</p>
+            <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Session log</p>
+              <p className="mt-3 text-sm leading-6 text-slate-600">Actions taken during this session appear here in order.</p>
+              <div className="mt-5 rounded-[1.4rem] border border-slate-200 bg-white/70">
+                <div className="border-b border-slate-200 px-4 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Current session</p>
                 </div>
-                <div className="divide-y divide-[#727D97]/45">
+                <div className="divide-y divide-slate-200">
                   {sessionLogEntries.map((entry) => (
                     <div key={entry.id} className="px-4 py-4">
                       <div className="flex items-start justify-between gap-3">
@@ -235,11 +221,11 @@ function BlacklineReviewDashboard() {
                             >
                               {entry.action}
                             </span>
-                            <p className="text-sm font-semibold text-[#111111]">{entry.reportId}</p>
+                            <p className="text-sm font-semibold text-slate-800">{entry.reportId}</p>
                           </div>
-                          <p className="mt-2 text-sm leading-6 text-[#49536B]">{entry.detail}</p>
+                          <p className="mt-2 text-sm leading-6 text-slate-600">{entry.detail}</p>
                         </div>
-                        <p className="shrink-0 pt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#5F6C86]">
+                        <p className="shrink-0 pt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
                           {entry.time}
                         </p>
                       </div>
@@ -255,13 +241,7 @@ function BlacklineReviewDashboard() {
   );
 }
 
-function BlacklineSheet({
-  item,
-  priority,
-}: {
-  item: ApplicationListItem;
-  priority: "sharp" | "standard";
-}) {
+function DashboardCard({ item }: { item: ApplicationListItem }) {
   const [overflowOpen, setOverflowOpen] = useState(false);
   const [selectedInterviewerId, setSelectedInterviewerId] = useState("");
   const overflowRef = useRef<HTMLDivElement | null>(null);
@@ -285,39 +265,39 @@ function BlacklineSheet({
   return (
     <motion.article
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-[1.8rem] border border-[#727D97] bg-white text-[#121212] shadow-[0_18px_50px_rgba(114,125,151,0.14)]"
+      className="rounded-[1.8rem] border border-slate-200 bg-white/80 text-slate-900 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm"
       initial={{ opacity: 0, y: 14 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
     >
-      <div className="flex items-start justify-between gap-4 border-b border-[#111111]/10 px-5 py-4">
+      <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            {item.is_hidden ? <StatusMark status="HIDDEN" tone="blackline" /> : null}
-            <StatusMark status={item.status} tone="blackline" />
+            {item.is_hidden ? <StatusMark status="HIDDEN" /> : null}
+            <StatusMark status={item.status} />
           </div>
-          <h4 className="text-[2rem] leading-none tracking-[-0.07em] text-[#111111]" style={{ fontFamily: "var(--font-reports-space)" }}>
+          <h4 className="text-[1.8rem] font-black leading-none tracking-tight text-slate-800" style={{ fontFamily: "var(--font-display)" }}>
             {item.display_id}
           </h4>
         </div>
         <div className="relative" ref={overflowRef}>
           <button
-            className="grid size-10 place-items-center rounded-full border border-[#111111]/10 text-[#474747] transition-all duration-200 hover:border-[#727D97] hover:bg-[#E6E9F0] hover:text-[#111111]"
+            className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
             onClick={() => setOverflowOpen((current) => !current)}
             type="button"
           >
             <MoreHorizontal className="size-4" />
           </button>
           {overflowOpen ? (
-            <div className="absolute right-0 z-20 mt-2 min-w-44 rounded-[1rem] border border-[#727D97] bg-[#F7F7F1] p-2 shadow-[0_18px_44px_rgba(114,125,151,0.2)]">
-              <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-[#49536B] transition-colors duration-200 hover:bg-[#E6E9F0]" type="button">
+            <div className="absolute right-0 z-20 mt-2 min-w-44 rounded-[1rem] border border-slate-200 bg-white p-2 shadow-[0_18px_44px_rgba(15,23,42,0.12)]">
+              <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-50" type="button">
                 <span>Edit ID</span>
                 <PencilLine className="size-4" />
               </button>
-              <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-[#49536B] transition-colors duration-200 hover:bg-[#E6E9F0]" type="button">
+              <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-50" type="button">
                 <span>{item.is_hidden ? "Unhide report" : "Hide report"}</span>
                 {item.is_hidden ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
               </button>
-              <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-[#AF3030] transition-colors duration-200 hover:bg-[#F4DDDD]" type="button">
+              <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-rose-700 transition-colors duration-200 hover:bg-rose-50" type="button">
                 <span>Delete report</span>
                 <Trash2 className="size-4" />
               </button>
@@ -328,41 +308,41 @@ function BlacklineSheet({
 
       <div className="space-y-4 px-5 py-5">
         <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
-          <BlacklineMeta label="Created" value={formatShortDate(item.created_at)} />
+          <DashboardMeta label="Created" value={formatShortDate(item.created_at)} />
           <div className="sm:pt-0.5">
-            <PrimaryLink href={`/admin/applications/${item.id}`} label="Open" tone="blackline" />
+            <PrimaryLink href={`/admin/applications/${item.id}`} label="Open" />
           </div>
         </div>
 
-        <div className="rounded-[1.3rem] border border-[#111111]/10 bg-[#fafaf6] p-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6c6c64]">Assigned interviewer</p>
+        <div className="rounded-[1.3rem] border border-slate-200 bg-white/70 p-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Assigned interviewer</p>
           {item.assigned_interviewer ? (
             <div className="mt-3 flex items-center gap-3">
-              <Avatar className="size-10 border border-[#111111]/10">
-                <AvatarFallback className="bg-[#111111] text-[#fafaf6]">
+              <Avatar className="size-10 border border-slate-200 bg-slate-100">
+                <AvatarFallback className="bg-slate-800 text-white">
                   {getInitials(item.assigned_interviewer.name)}
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[#111111]">{item.assigned_interviewer.name}</p>
-                <p className="truncate text-xs text-[#66685d]">{item.assigned_interviewer.email}</p>
+                <p className="truncate text-sm font-semibold text-slate-800">{item.assigned_interviewer.name}</p>
+                <p className="truncate text-xs text-slate-500">{item.assigned_interviewer.email}</p>
               </div>
             </div>
           ) : (
             <div className="mt-3 flex items-center gap-3">
-              <Avatar className="size-10 border border-[#111111]/10">
-                <AvatarFallback className="bg-[#D8DBE2] text-[#49536B]">UN</AvatarFallback>
+              <Avatar className="size-10 border border-slate-200 bg-slate-100">
+                <AvatarFallback className="bg-slate-100 text-slate-500">UN</AvatarFallback>
               </Avatar>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[#111111]">Unassigned</p>
-                <p className="truncate text-xs text-[#66685d]">No interviewer selected yet</p>
+                <p className="truncate text-sm font-semibold text-slate-800">Unassigned</p>
+                <p className="truncate text-xs text-slate-500">No interviewer selected yet</p>
               </div>
             </div>
           )}
         </div>
 
-        <div className="rounded-[1.3rem] border border-[#111111]/10 bg-[#fafaf6] p-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6c6c64]">Assignment</p>
+        <div className="rounded-[1.3rem] border border-slate-200 bg-white/70 p-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Assignment</p>
           <div className="mt-3 space-y-3">
             <Select
               value={selectedInterviewerId}
@@ -372,7 +352,7 @@ function BlacklineSheet({
               }}
             >
               <SelectTrigger
-                className="h-auto w-full rounded-xl border-[#111111]/10 bg-[#fdfcf8] px-3 py-3 transition-all duration-200 hover:border-[#727D97] hover:bg-white"
+                className="h-auto w-full rounded-xl border-slate-200 bg-white px-3 py-3 transition-all duration-200 hover:border-blue-200 hover:bg-blue-50/40"
                 onClick={() => setOverflowOpen(false)}
               >
                 {selectedInterviewer ? (
@@ -381,17 +361,17 @@ function BlacklineSheet({
                       <AvatarFallback>{getInitials(selectedInterviewer.name)}</AvatarFallback>
                     </Avatar>
                     <span className="min-w-0 flex-1 space-y-0.5">
-                      <span className="block truncate font-medium text-[#111111]">{selectedInterviewer.name}</span>
-                      <span className="block truncate text-xs text-[#66685d]">{selectedInterviewer.email}</span>
+                      <span className="block truncate font-medium text-slate-800">{selectedInterviewer.name}</span>
+                      <span className="block truncate text-xs text-slate-500">{selectedInterviewer.email}</span>
                     </span>
                   </div>
                 ) : (
-                  <span className="text-sm text-[#66685d]">
+                  <span className="text-sm text-slate-500">
                     {item.assigned_interviewer ? "Choose new interviewer" : "Choose interviewer"}
                   </span>
                 )}
               </SelectTrigger>
-              <SelectContent className="rounded-2xl border border-[#111111]/10 bg-[#fdfcf8] shadow-[0_18px_38px_rgba(114,125,151,0.18)]">
+              <SelectContent className="rounded-2xl border border-slate-200 bg-white shadow-[0_18px_38px_rgba(15,23,42,0.12)]">
                 <SelectGroup>
                   <SelectLabel>Available interviewers</SelectLabel>
                   {reportsDashboardInterviewers.map((interviewer) => (
@@ -400,10 +380,10 @@ function BlacklineSheet({
                         <AvatarFallback>{getInitials(interviewer.name)}</AvatarFallback>
                       </Avatar>
                       <span className="min-w-0 flex-1 flex-col justify-center space-y-0.5">
-                        <span className="block truncate font-medium text-[#111111]">{interviewer.name}</span>
-                        <span className="block truncate text-xs text-[#66685d]">{interviewer.email}</span>
+                        <span className="block truncate font-medium text-slate-800">{interviewer.name}</span>
+                        <span className="block truncate text-xs text-slate-500">{interviewer.email}</span>
                       </span>
-                      <span className="rounded-full bg-[#D8DBE2] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#49536B]">
+                      <span className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-800">
                         {interviewer.active_assignment_count} active
                       </span>
                     </SelectItem>
@@ -413,7 +393,7 @@ function BlacklineSheet({
             </Select>
 
             <button
-              className="w-full rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition-all duration-200 hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-45"
+              className="w-full rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-45"
               disabled={!selectedInterviewerId}
               onClick={() => setOverflowOpen(false)}
               type="button"
@@ -427,49 +407,28 @@ function BlacklineSheet({
   );
 }
 
-
-function BlacklineMetric({ label, value }: { label: string; value: number }) {
+function DashboardMetric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[1rem] border border-[#727D97] bg-white px-3 py-3">
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86]">{label}</span>
-      <span className="text-sm font-semibold text-[#111111]">{value}</span>
+    <div className="flex items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-white px-3 py-3">
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{label}</span>
+      <span className="text-sm font-semibold text-slate-800">{value}</span>
     </div>
   );
 }
 
-function BlacklineMeta({ label, value }: { label: string; value: string }) {
+function DashboardMeta({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.2rem] border border-[#111111]/10 bg-[#f7f7f1] px-4 py-3">
-      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#6a6a62]">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-[#111111]">{value}</p>
+    <div className="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-800">{value}</p>
     </div>
   );
 }
 
-function GhostAction({
-  label,
-}: {
-  label: string;
-}) {
-  return (
-    <button className="rounded-full border border-[#111111]/10 bg-[#f6f6f1] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#111111]" type="button">
-      {label}
-    </button>
-  );
-}
-
-function PrimaryLink({
-  href,
-  label,
-  tone,
-}: {
-  href: string;
-  label: string;
-  tone: "blackline";
-}) {
+function PrimaryLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
-      className="inline-flex items-center gap-1 rounded-full bg-[#111111] px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#f7f8ec]"
+      className="inline-flex items-center gap-1 rounded-full bg-blue-700 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white shadow-sm transition-colors duration-200 hover:bg-blue-800"
       href={href}
     >
       {label}
@@ -478,79 +437,29 @@ function PrimaryLink({
   );
 }
 
-function ActionChip({
-  label,
-  tone,
-  icon: Icon,
-}: {
-  label: string;
-  tone: "blackline";
-  icon?: typeof Eye;
-}) {
-  return (
-    <button className="inline-flex items-center gap-1.5 rounded-full border border-[#d7ff53]/35 bg-[#d7ff53]/8 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#111111]" type="button">
-      {Icon ? <Icon className="size-3.5" /> : null}
-      {label}
-    </button>
-  );
-}
-
-function StatusMark({
-  status,
-  tone,
-}: {
-  status: string;
-  tone: "blackline";
-}) {
+function StatusMark({ status }: { status: string }) {
   const styles = {
-    READY: "bg-[#d7ff53] text-[#111111]",
-    COMPLETE: "bg-[#ffb347] text-[#111111]",
-    ASSIGNED: "bg-[#7cf0ff] text-[#111111]",
-    HIDDEN: "bg-[#8A94A6] text-[#111111]",
+    READY: "border-lime-200 bg-lime-100 text-lime-900",
+    COMPLETE: "border-amber-200 bg-amber-100 text-amber-900",
+    ASSIGNED: "border-sky-200 bg-sky-100 text-sky-900",
+    HIDDEN: "border-slate-200 bg-slate-100 text-slate-700",
   };
 
-  const className = styles[status as keyof typeof styles] ?? "bg-[#E6E9F0] text-[#111111]";
+  const className = styles[status as keyof typeof styles] ?? "border-slate-200 bg-slate-100 text-slate-700";
 
   return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${className}`}>
+    <span className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${className}`}>
       {status}
     </span>
   );
 }
 
 function getFilterActiveClasses(status: (typeof reportsDashboardStatuses)[number]) {
-  if (status === "ALL") return "bg-[#198FF0] text-[#111111] shadow-[0_8px_20px_rgba(25,143,240,0.28)]";
-  if (status === "READY") return "bg-[#d7ff53] text-[#111111] shadow-[0_8px_20px_rgba(215,255,83,0.28)]";
-  if (status === "COMPLETE") return "bg-[#ffb347] text-[#111111] shadow-[0_8px_20px_rgba(255,179,71,0.24)]";
-  if (status === "ASSIGNED") return "bg-[#7cf0ff] text-[#111111] shadow-[0_8px_20px_rgba(124,240,255,0.22)]";
-  return "bg-[#8A94A6] text-[#111111] shadow-[0_8px_20px_rgba(138,148,166,0.24)]";
-}
-
-function getSuggestedInterviewer(item: ApplicationListItem) {
-  if (item.status === "READY") return reportsDashboardInterviewers[0];
-  if (item.status === "COMPLETE") return reportsDashboardInterviewers[2];
-  if (item.status === "ASSIGNED") return reportsDashboardInterviewers[1];
-  return item.assigned_interviewer
-    ? {
-        ...item.assigned_interviewer,
-        active_assignment_count: reportsDashboardInterviewers.find(
-          (interviewer) => interviewer.id === item.assigned_interviewer?.id,
-        )?.active_assignment_count ?? 0,
-      }
-    : reportsDashboardInterviewers[0];
-}
-
-function getAssignmentActionLabel(item: ApplicationListItem) {
-  if (item.status === "COMPLETE") return "Assign interviewer";
-  if (item.status === "ASSIGNED") return "Reassign interviewer";
-  return "Assignment locked";
-}
-
-function getAssignmentCopy(item: ApplicationListItem) {
-  if (item.status === "READY") return "Pages 1-3 are ready for final generation";
-  if (item.status === "COMPLETE") return "Final report is ready for first assignment";
-  if (item.status === "ASSIGNED") return "Can be reassigned if workload shifts";
-  return "No assignment needed";
+  if (status === "ALL") return "border-blue-100 bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-slate-800 shadow-[0_10px_22px_rgba(148,163,184,0.16)]";
+  if (status === "READY") return "border-lime-200 bg-lime-100 text-lime-900 shadow-[0_8px_20px_rgba(190,242,100,0.28)]";
+  if (status === "COMPLETE") return "border-amber-200 bg-amber-100 text-amber-900 shadow-[0_8px_20px_rgba(253,230,138,0.26)]";
+  if (status === "ASSIGNED") return "border-sky-200 bg-sky-100 text-sky-900 shadow-[0_8px_20px_rgba(186,230,253,0.28)]";
+  return "border-slate-200 bg-slate-100 text-slate-700 shadow-[0_8px_20px_rgba(226,232,240,0.24)]";
 }
 
 function getInitials(name: string) {
@@ -569,3 +478,10 @@ function formatShortDate(value: string) {
     year: "numeric",
   });
 }
+
+const pageCanvasStyle: React.CSSProperties = {
+  backgroundColor: "#f8fafc",
+  backgroundImage: "radial-gradient(#e2e8f0 0.5px, transparent 0.5px)",
+  backgroundSize: "24px 24px",
+  fontFamily: "var(--font-body)",
+};

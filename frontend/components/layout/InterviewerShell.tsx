@@ -44,8 +44,15 @@ export function InterviewerShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#eef0f5_0%,#dfe3eb_22%,#d8dbe2_22%,#cfd5df_62%,#dfe3eb_62%,#eef0f5_100%)] text-[#111111]">
-      <div className="min-h-screen bg-[#D8DBE2] text-[#111111]">
+    <div
+      className="min-h-screen text-slate-900"
+      style={{
+        backgroundColor: "#f8fafc",
+        backgroundImage: "radial-gradient(#e2e8f0 0.5px, transparent 0.5px)",
+        backgroundSize: "24px 24px",
+      }}
+    >
+      <div className="min-h-screen bg-transparent text-slate-900">
         <InterviewerNavbar onSignOut={handleSignOut} />
         <main className="mx-auto max-w-[106rem] px-5 py-7 md:px-8 md:py-8">{children}</main>
       </div>
