@@ -123,7 +123,7 @@ export function SynthesisReportSection({
                   </label>
                   <select
                     id="focus-theme-select"
-                    className="w-full rounded-[1rem] border border-[color:var(--line)] bg-white/90 px-4 py-3 text-sm text-[color:var(--ink)] shadow-sm"
+                    className="w-full rounded-[1rem] border border-slate-200 bg-white/90 px-4 py-3 text-sm text-[color:var(--ink)] shadow-[0_10px_22px_rgba(15,23,42,0.05)]"
                     value={selectedThemeKey}
                     onChange={(event) => setSelectedThemeKey(event.target.value)}
                   >
@@ -235,7 +235,7 @@ export function SynthesisReportSection({
                       {(group.questions || []).map((question, questionIndex) => (
                         <li
                           key={`${group.theme_id || "question"}-${questionIndex}`}
-                          className="grid gap-3 rounded-[1rem] border border-[color:var(--line)] bg-slate-50/70 px-4 py-3 md:grid-cols-[2rem_1fr]"
+                          className="grid gap-3 rounded-[1rem] border border-slate-200 bg-slate-50/72 px-4 py-3 md:grid-cols-[2rem_1fr]"
                         >
                           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--accent-soft)] text-xs font-bold text-[color:var(--accent-strong)]">
                             {questionIndex + 1}
@@ -288,7 +288,7 @@ function EvidenceSources({ values }: { values?: string[] }) {
   const bucketLabels = Object.keys(grouped);
 
   return (
-    <details className="mt-4 rounded-[1rem] border border-[color:var(--line)] bg-slate-50/78 px-4 py-3">
+    <details className="mt-4 rounded-[1rem] border border-slate-200 bg-slate-50/78 px-4 py-3">
       <summary className="cursor-pointer list-none">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">
@@ -307,7 +307,7 @@ function EvidenceSources({ values }: { values?: string[] }) {
               {entries.map((entry) => (
                 <span
                   key={`${label}-${entry}`}
-                  className="inline-flex rounded-full border border-[color:var(--line)] bg-white px-3 py-1.5 text-xs font-medium text-[color:var(--ink)] shadow-sm"
+                  className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-[color:var(--ink)] shadow-[0_10px_20px_rgba(15,23,42,0.05)]"
                 >
                   {entry}
                 </span>

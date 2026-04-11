@@ -190,8 +190,8 @@ function ReviewPageTwoSectionLegacy({
                       key={`${key}-${entityId || index}`}
                       className={`rounded-[1.2rem] border p-4 transition-colors ${
                         highlighted
-                          ? "border-blue-300 bg-[linear-gradient(180deg,rgba(239,246,255,0.96),rgba(255,255,255,0.96))] shadow-[var(--card-shadow-soft)]"
-                          : "border-[color:var(--line)] bg-white/80 shadow-[var(--card-shadow-soft)]"
+                          ? "border-blue-200 bg-[linear-gradient(180deg,rgba(239,246,255,0.98),rgba(255,255,255,0.96))] shadow-[0_16px_30px_rgba(59,130,246,0.10)]"
+                          : "border-slate-200 bg-white/80 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
                       }`}
                       title={buildAnnotationTitle(annotation)}
                     >
@@ -296,7 +296,7 @@ export function ReviewPageTwoSection({
                 </div>
               </div>
 
-              <div className="overflow-hidden rounded-[1.1rem] border border-[color:var(--line)] bg-white/78">
+              <div className="overflow-hidden rounded-[1.1rem] border border-slate-200 bg-white/80">
                 <table className="min-w-full divide-y divide-[color:var(--line)] text-sm">
                   <thead className="bg-slate-50/85 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)]">
                     <tr>
@@ -373,7 +373,7 @@ export function ReviewPageTwoSection({
               </div>
 
               {readString(activeActivity.roles_and_responsibilities) ? (
-                <section className="rounded-[1.1rem] border border-[color:var(--line)] bg-white/75 p-4">
+                <section className="rounded-[1.1rem] border border-slate-200 bg-white/78 p-4">
                   <UserProvidedText
                     label="Responsibilities"
                     value={readString(activeActivity.roles_and_responsibilities)!}
@@ -383,7 +383,7 @@ export function ReviewPageTwoSection({
               ) : null}
 
               {readString(activeActivity.description_raw) ? (
-                <section className="rounded-[1.1rem] border border-[color:var(--line)] bg-white/75 p-4">
+                <section className="rounded-[1.1rem] border border-slate-200 bg-white/78 p-4">
                   <UserProvidedText
                     label="Description"
                     value={readString(activeActivity.description_raw)!}
@@ -447,7 +447,7 @@ export function ReviewPageTwoSection({
               </div>
 
                 {readString(activeLeadership.description_raw) ? (
-                  <section className="rounded-[1.1rem] border border-[color:var(--line)] bg-white/75 p-4">
+                  <section className="rounded-[1.1rem] border border-slate-200 bg-white/78 p-4">
                     <UserProvidedText
                       label="Description"
                       value={readString(activeLeadership.description_raw)!}
@@ -494,7 +494,7 @@ export function ReviewPageTwoSection({
                   <CompactMetric label="Overall Result" value={formatTestScore(activeTest)} />
                 </div>
 
-              <div className="overflow-hidden rounded-[1.1rem] border border-[color:var(--line)] bg-white/78">
+              <div className="overflow-hidden rounded-[1.1rem] border border-slate-200 bg-white/80">
                 <table className="min-w-full divide-y divide-[color:var(--line)] text-sm">
                   <thead className="bg-slate-50/85 text-left text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)]">
                     <tr>
@@ -558,7 +558,7 @@ export function ReviewPageThreeSection({
           return (
             <article
               key={entityId}
-              className="rounded-[1.2rem] border border-[color:var(--line)] bg-white/82 p-4 shadow-[var(--card-shadow-soft)]"
+              className="rounded-[1.2rem] border border-slate-200 bg-white/82 p-4 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
             >
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <div className="space-y-1">
