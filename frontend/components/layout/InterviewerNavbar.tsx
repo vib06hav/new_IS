@@ -102,7 +102,9 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
                 </p>
               </div>
             </div>
+          </div>
 
+          <div className="relative flex items-center gap-5 self-end xl:self-auto" ref={menuRef}>
             <nav className="hidden items-center gap-2 xl:flex">
               {navItems.map((item) => (
                 <Link
@@ -118,9 +120,7 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
                 </Link>
               ))}
             </nav>
-          </div>
 
-          <div className="relative flex items-center gap-2 self-end xl:self-auto" ref={menuRef}>
             <button
               className="rounded-full"
               onClick={() => setMenuOpen((current) => !current)}

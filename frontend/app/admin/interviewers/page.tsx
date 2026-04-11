@@ -3,16 +3,17 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeftRight,
+  ChevronLeft,
+  ChevronRight,
   KeyRound,
   Mail,
   PencilLine,
   Plus,
   ShieldAlert,
-  Stars,
   UserRound,
   X,
 } from "lucide-react";
-import { Cormorant_Garamond, IBM_Plex_Sans, Space_Grotesk } from "next/font/google";
+import { Libre_Franklin, IBM_Plex_Sans } from "next/font/google";
 import {
   createInterviewer,
   deleteInterviewer,
@@ -40,23 +41,16 @@ import { Badge } from "@/components/shadcn/badge";
 type AssignmentSource = "assigned" | "available" | "reassign";
 type AssignmentModalItem = InterviewerAssignmentSummaryItem & { source: AssignmentSource };
 
-const spaceGrotesk = Space_Grotesk({
+const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-reports-space",
+  weight: ["900"],
+  variable: "--font-reports-display",
 });
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-reports-plex",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-reports-cormorant",
 });
 
 export default function AdminInterviewersPage() {
@@ -91,7 +85,23 @@ function AdminInterviewersContent() {
   const [profileForm, setProfileForm] = useState({ name: "" });
   const [accountForm, setAccountForm] = useState({ email: "" });
   const [passwordForm, setPasswordForm] = useState({ password: "", confirmPassword: "" });
+  const [showSidebar, setShowSidebar] = useState(true);
   const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
+
+  // Load sidebar preference
+  useEffect(() => {
+    const saved = localStorage.getItem("agis_admin_sidebar_visible");
+    if (saved !== null) {
+      setShowSidebar(saved === "true");
+    }
+  }, []);
+
+  // Save sidebar preference
+  const toggleSidebar = () => {
+    const next = !showSidebar;
+    setShowSidebar(next);
+    localStorage.setItem("agis_admin_sidebar_visible", String(next));
+  };
 
   async function loadInterviewers() {
     try {
@@ -497,38 +507,43 @@ function AdminInterviewersContent() {
 
   return (
     <div
-      className={`${spaceGrotesk.variable} ${plexSans.variable} ${cormorant.variable} space-y-6`}
+      className={`${libreFranklin.variable} ${plexSans.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className={`grid gap-6 transition-all duration-500 ease-in-out ${showSidebar ? "xl:grid-cols-[1fr_22rem]" : "grid-cols-1"}`}>
         <div className="space-y-6">
-          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
-            <div className="overflow-hidden rounded-[2rem] border border-[#727D97] bg-[linear-gradient(135deg,#c9d0dc_0%,#d8dbe2_40%,#ced4df_100%)] p-6 xl:h-full">
-              <div className="flex h-full flex-col justify-between gap-6">
+          <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="relative flex flex-col h-full justify-between gap-6">
+                {/* Header Toggle */}
+                <div className="absolute right-0 top-0 flex items-center gap-2 group">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    {showSidebar ? "Hide Sidebar" : "Show Sidebar"}
+                  </span>
+                  <button 
+                    onClick={toggleSidebar}
+                    className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white shadow-sm text-slate-400 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md active:scale-95"
+                  >
+                    {showSidebar ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
+                  </button>
+                </div>
+                
                 <div>
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-[#5F6C86]">
-                    <span className="inline-flex items-center gap-2 text-[#111111]">
-                      <Stars className="size-3.5" />
-                      Interview operations
-                    </span>
-                  </div>
-                  <div className="mt-5 space-y-4">
+                  <div className="space-y-2">
                     <h1
-                      className="max-w-4xl text-[3rem] leading-[0.92] tracking-[-0.07em] text-[#111111] md:text-[3.85rem]"
-                      style={{ fontFamily: "var(--font-reports-cormorant)" }}
+                      className="max-w-4xl text-4xl md:text-5xl font-black tracking-tight text-slate-800 leading-none"
+                      style={{ fontFamily: "var(--font-reports-display)" }}
                     >
                       Interviewer Manager
                     </h1>
-                    <p className="max-w-3xl text-sm leading-7 text-[#49536B]">
-                      Review the active interviewer roster, open assignment buckets when work needs to move, and manage
-                      interviewer account details without leaving the page context.
+                    <p className="max-w-3xl text-base text-slate-600 leading-relaxed">
+                      Review the active interviewer roster and manage assignments.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
                   <button
-                    className="inline-flex items-center gap-2 rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444]"
+                    className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow-md"
                     onClick={() => setCreateOpen(true)}
                     type="button"
                   >
@@ -537,17 +552,16 @@ function AdminInterviewersContent() {
                   </button>
                 </div>
               </div>
-            </div>
-
-            <div className="rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] p-4 xl:h-full">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6C86]">Status totals</p>
-              <div className="mt-4 space-y-3">
-                <MetricStrip label="Interviewers" value={metrics.interviewers} />
-                <MetricStrip label="Active assignments" value={metrics.activeAssignments} />
-                <MetricStrip label="Ready pool" value={metrics.readyPool} />
-              </div>
-            </div>
           </section>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Status totals</p>
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+              <MetricStrip label="Interviewers" value={metrics.interviewers} />
+              <MetricStrip label="Active assignments" value={metrics.activeAssignments} />
+              <MetricStrip label="Ready pool" value={metrics.readyPool} />
+            </div>
+          </div>
 
           {message ? <p className="rounded-[1.2rem] border border-[#198FF0]/35 bg-[#EAF4FD] px-4 py-3 text-sm text-[#24527A]">{message}</p> : null}
           {error ? <p className="rounded-[1.2rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">{error}</p> : null}
@@ -573,16 +587,16 @@ function AdminInterviewersContent() {
           )}
         </div>
 
-        <aside className="grid gap-5 self-start">
+        <aside className={`grid gap-5 self-start transition-all duration-500 ease-in-out ${showSidebar ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8 pointer-events-none hidden"}`}>
           <AdminSessionLogPanel entries={sessionHistoryEntries} />
         </aside>
       </div>
 
       {createOpen ? (
         <CenteredOverlay onClose={() => !createSubmitting && setCreateOpen(false)}>
-          <div className="rounded-[1.9rem] border border-[#727D97] bg-[#F7F7F1] p-6 shadow-[0_24px_70px_rgba(114,125,151,0.24)]">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
             <SurfaceHeader eyebrow="Create interviewer" title="Add interviewer" onClose={() => setCreateOpen(false)} />
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-[#49536B]">
+            <p className="mt-4 max-w-2xl text-base text-slate-600 leading-relaxed">
               Create a new interviewer account with the same core fields used in the live frontend.
             </p>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -598,7 +612,7 @@ function AdminInterviewersContent() {
             ) : null}
             <div className="mt-6 flex justify-end">
               <button
-                className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 disabled:opacity-60"
                 disabled={createSubmitting || !createForm.name.trim() || !createForm.email.trim() || !createForm.password || createPasswordMismatch}
                 onClick={() => void handleCreate()}
                 type="button"
@@ -612,7 +626,7 @@ function AdminInterviewersContent() {
 
       {assignmentInterviewer ? (
         <CenteredOverlay onClose={closeAssignmentModal}>
-          <div className="rounded-[1.9rem] border border-[#727D97] bg-[#F7F7F1] p-6 shadow-[0_24px_70px_rgba(114,125,151,0.24)]">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
             <SurfaceHeader eyebrow="Assignment buckets" title={`Manage assignments · ${assignmentInterviewer.name}`} onClose={closeAssignmentModal} />
             <p className="mt-4 max-w-3xl text-sm leading-7 text-[#49536B]">
               Keep the bucket logic from the real frontend, but present it inside the same mock system as the other admin pages.
@@ -746,29 +760,29 @@ function InterviewerCard({
   onEdit: () => void;
 }) {
   return (
-    <article className="rounded-[1.8rem] border border-[#727D97] bg-white text-[#121212] shadow-[0_18px_50px_rgba(114,125,151,0.14)]">
+    <article className="rounded-3xl border border-slate-200 bg-white text-slate-900 shadow-[0_10px_30px_rgba(2,12,32,0.05)] transition-all hover:shadow-md">
       <div className="space-y-4 px-5 py-5">
         <div className="flex min-w-0 items-center gap-3">
           <InterviewerAvatar item={item} sizeClassName="size-12" />
           <div className="min-w-0 flex-1 space-y-2">
-            <h4 className="text-[2rem] leading-none tracking-[-0.07em] text-[#111111]" style={{ fontFamily: "var(--font-reports-space)" }}>
+            <h4 className="text-xl font-black tracking-tight text-slate-800" style={{ fontFamily: "var(--font-reports-display)" }}>
               {item.name}
             </h4>
-            <p className="truncate text-sm text-[#66685D]">{item.email}</p>
+            <p className="truncate text-sm text-slate-500">{item.email}</p>
           </div>
         </div>
 
-        <div className="rounded-[1.3rem] border border-[#111111]/10 bg-[#FAFAF6] p-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6C6C64]">Active assignments</p>
-          <p className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-[#111111]">{item.active_assignment_count}</p>
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Active assignments</p>
+          <p className="mt-3 text-3xl font-black text-slate-800 tracking-tight">{item.active_assignment_count}</p>
         </div>
 
         <div className="grid gap-2">
-          <button className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444]" onClick={onManageAssignments} type="button">
+          <button className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700" onClick={onManageAssignments} type="button">
             <ArrowLeftRight className="size-4" />
             Manage assignments
           </button>
-          <button className="inline-flex items-center justify-center gap-2 rounded-full border border-[#727D97] bg-[#F7F7F1] px-4 py-3 text-sm font-semibold text-[#111111] transition hover:bg-[#E6E9F0]" onClick={onEdit} type="button">
+          <button className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-blue-300 hover:text-blue-700" onClick={onEdit} type="button">
             <PencilLine className="size-4" />
             Edit interviewer
           </button>

@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Stars } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
-  Cormorant_Garamond,
+  Libre_Franklin,
   IBM_Plex_Sans,
 } from "next/font/google";
 import {
@@ -35,11 +35,10 @@ const plexSans = IBM_Plex_Sans({
   variable: "--font-reports-plex",
 });
 
-const cormorant = Cormorant_Garamond({
+const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-reports-cormorant",
+  weight: ["900"],
+  variable: "--font-reports-display",
 });
 
 export default function AdminReportsPage() {
@@ -64,7 +63,23 @@ function AdminReportsContent() {
   const [editingDisplayIdAppId, setEditingDisplayIdAppId] = useState<string | null>(null);
   const [draftDisplayIdByApp, setDraftDisplayIdByApp] = useState<Record<string, string>>({});
   const [savingDisplayIdAppId, setSavingDisplayIdAppId] = useState<string | null>(null);
+  const [showSidebar, setShowSidebar] = useState(true);
   const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
+
+  // Load sidebar preference
+  useEffect(() => {
+    const saved = localStorage.getItem("agis_admin_sidebar_visible");
+    if (saved !== null) {
+      setShowSidebar(saved === "true");
+    }
+  }, []);
+
+  // Save sidebar preference
+  const toggleSidebar = () => {
+    const next = !showSidebar;
+    setShowSidebar(next);
+    localStorage.setItem("agis_admin_sidebar_visible", String(next));
+  };
 
   async function loadData() {
     try {
@@ -279,67 +294,62 @@ function AdminReportsContent() {
 
   return (
     <div
-      className={`${plexSans.variable} ${cormorant.variable} space-y-6`}
+      className={`${plexSans.variable} ${libreFranklin.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_22rem]">
+      <div className={`grid gap-6 transition-all duration-500 ease-in-out ${showSidebar ? "xl:grid-cols-[1fr_22rem]" : "grid-cols-1"}`}>
         <div className="space-y-6">
-            <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
-              <div className="space-y-4 xl:flex xl:h-full xl:flex-col xl:gap-4 xl:space-y-0">
-                <div className="overflow-hidden rounded-[2rem] border border-[#727D97] bg-[linear-gradient(135deg,#c9d0dc_0%,#d8dbe2_40%,#ced4df_100%)] p-6 xl:flex-1">
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-[#5F6C86]">
-                    <span className="inline-flex items-center gap-2 text-[#111111]">
-                      <Stars className="size-3.5" />
-                      Admin review desk
-                    </span>
-                  </div>
-                  <div className="mt-5 space-y-4">
+            <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="relative">
+                {/* Header Toggle */}
+                <div className="absolute right-0 top-0 flex items-center gap-2 group">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    {showSidebar ? "Hide Sidebar" : "Show Sidebar"}
+                  </span>
+                  <button 
+                    onClick={toggleSidebar}
+                    className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white shadow-sm text-slate-400 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md active:scale-95"
+                  >
+                    {showSidebar ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
                     <h3
-                      className="max-w-4xl text-[3rem] leading-[0.92] tracking-[-0.07em] text-[#111111] md:text-[3.85rem]"
-                      style={{ fontFamily: "var(--font-reports-cormorant)" }}
+                      className="max-w-4xl text-4xl md:text-5xl font-black tracking-tight text-slate-800 leading-none"
+                      style={{ fontFamily: "var(--font-reports-display)" }}
                     >
                       Generated Reports
                     </h3>
-                    <p className="max-w-3xl text-sm leading-7 text-[#49536B]">
-                      Open generated reports, update report IDs, assign or reassign interviewers, manage visibility, and
-                      remove reports when necessary.
+                    <p className="max-w-3xl text-base text-slate-600 leading-relaxed">
+                      Open generated reports, update report IDs, assign or reassign interviewers, and manage visibility.
                     </p>
                   </div>
                 </div>
-
-                <div className="rounded-[1.9rem] border border-[#727D97] bg-[#CBD2DE] p-4">
-                  <div className="rounded-[1.4rem] border border-[#727D97] bg-[#E6E9F0] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {REPORT_STATUSES.map((status) => (
-                        <button
-                          key={status}
-                          className={`rounded-[1rem] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 ${
-                            statusFilter === status
-                              ? getFilterActiveClasses(status)
-                              : "border border-transparent bg-transparent text-[#49536B] hover:border-[#727D97] hover:bg-[#F7F7F1] hover:text-[#111111]"
-                          }`}
-                          onClick={() => setStatusFilter(status)}
-                          type="button"
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] p-4 xl:flex xl:h-full xl:flex-col">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6C86]">Status totals</p>
-                <div className="mt-4 flex flex-1 flex-col gap-3">
-                  <StatusTotal className="flex-1" label="Ready" value={metrics.ready} />
-                  <StatusTotal className="flex-1" label="Assigned" value={metrics.assigned} />
-                  <StatusTotal className="flex-1" label="Draft" value={metrics.draft} />
-                  <StatusTotal className="flex-1" label="Published" value={metrics.published} />
-                  <StatusTotal className="flex-1" label="Hidden" value={metrics.hidden} />
-                </div>
               </div>
             </section>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+              <div className="rounded-xl border border-slate-100 bg-slate-50 p-1.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {REPORT_STATUSES.map((status) => (
+                    <button
+                      key={status}
+                      className={`rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-widest transition-all duration-200 ${
+                        statusFilter === status
+                          ? "bg-blue-600 text-white shadow-md"
+                          : "text-slate-500 hover:bg-white hover:text-blue-700 hover:shadow-sm"
+                      }`}
+                      onClick={() => setStatusFilter(status)}
+                      type="button"
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
             {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
@@ -380,9 +390,24 @@ function AdminReportsContent() {
         )}
           </div>
 
-        <aside className="grid gap-5 self-start">
-          <AdminSessionLogPanel entries={sessionHistoryEntries} />
-        </aside>
+        {showSidebar && (
+          <aside className="grid gap-5 self-start transition-all duration-500 ease-in-out">
+            <AdminSessionLogPanel entries={sessionHistoryEntries} />
+            
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Status totals</p>
+              <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50">
+                <div className="divide-y divide-slate-200">
+                  <div className="px-4 py-3"><StatusTotal label="Ready" value={metrics.ready} /></div>
+                  <div className="px-4 py-3"><StatusTotal label="Assigned" value={metrics.assigned} /></div>
+                  <div className="px-4 py-3"><StatusTotal label="Draft" value={metrics.draft} /></div>
+                  <div className="px-4 py-3"><StatusTotal label="Published" value={metrics.published} /></div>
+                  <div className="px-4 py-3"><StatusTotal label="Hidden" value={metrics.hidden} /></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        )}
       </div>
     </div>
   );
@@ -474,9 +499,9 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
 
 function StatusTotal({ label, value, className }: { label: string; value: number; className?: string }) {
   return (
-    <div className={`${className ?? ""} flex items-center justify-between gap-3 rounded-[1rem] border border-[#727D97] bg-[#E6E9F0] px-3 py-3`}>
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86]">{label}</span>
-      <span className="text-sm font-semibold text-[#111111]">{value}</span>
+    <div className={`${className ?? ""} flex items-center justify-between gap-3`}>
+      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
+      <span className="text-sm font-semibold text-slate-800">{value}</span>
     </div>
   );
 }

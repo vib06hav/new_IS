@@ -10,7 +10,7 @@ import {
   PencilLine,
   Trash2,
 } from "lucide-react";
-import { Space_Grotesk } from "next/font/google";
+import { Libre_Franklin } from "next/font/google";
 import type { ApplicationListItem, InterviewerListItem } from "@/lib/types";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -24,10 +24,10 @@ import {
   SelectTrigger,
 } from "@/components/shadcn/select";
 
-const spaceGrotesk = Space_Grotesk({
+const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-reports-space",
+  weight: ["900"],
+  variable: "--font-reports-display",
 });
 
 export function AdminReportCard({
@@ -96,9 +96,9 @@ export function AdminReportCard({
 
   return (
     <article
-      className={`${spaceGrotesk.variable} rounded-[1.8rem] border border-[#727D97] bg-white text-[#121212] shadow-[0_18px_50px_rgba(114,125,151,0.14)]`}
+      className={`${libreFranklin.variable} rounded-3xl border border-slate-200 bg-white text-slate-900 shadow-[0_10px_30px_rgba(2,12,32,0.05)] transition-all hover:shadow-md`}
     >
-      <div className="flex items-start justify-between gap-4 border-b border-[#111111]/10 px-5 py-4">
+      <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             {item.is_hidden ? <StatusMark status="HIDDEN" /> : null}
@@ -123,7 +123,7 @@ export function AdminReportCard({
               </div>
             </div>
           ) : (
-            <h4 className="text-[2rem] leading-none tracking-[-0.07em] text-[#111111]" style={{ fontFamily: "var(--font-reports-space)" }}>
+            <h4 className="text-xl font-black tracking-tight text-slate-800" style={{ fontFamily: "var(--font-reports-display)" }}>
               {item.display_id}
             </h4>
           )}
@@ -137,7 +137,7 @@ export function AdminReportCard({
             <MoreHorizontal className="size-4" />
           </button>
           {overflowOpen ? (
-            <div className="absolute right-0 z-20 mt-2 min-w-44 rounded-[1rem] border border-[#727D97] bg-[#F7F7F1] p-2 shadow-[0_18px_44px_rgba(114,125,151,0.2)]">
+            <div className="absolute right-0 z-20 mt-2 min-w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl ring-1 ring-black ring-opacity-5">
               <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-[#49536B] transition-colors duration-200 hover:bg-[#E6E9F0]" onClick={() => { setOverflowOpen(false); onStartEdit(); }} type="button">
                 <span>Edit ID</span>
                 <PencilLine className="size-4" />
@@ -163,7 +163,7 @@ export function AdminReportCard({
           </div>
         </div>
 
-        <div className="rounded-[1.3rem] border border-[#111111]/10 bg-[#fafaf6] p-4">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6c6c64]">Assigned interviewer</p>
           {item.assigned_interviewer ? (
             <div className="mt-3 flex items-center gap-3">
@@ -188,27 +188,27 @@ export function AdminReportCard({
           )}
         </div>
 
-        <div className="rounded-[1.3rem] border border-[#111111]/10 bg-[#fafaf6] p-4">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6c6c64]">Assignment</p>
           <div className="mt-3 space-y-3">
             {canMutateAssignment ? (
               <Select value={selectedInterviewerId} onValueChange={(value) => onSelectedInterviewerChange(value ?? "")}>
-                <SelectTrigger className="h-auto w-full rounded-xl border-[#111111]/10 bg-[#fdfcf8] px-3 py-3 transition-all duration-200 hover:border-[#727D97] hover:bg-white">
+                <SelectTrigger className="h-auto w-full rounded-xl border-slate-200 bg-white px-3 py-3 transition-all duration-200 hover:border-blue-300 hover:shadow-sm">
                   {selectedInterviewer ? (
                     <div className="flex min-w-0 flex-1 items-center gap-2">
                       <Avatar className="size-8">
                         <AvatarFallback>{getInitials(selectedInterviewer.name)}</AvatarFallback>
                       </Avatar>
                       <span className="min-w-0 flex-1 space-y-0.5">
-                        <span className="block truncate font-medium text-[#111111]">{selectedInterviewer.name}</span>
-                        <span className="block truncate text-xs text-[#66685d]">{selectedInterviewer.email}</span>
+                        <span className="block truncate font-medium text-slate-800">{selectedInterviewer.name}</span>
+                        <span className="block truncate text-xs text-slate-500">{selectedInterviewer.email}</span>
                       </span>
                     </div>
                   ) : (
-                    <span className="text-sm text-[#66685d]">{canAssign ? "Choose interviewer" : "Choose new interviewer"}</span>
+                    <span className="text-sm text-slate-500">{canAssign ? "Choose interviewer" : "Choose new interviewer"}</span>
                   )}
                 </SelectTrigger>
-                <SelectContent className="rounded-2xl border border-[#111111]/10 bg-[#fdfcf8] shadow-[0_18px_38px_rgba(114,125,151,0.18)]">
+                <SelectContent className="rounded-2xl border border-slate-200 bg-white shadow-xl">
                   <SelectGroup>
                     <SelectLabel>Available interviewers</SelectLabel>
                     {interviewers.map((interviewer) => (
@@ -230,7 +230,7 @@ export function AdminReportCard({
               <div className="flex w-full items-center rounded-xl border border-[#111111]/10 bg-[#fdfcf8] px-3 py-3 text-sm text-[#66685d]">Assignment locked</div>
             )}
 
-            <button className="w-full rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition-all duration-200 hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-45" disabled={isBusy || !selectedInterviewerId || !canMutateAssignment} onClick={() => onAssign(canAssign ? "assign" : "reassign")} type="button">
+            <button className="w-full rounded-full bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-45" disabled={isBusy || !selectedInterviewerId || !canMutateAssignment} onClick={() => onAssign(canAssign ? "assign" : "reassign")} type="button">
               {isBusy ? "Saving..." : getAssignmentActionLabel(item)}
             </button>
           </div>
@@ -242,16 +242,16 @@ export function AdminReportCard({
 
 function BlacklineMeta({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.2rem] border border-[#111111]/10 bg-[#f7f7f1] px-4 py-3">
-      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#6a6a62]">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-[#111111]">{value}</p>
+    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-800">{value}</p>
     </div>
   );
 }
 
 function PrimaryLink({ href, label }: { href: string; label: string }) {
   return (
-    <Link className="inline-flex items-center gap-1 rounded-full bg-[#111111] px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#f7f8ec]" href={href}>
+    <Link className="inline-flex items-center gap-1 rounded-full bg-blue-600 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white shadow-sm transition-all hover:bg-blue-700" href={href}>
       {label}
       <ArrowUpRight className="size-3.5" />
     </Link>

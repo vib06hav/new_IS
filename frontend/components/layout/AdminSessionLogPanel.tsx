@@ -22,30 +22,30 @@ export function AdminSessionLogPanel({
   }, []);
 
   return (
-    <div className="rounded-[1.9rem] border border-[#727D97] bg-[#CBD2DE] p-5">
-      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#5F6C86]">Session log</p>
-      <p className="mt-3 text-sm leading-6 text-[#49536B]">Actions taken during this session appear here in order.</p>
-      <div className="mt-5 rounded-[1.4rem] border border-[#727D97] bg-[#E6E9F0]">
-        <div className="border-b border-[#727D97] px-4 py-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86]">Current session</p>
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Session log</p>
+      <p className="mt-3 text-sm leading-6 text-slate-600">Actions taken during this session appear here in order.</p>
+      <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50/50">
+        <div className="border-b border-slate-200/60 px-4 py-3">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Current session</p>
         </div>
         {entries.length > 0 ? (
-          <div className="divide-y divide-[#727D97]/45">
+          <div className="divide-y divide-slate-200/60">
             {entries.map((entry) => (
               <div key={entry.id} className="px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
-                        className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${getSessionLogToneClasses(entry.tone)}`}
+                        className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${getSessionLogToneClasses(entry.tone)}`}
                       >
                         {entry.action}
                       </span>
-                      <p className="text-sm font-semibold text-[#111111]">{entry.reportId}</p>
+                      <p className="text-sm font-semibold text-slate-800">{entry.reportId}</p>
                     </div>
-                    <p className="mt-2 text-sm leading-6 text-[#49536B]">{entry.detail}</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-500">{entry.detail}</p>
                   </div>
-                  <p className="shrink-0 pt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#5F6C86]">
+                  <p className="shrink-0 pt-0.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                     {formatSessionLogTime(entry.timestamp, now)}
                   </p>
                 </div>
@@ -84,10 +84,10 @@ function formatSessionLogTime(timestamp: number, now: number) {
 }
 
 function getSessionLogToneClasses(tone: AdminSessionHistoryTone) {
-  if (tone === "lime") return "bg-[#D7FF53] text-[#111111]";
-  if (tone === "blue") return "bg-[#198FF0] text-[#F7F7F1]";
-  if (tone === "cyan") return "bg-[#7CF0FF] text-[#111111]";
-  if (tone === "orange") return "bg-[#FFB347] text-[#111111]";
-  if (tone === "pink") return "bg-[#FF6B9D] text-[#111111]";
-  return "bg-[#5F6C86] text-[#F7F7F1]";
+  if (tone === "lime") return "bg-lime-100 text-lime-700 border border-lime-200";
+  if (tone === "blue") return "bg-blue-100 text-blue-700 border border-blue-200";
+  if (tone === "cyan") return "bg-cyan-100 text-cyan-700 border border-cyan-200";
+  if (tone === "orange") return "bg-orange-100 text-orange-700 border border-orange-200";
+  if (tone === "pink") return "bg-pink-100 text-pink-700 border border-pink-200";
+  return "bg-slate-100 text-slate-600 border border-slate-200";
 }

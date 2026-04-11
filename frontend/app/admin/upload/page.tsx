@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight, FileUp, Sparkles, Stars, Trash2 } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, FileUp, Sparkles, Trash2 } from "lucide-react";
 import {
-  Cormorant_Garamond,
+  Libre_Franklin,
   IBM_Plex_Sans,
 } from "next/font/google";
 import { fetchApplications, retryApplication, uploadApplication } from "@/lib/api";
@@ -46,17 +46,16 @@ type QueueRow =
       action: "retry" | "none";
     };
 
+const libreFranklin = Libre_Franklin({
+  subsets: ["latin"],
+  weight: ["900"],
+  variable: "--font-reports-display",
+});
+
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-reports-plex",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-reports-cormorant",
 });
 
 function sortQueueRows(rows: QueueRow[]) {
@@ -90,7 +89,23 @@ function AdminUploadContent() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [duplicateMessage, setDuplicateMessage] = useState<string | null>(null);
+  const [showSidebar, setShowSidebar] = useState(true);
   const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
+
+  // Load sidebar preference
+  useEffect(() => {
+    const saved = localStorage.getItem("agis_admin_sidebar_visible");
+    if (saved !== null) {
+      setShowSidebar(saved === "true");
+    }
+  }, []);
+
+  // Save sidebar preference
+  const toggleSidebar = () => {
+    const next = !showSidebar;
+    setShowSidebar(next);
+    localStorage.setItem("agis_admin_sidebar_visible", String(next));
+  };
 
   async function loadUploads() {
     try {
@@ -364,49 +379,55 @@ function AdminUploadContent() {
 
   return (
     <div
-      className={`${plexSans.variable} ${cormorant.variable} space-y-6`}
+      className={`${libreFranklin.variable} ${plexSans.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className={`grid gap-6 transition-all duration-500 ease-in-out ${showSidebar ? "xl:grid-cols-[1fr_22rem]" : "grid-cols-1"}`}>
         <div className="space-y-6">
-            <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
-              <div className="overflow-hidden rounded-[2rem] border border-[#727D97] bg-[linear-gradient(135deg,#c9d0dc_0%,#d8dbe2_40%,#ced4df_100%)] p-6 xl:h-full">
-                <div className="flex h-full flex-col">
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-[#5F6C86]">
-                    <span className="inline-flex items-center gap-2 text-[#111111]">
-                      <Stars className="size-3.5" />
-                      Document ingestion
-                    </span>
-                  </div>
-                  <div className="mt-5 space-y-4">
+            <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="relative">
+                {/* Header Toggle */}
+                <div className="absolute right-0 top-0 flex items-center gap-2 group">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    {showSidebar ? "Hide Sidebar" : "Show Sidebar"}
+                  </span>
+                  <button 
+                    onClick={toggleSidebar}
+                    className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white shadow-sm text-slate-400 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md active:scale-95"
+                  >
+                    {showSidebar ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
                     <h1
-                      className="max-w-4xl text-[3rem] leading-[0.92] tracking-[-0.07em] text-[#111111] md:text-[3.85rem]"
-                      style={{ fontFamily: "var(--font-reports-cormorant)" }}
+                      className="max-w-4xl text-4xl md:text-5xl font-black tracking-tight text-slate-800 leading-none"
+                      style={{ fontFamily: "var(--font-reports-display)" }}
                     >
                       Upload Queue
                     </h1>
-                    <p className="max-w-3xl text-sm leading-7 text-[#49536B]">
-                      Queue PDFs, monitor processing, retry failures, and remove stale items before they re-enter the
-                      pipeline.
+                    <p className="max-w-3xl text-base text-slate-600 leading-relaxed">
+                      Queue PDFs, monitor processing, retry failures, and remove stale items.
                     </p>
                   </div>
                 </div>
               </div>
-
-              <div className="rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] p-4 xl:h-full">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6C86]">Status totals</p>
-                <div className="mt-4 space-y-3">
-                  <MetricStrip label="Queued" value={metrics.queued} />
-                  <MetricStrip label="Processing" value={metrics.processing} />
-                  <MetricStrip label="Failed" value={metrics.failed} />
-                </div>
-              </div>
             </section>
 
-            <section className="grid gap-4 xl:grid-cols-[24rem_minmax(0,1fr)] xl:items-start">
-              <div className="rounded-[1.9rem] border border-[#727D97] bg-[#CBD2DE] p-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#5F6C86]">Add PDFs</p>
-                <div className="mt-4 flex flex-col gap-4 rounded-[1.4rem] border border-[#727D97] bg-[#F7F7F1] p-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Status totals</p>
+              <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+                <MetricStrip label="Queued" value={metrics.queued} />
+                <MetricStrip label="Processing" value={metrics.processing} />
+                <MetricStrip label="Failed" value={metrics.failed} />
+              </div>
+            </div>
+
+            <section className="grid gap-6 xl:grid-cols-[24rem_minmax(0,1fr)] xl:items-start">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Add PDFs</p>
+                <div className="mt-5 flex flex-col gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
                   <input
                     id="application-pdf"
                     className="sr-only"
@@ -416,31 +437,31 @@ function AdminUploadContent() {
                     onChange={handleFileSelection}
                   />
 
-                  <div className="rounded-[1.4rem] border border-dashed border-[#727D97] bg-[#E6E9F0] px-4 py-5 text-center">
-                    <div className="mx-auto grid size-11 place-items-center rounded-full bg-[#198FF0] text-[#F7F7F1]">
-                      <FileUp className="size-5" />
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-8 text-center transition-colors hover:border-blue-400">
+                    <div className="mx-auto grid size-12 place-items-center rounded-full bg-blue-100 text-blue-600">
+                      <FileUp className="size-6" />
                     </div>
-                    <div className="mt-4 flex flex-col items-center gap-3">
-                      <Badge variant={selectedFiles.length > 0 ? "secondary" : "outline"}>
+                    <div className="mt-5 flex flex-col items-center gap-4">
+                      <Badge variant={selectedFiles.length > 0 ? "secondary" : "outline"} className="px-3 py-1">
                         {selectedFiles.length > 0
                           ? `${selectedFiles.length} PDF${selectedFiles.length === 1 ? "" : "s"} selected`
                           : "No PDFs selected yet"}
                       </Badge>
                       <label
                         htmlFor="application-pdf"
-                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-[#727D97] bg-white px-4 py-2 text-sm font-semibold text-[#111111] transition hover:border-[#198FF0] hover:bg-[#EAF4FD]"
+                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-blue-500 hover:text-blue-700 hover:shadow-md"
                       >
                         Choose PDFs
                       </label>
                     </div>
                   </div>
 
-                  <Separator />
+                  <Separator className="bg-slate-200/60" />
 
-                  <div className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-[#727D97] bg-[#E6E9F0] px-4 py-3">
-                    <div className="flex items-center gap-2 text-sm text-[#49536B]">
-                      <Sparkles className="size-4 text-[#198FF0]" />
-                      <span>
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm text-blue-700">
+                      <Sparkles className="size-4" />
+                      <span className="text-xs font-medium">
                         {selectedFiles.length > 0
                           ? "Ready to append these PDFs to the upload queue"
                           : hasPendingBrowserWork
@@ -453,13 +474,13 @@ function AdminUploadContent() {
                     ) : null}
                   </div>
 
-                  <div className="rounded-[1.2rem] border border-[#FFB347]/45 bg-[#FFF1DF] px-4 py-3 text-sm text-[#8C5B1C]">
+                  <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-[11px] leading-relaxed text-amber-800">
                     Batch execution pauses if you refresh or leave this page. Any files already processed by the backend
                     stay saved with their latest status.
                   </div>
 
                   <ShadButton
-                    className="w-full justify-center bg-[#111111] text-[#F7F7F1] hover:bg-[#2B3444]"
+                    className="w-full justify-center bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md transition-all rounded-full h-11"
                     disabled={selectedFiles.length === 0}
                     onClick={handleAddToBatch}
                   >
@@ -482,11 +503,11 @@ function AdminUploadContent() {
                   </p>
                 ) : null}
 
-                <div className="rounded-[1.9rem] border border-[#727D97] bg-[#CBD2DE] p-5">
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#5F6C86]">Upload queue</p>
-                      <p className="mt-2 text-sm leading-6 text-[#49536B]">
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Upload queue</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
                         Queued, processing, and failed files stay visible in one operational list.
                       </p>
                     </div>
@@ -502,23 +523,23 @@ function AdminUploadContent() {
                       <p className="mt-2 text-sm text-[#5F6C86]">QUEUED, PROCESSING, and FAILED items appear here.</p>
                     </div>
                   ) : (
-                    <div className="mt-5 overflow-hidden rounded-[1.4rem] border border-[#727D97] bg-[#F7F7F1]">
-                      <div className="grid gap-3 border-b border-[#727D97] bg-[#E6E9F0] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86] md:grid-cols-[1.2fr_0.8fr_0.9fr_0.8fr]">
+                    <div className="mt-6 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm ring-1 ring-slate-100">
+                      <div className="grid gap-3 border-b border-slate-50 bg-slate-50 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-400 md:grid-cols-[1.2fr_0.8fr_0.9fr_0.8fr]">
                         <span>Application</span>
                         <span>Status</span>
                         <span>Created</span>
                         <span>Action</span>
                       </div>
 
-                      <div className="divide-y divide-[#727D97]/45">
+                      <div className="divide-y divide-slate-100">
                         {queueRows.map((row) => (
-                          <div key={row.key} className="grid gap-4 px-4 py-4 md:grid-cols-[1.2fr_0.8fr_0.9fr_0.8fr] md:items-center">
+                          <div key={row.key} className="grid gap-4 px-4 py-4 md:grid-cols-[1.2fr_0.8fr_0.9fr_0.8fr] md:items-center transition-colors hover:bg-slate-100/50">
                             <div className="space-y-1">
-                              <p className="text-base font-semibold tracking-[-0.03em] text-[#111111]">{row.label}</p>
-                              {row.kind === "pending" ? <p className="text-xs text-[#5F6C86]">{row.note}</p> : null}
+                              <p className="text-sm font-bold tracking-tight text-slate-800">{row.label}</p>
+                              {row.kind === "pending" ? <p className="text-[11px] text-slate-500">{row.note}</p> : null}
                             </div>
                             <UploadStatusMark status={row.status} />
-                            <p className="text-sm text-[#49536B]">{new Date(row.createdAt).toLocaleString()}</p>
+                            <p className="text-xs text-slate-500">{new Date(row.createdAt).toLocaleString()}</p>
                             <div className="flex items-center gap-2">
                               {row.action === "retry" && row.kind === "application" ? (
                                 <Button disabled={busyRetryId === row.id} onClick={() => void handleRetry(row.id)}>
@@ -546,7 +567,7 @@ function AdminUploadContent() {
             </section>
           </div>
 
-        <aside className="grid gap-5 self-start">
+        <aside className={`grid gap-5 self-start transition-all duration-500 ease-in-out ${showSidebar ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8 pointer-events-none hidden"}`}>
           <AdminSessionLogPanel entries={sessionHistoryEntries} />
         </aside>
       </div>
@@ -556,9 +577,9 @@ function AdminUploadContent() {
 
 function MetricStrip({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[1rem] border border-[#727D97] bg-[#CBD2DE] px-3 py-3">
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86]">{label}</span>
-      <span className="text-sm font-semibold text-[#111111]">{value}</span>
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 transition-all hover:bg-white hover:shadow-sm">
+      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{label}</span>
+      <span className="text-sm font-semibold text-slate-800">{value}</span>
     </div>
   );
 }
