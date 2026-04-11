@@ -73,7 +73,7 @@ export function ReviewPageOneSection({ data }: { data: unknown }) {
 
   return (
     <div className="space-y-4">
-      <section className="rounded-[1.8rem] border border-white/85 bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(239,246,255,0.88),rgba(224,231,255,0.7))] p-5 shadow-[0_20px_42px_rgba(148,163,184,0.16)]">
+      <section className="rounded-[1.8rem] border border-slate-200 bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(239,246,255,0.88),rgba(255,255,255,0.9))] p-5 shadow-[0_20px_42px_rgba(15,23,42,0.08)]">
         <div className="max-w-4xl space-y-3">
           <div className="space-y-2">
             <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[color:var(--muted)]">Application Overview</p>
@@ -100,7 +100,7 @@ export function ReviewPageOneSection({ data }: { data: unknown }) {
               pageData.familyMembers.map((member) => (
                 <article
                   key={member.label}
-                  className="rounded-[1.35rem] border border-[color:var(--line)] bg-white/84 p-4 shadow-[var(--card-shadow-soft)]"
+                  className="rounded-[1.35rem] border border-slate-200 bg-white/82 p-4 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
                 >
                   <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">
                     {member.label}
@@ -128,7 +128,7 @@ export function ReviewPageOneSection({ data }: { data: unknown }) {
               pageData.schoolHistory.map((school, index) => (
                 <article
                   key={school.entityId || `${school.level || "level"}-${index}`}
-                  className="grid gap-3 rounded-[1.3rem] border border-[color:var(--line)] bg-white/84 p-4 shadow-[var(--card-shadow-soft)] sm:grid-cols-[4.5rem_minmax(0,1fr)]"
+                  className="grid gap-3 rounded-[1.3rem] border border-slate-200 bg-white/82 p-4 shadow-[0_16px_30px_rgba(15,23,42,0.06)] sm:grid-cols-[4.5rem_minmax(0,1fr)]"
                 >
                   <div className="inline-flex h-fit w-fit min-w-[4.5rem] items-center justify-center rounded-full bg-[color:var(--accent-soft)] px-3 py-2 text-sm font-semibold text-[color:var(--accent-strong)]">
                     {school.level || `Stage ${index + 1}`}
@@ -894,7 +894,7 @@ function CompactMetric({ label, value }: { label: string; value?: string }) {
   }
 
   return (
-    <div className="min-w-[8.5rem] rounded-[1rem] border border-[color:var(--line)] bg-white/82 px-3 py-2 shadow-[var(--card-shadow-soft)]">
+    <div className="min-w-[8.5rem] rounded-[1rem] border border-slate-200 bg-white/82 px-3 py-2 shadow-[0_14px_26px_rgba(15,23,42,0.06)]">
       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)]">{label}</p>
       <p className="mt-1 text-sm font-semibold text-[color:var(--ink)]">{value}</p>
     </div>
@@ -922,15 +922,15 @@ function PageTwoPanel({
 }) {
   return (
     <section
-      className={`isolate overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(248,250,252,0.86))] shadow-[var(--card-shadow-soft)] transition-colors ${
+      className={`isolate overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_18px_36px_rgba(15,23,42,0.08)] transition-colors ${
         highlighted
-          ? "border-blue-300 shadow-[0_18px_32px_rgba(96,165,250,0.16)]"
-          : "border-[color:var(--line)]"
+          ? "border-blue-200 shadow-[0_18px_32px_rgba(59,130,246,0.12)]"
+          : "border-slate-200"
       }`}
       title={annotationTitle}
     >
       {tabs.length ? (
-        <div className="relative z-0 overflow-x-auto border-b border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(243,247,255,0.92),rgba(255,255,255,0.8))] px-4 pt-3">
+        <div className="relative z-0 overflow-x-auto border-b border-slate-200 bg-[linear-gradient(180deg,rgba(248,250,252,0.96),rgba(255,255,255,0.82))] px-4 pt-3">
           <div className="flex min-w-max items-end gap-2">
             {tabs.map((tab, index) => {
               const active = index === activeIndex;
@@ -947,8 +947,8 @@ function PageTwoPanel({
                   title={tab.title}
                   className={`relative touch-manipulation rounded-t-[1rem] border px-4 py-2.5 text-left transition-all focus:outline-none ${
                     active
-                      ? "z-10 border-[color:var(--line)] border-b-white bg-white text-[color:var(--ink)] shadow-[0_-4px_14px_rgba(148,163,184,0.12)]"
-                      : "z-0 border-transparent bg-white/45 text-[color:var(--muted)] hover:bg-white/70"
+                      ? "z-10 border-slate-200 border-b-white bg-white text-[color:var(--ink)] shadow-[0_-4px_14px_rgba(15,23,42,0.08)]"
+                      : "z-0 border-transparent bg-white/45 text-[color:var(--muted)] hover:bg-white/75"
                   }`}
                   aria-pressed={active}
                 >
@@ -1003,7 +1003,7 @@ function UserProvidedText({
 
 function EmptyStateCopy({ text }: { text: string }) {
   return (
-    <div className="rounded-[1.2rem] border border-dashed border-[color:var(--line)] bg-white/70 px-4 py-5 text-sm leading-6 text-[color:var(--muted)]">
+    <div className="rounded-[1.2rem] border border-dashed border-slate-300 bg-white/70 px-4 py-5 text-sm leading-6 text-[color:var(--muted)]">
       {text}
     </div>
   );

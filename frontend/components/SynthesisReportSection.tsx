@@ -148,8 +148,8 @@ export function SynthesisReportSection({
                           onClick={() => setSelectedThemeKey(themeKey)}
                           className={`block w-full rounded-[1.3rem] border p-4 text-left transition ${
                             active
-                              ? "border-blue-300 bg-[linear-gradient(145deg,rgba(239,246,255,0.96),rgba(255,255,255,0.92))] shadow-[0_18px_34px_rgba(148,163,184,0.14)]"
-                              : "border-[color:var(--line)] bg-white/82 shadow-[var(--card-shadow-soft)] hover:bg-white/92"
+                              ? "border-blue-200 bg-[linear-gradient(145deg,rgba(239,246,255,0.98),rgba(255,255,255,0.94))] shadow-[0_18px_34px_rgba(15,23,42,0.08)]"
+                              : "border-slate-200 bg-white/80 shadow-[0_16px_30px_rgba(15,23,42,0.06)] hover:bg-white/92"
                           }`}
                         >
                           <p className="text-sm font-semibold leading-6 text-[color:var(--ink)]">
@@ -167,7 +167,7 @@ export function SynthesisReportSection({
               <section className="space-y-4">
                 {activeTheme ? (
                   <>
-                    <article className="rounded-[1.5rem] border border-[color:var(--line)] bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(239,246,255,0.86),rgba(224,231,255,0.68))] p-5 shadow-[0_18px_34px_rgba(148,163,184,0.12)]">
+                    <article className="rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(239,246,255,0.88),rgba(255,255,255,0.9))] p-5 shadow-[0_18px_34px_rgba(15,23,42,0.08)]">
                       <div className="space-y-4">
                         <div className="space-y-2">
                           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">
@@ -194,7 +194,7 @@ export function SynthesisReportSection({
                         activeThemeSignals.map((signal, index) => (
                           <article
                             key={signal.signal_id || signal.title || index}
-                            className="rounded-[1.3rem] border border-[color:var(--line)] bg-white/84 p-5 shadow-[var(--card-shadow-soft)]"
+                            className="rounded-[1.3rem] border border-slate-200 bg-white/82 p-5 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
                           >
                             <div className="space-y-4">
                               <div className="space-y-2">
@@ -225,7 +225,7 @@ export function SynthesisReportSection({
                 groups.map((group, index) => (
                   <article
                     key={`${group.theme_id || "group"}-${index}`}
-                    className="rounded-[1.3rem] border border-[color:var(--line)] bg-white/82 p-5 shadow-[var(--card-shadow-soft)]"
+                    className="rounded-[1.3rem] border border-slate-200 bg-white/82 p-5 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       {group.theme_id ? <Tag>{group.theme_id}</Tag> : null}
@@ -363,7 +363,7 @@ function Tag({ children, tone = "default" }: { children: React.ReactNode; tone?:
 
 function EmptyDetail({ text }: { text: string }) {
   return (
-    <div className="rounded-[1.3rem] border border-dashed border-[color:var(--line-strong)] bg-white/72 px-5 py-6 text-sm text-[color:var(--muted)]">
+    <div className="rounded-[1.3rem] border border-dashed border-slate-300 bg-white/72 px-5 py-6 text-sm text-[color:var(--muted)]">
       {text}
     </div>
   );

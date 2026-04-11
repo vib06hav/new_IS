@@ -46,7 +46,7 @@ export function ReviewPackageSection({
     <div className="space-y-5">
       {controlledActiveTab === undefined && !onActiveTabChange ? (
         <div className="flex justify-end">
-          <div className="max-w-full rounded-[1.6rem] border border-[rgba(191,219,254,0.95)] bg-[linear-gradient(135deg,rgba(219,234,254,0.96),rgba(239,246,255,0.94),rgba(224,231,255,0.9))] px-3 py-3 shadow-[0_18px_36px_rgba(148,163,184,0.18),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur">
+          <div className="max-w-full rounded-[1.5rem] border border-slate-200 bg-white/80 px-3 py-3 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
             <SegmentedControl value={activeTab} onChange={setActiveTab} options={navOptions} />
           </div>
         </div>

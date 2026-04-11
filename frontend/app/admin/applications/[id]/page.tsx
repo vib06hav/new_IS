@@ -2,15 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { ArrowUpRight } from "lucide-react";
+import { IBM_Plex_Sans, Libre_Franklin } from "next/font/google";
 import { fetchApplicationDetail, fetchSourcePdf } from "@/lib/api";
 import type { ApplicationDetailAdmin } from "@/lib/types";
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ReviewPackageSection } from "@/components/ReviewPackageSection";
 import { usePolling } from "@/lib/usePolling";
 import { AdminShell } from "@/components/layout/AdminShell";
+
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-reports-plex",
+});
+
+const libreFranklin = Libre_Franklin({
+  subsets: ["latin"],
+  weight: ["900"],
+  variable: "--font-display",
+  display: "swap",
+});
 
 export default function AdminApplicationDetailPage() {
   const params = useParams<{ id: string }>();
@@ -84,23 +98,39 @@ export default function AdminApplicationDetailPage() {
 
   return (
     <AdminShell>
-      <div className="space-y-6">
-        <section className="rounded-[1.35rem] border border-white/85 bg-white/75 px-4 py-3 shadow-[0_10px_24px_rgba(148,163,184,0.1)] backdrop-blur">
+      <div
+        className={`${plexSans.variable} ${libreFranklin.variable} space-y-6`}
+        style={{ fontFamily: "var(--font-reports-plex)" }}
+      >
+        {error ? (
+          <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+            {error}
+          </p>
+        ) : null}
+
+        <section className="rounded-[1.8rem] border border-slate-200 bg-white/80 p-4 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2.5">
               <StatusBadge status={item.status} />
               <MetaPill label="Application ID" value={item.display_id} />
               <MetaPill label="Created" value={createdAt} />
               <MetaPill label="Interviewer" value={assignee} />
             </div>
-            <Button variant="secondary" disabled={openingPdf} onClick={() => void handleOpenPdf()}>
+
+            <button
+              className="inline-flex items-center gap-1 rounded-full bg-blue-700 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-55"
+              disabled={openingPdf}
+              onClick={() => void handleOpenPdf()}
+              type="button"
+            >
               {openingPdf ? "Opening PDF..." : "Open source PDF"}
-            </Button>
+              <ArrowUpRight className="size-3.5" />
+            </button>
           </div>
         </section>
 
         {item.status === "READY" ? (
-          <Card title="Report Generation" description="Admin-controlled completion step">
+          <Card title="Report Generation" description="Admin-controlled completion step" eyebrow={null}>
             <p className="text-sm leading-7 text-[color:var(--muted)]">
               Pages 1-3 are ready. Generate the final report from the reports dashboard to unlock assignment and full
               review visibility.
@@ -121,9 +151,9 @@ export default function AdminApplicationDetailPage() {
 
 function MetaPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-full border border-[color:var(--line)] bg-white/88 px-3 py-2 shadow-sm">
-      <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)]">{label}: </span>
-      <span className="text-sm text-[color:var(--ink)]">{value}</span>
+    <div className="rounded-full border border-slate-200 bg-white px-3 py-2 shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
+      <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">{label}: </span>
+      <span className="text-sm text-slate-800">{value}</span>
     </div>
   );
 }
