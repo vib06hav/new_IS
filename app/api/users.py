@@ -17,14 +17,13 @@ from app.auth.service import admin_set_user_password, create_interviewer, update
 from app.database import get_db
 from app.models.application import Application
 from app.models.assignment import Assignment
-from app.models.draft import Draft
 from app.models.user import User
 
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-ACTIVE_ASSIGNMENT_STATUSES = {"ASSIGNED", "DRAFT"}
+ACTIVE_ASSIGNMENT_STATUSES = {"ASSIGNED"}
 
 
 def _get_interviewer_or_404(db: Session, user_id: UUID) -> User:
@@ -39,7 +38,7 @@ def _get_interviewer_or_404(db: Session, user_id: UUID) -> User:
 def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssignmentSummary:
     applications = (
         db.query(Application)
-        .filter(Application.status.in_(["READY", "ASSIGNED", "DRAFT"]))
+        .filter(Application.status.in_(["COMPLETE", "ASSIGNED"]))
         .order_by(Application.created_at.desc())
         .all()
     )
@@ -57,7 +56,7 @@ def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssi
 
     for application in applications:
         assignment = assignments_by_application.get(application.id)
-        if application.status == "READY" and not assignment:
+        if application.status == "COMPLETE" and not assignment:
             available_to_assign.append(
                 InterviewerAssignmentSummaryItem(
                     application_id=application.id,
@@ -185,15 +184,13 @@ def save_interviewer_assignments(
         application = applications_by_id.get(application_id)
         if not application:
             raise HTTPException(status_code=404, detail=f"Application {application_id} not found")
-        if application.status not in {"READY", "ASSIGNED", "DRAFT"}:
-            raise HTTPException(status_code=409, detail="Only READY, ASSIGNED, or DRAFT applications can be staged")
-        if application.status == "PUBLISHED":
-            raise HTTPException(status_code=409, detail="Published applications cannot be assigned here")
+        if application.status not in {"COMPLETE", "ASSIGNED"}:
+            raise HTTPException(status_code=409, detail="Only COMPLETE or ASSIGNED applications can be staged")
 
         assignment = assignments_by_application.get(application_id)
         if not assignment:
-            if application.status != "READY":
-                raise HTTPException(status_code=409, detail="Only READY applications can be newly assigned")
+            if application.status != "COMPLETE":
+                raise HTTPException(status_code=409, detail="Only COMPLETE applications can be newly assigned")
             new_assignment = Assignment(
                 application_id=application.id,
                 interviewer_id=interviewer.id,
@@ -206,7 +203,6 @@ def save_interviewer_assignments(
         if assignment.interviewer_id == interviewer.id:
             continue
 
-        db.query(Draft).filter(Draft.application_id == application_id).delete()
         assignment.interviewer_id = interviewer.id
         assignment.assigned_by = current_user.id
         assignment.assigned_at = datetime.utcnow()
@@ -218,8 +214,7 @@ def save_interviewer_assignments(
 
         application = applications_by_id.get(assignment.application_id)
         if application and application.status in ACTIVE_ASSIGNMENT_STATUSES:
-            db.query(Draft).filter(Draft.application_id == assignment.application_id).delete()
-            application.status = "READY"
+            application.status = "COMPLETE"
         db.delete(assignment)
 
     db.commit()
@@ -296,7 +291,6 @@ def delete_interviewer(
 
     assignments = db.query(Assignment).filter(Assignment.interviewer_id == user_id).all()
     for assignment in assignments:
-        db.query(Draft).filter(Draft.application_id == assignment.application_id).delete()
         db.delete(assignment)
 
     db.delete(interviewer)

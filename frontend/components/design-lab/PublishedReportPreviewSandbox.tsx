@@ -67,10 +67,10 @@ export function PublishedReportPreviewSandbox() {
                         className="max-w-4xl text-[3rem] leading-[0.92] tracking-[-0.07em] text-[#111111] md:text-[3.7rem]"
                         style={{ fontFamily: "var(--font-reports-cormorant)" }}
                       >
-                        Published report mock
+                        Final report mock
                       </h1>
                       <p className="max-w-3xl text-sm leading-7 text-[#49536B]">
-                        Frontend-only preview of the final interviewer report presentation using mock published data assigned
+                        Frontend-only preview of the final interviewer report presentation using mock completed data assigned
                         to vib.
                       </p>
                     </div>
@@ -105,7 +105,7 @@ export function PublishedReportPreviewSandbox() {
             <section className="rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] p-4 shadow-[0_18px_36px_rgba(114,125,151,0.12)]">
               <div className="space-y-1">
                 <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#5F6C86]">Report pages</p>
-                <h2 className="text-[1.05rem] font-semibold tracking-[-0.03em] text-[#111111]">Published navigation</h2>
+                <h2 className="text-[1.05rem] font-semibold tracking-[-0.03em] text-[#111111]">Final report navigation</h2>
               </div>
               <div className="mt-3 rounded-[1.1rem] border border-[#727D97] bg-[#F7F7F1] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]">
                 <SegmentedControl value={activePageTab} onChange={setActivePageTab} options={pageOptions} />
@@ -115,7 +115,7 @@ export function PublishedReportPreviewSandbox() {
             {item.review_package ? (
               <ReviewPackageSection
                 reviewPackage={item.review_package}
-                annotationSource={item.latest_draft?.content}
+                annotationSource={item.final_report?.content}
                 activeTab={activePageTab}
                 onActiveTabChange={setActivePageTab}
               />

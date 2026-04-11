@@ -18,7 +18,7 @@ import { usePolling } from "@/lib/usePolling";
 import { InterviewerShell } from "@/components/layout/InterviewerShell";
 import { InterviewerReportCard } from "@/components/interviewer/InterviewerReportCard";
 
-const REPORT_STATUSES = ["ALL", "DRAFT", "PUBLISHED", "HIDDEN"] as const;
+const REPORT_STATUSES = ["ALL", "ASSIGNED", "HIDDEN"] as const;
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -62,8 +62,7 @@ export default function InterviewerDashboardPage() {
   const metrics = useMemo(
     () => ({
       all: items.filter((item) => !item.is_hidden_for_interviewer).length,
-      drafts: items.filter((item) => !item.is_hidden_for_interviewer && item.status === "DRAFT").length,
-      published: items.filter((item) => !item.is_hidden_for_interviewer && item.status === "PUBLISHED").length,
+      assigned: items.filter((item) => !item.is_hidden_for_interviewer && item.status === "ASSIGNED").length,
       hidden: items.filter((item) => item.is_hidden_for_interviewer).length,
     }),
     [items],
@@ -122,8 +121,7 @@ export default function InterviewerDashboardPage() {
                   Your Reports
                 </h3>
                 <p className="max-w-3xl text-sm leading-7 text-[#49536B]">
-                  Open your reports, track what is still in draft, review what is already published, and hide reports from
-                  your personal workspace when you need a cleaner queue.
+                  Open your assigned reports and hide reports from your personal workspace when you need a cleaner queue.
                 </p>
               </div>
             </div>
@@ -154,8 +152,7 @@ export default function InterviewerDashboardPage() {
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6C86]">Status totals</p>
             <div className="mt-4 flex flex-1 flex-col gap-3">
               <StatusTotal className="flex-1" label="All" value={metrics.all} />
-              <StatusTotal className="flex-1" label="Draft" value={metrics.drafts} />
-              <StatusTotal className="flex-1" label="Published" value={metrics.published} />
+              <StatusTotal className="flex-1" label="Assigned" value={metrics.assigned} />
               <StatusTotal className="flex-1" label="Hidden" value={metrics.hidden} />
             </div>
           </div>
@@ -196,8 +193,7 @@ function StatusTotal({ label, value, className }: { label: string; value: number
 
 function getFilterActiveClasses(status: (typeof REPORT_STATUSES)[number]) {
   if (status === "ALL") return "bg-[#198FF0] text-[#111111] shadow-[0_8px_20px_rgba(25,143,240,0.28)]";
-  if (status === "DRAFT") return "bg-[#ffb347] text-[#111111] shadow-[0_8px_20px_rgba(255,179,71,0.24)]";
-  if (status === "PUBLISHED") return "bg-[#ff6b9d] text-[#111111] shadow-[0_8px_20px_rgba(255,107,157,0.22)]";
+  if (status === "ASSIGNED") return "bg-[#7cf0ff] text-[#111111] shadow-[0_8px_20px_rgba(124,240,255,0.22)]";
   return "bg-[#8A94A6] text-[#111111] shadow-[0_8px_20px_rgba(138,148,166,0.24)]";
 }
 
@@ -205,21 +201,14 @@ function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
   if (status === "ALL") {
     return {
       title: "No visible reports right now.",
-      description: "Draft and published reports assigned to you will appear here once they are available.",
+      description: "Assigned reports will appear here once they are available.",
     };
   }
 
-  if (status === "DRAFT") {
+  if (status === "ASSIGNED") {
     return {
-      title: "No draft reports yet.",
-      description: "Reports you are still refining will appear here.",
-    };
-  }
-
-  if (status === "PUBLISHED") {
-    return {
-      title: "No published reports yet.",
-      description: "Reports you have already published will appear here.",
+      title: "No assigned reports yet.",
+      description: "Reports currently routed to you will appear here.",
     };
   }
 

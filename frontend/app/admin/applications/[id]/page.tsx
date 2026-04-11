@@ -99,11 +99,11 @@ export default function AdminApplicationDetailPage() {
           </div>
         </section>
 
-        {item.status === "DRAFT" ? (
-          <Card title="Draft Status" description="Admin visibility before publish">
+        {item.status === "READY" ? (
+          <Card title="Report Generation" description="Admin-controlled completion step">
             <p className="text-sm leading-7 text-[color:var(--muted)]">
-              An interviewer draft exists, but the written assessment remains private until publish. You can continue
-              reviewing the application summary and source material in the meantime.
+              Pages 1-3 are ready. Generate the final report from the reports dashboard to unlock assignment and full
+              review visibility.
             </p>
           </Card>
         ) : null}
@@ -111,7 +111,7 @@ export default function AdminApplicationDetailPage() {
         {item.review_package ? (
           <ReviewPackageSection
             reviewPackage={item.review_package}
-            annotationSource={item.published_draft?.content}
+            annotationSource={item.final_report?.content}
           />
         ) : null}
       </div>

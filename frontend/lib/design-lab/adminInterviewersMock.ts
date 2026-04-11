@@ -97,7 +97,7 @@ export const adminInterviewersSandboxState: AdminInterviewerSandboxState = {
       {
         application_id: "app-001",
         application_display_id: "PLK-2026-0142",
-        status: "READY",
+        status: "COMPLETE",
         current_interviewer: interviewerA,
       },
       {
@@ -109,13 +109,13 @@ export const adminInterviewersSandboxState: AdminInterviewerSandboxState = {
       {
         application_id: "app-003",
         application_display_id: "PLK-2026-0157",
-        status: "DRAFT",
+        status: "ASSIGNED",
         current_interviewer: interviewerA,
       },
       {
         application_id: "app-004",
         application_display_id: "PLK-2026-0163",
-        status: "READY",
+        status: "COMPLETE",
         current_interviewer: interviewerA,
       },
     ],
@@ -123,12 +123,12 @@ export const adminInterviewersSandboxState: AdminInterviewerSandboxState = {
       {
         application_id: "app-005",
         application_display_id: "PLK-2026-0169",
-        status: "READY",
+        status: "COMPLETE",
       },
       {
         application_id: "app-006",
         application_display_id: "PLK-2026-0171",
-        status: "READY",
+        status: "COMPLETE",
       },
       {
         application_id: "app-007",
@@ -146,7 +146,7 @@ export const adminInterviewersSandboxState: AdminInterviewerSandboxState = {
       {
         application_id: "app-009",
         application_display_id: "PLK-2026-0189",
-        status: "DRAFT",
+        status: "ASSIGNED",
         current_interviewer: interviewerC,
       },
       {

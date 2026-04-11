@@ -6,25 +6,29 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.agents.orchestrator import run_deterministic_pipeline
+from app.agents.orchestrator import run_deterministic_pipeline, run_synthesis_pipeline
 from app.api.helpers import (
     build_application_list_item,
     build_assignment_list_item,
+    build_final_report_summary,
+    get_canonical_record,
     get_application_or_404,
     get_assignment_for_application,
+    get_final_report,
 )
 from app.api.schemas import (
     ApplicationDisplayIdUpdateRequest,
     ApplicationListItem,
     AssignmentListItem,
     AssignmentUpsertRequest,
+    FinalReportMutationResponse,
 )
 from app.auth.dependencies import require_admin
 from app.database import get_db
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
-from app.models.draft import Draft
+from app.models.final_report import FinalReport
 from app.models.user import User
 
 
@@ -39,7 +43,7 @@ def _get_interviewer_or_400(db: Session, interviewer_id: UUID) -> User:
 
 
 def _delete_application_with_related_data(db: Session, application: Application) -> None:
-    db.query(Draft).filter(Draft.application_id == application.id).delete()
+    db.query(FinalReport).filter(FinalReport.application_id == application.id).delete()
     db.query(CanonicalRecord).filter(CanonicalRecord.application_id == application.id).delete()
     db.query(Assignment).filter(Assignment.application_id == application.id).delete()
     db.delete(application)
@@ -80,12 +84,112 @@ def retry_application(
     if application.status != "FAILED":
         raise HTTPException(status_code=409, detail="Only FAILED applications can be retried")
 
-    application.status = "PROCESSING"
-    application.last_activity_at = datetime.utcnow()
-    db.commit()
-    run_deterministic_pipeline(str(application_id), application.file_path, db)
-    db.refresh(application)
-    return build_application_list_item(application)
+    canonical_record = get_canonical_record(db, application_id)
+    final_report = get_final_report(db, application_id)
+
+    try:
+        if canonical_record and not final_report:
+            synthesis_result = run_synthesis_pipeline(
+                str(application_id),
+                canonical_record.canonical_data,
+                db=db,
+                persisted_review=canonical_record,
+            )
+            ros_output = synthesis_result.get("ros_v1")
+            if not isinstance(ros_output, dict):
+                raise HTTPException(status_code=502, detail="Final report generation failed before a report was produced.")
+
+            report_version = str((ros_output.get("report_metadata") or {}).get("report_version") or "ROS_v1")
+            db.add(
+                FinalReport(
+                    application_id=application_id,
+                    content=ros_output,
+                    generated_by=current_user.id,
+                    report_version=report_version,
+                )
+            )
+            application.status = "COMPLETE"
+            application.last_activity_at = datetime.utcnow()
+            db.commit()
+        else:
+            application.status = "PROCESSING"
+            application.last_activity_at = datetime.utcnow()
+            db.commit()
+            run_deterministic_pipeline(str(application_id), application.file_path, db)
+
+        db.refresh(application)
+        return build_application_list_item(application)
+    except HTTPException:
+        db.rollback()
+        application.status = "FAILED"
+        application.last_activity_at = datetime.utcnow()
+        db.commit()
+        raise
+    except Exception:
+        db.rollback()
+        application.status = "FAILED"
+        application.last_activity_at = datetime.utcnow()
+        db.commit()
+        raise
+
+
+@router.post("/applications/{application_id}/generate-report", response_model=FinalReportMutationResponse)
+def generate_final_report(
+    application_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    application = get_application_or_404(db, application_id)
+    if application.status != "READY":
+        raise HTTPException(status_code=409, detail="Only READY applications can generate a final report")
+
+    canonical_record = get_canonical_record(db, application_id)
+    if not canonical_record:
+        raise HTTPException(status_code=409, detail="Canonical data not available")
+
+    if get_final_report(db, application_id):
+        raise HTTPException(status_code=409, detail="Final report already exists")
+
+    try:
+        synthesis_result = run_synthesis_pipeline(
+            str(application_id),
+            canonical_record.canonical_data,
+            db=db,
+            persisted_review=canonical_record,
+        )
+        ros_output = synthesis_result.get("ros_v1")
+        if not isinstance(ros_output, dict):
+            raise HTTPException(status_code=502, detail="Final report generation failed before a report was produced.")
+
+        report_version = str((ros_output.get("report_metadata") or {}).get("report_version") or "ROS_v1")
+        final_report = FinalReport(
+            application_id=application_id,
+            content=ros_output,
+            generated_by=current_user.id,
+            report_version=report_version,
+        )
+        db.add(final_report)
+        application.status = "COMPLETE"
+        application.last_activity_at = datetime.utcnow()
+        db.commit()
+        db.refresh(final_report)
+        return FinalReportMutationResponse(
+            application_id=application_id,
+            status=application.status,
+            final_report=build_final_report_summary(final_report),
+        )
+    except HTTPException:
+        db.rollback()
+        application.status = "FAILED"
+        application.last_activity_at = datetime.utcnow()
+        db.commit()
+        raise
+    except Exception:
+        db.rollback()
+        application.status = "FAILED"
+        application.last_activity_at = datetime.utcnow()
+        db.commit()
+        raise
 
 
 @router.post("/applications/{application_id}/assign", response_model=ApplicationListItem)
@@ -96,8 +200,8 @@ def assign_application(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status != "READY":
-        raise HTTPException(status_code=409, detail="Only READY applications can be assigned")
+    if application.status != "COMPLETE":
+        raise HTTPException(status_code=409, detail="Only COMPLETE applications can be assigned")
 
     interviewer = _get_interviewer_or_400(db, payload.interviewer_id)
     existing_assignment = get_assignment_for_application(db, application_id)
@@ -201,15 +305,14 @@ def reassign_application(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status not in {"ASSIGNED", "DRAFT"}:
-        raise HTTPException(status_code=409, detail="Only ASSIGNED or DRAFT applications can be reassigned")
+    if application.status != "ASSIGNED":
+        raise HTTPException(status_code=409, detail="Only ASSIGNED applications can be reassigned")
 
     interviewer = _get_interviewer_or_400(db, payload.interviewer_id)
     assignment = get_assignment_for_application(db, application_id)
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
 
-    db.query(Draft).filter(Draft.application_id == application_id).delete()
     assignment.interviewer_id = interviewer.id
     assignment.assigned_by = current_user.id
     assignment.assigned_at = datetime.utcnow()

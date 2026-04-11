@@ -10,7 +10,7 @@ from app.api.schemas import (
     ApplicationListItem,
     AssignmentListItem,
     CanonicalSummary,
-    DraftSummary,
+    FinalReportSummary,
     InterviewerListItem,
     ReviewPackageSummary,
     ReviewPages123,
@@ -19,7 +19,7 @@ from app.api.schemas import (
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
-from app.models.draft import Draft
+from app.models.final_report import FinalReport
 from app.models.user import User
 from app.projection.ros_projector import project_ros
 
@@ -35,29 +35,14 @@ def get_assignment_for_application(db: Session, application_id: UUID) -> Optiona
     return db.query(Assignment).filter(Assignment.application_id == application_id).first()
 
 
-def get_latest_draft(db: Session, application_id: UUID) -> Optional[Draft]:
-    drafts = (
-        db.query(Draft)
-        .filter(Draft.application_id == application_id)
-        .order_by(Draft.version.desc(), Draft.created_at.desc())
-        .all()
+def get_final_report(db: Session, application_id: UUID) -> Optional[FinalReport]:
+    final_report = (
+        db.query(FinalReport)
+        .filter(FinalReport.application_id == application_id)
+        .first()
     )
-    for draft in drafts:
-        if isinstance(draft.content, dict):
-            return draft
-    return None
-
-
-def get_published_draft(db: Session, application_id: UUID) -> Optional[Draft]:
-    drafts = (
-        db.query(Draft)
-        .filter(Draft.application_id == application_id, Draft.is_published.is_(True))
-        .order_by(Draft.version.desc(), Draft.created_at.desc())
-        .all()
-    )
-    for draft in drafts:
-        if isinstance(draft.content, dict):
-            return draft
+    if final_report and isinstance(final_report.content, dict):
+        return final_report
     return None
 
 
@@ -109,15 +94,14 @@ def build_user_summary(user: Optional[User]) -> Optional[UserSummary]:
     return UserSummary(id=user.id, name=user.name, email=user.email)
 
 
-def build_draft_summary(draft: Optional[Draft]) -> Optional[DraftSummary]:
-    if not draft or not isinstance(draft.content, dict):
+def build_final_report_summary(final_report: Optional[FinalReport]) -> Optional[FinalReportSummary]:
+    if not final_report or not isinstance(final_report.content, dict):
         return None
-    return DraftSummary(
-        id=draft.id,
-        version=draft.version,
-        is_published=draft.is_published,
-        created_at=draft.created_at,
-        content=draft.content,
+    return FinalReportSummary(
+        id=final_report.id,
+        report_version=final_report.report_version,
+        created_at=final_report.created_at,
+        content=final_report.content,
     )
 
 
@@ -142,7 +126,7 @@ def build_admin_detail(
     application: Application,
     interviewer: Optional[User],
     review_package: Optional[ReviewPackageSummary],
-    published_draft: Optional[Draft],
+    final_report: Optional[FinalReport],
 ) -> ApplicationDetailAdmin:
     return ApplicationDetailAdmin(
         id=application.id,
@@ -152,7 +136,7 @@ def build_admin_detail(
         last_activity_at=application.last_activity_at,
         assigned_interviewer=build_user_summary(interviewer),
         review_package=review_package,
-        published_draft=build_draft_summary(published_draft),
+        final_report=build_final_report_summary(final_report),
     )
 
 
@@ -161,7 +145,7 @@ def build_interviewer_detail(
     assignment: Optional[Assignment],
     interviewer: Optional[User],
     review_package: Optional[ReviewPackageSummary],
-    latest_draft: Optional[Draft],
+    final_report: Optional[FinalReport],
 ) -> ApplicationDetailInterviewer:
     return ApplicationDetailInterviewer(
         id=application.id,
@@ -172,7 +156,7 @@ def build_interviewer_detail(
         is_hidden_for_interviewer=assignment.is_hidden_for_interviewer if assignment else False,
         assigned_interviewer=build_user_summary(interviewer),
         review_package=review_package,
-        latest_draft=build_draft_summary(latest_draft),
+        final_report=build_final_report_summary(final_report),
     )
 
 

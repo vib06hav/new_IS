@@ -15,8 +15,7 @@ from app.api.helpers import (
     get_application_or_404,
     get_assignment_for_application,
     get_canonical_record,
-    get_latest_draft,
-    get_published_draft,
+    get_final_report,
 )
 from app.api.schemas import (
     ApplicationDetailAdmin,
@@ -35,6 +34,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/applications", tags=["Applications"])
+
+
+def _handle_application_insert_integrity_error(exc: IntegrityError) -> HTTPException:
+    constraint_name = getattr(getattr(exc.orig, "diag", None), "constraint_name", None)
+    if constraint_name == "uq_applications_display_id":
+        return HTTPException(status_code=409, detail="Application display ID already exists")
+    logger.exception("Application insert failed due to an unexpected integrity error", exc_info=exc)
+    return HTTPException(status_code=500, detail="Failed to create application record")
 
 
 def derive_display_id(filename: str) -> str:
@@ -125,7 +132,7 @@ def upload_application(
         db.rollback()
         if os.path.exists(file_path):
             os.remove(file_path)
-        raise HTTPException(status_code=409, detail="Application display ID already exists") from exc
+        raise _handle_application_insert_integrity_error(exc) from exc
     db.refresh(db_app)
 
     try:
@@ -171,14 +178,14 @@ def get_application(
     review_package = build_review_package_summary(application, canonical_record)
 
     if current_user.role == "admin":
-        published_draft = get_published_draft(db, application_id)
-        return build_admin_detail(application, assigned_user, review_package, published_draft)
+        final_report = get_final_report(db, application_id)
+        return build_admin_detail(application, assigned_user, review_package, final_report)
 
     if not assignment or assignment.interviewer_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to view this application")
 
-    latest_draft = get_latest_draft(db, application_id)
-    return build_interviewer_detail(application, assignment, assigned_user, review_package, latest_draft)
+    final_report = get_final_report(db, application_id)
+    return build_interviewer_detail(application, assignment, assigned_user, review_package, final_report)
 
 
 @router.get("/{application_id}/source-pdf")

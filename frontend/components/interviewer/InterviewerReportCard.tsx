@@ -123,8 +123,6 @@ function PrimaryLink({ href, label }: { href: string; label: string }) {
 function StatusMark({ status }: { status: string }) {
   const styles = {
     ASSIGNED: "bg-[#7CF0FF] text-[#111111]",
-    DRAFT: "bg-[#ffb347] text-[#111111]",
-    PUBLISHED: "bg-[#ff6b9d] text-[#111111]",
     HIDDEN: "bg-[#8A94A6] text-[#111111]",
   };
 

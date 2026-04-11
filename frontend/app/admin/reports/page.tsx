@@ -12,6 +12,7 @@ import {
   deleteApplication,
   fetchApplications,
   fetchInterviewers,
+  generateReport,
   hideApplication,
   reassignApplication,
   unhideApplication,
@@ -27,7 +28,7 @@ import { AdminSessionLogPanel } from "@/components/layout/AdminSessionLogPanel";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { AdminReportCard } from "@/components/admin/AdminReportCard";
 
-const REPORT_STATUSES = ["ALL", "READY", "ASSIGNED", "DRAFT", "PUBLISHED", "HIDDEN"] as const;
+const REPORT_STATUSES = ["ALL", "READY", "COMPLETE", "ASSIGNED", "HIDDEN"] as const;
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -56,13 +57,14 @@ function AdminReportsContent() {
   const [statusFilter, setStatusFilter] = useState<(typeof REPORT_STATUSES)[number]>("ALL");
   const [loading, setLoading] = useState(true);
   const [busyAppId, setBusyAppId] = useState<string | null>(null);
+  const [generatingAppId, setGeneratingAppId] = useState<string | null>(null);
   const [hiddenBusyAppId, setHiddenBusyAppId] = useState<string | null>(null);
   const [deletingAppId, setDeletingAppId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [selectedInterviewerByApp, setSelectedInterviewerByApp] = useState<Record<string, string>>({});
   const [editingDisplayIdAppId, setEditingDisplayIdAppId] = useState<string | null>(null);
-  const [draftDisplayIdByApp, setDraftDisplayIdByApp] = useState<Record<string, string>>({});
+  const [pendingDisplayIdByApp, setPendingDisplayIdByApp] = useState<Record<string, string>>({});
   const [savingDisplayIdAppId, setSavingDisplayIdAppId] = useState<string | null>(null);
   const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
 
@@ -141,6 +143,32 @@ function AdminReportsContent() {
     }
   }
 
+  async function handleGenerate(applicationId: string) {
+    setGeneratingAppId(applicationId);
+    setMessage(null);
+    setError(null);
+    try {
+      const report = items.find((item) => item.id === applicationId);
+      await generateReport(applicationId);
+      setMessage("Final report generated.");
+
+      if (report) {
+        addEntry({
+          action: "Generated",
+          reportId: report.display_id,
+          detail: "Pages 4-5 and annotations were created for assignment-ready review.",
+          tone: "lime",
+        });
+      }
+
+      await loadData();
+    } catch (generationError) {
+      setError(generationError instanceof Error ? generationError.message : "Final report generation failed.");
+    } finally {
+      setGeneratingAppId(null);
+    }
+  }
+
   async function toggleHidden(applicationId: string, nextHidden: boolean) {
     setHiddenBusyAppId(applicationId);
     setMessage(null);
@@ -207,14 +235,14 @@ function AdminReportsContent() {
 
   function startEditingDisplayId(item: ApplicationListItem) {
     setEditingDisplayIdAppId(item.id);
-    setDraftDisplayIdByApp((current) => ({ ...current, [item.id]: item.display_id }));
+    setPendingDisplayIdByApp((current) => ({ ...current, [item.id]: item.display_id }));
     setMessage(null);
     setError(null);
   }
 
   function cancelEditingDisplayId(applicationId: string) {
     setEditingDisplayIdAppId((current) => (current === applicationId ? null : current));
-    setDraftDisplayIdByApp((current) => {
+    setPendingDisplayIdByApp((current) => {
       const next = { ...current };
       delete next[applicationId];
       return next;
@@ -222,7 +250,7 @@ function AdminReportsContent() {
   }
 
   async function saveDisplayId(applicationId: string) {
-    const displayId = draftDisplayIdByApp[applicationId];
+    const displayId = pendingDisplayIdByApp[applicationId];
     if (!displayId) {
       setError("Display ID cannot be empty.");
       return;
@@ -257,9 +285,8 @@ function AdminReportsContent() {
   const metrics = useMemo(
     () => ({
       ready: items.filter((item) => item.status === "READY").length,
+      complete: items.filter((item) => item.status === "COMPLETE").length,
       assigned: items.filter((item) => item.status === "ASSIGNED").length,
-      draft: items.filter((item) => item.status === "DRAFT").length,
-      published: items.filter((item) => item.status === "PUBLISHED").length,
       hidden: items.filter((item) => item.is_hidden).length,
     }),
     [items],
@@ -333,9 +360,8 @@ function AdminReportsContent() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6C86]">Status totals</p>
                 <div className="mt-4 flex flex-1 flex-col gap-3">
                   <StatusTotal className="flex-1" label="Ready" value={metrics.ready} />
+                  <StatusTotal className="flex-1" label="Complete" value={metrics.complete} />
                   <StatusTotal className="flex-1" label="Assigned" value={metrics.assigned} />
-                  <StatusTotal className="flex-1" label="Draft" value={metrics.draft} />
-                  <StatusTotal className="flex-1" label="Published" value={metrics.published} />
                   <StatusTotal className="flex-1" label="Hidden" value={metrics.hidden} />
                 </div>
               </div>
@@ -359,16 +385,18 @@ function AdminReportsContent() {
                 onSelectedInterviewerChange={(value) =>
                   setSelectedInterviewerByApp((current) => ({ ...current, [item.id]: value }))
                 }
+                onGenerate={() => void handleGenerate(item.id)}
                 onAssign={(mode) => void mutateAssignment(item.id, mode)}
                 onToggleHidden={() => void toggleHidden(item.id, !item.is_hidden)}
                 onDelete={() => void removeReport(item.id)}
                 onStartEdit={() => startEditingDisplayId(item)}
                 onCancelEdit={() => cancelEditingDisplayId(item.id)}
                 onSaveEdit={() => void saveDisplayId(item.id)}
-                onDraftDisplayIdChange={(value) =>
-                  setDraftDisplayIdByApp((current) => ({ ...current, [item.id]: value }))
+                onPendingDisplayIdChange={(value) =>
+                  setPendingDisplayIdByApp((current) => ({ ...current, [item.id]: value }))
                 }
-                draftDisplayId={draftDisplayIdByApp[item.id] ?? ""}
+                pendingDisplayId={pendingDisplayIdByApp[item.id] ?? ""}
+                isGenerating={generatingAppId === item.id}
                 isBusy={busyAppId === item.id}
                 isHiddenBusy={hiddenBusyAppId === item.id}
                 isDeleting={deletingAppId === item.id}
@@ -391,9 +419,8 @@ function AdminReportsContent() {
 function getFilterActiveClasses(status: (typeof REPORT_STATUSES)[number]) {
   if (status === "ALL") return "bg-[#198FF0] text-[#111111] shadow-[0_8px_20px_rgba(25,143,240,0.28)]";
   if (status === "READY") return "bg-[#d7ff53] text-[#111111] shadow-[0_8px_20px_rgba(215,255,83,0.28)]";
+  if (status === "COMPLETE") return "bg-[#9af5b4] text-[#111111] shadow-[0_8px_20px_rgba(154,245,180,0.24)]";
   if (status === "ASSIGNED") return "bg-[#7cf0ff] text-[#111111] shadow-[0_8px_20px_rgba(124,240,255,0.22)]";
-  if (status === "DRAFT") return "bg-[#ffb347] text-[#111111] shadow-[0_8px_20px_rgba(255,179,71,0.24)]";
-  if (status === "PUBLISHED") return "bg-[#ff6b9d] text-[#111111] shadow-[0_8px_20px_rgba(255,107,157,0.22)]";
   return "bg-[#8A94A6] text-[#111111] shadow-[0_8px_20px_rgba(138,148,166,0.24)]";
 }
 
@@ -412,7 +439,14 @@ function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
   if (status === "READY") {
     return {
       title: "No ready reports yet.",
-      description: "Reports waiting for first assignment will appear here.",
+      description: "Reports waiting for Pages 4-5 generation will appear here.",
+    };
+  }
+
+  if (status === "COMPLETE") {
+    return {
+      title: "No complete reports yet.",
+      description: "Reports ready for assignment will appear here.",
     };
   }
 
@@ -420,20 +454,6 @@ function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
     return {
       title: "No assigned reports yet.",
       description: "Reports currently owned by an interviewer will appear here.",
-    };
-  }
-
-  if (status === "DRAFT") {
-    return {
-      title: "No draft reports yet.",
-      description: "Reports being refined before publishing will appear here.",
-    };
-  }
-
-  if (status === "PUBLISHED") {
-    return {
-      title: "No published reports yet.",
-      description: "Published reports will appear here once they are live and visible.",
     };
   }
 

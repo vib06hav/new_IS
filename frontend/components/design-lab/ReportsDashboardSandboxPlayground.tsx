@@ -95,11 +95,11 @@ const sessionLogEntries = [
   },
   {
     id: "log-5",
-    action: "Published",
+    action: "Completed",
     reportId: "PLK-2026-0157",
-    detail: "Visibility restored and report returned to live set",
+    detail: "Pages 4-5 generated and report moved to assignment-ready",
     time: "14 min ago",
-    accent: "#FF6B9D",
+    accent: "#FFB347",
     badgeText: "#111111",
   },
   {
@@ -202,9 +202,8 @@ function BlacklineReviewDashboard() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6C86]">Status totals</p>
                 <div className="mt-4 space-y-3">
                   <BlacklineMetric label="Ready" value={reportsDashboardMetrics.ready} />
+                  <BlacklineMetric label="Complete" value={reportsDashboardMetrics.complete} />
                   <BlacklineMetric label="Assigned" value={reportsDashboardMetrics.assigned} />
-                  <BlacklineMetric label="Draft" value={reportsDashboardMetrics.draft} />
-                  <BlacklineMetric label="Published" value={reportsDashboardMetrics.published} />
                 </div>
               </div>
             </section>
@@ -505,9 +504,8 @@ function StatusMark({
 }) {
   const styles = {
     READY: "bg-[#d7ff53] text-[#111111]",
+    COMPLETE: "bg-[#ffb347] text-[#111111]",
     ASSIGNED: "bg-[#7cf0ff] text-[#111111]",
-    DRAFT: "bg-[#ffb347] text-[#111111]",
-    PUBLISHED: "bg-[#ff6b9d] text-[#111111]",
     HIDDEN: "bg-[#8A94A6] text-[#111111]",
   };
 
@@ -523,16 +521,15 @@ function StatusMark({
 function getFilterActiveClasses(status: (typeof reportsDashboardStatuses)[number]) {
   if (status === "ALL") return "bg-[#198FF0] text-[#111111] shadow-[0_8px_20px_rgba(25,143,240,0.28)]";
   if (status === "READY") return "bg-[#d7ff53] text-[#111111] shadow-[0_8px_20px_rgba(215,255,83,0.28)]";
+  if (status === "COMPLETE") return "bg-[#ffb347] text-[#111111] shadow-[0_8px_20px_rgba(255,179,71,0.24)]";
   if (status === "ASSIGNED") return "bg-[#7cf0ff] text-[#111111] shadow-[0_8px_20px_rgba(124,240,255,0.22)]";
-  if (status === "DRAFT") return "bg-[#ffb347] text-[#111111] shadow-[0_8px_20px_rgba(255,179,71,0.24)]";
-  if (status === "PUBLISHED") return "bg-[#ff6b9d] text-[#111111] shadow-[0_8px_20px_rgba(255,107,157,0.22)]";
   return "bg-[#8A94A6] text-[#111111] shadow-[0_8px_20px_rgba(138,148,166,0.24)]";
 }
 
 function getSuggestedInterviewer(item: ApplicationListItem) {
   if (item.status === "READY") return reportsDashboardInterviewers[0];
+  if (item.status === "COMPLETE") return reportsDashboardInterviewers[2];
   if (item.status === "ASSIGNED") return reportsDashboardInterviewers[1];
-  if (item.status === "DRAFT") return reportsDashboardInterviewers[2];
   return item.assigned_interviewer
     ? {
         ...item.assigned_interviewer,
@@ -544,16 +541,15 @@ function getSuggestedInterviewer(item: ApplicationListItem) {
 }
 
 function getAssignmentActionLabel(item: ApplicationListItem) {
-  if (item.status === "READY") return "Assign interviewer";
-  if (item.status === "ASSIGNED" || item.status === "DRAFT") return "Reassign interviewer";
+  if (item.status === "COMPLETE") return "Assign interviewer";
+  if (item.status === "ASSIGNED") return "Reassign interviewer";
   return "Assignment locked";
 }
 
 function getAssignmentCopy(item: ApplicationListItem) {
-  if (item.status === "READY") return "Queue is ready for first assignment";
+  if (item.status === "READY") return "Pages 1-3 are ready for final generation";
+  if (item.status === "COMPLETE") return "Final report is ready for first assignment";
   if (item.status === "ASSIGNED") return "Can be reassigned if workload shifts";
-  if (item.status === "DRAFT") return "Draft is in progress and can still move";
-  if (item.status === "PUBLISHED") return "Published ownership remains visible";
   return "No assignment needed";
 }
 
