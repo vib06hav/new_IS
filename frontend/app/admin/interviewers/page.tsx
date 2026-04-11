@@ -97,7 +97,7 @@ function AdminInterviewersContent() {
     try {
       const [interviewers, readyApplications] = await Promise.all([
         fetchInterviewers(),
-        fetchApplications("READY"),
+        fetchApplications("COMPLETE"),
       ]);
       setItems(interviewers);
       setReadyPoolCount(readyApplications.length);
@@ -419,12 +419,12 @@ function AdminInterviewersContent() {
     return count;
   }, [assignmentItems.originalAssignedSet, assignmentOriginalIds, stagedAssignedIds, stagedAssignedSet]);
 
-  const stagedDraftReassignments = useMemo(
+  const stagedCompleteReassignments = useMemo(
     () =>
       assignmentBuckets.currentlyAssigned.filter(
         (item) =>
           item.source === "reassign" &&
-          item.status === "DRAFT" &&
+          item.status === "ASSIGNED" &&
           stagedAssignedSet.has(item.application_id),
       ),
     [assignmentBuckets.currentlyAssigned, stagedAssignedSet],
@@ -441,9 +441,9 @@ function AdminInterviewersContent() {
   async function handleAssignmentSave() {
     if (!assignmentInterviewer) return;
     if (
-      stagedDraftReassignments.length > 0 &&
+      stagedCompleteReassignments.length > 0 &&
       !window.confirm(
-        `${stagedDraftReassignments.length} drafted report(s) will be reassigned. Their current drafts will be discarded and reset to ASSIGNED. Continue?`,
+        `${stagedCompleteReassignments.length} assigned report(s) will be moved to a new interviewer. Continue?`,
       )
     ) {
       return;

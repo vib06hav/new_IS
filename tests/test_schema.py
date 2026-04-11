@@ -27,7 +27,7 @@ def test_schema():
     inspector = inspect(engine)
 
     tables = set(inspector.get_table_names())
-    required = {"users", "applications", "canonical_records", "assignments", "drafts"}
+    required = {"users", "applications", "canonical_records", "assignments", "final_reports"}
     assert required.issubset(tables), f"Found tables: {tables}"
     assert "synthesis_records" not in tables
 
@@ -42,5 +42,5 @@ def test_schema():
     assignment_fks = inspector.get_foreign_keys("assignments")
     assert len(assignment_fks) == 3
 
-    drafts_cols = {col["name"]: col for col in inspector.get_columns("drafts")}
-    assert {"application_id", "version", "content", "generated_by", "is_published"}.issubset(drafts_cols.keys())
+    final_report_cols = {col["name"]: col for col in inspector.get_columns("final_reports")}
+    assert {"application_id", "content", "generated_by", "report_version"}.issubset(final_report_cols.keys())

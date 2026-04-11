@@ -30,7 +30,7 @@ type QuestionGroupRecord = {
   questions?: string[];
 };
 
-type DraftLike = Record<string, unknown> & {
+type ReportLike = Record<string, unknown> & {
   page_4_focus_areas?: {
     themes?: ThemeRecord[];
     signals?: SignalRecord[];
@@ -43,23 +43,23 @@ type DraftLike = Record<string, unknown> & {
   };
 };
 
-type DraftTab = "page4" | "page5";
+type ReportTab = "page4" | "page5";
 
 export function SynthesisReportSection({
-  draft,
-  title = "Draft Report",
+  report,
+  title = "Final Report",
   description,
   initialTab = "page4",
   hideInternalTabs = false,
 }: {
-  draft: Record<string, unknown>;
+  report: Record<string, unknown>;
   title?: string;
   description?: string;
-  initialTab?: DraftTab;
+  initialTab?: ReportTab;
   hideInternalTabs?: boolean;
 }) {
-  const parsed = draft as DraftLike;
-  const [activeTab, setActiveTab] = useState<DraftTab>(initialTab);
+  const parsed = report as ReportLike;
+  const [activeTab, setActiveTab] = useState<ReportTab>(initialTab);
   const themes = Array.isArray(parsed.page_4_focus_areas?.themes) ? parsed.page_4_focus_areas?.themes || [] : [];
   const signals = Array.isArray(parsed.page_4_focus_areas?.signals) ? parsed.page_4_focus_areas?.signals || [] : [];
   const [selectedThemeKey, setSelectedThemeKey] = useState<string>(() => getThemeKey(themes[0], 0));

@@ -66,7 +66,7 @@ export function ReviewPackageSection({
         ) : null}
         {activeTab === "page4" && annotationSource ? (
           <SynthesisReportSection
-            draft={annotationSource}
+            report={annotationSource}
             title="Focus Areas"
             description="Themes, signals, and what still needs resolution."
             initialTab="page4"
@@ -75,7 +75,7 @@ export function ReviewPackageSection({
         ) : null}
         {activeTab === "page5" && annotationSource ? (
           <SynthesisReportSection
-            draft={annotationSource}
+            report={annotationSource}
             title="Interview Questions"
             description="Question groups derived from the synthesized themes."
             initialTab="page5"

@@ -7,7 +7,7 @@ import type {
   AssignmentListItem,
   InterviewerAssignmentSavePayload,
   InterviewerAssignmentSummary,
-  DraftMutationResponse,
+  FinalReportMutationResponse,
   InterviewerListItem,
   InterviewerUpdatePayload,
   PasswordChangePayload,
@@ -243,14 +243,8 @@ export async function unhideMyApplication(applicationId: string) {
   });
 }
 
-export async function generateDraft(applicationId: string) {
-  return apiRequest<DraftMutationResponse>(`/applications/${applicationId}/generate`, {
-    method: "POST",
-  });
-}
-
-export async function publishDraft(applicationId: string) {
-  return apiRequest<DraftMutationResponse>(`/applications/${applicationId}/publish`, {
+export async function generateReport(applicationId: string) {
+  return apiRequest<FinalReportMutationResponse>(`/applications/${applicationId}/generate-report`, {
     method: "POST",
   });
 }

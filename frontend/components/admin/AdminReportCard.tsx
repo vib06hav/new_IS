@@ -35,14 +35,16 @@ export function AdminReportCard({
   interviewers,
   selectedInterviewerId,
   onSelectedInterviewerChange,
+  onGenerate,
   onAssign,
   onToggleHidden,
   onDelete,
   onStartEdit,
   onCancelEdit,
   onSaveEdit,
-  onDraftDisplayIdChange,
-  draftDisplayId,
+  onPendingDisplayIdChange,
+  pendingDisplayId,
+  isGenerating,
   isBusy,
   isHiddenBusy,
   isDeleting,
@@ -53,14 +55,16 @@ export function AdminReportCard({
   interviewers: InterviewerListItem[];
   selectedInterviewerId: string;
   onSelectedInterviewerChange: (value: string) => void;
+  onGenerate: () => void;
   onAssign: (mode: "assign" | "reassign") => void;
   onToggleHidden: () => void;
   onDelete: () => void;
   onStartEdit: () => void;
   onCancelEdit: () => void;
   onSaveEdit: () => void;
-  onDraftDisplayIdChange: (value: string) => void;
-  draftDisplayId: string;
+  onPendingDisplayIdChange: (value: string) => void;
+  pendingDisplayId: string;
+  isGenerating: boolean;
   isBusy: boolean;
   isHiddenBusy: boolean;
   isDeleting: boolean;
@@ -70,8 +74,9 @@ export function AdminReportCard({
   const [overflowOpen, setOverflowOpen] = useState(false);
   const overflowRef = useRef<HTMLDivElement | null>(null);
   const selectedInterviewer = interviewers.find((interviewer) => interviewer.id === selectedInterviewerId);
-  const canAssign = item.status === "READY";
-  const canReassign = item.status === "ASSIGNED" || item.status === "DRAFT";
+  const canGenerate = item.status === "READY";
+  const canAssign = item.status === "COMPLETE";
+  const canReassign = item.status === "ASSIGNED";
   const canMutateAssignment = canAssign || canReassign;
 
   useEffect(() => {
@@ -106,13 +111,13 @@ export function AdminReportCard({
           </div>
           {isEditingDisplayId ? (
             <div className="space-y-2">
-              <Input
-                label="Application ID"
-                autoFocus
-                className="mt-0"
-                value={draftDisplayId}
-                onChange={(event) => onDraftDisplayIdChange(event.target.value)}
-              />
+                <Input
+                  label="Application ID"
+                  autoFocus
+                  className="mt-0"
+                  value={pendingDisplayId}
+                  onChange={(event) => onPendingDisplayIdChange(event.target.value)}
+                />
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" disabled={isSavingDisplayId} onClick={onSaveEdit}>
                   {isSavingDisplayId ? "Saving..." : "Save ID"}
@@ -189,9 +194,15 @@ export function AdminReportCard({
         </div>
 
         <div className="rounded-[1.3rem] border border-[#111111]/10 bg-[#fafaf6] p-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6c6c64]">Assignment</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6c6c64]">
+            {canGenerate ? "Report generation" : "Assignment"}
+          </p>
           <div className="mt-3 space-y-3">
-            {canMutateAssignment ? (
+            {canGenerate ? (
+              <div className="flex w-full items-center rounded-xl border border-[#111111]/10 bg-[#fdfcf8] px-3 py-3 text-sm text-[#66685d]">
+                Generate Pages 4-5 to unlock assignment.
+              </div>
+            ) : canMutateAssignment ? (
               <Select value={selectedInterviewerId} onValueChange={(value) => onSelectedInterviewerChange(value ?? "")}>
                 <SelectTrigger className="h-auto w-full rounded-xl border-[#111111]/10 bg-[#fdfcf8] px-3 py-3 transition-all duration-200 hover:border-[#727D97] hover:bg-white">
                   {selectedInterviewer ? (
@@ -230,9 +241,20 @@ export function AdminReportCard({
               <div className="flex w-full items-center rounded-xl border border-[#111111]/10 bg-[#fdfcf8] px-3 py-3 text-sm text-[#66685d]">Assignment locked</div>
             )}
 
-            <button className="w-full rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition-all duration-200 hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-45" disabled={isBusy || !selectedInterviewerId || !canMutateAssignment} onClick={() => onAssign(canAssign ? "assign" : "reassign")} type="button">
-              {isBusy ? "Saving..." : getAssignmentActionLabel(item)}
-            </button>
+            {canGenerate ? (
+              <button
+                className="w-full rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition-all duration-200 hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-45"
+                disabled={isGenerating}
+                onClick={onGenerate}
+                type="button"
+              >
+                {isGenerating ? "Generating..." : "Generate report"}
+              </button>
+            ) : (
+              <button className="w-full rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition-all duration-200 hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-45" disabled={isBusy || !selectedInterviewerId || !canMutateAssignment} onClick={() => onAssign(canAssign ? "assign" : "reassign")} type="button">
+                {isBusy ? "Saving..." : getAssignmentActionLabel(item)}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -261,9 +283,8 @@ function PrimaryLink({ href, label }: { href: string; label: string }) {
 function StatusMark({ status }: { status: string }) {
   const styles = {
     READY: "bg-[#d7ff53] text-[#111111]",
+    COMPLETE: "bg-[#9af5b4] text-[#111111]",
     ASSIGNED: "bg-[#7cf0ff] text-[#111111]",
-    DRAFT: "bg-[#ffb347] text-[#111111]",
-    PUBLISHED: "bg-[#ff6b9d] text-[#111111]",
     HIDDEN: "bg-[#8A94A6] text-[#111111]",
   };
 
@@ -285,7 +306,7 @@ function formatDateTime(value: string) {
 }
 
 function getAssignmentActionLabel(item: ApplicationListItem) {
-  if (item.status === "READY") return "Assign interviewer";
-  if (item.status === "ASSIGNED" || item.status === "DRAFT") return "Reassign interviewer";
+  if (item.status === "COMPLETE") return "Assign interviewer";
+  if (item.status === "ASSIGNED") return "Reassign interviewer";
   return "Assignment locked";
 }

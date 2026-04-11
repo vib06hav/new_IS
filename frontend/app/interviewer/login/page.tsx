@@ -33,8 +33,7 @@ export default function InterviewerLoginPage() {
               <div>
                 <h1 className="mb-6 text-5xl font-black leading-[1.1] tracking-tight text-slate-800">Prepare With Structure.</h1>
                 <p className="max-w-xl text-lg leading-[1.6] text-slate-600">
-                  Review the source package, generate interview briefs from canonical state, and publish final outputs
-                  with traceable evidence.
+                  Review completed reports, inspect the source package, and prepare interviews with traceable evidence.
                 </p>
               </div>
             </div>

@@ -67,7 +67,7 @@ def test_admin_assignments_and_interviewer_listing():
         display_id="APP-ADM-001",
         uploaded_by=admin.id,
         file_path="demo.pdf",
-        status="READY",
+        status="COMPLETE",
     )
     db.add_all([admin, interviewer, application])
     db.commit()
@@ -84,7 +84,7 @@ def test_admin_assignments_and_interviewer_listing():
 
     list_response = client.get("/applications", headers=headers)
     assert list_response.status_code == 200
-    assert list_response.json()[0]["status"] == "READY"
+    assert list_response.json()[0]["status"] == "COMPLETE"
 
     assign_response = client.post(
         f"/applications/{application_id}/assign",
@@ -126,7 +126,7 @@ def test_delete_interviewer_blocks_when_user_uploaded_applications():
         display_id="APP-ADM-002",
         uploaded_by=interviewer.id,
         file_path="uploaded-by-interviewer.pdf",
-        status="READY",
+        status="COMPLETE",
     )
     db.add_all([admin, interviewer, application])
     db.commit()
@@ -207,7 +207,7 @@ def test_admin_hide_sets_global_flag_without_affecting_personal_flag():
         display_id="APP-ADM-004",
         uploaded_by=admin.id,
         file_path="demo.pdf",
-        status="DRAFT",
+        status="ASSIGNED",
     )
     assignment = Assignment(
         application_id=application.id,
@@ -230,3 +230,26 @@ def test_admin_hide_sets_global_flag_without_affecting_personal_flag():
     assert hide_response.status_code == 200
     assert hide_response.json()["is_hidden"] is True
     assert hide_response.json()["is_hidden_for_interviewer"] is True
+
+
+def test_application_insert_populates_last_activity_at_by_default():
+    db = TestingSessionLocal()
+    db.query(Assignment).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-default@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-ADM-005",
+        uploaded_by=admin.id,
+        file_path="default-last-activity.pdf",
+        status="PROCESSING",
+    )
+    db.add_all([admin, application])
+    db.commit()
+    db.refresh(application)
+
+    assert application.last_activity_at is not None
+
+    db.close()

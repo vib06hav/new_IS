@@ -1,6 +1,6 @@
 import type { ApplicationListItem, InterviewerListItem } from "@/lib/types";
 
-export const reportsDashboardStatuses = ["ALL", "READY", "ASSIGNED", "DRAFT", "PUBLISHED", "HIDDEN"] as const;
+export const reportsDashboardStatuses = ["ALL", "READY", "COMPLETE", "ASSIGNED", "HIDDEN"] as const;
 
 export const reportsDashboardInterviewers: InterviewerListItem[] = [
   {
@@ -50,7 +50,7 @@ export const reportsDashboardItems: ApplicationListItem[] = [
   {
     id: "app-003",
     display_id: "PLK-2026-0157",
-    status: "DRAFT",
+    status: "COMPLETE",
     is_hidden: false,
     created_at: "2026-03-25T09:05:00.000Z",
     is_hidden_for_interviewer: false,
@@ -64,7 +64,7 @@ export const reportsDashboardItems: ApplicationListItem[] = [
   {
     id: "app-004",
     display_id: "PLK-2026-0163",
-    status: "PUBLISHED",
+    status: "ASSIGNED",
     is_hidden: false,
     created_at: "2026-03-25T14:30:00.000Z",
     is_hidden_for_interviewer: false,
@@ -78,7 +78,7 @@ export const reportsDashboardItems: ApplicationListItem[] = [
   {
     id: "app-005",
     display_id: "PLK-2026-0169",
-    status: "PUBLISHED",
+    status: "ASSIGNED",
     is_hidden: true,
     created_at: "2026-03-26T11:20:00.000Z",
     is_hidden_for_interviewer: false,
@@ -102,7 +102,6 @@ export const reportsDashboardItems: ApplicationListItem[] = [
 
 export const reportsDashboardMetrics = {
   ready: reportsDashboardItems.filter((item) => item.status === "READY").length,
+  complete: reportsDashboardItems.filter((item) => item.status === "COMPLETE").length,
   assigned: reportsDashboardItems.filter((item) => item.status === "ASSIGNED").length,
-  draft: reportsDashboardItems.filter((item) => item.status === "DRAFT").length,
-  published: reportsDashboardItems.filter((item) => item.status === "PUBLISHED").length,
 };

@@ -55,10 +55,9 @@ class UserSummary(BaseModel):
     email: str
 
 
-class DraftSummary(BaseModel):
+class FinalReportSummary(BaseModel):
     id: UUID
-    version: int
-    is_published: bool
+    report_version: str
     created_at: datetime
     content: Dict[str, Any]
 
@@ -108,7 +107,7 @@ class ApplicationDetailAdmin(BaseModel):
     last_activity_at: datetime
     assigned_interviewer: Optional[UserSummary] = None
     review_package: Optional[ReviewPackageSummary] = None
-    published_draft: Optional[DraftSummary] = None
+    final_report: Optional[FinalReportSummary] = None
 
 
 class ApplicationDetailInterviewer(BaseModel):
@@ -120,7 +119,7 @@ class ApplicationDetailInterviewer(BaseModel):
     is_hidden_for_interviewer: bool = False
     assigned_interviewer: Optional[UserSummary] = None
     review_package: Optional[ReviewPackageSummary] = None
-    latest_draft: Optional[DraftSummary] = None
+    final_report: Optional[FinalReportSummary] = None
 
 
 class AssignmentUpsertRequest(BaseModel):
@@ -146,10 +145,10 @@ class InterviewerListItem(BaseModel):
     active_assignment_count: int
 
 
-class DraftMutationResponse(BaseModel):
+class FinalReportMutationResponse(BaseModel):
     application_id: UUID
     status: str
-    draft: DraftSummary
+    final_report: FinalReportSummary
 
 
 class InterviewerAssignmentSummaryItem(BaseModel):

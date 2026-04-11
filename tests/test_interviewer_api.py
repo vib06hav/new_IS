@@ -14,7 +14,7 @@ from app.main import app
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
-from app.models.draft import Draft
+from app.models.final_report import FinalReport
 from app.models.user import User
 
 
@@ -51,9 +51,9 @@ def _token_for(email: str, role: str) -> str:
     return create_access_token({"sub": email, "role": role})
 
 
-def test_generate_publish_and_admin_visibility():
+def test_admin_generate_report_and_interviewer_visibility():
     db = TestingSessionLocal()
-    db.query(Draft).delete()
+    db.query(FinalReport).delete()
     db.query(Assignment).delete()
     db.query(CanonicalRecord).delete()
     db.query(Application).delete()
@@ -72,33 +72,33 @@ def test_generate_publish_and_admin_visibility():
         display_id="APP-INT-001",
         uploaded_by=admin.id,
         file_path="demo.pdf",
-        status="ASSIGNED",
+        status="READY",
     )
     canonical = CanonicalRecord(
         id=uuid.uuid4(),
         application_id=application.id,
         canonical_version="1.0",
         canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3={
+            "page_1_background_profile": {},
+            "page_2_academic_and_engagement": {},
+            "page_3_essays": {},
+        },
     )
-    assignment = Assignment(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        interviewer_id=interviewer.id,
-        assigned_by=admin.id,
-    )
-    db.add_all([admin, interviewer, application, canonical, assignment])
+    db.add_all([admin, interviewer, application, canonical])
     db.commit()
     admin_email = admin.email
     admin_role = admin.role
     application_id = application.id
     interviewer_email = interviewer.email
     interviewer_role = interviewer.role
+    interviewer_id = interviewer.id
     db.close()
 
     app.dependency_overrides[get_db] = override_get_db
     client = TestClient(app)
-    interviewer_headers = {"Authorization": f"Bearer {_token_for(interviewer_email, interviewer_role)}"}
     admin_headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+    interviewer_headers = {"Authorization": f"Bearer {_token_for(interviewer_email, interviewer_role)}"}
 
     fake_ros = {
         "report_metadata": {"report_version": "ROS_v1"},
@@ -107,61 +107,44 @@ def test_generate_publish_and_admin_visibility():
         "page_3_essays": {},
         "page_4_focus_areas": {"themes": [], "signals": []},
         "page_5_question_groups": {"question_groups": []},
+        "signal_data": {"annotations": {}},
     }
 
-    with patch("app.api.interviewer.run_synthesis_pipeline", return_value={"ros_v1": fake_ros, "confidence": 0.9}):
-        before_generate = client.get(f"/applications/{application_id}", headers=admin_headers).json()["last_activity_at"]
-        generate_response = client.post(
-            f"/applications/{application_id}/generate",
-            headers=interviewer_headers,
-        )
+    with patch("app.api.admin.run_synthesis_pipeline", return_value={"ros_v1": fake_ros, "confidence": 0.9}):
+        generate_response = client.post(f"/applications/{application_id}/generate-report", headers=admin_headers)
+
     assert generate_response.status_code == 200
-    assert generate_response.json()["status"] == "DRAFT"
-    assert generate_response.json()["draft"]["version"] == 1
-    assert generate_response.json()["draft"]["is_published"] is False
+    assert generate_response.json()["status"] == "COMPLETE"
+    assert generate_response.json()["final_report"]["report_version"] == "ROS_v1"
 
-    admin_before_publish = client.get(f"/applications/{application_id}", headers=admin_headers)
-    assert admin_before_publish.status_code == 200
-    assert admin_before_publish.json()["published_draft"] is None
-    assert admin_before_publish.json()["review_package"]["canonical_version"] == "1.0"
-    assert admin_before_publish.json()["last_activity_at"] >= before_generate
-
-    publish_response = client.post(
-        f"/applications/{application_id}/publish",
-        headers=interviewer_headers,
+    assign_response = client.post(
+        f"/applications/{application_id}/assign",
+        json={"interviewer_id": str(interviewer_id)},
+        headers=admin_headers,
     )
-    assert publish_response.status_code == 200
-    assert publish_response.json()["status"] == "PUBLISHED"
-    assert publish_response.json()["draft"]["is_published"] is True
+    assert assign_response.status_code == 200
+    assert assign_response.json()["status"] == "ASSIGNED"
 
-    admin_after_publish = client.get(f"/applications/{application_id}", headers=admin_headers)
-    assert admin_after_publish.status_code == 200
-    assert admin_after_publish.json()["published_draft"]["is_published"] is True
-    assert admin_after_publish.json()["last_activity_at"] >= admin_before_publish.json()["last_activity_at"]
+    interviewer_detail = client.get(f"/applications/{application_id}", headers=interviewer_headers)
+    assert interviewer_detail.status_code == 200
+    assert interviewer_detail.json()["final_report"]["report_version"] == "ROS_v1"
 
 
-def test_generate_rate_limit_returns_429():
+def test_admin_generate_failure_moves_application_to_failed():
     db = TestingSessionLocal()
-    db.query(Draft).delete()
+    db.query(FinalReport).delete()
     db.query(Assignment).delete()
     db.query(CanonicalRecord).delete()
     db.query(Application).delete()
     db.query(User).delete()
 
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-rate@example.com", password_hash="x", role="admin")
-    interviewer = User(
-        id=uuid.uuid4(),
-        name="Interviewer",
-        email="interviewer-rate@example.com",
-        password_hash="x",
-        role="interviewer",
-    )
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-fail@example.com", password_hash="x", role="admin")
     application = Application(
         id=uuid.uuid4(),
-        display_id="APP-INT-002",
+        display_id="APP-INT-FAIL",
         uploaded_by=admin.id,
         file_path="demo.pdf",
-        status="ASSIGNED",
+        status="READY",
     )
     canonical = CanonicalRecord(
         id=uuid.uuid4(),
@@ -169,42 +152,32 @@ def test_generate_rate_limit_returns_429():
         canonical_version="1.0",
         canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
     )
-    assignment = Assignment(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        interviewer_id=interviewer.id,
-        assigned_by=admin.id,
-    )
-    db.add_all([admin, interviewer, application, canonical, assignment])
+    db.add_all([admin, application, canonical])
     db.commit()
-    interviewer_email = interviewer.email
-    interviewer_role = interviewer.role
+    admin_email = admin.email
+    admin_role = admin.role
     application_id = application.id
     db.close()
 
     app.dependency_overrides[get_db] = override_get_db
     client = TestClient(app)
-    interviewer_headers = {"Authorization": f"Bearer {_token_for(interviewer_email, interviewer_role)}"}
+    admin_headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
 
-    with patch("app.api.interviewer.run_synthesis_pipeline", return_value={"ros_v1": {}, "confidence": 0.9}):
-        for _ in range(5):
-            response = client.post(
-                f"/applications/{application_id}/generate",
-                headers=interviewer_headers,
-            )
-            assert response.status_code == 200
+    with patch("app.api.admin.run_synthesis_pipeline", return_value={"ros_v1": None, "validation_result": {"violations_log": []}}):
+        generate_response = client.post(f"/applications/{application_id}/generate-report", headers=admin_headers)
 
-        throttled = client.post(
-            f"/applications/{application_id}/generate",
-            headers=interviewer_headers,
-        )
+    assert generate_response.status_code == 502
 
-    assert throttled.status_code == 429
+    detail_response = client.get(f"/applications/{application_id}", headers=admin_headers)
+    assert detail_response.status_code == 200
+    assert detail_response.json()["status"] == "FAILED"
+    assert detail_response.json()["review_package"] is not None
+    assert detail_response.json()["final_report"] is None
 
 
 def test_interviewer_personal_hide_is_separate_from_admin_visibility():
     db = TestingSessionLocal()
-    db.query(Draft).delete()
+    db.query(FinalReport).delete()
     db.query(Assignment).delete()
     db.query(CanonicalRecord).delete()
     db.query(Application).delete()
@@ -223,7 +196,14 @@ def test_interviewer_personal_hide_is_separate_from_admin_visibility():
         display_id="APP-INT-003",
         uploaded_by=admin.id,
         file_path="demo.pdf",
-        status="DRAFT",
+        status="ASSIGNED",
+    )
+    final_report = FinalReport(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        content={"report_metadata": {"report_version": "ROS_v1"}},
+        generated_by=admin.id,
+        report_version="ROS_v1",
     )
     assignment = Assignment(
         id=uuid.uuid4(),
@@ -231,7 +211,7 @@ def test_interviewer_personal_hide_is_separate_from_admin_visibility():
         interviewer_id=interviewer.id,
         assigned_by=admin.id,
     )
-    db.add_all([admin, interviewer, application, assignment])
+    db.add_all([admin, interviewer, application, final_report, assignment])
     db.commit()
     admin_email = admin.email
     admin_role = admin.role
@@ -269,7 +249,7 @@ def test_interviewer_personal_hide_is_separate_from_admin_visibility():
 
 def test_admin_global_hide_removes_application_from_interviewer_list():
     db = TestingSessionLocal()
-    db.query(Draft).delete()
+    db.query(FinalReport).delete()
     db.query(Assignment).delete()
     db.query(CanonicalRecord).delete()
     db.query(Application).delete()
@@ -288,7 +268,14 @@ def test_admin_global_hide_removes_application_from_interviewer_list():
         display_id="APP-INT-004",
         uploaded_by=admin.id,
         file_path="demo.pdf",
-        status="PUBLISHED",
+        status="ASSIGNED",
+    )
+    final_report = FinalReport(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        content={"report_metadata": {"report_version": "ROS_v1"}},
+        generated_by=admin.id,
+        report_version="ROS_v1",
     )
     assignment = Assignment(
         id=uuid.uuid4(),
@@ -296,7 +283,7 @@ def test_admin_global_hide_removes_application_from_interviewer_list():
         interviewer_id=interviewer.id,
         assigned_by=admin.id,
     )
-    db.add_all([admin, interviewer, application, assignment])
+    db.add_all([admin, interviewer, application, final_report, assignment])
     db.commit()
     admin_email = admin.email
     admin_role = admin.role

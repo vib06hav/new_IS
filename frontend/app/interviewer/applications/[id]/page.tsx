@@ -5,9 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { IBM_Plex_Sans } from "next/font/google";
-import { fetchApplicationDetail, fetchSourcePdf, generateDraft, publishDraft } from "@/lib/api";
+import { fetchApplicationDetail, fetchSourcePdf } from "@/lib/api";
 import type { ApplicationDetailInterviewer } from "@/lib/types";
-import { Button } from "@/components/ui/Button";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ReviewPackageSection, type ReviewPageTab } from "@/components/ReviewPackageSection";
@@ -25,7 +24,6 @@ export default function InterviewerApplicationPage() {
   const params = useParams<{ id: string }>();
   const [item, setItem] = useState<ApplicationDetailInterviewer | null>(null);
   const [loading, setLoading] = useState(true);
-  const [busyAction, setBusyAction] = useState<"generate" | "publish" | null>(null);
   const [openingPdf, setOpeningPdf] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -49,37 +47,7 @@ export default function InterviewerApplicationPage() {
     void loadDetail();
   }, [params.id]);
 
-  usePolling(loadDetail, 5000, !loading && !busyAction);
-
-  async function handleGenerate() {
-    setMessage(null);
-    setError(null);
-    setBusyAction("generate");
-    try {
-      await generateDraft(params.id);
-      setMessage(item?.status === "DRAFT" ? "Draft regenerated." : "Draft generated.");
-      await loadDetail();
-    } catch (generationError) {
-      setError(generationError instanceof Error ? generationError.message : "Generation failed.");
-    } finally {
-      setBusyAction(null);
-    }
-  }
-
-  async function handlePublish() {
-    setMessage(null);
-    setError(null);
-    setBusyAction("publish");
-    try {
-      await publishDraft(params.id);
-      setMessage("Draft published.");
-      await loadDetail();
-    } catch (publishError) {
-      setError(publishError instanceof Error ? publishError.message : "Publish failed.");
-    } finally {
-      setBusyAction(null);
-    }
-  }
+  usePolling(loadDetail, 5000, !loading);
 
   async function handleOpenPdf() {
     if (!item) return;
@@ -105,8 +73,8 @@ export default function InterviewerApplicationPage() {
   }
 
   useEffect(() => {
-    const hasDraftPages = Boolean(item?.latest_draft?.content);
-    if (!hasDraftPages && (activePageTab === "page4" || activePageTab === "page5")) {
+    const hasFinalReportPages = Boolean(item?.final_report?.content);
+    if (!hasFinalReportPages && (activePageTab === "page4" || activePageTab === "page5")) {
       setActivePageTab("page1");
     }
   }, [activePageTab, item]);
@@ -158,15 +126,13 @@ export default function InterviewerApplicationPage() {
     );
   }
 
-  const canGenerate = item.status === "ASSIGNED" || item.status === "DRAFT";
-  const canPublish = item.status === "DRAFT";
   const lastUpdatedAt = new Date(item.last_activity_at).toLocaleString();
-  const hasDraftPages = Boolean(item.latest_draft?.content);
+  const hasFinalReportPages = Boolean(item.final_report?.content);
   const pageOptions: Array<{ value: ReviewPageTab; label: string; meta: string }> = [
     { value: "page1", label: "Overview", meta: "Applicant profile" },
     { value: "page2", label: "Academics & Activities", meta: "Study and engagement" },
     { value: "page3", label: "Writing", meta: "Essays and excerpts" },
-    ...(hasDraftPages
+    ...(hasFinalReportPages
       ? [
           { value: "page4" as const, label: "Focus Areas", meta: "Themes and signals" },
           { value: "page5" as const, label: "Questions", meta: "Interview prompts" },
@@ -205,35 +171,14 @@ export default function InterviewerApplicationPage() {
         <section className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(21rem,0.92fr)]">
           <article className="flex min-h-[8.9rem] flex-col justify-between rounded-[1.5rem] border border-[#727D97] bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(239,246,255,0.95),rgba(224,231,255,0.84))] p-3.5 shadow-[0_18px_36px_rgba(148,163,184,0.14),inset_0_1px_0_rgba(255,255,255,0.62)]">
             <div className="space-y-1.5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#198FF0]">Draft workflow</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#198FF0]">Report workflow</p>
               <div className="space-y-1">
-                <h2 className="text-[1.05rem] font-semibold tracking-[-0.03em] text-[#111111]">Draft actions</h2>
+                <h2 className="text-[1.05rem] font-semibold tracking-[-0.03em] text-[#111111]">Completed report</h2>
                 <p className="max-w-2xl text-sm leading-5 text-[#49536B]">
-                  {item.status === "PUBLISHED"
-                    ? "This report has already been published. The current draft is fixed for admin review."
-                    : "Generate or refresh Pages 4-5 from the latest synthesized analysis, then publish when the report is ready for admin review."}
+                  This report was completed by an admin before assignment. You can review the full Pages 1-5 package
+                  without any generation or publishing steps.
                 </p>
               </div>
-            </div>
-
-            <div className="mt-3 flex w-full flex-col gap-2 sm:w-auto sm:min-w-[23rem] sm:flex-row">
-              <Button className="sm:flex-1" disabled={busyAction !== null || !canGenerate} onClick={() => void handleGenerate()}>
-                {busyAction === "generate"
-                  ? item.status === "DRAFT"
-                    ? "Regenerating..."
-                    : "Generating..."
-                  : item.status === "DRAFT"
-                    ? "Regenerate draft"
-                    : "Generate draft"}
-              </Button>
-              <Button
-                className="sm:flex-1"
-                disabled={busyAction !== null || !canPublish || !item.latest_draft}
-                variant="secondary"
-                onClick={() => void handlePublish()}
-              >
-                {busyAction === "publish" ? "Publishing..." : "Publish draft"}
-              </Button>
             </div>
           </article>
 
@@ -246,7 +191,7 @@ export default function InterviewerApplicationPage() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#5F6C86]">Report pages</p>
                 <h2 className="text-[1.05rem] font-semibold tracking-[-0.03em] text-[#111111]">Page controls</h2>
                 <p className="text-sm leading-5 text-[#49536B]">
-                  Pages 4 and 5 appear after draft generation and stay available while draft content exists.
+                  Pages 4 and 5 appear once the final report has been generated and stay available throughout assignment.
                 </p>
               </div>
 
@@ -276,7 +221,7 @@ export default function InterviewerApplicationPage() {
         {item.review_package ? (
           <ReviewPackageSection
             reviewPackage={item.review_package}
-            annotationSource={item.latest_draft?.content}
+            annotationSource={item.final_report?.content}
             activeTab={activePageTab}
             onActiveTabChange={setActivePageTab}
           />

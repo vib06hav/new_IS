@@ -34,10 +34,9 @@ export type ReviewPackageSummary = {
   pages_1_3: ReviewPages123;
 };
 
-export type DraftSummary = {
+export type FinalReportSummary = {
   id: string;
-  version: number;
-  is_published: boolean;
+  report_version: string;
   created_at: string;
   content: Record<string, unknown>;
 };
@@ -68,7 +67,7 @@ export type ApplicationDetailAdmin = {
   last_activity_at: string;
   assigned_interviewer?: UserSummary | null;
   review_package?: ReviewPackageSummary | null;
-  published_draft?: DraftSummary | null;
+  final_report?: FinalReportSummary | null;
 };
 
 export type ApplicationDetailInterviewer = {
@@ -80,7 +79,7 @@ export type ApplicationDetailInterviewer = {
   is_hidden_for_interviewer: boolean;
   assigned_interviewer?: UserSummary | null;
   review_package?: ReviewPackageSummary | null;
-  latest_draft?: DraftSummary | null;
+  final_report?: FinalReportSummary | null;
 };
 
 export type InterviewerListItem = {
@@ -139,8 +138,8 @@ export type ApplicationDisplayIdUpdatePayload = {
   display_id: string;
 };
 
-export type DraftMutationResponse = {
+export type FinalReportMutationResponse = {
   application_id: string;
   status: string;
-  draft: DraftSummary;
+  final_report: FinalReportSummary;
 };
