@@ -88,25 +88,30 @@ export function AdminNavbar({ onSignOut }: AdminNavbarProps) {
       <div className="mx-auto max-w-[106rem] px-5 py-4 md:px-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex items-center gap-5">
-            <div className="flex items-center gap-3">
-              <div className="relative grid size-11 place-items-center overflow-hidden rounded-xl border border-blue-200 bg-blue-100 shadow-sm">
-                <Image
-                  alt="Interview Standardiser logo"
-                  className="h-7 w-7 object-contain"
-                  height={28}
-                  src="/Logo-removebg-preview.png"
-                  width={28}
+          <div className="flex items-center space-x-2">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 shadow-sm border border-blue-200/50">
+              <svg
+                aria-hidden="true"
+                className="size-6 text-blue-900"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
                 />
-                <span className="absolute -bottom-0.5 -right-0.5 rounded border border-blue-200 bg-white px-0.5 text-[8px] font-bold text-blue-900">
-                  IS
-                </span>
-              </div>
-              <div>
-                <p className="text-sm font-semibold tracking-tight text-slate-800">
-                  Interview Standardiser
-                </p>
-              </div>
+              </svg>
+              <span className="absolute -bottom-1 -right-1 rounded border border-blue-200 bg-white px-1 text-[10px] font-bold text-blue-900">
+                IS
+              </span>
             </div>
+            <span className="text-xl font-semibold tracking-tight text-slate-800">
+              Interview Standardiser
+            </span>
+          </div>
           </div>
 
           <div className="relative flex items-center gap-5 self-end xl:self-auto" ref={menuRef}>

@@ -10,6 +10,7 @@ import {
   PencilLine,
   Plus,
   ShieldAlert,
+  Stars,
   UserRound,
   X,
 } from "lucide-react";
@@ -93,6 +94,9 @@ function AdminInterviewersContent() {
     const saved = localStorage.getItem("agis_admin_sidebar_visible");
     if (saved !== null) {
       setShowSidebar(saved === "true");
+    } else {
+      // Default to open for first-time visitors
+      setShowSidebar(true);
     }
   }, []);
 
@@ -527,18 +531,17 @@ function AdminInterviewersContent() {
                   </button>
                 </div>
                 
-                <div>
-                  <div className="space-y-2">
-                    <h1
-                      className="max-w-4xl text-4xl md:text-5xl font-black tracking-tight text-slate-800 leading-none"
-                      style={{ fontFamily: "var(--font-reports-display)" }}
-                    >
-                      Interviewer Manager
-                    </h1>
-                    <p className="max-w-3xl text-base text-slate-600 leading-relaxed">
-                      Review the active interviewer roster and manage assignments.
-                    </p>
-                  </div>
+                <div className="space-y-3">
+                  <h1
+                    className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
+                    style={{ fontFamily: "var(--font-reports-display)" }}
+                  >
+                    Interviewer Manager
+                  </h1>
+                  <p className="max-w-3xl text-sm text-slate-600 leading-relaxed">
+                    Review the active interviewer roster, open assignment buckets when work needs to move, and manage
+                    interviewer account details without leaving the page context.
+                  </p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">

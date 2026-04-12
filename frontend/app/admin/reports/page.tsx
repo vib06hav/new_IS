@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileChartColumn, LayoutPanelLeft, ListTodo, Search, Settings2, Stars } from "lucide-react";
 import {
   Libre_Franklin,
   IBM_Plex_Sans,
@@ -71,6 +71,9 @@ function AdminReportsContent() {
     const saved = localStorage.getItem("agis_admin_sidebar_visible");
     if (saved !== null) {
       setShowSidebar(saved === "true");
+    } else {
+      // Default to open for first-time visitors
+      setShowSidebar(true);
     }
   }, []);
 
@@ -314,18 +317,17 @@ function AdminReportsContent() {
                   </button>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <h3
-                      className="max-w-4xl text-4xl md:text-5xl font-black tracking-tight text-slate-800 leading-none"
-                      style={{ fontFamily: "var(--font-reports-display)" }}
-                    >
-                      Generated Reports
-                    </h3>
-                    <p className="max-w-3xl text-base text-slate-600 leading-relaxed">
-                      Open generated reports, update report IDs, assign or reassign interviewers, and manage visibility.
-                    </p>
-                  </div>
+                <div className="space-y-3">
+                  <h3
+                    className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
+                    style={{ fontFamily: "var(--font-reports-display)" }}
+                  >
+                    Generated Reports
+                  </h3>
+                  <p className="max-w-3xl text-sm text-slate-600 leading-relaxed">
+                    Open generated reports, update report IDs, assign or reassign interviewers, manage visibility, and
+                    remove reports when necessary.
+                  </p>
                 </div>
               </div>
             </section>
