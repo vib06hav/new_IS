@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeftRight,
+  ChevronLeft,
+  ChevronRight,
   KeyRound,
   Mail,
   PencilLine,
@@ -12,7 +14,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { IBM_Plex_Sans, Libre_Franklin } from "next/font/google";
+import { Libre_Franklin, IBM_Plex_Sans } from "next/font/google";
 import {
   createInterviewer,
   deleteInterviewer,
@@ -40,17 +42,16 @@ import { Badge } from "@/components/shadcn/badge";
 type AssignmentSource = "assigned" | "available" | "reassign";
 type AssignmentModalItem = InterviewerAssignmentSummaryItem & { source: AssignmentSource };
 
+const libreFranklin = Libre_Franklin({
+  subsets: ["latin"],
+  weight: ["900"],
+  variable: "--font-reports-display",
+});
+
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-reports-plex",
-});
-
-const libreFranklin = Libre_Franklin({
-  subsets: ["latin"],
-  weight: ["900"],
-  variable: "--font-display",
-  display: "swap",
 });
 
 export default function AdminInterviewersPage() {
@@ -85,13 +86,32 @@ function AdminInterviewersContent() {
   const [profileForm, setProfileForm] = useState({ name: "" });
   const [accountForm, setAccountForm] = useState({ email: "" });
   const [passwordForm, setPasswordForm] = useState({ password: "", confirmPassword: "" });
+  const [showSidebar, setShowSidebar] = useState(true);
   const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
+
+  // Load sidebar preference
+  useEffect(() => {
+    const saved = localStorage.getItem("agis_admin_sidebar_visible");
+    if (saved !== null) {
+      setShowSidebar(saved === "true");
+    } else {
+      // Default to open for first-time visitors
+      setShowSidebar(true);
+    }
+  }, []);
+
+  // Save sidebar preference
+  const toggleSidebar = () => {
+    const next = !showSidebar;
+    setShowSidebar(next);
+    localStorage.setItem("agis_admin_sidebar_visible", String(next));
+  };
 
   async function loadInterviewers() {
     try {
       const [interviewers, readyApplications] = await Promise.all([
         fetchInterviewers(),
-        fetchApplications("COMPLETE"),
+        fetchApplications("READY"),
       ]);
       setItems(interviewers);
       setReadyPoolCount(readyApplications.length);
@@ -413,12 +433,12 @@ function AdminInterviewersContent() {
     return count;
   }, [assignmentItems.originalAssignedSet, assignmentOriginalIds, stagedAssignedIds, stagedAssignedSet]);
 
-  const stagedCompleteReassignments = useMemo(
+  const stagedDraftReassignments = useMemo(
     () =>
       assignmentBuckets.currentlyAssigned.filter(
         (item) =>
           item.source === "reassign" &&
-          item.status === "ASSIGNED" &&
+          item.status === "DRAFT" &&
           stagedAssignedSet.has(item.application_id),
       ),
     [assignmentBuckets.currentlyAssigned, stagedAssignedSet],
@@ -435,9 +455,9 @@ function AdminInterviewersContent() {
   async function handleAssignmentSave() {
     if (!assignmentInterviewer) return;
     if (
-      stagedCompleteReassignments.length > 0 &&
+      stagedDraftReassignments.length > 0 &&
       !window.confirm(
-        `${stagedCompleteReassignments.length} assigned report(s) will be moved to a new interviewer. Continue?`,
+        `${stagedDraftReassignments.length} drafted report(s) will be reassigned. Their current drafts will be discarded and reset to ASSIGNED. Continue?`,
       )
     ) {
       return;
@@ -491,38 +511,42 @@ function AdminInterviewersContent() {
 
   return (
     <div
-      className={`${plexSans.variable} ${libreFranklin.variable} space-y-6`}
+      className={`${libreFranklin.variable} ${plexSans.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className={`grid gap-6 transition-all duration-500 ease-in-out ${showSidebar ? "xl:grid-cols-[1fr_22rem]" : "grid-cols-1"}`}>
         <div className="space-y-6">
-          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
-            <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm xl:h-full">
-              <div className="flex h-full flex-col justify-between gap-6">
-                <div>
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-slate-500">
-                    <span className="inline-flex items-center gap-2 text-slate-800">
-                      <Stars className="size-3.5" />
-                      Interview operations
-                    </span>
-                  </div>
-                  <div className="mt-5 space-y-4">
-                    <h1
-                      className="max-w-4xl text-5xl font-black leading-[1.04] tracking-tight text-slate-800 md:text-[3.5rem]"
-                      style={{ fontFamily: "var(--font-display)" }}
-                    >
-                      Interviewer Manager
-                    </h1>
-                    <p className="max-w-3xl text-base leading-[1.6] text-slate-600">
-                      Review the active interviewer roster, open assignment buckets when work needs to move, and manage
-                      interviewer account details without leaving the page context.
-                    </p>
-                  </div>
+          <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="relative flex flex-col h-full justify-between gap-6">
+                {/* Header Toggle */}
+                <div className="absolute right-0 top-0 flex items-center gap-2 group">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    {showSidebar ? "Hide Sidebar" : "Show Sidebar"}
+                  </span>
+                  <button 
+                    onClick={toggleSidebar}
+                    className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white shadow-sm text-slate-400 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md active:scale-95"
+                  >
+                    {showSidebar ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  <h1
+                    className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
+                    style={{ fontFamily: "var(--font-reports-display)" }}
+                  >
+                    Interviewer Manager
+                  </h1>
+                  <p className="max-w-3xl text-sm text-slate-600 leading-relaxed">
+                    Review the active interviewer roster, open assignment buckets when work needs to move, and manage
+                    interviewer account details without leaving the page context.
+                  </p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
                   <button
-                    className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-800"
+                    className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow-md"
                     onClick={() => setCreateOpen(true)}
                     type="button"
                   >
@@ -531,27 +555,26 @@ function AdminInterviewersContent() {
                   </button>
                 </div>
               </div>
-            </div>
-
-            <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm xl:h-full">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Status totals</p>
-              <div className="mt-4 space-y-3">
-                <MetricStrip label="Interviewers" value={metrics.interviewers} />
-                <MetricStrip label="Active assignments" value={metrics.activeAssignments} />
-                <MetricStrip label="Ready pool" value={metrics.readyPool} />
-              </div>
-            </div>
           </section>
 
-          {message ? <p className="rounded-[1.2rem] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{message}</p> : null}
-          {error ? <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p> : null}
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Status totals</p>
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+              <MetricStrip label="Interviewers" value={metrics.interviewers} />
+              <MetricStrip label="Active assignments" value={metrics.activeAssignments} />
+              <MetricStrip label="Ready pool" value={metrics.readyPool} />
+            </div>
+          </div>
+
+          {message ? <p className="rounded-[1.2rem] border border-[#198FF0]/35 bg-[#EAF4FD] px-4 py-3 text-sm text-[#24527A]">{message}</p> : null}
+          {error ? <p className="rounded-[1.2rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">{error}</p> : null}
 
           {loading ? (
             <Loader label="Loading interviewers..." />
           ) : items.length === 0 ? (
-            <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 px-6 py-10 text-center shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-              <p className="text-base font-semibold text-slate-800">No interviewers yet.</p>
-              <p className="mt-2 text-sm text-slate-500">Add an interviewer to start assigning applications.</p>
+            <div className="rounded-[1.9rem] border border-[#727D97] bg-[#F7F7F1] px-6 py-10 text-center">
+              <p className="text-base font-semibold text-[#111111]">No interviewers yet.</p>
+              <p className="mt-2 text-sm text-[#5F6C86]">Add an interviewer to start assigning applications.</p>
             </div>
           ) : (
             <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -567,16 +590,16 @@ function AdminInterviewersContent() {
           )}
         </div>
 
-        <aside className="grid gap-5 self-start">
+        <aside className={`grid gap-5 self-start transition-all duration-500 ease-in-out ${showSidebar ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8 pointer-events-none hidden"}`}>
           <AdminSessionLogPanel entries={sessionHistoryEntries} />
         </aside>
       </div>
 
       {createOpen ? (
         <CenteredOverlay onClose={() => !createSubmitting && setCreateOpen(false)}>
-          <div className="rounded-[1.9rem] border border-slate-200 bg-white p-6 shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
             <SurfaceHeader eyebrow="Create interviewer" title="Add interviewer" onClose={() => setCreateOpen(false)} />
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
+            <p className="mt-4 max-w-2xl text-base text-slate-600 leading-relaxed">
               Create a new interviewer account with the same core fields used in the live frontend.
             </p>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -586,13 +609,13 @@ function AdminInterviewersContent() {
               <FieldEditor icon={KeyRound} label="Confirm password" type="password" value={createForm.confirmPassword} onChange={(value) => setCreateForm((current) => ({ ...current, confirmPassword: value }))} />
             </div>
             {createPasswordMismatch ? (
-              <p className="mt-4 rounded-[1rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+              <p className="mt-4 rounded-[1rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">
                 Passwords must match before the interviewer can be created.
               </p>
             ) : null}
             <div className="mt-6 flex justify-end">
               <button
-                className="inline-flex items-center justify-center rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 disabled:opacity-60"
                 disabled={createSubmitting || !createForm.name.trim() || !createForm.email.trim() || !createForm.password || createPasswordMismatch}
                 onClick={() => void handleCreate()}
                 type="button"
@@ -606,18 +629,18 @@ function AdminInterviewersContent() {
 
       {assignmentInterviewer ? (
         <CenteredOverlay onClose={closeAssignmentModal}>
-          <div className="rounded-[1.9rem] border border-slate-200 bg-white p-6 shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
             <SurfaceHeader eyebrow="Assignment buckets" title={`Manage assignments · ${assignmentInterviewer.name}`} onClose={closeAssignmentModal} />
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#49536B]">
               Keep the bucket logic from the real frontend, but present it inside the same mock system as the other admin pages.
             </p>
             {assignmentLoading ? (
-              <div className="mt-6 rounded-[1.6rem] border border-slate-200 bg-white/80 px-4 py-10">
+              <div className="mt-6 rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] px-4 py-10">
                 <Loader label="Loading assignment manager..." />
               </div>
             ) : assignmentSummary ? (
               <>
-                {assignmentError ? <p className="mt-6 rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{assignmentError}</p> : null}
+                {assignmentError ? <p className="mt-6 rounded-[1.2rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">{assignmentError}</p> : null}
                 <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
                   <Badge variant="secondary">{assignmentBuckets.currentlyAssigned.length} staged active</Badge>
                   <Badge variant="outline">{stagedChangeCount} pending change{stagedChangeCount === 1 ? "" : "s"}</Badge>
@@ -627,17 +650,17 @@ function AdminInterviewersContent() {
                   <AssignmentBucket title="Available to assign" items={assignmentBuckets.availableToAssign} actionLabel="Add" onAction={(applicationId) => addAssignment(applicationId)} showCurrentOwner={false} />
                   <AssignmentBucket title="Available to reassign" items={assignmentBuckets.availableToReassign} actionLabel="Add" onAction={(applicationId) => addAssignment(applicationId)} showCurrentOwner />
                 </div>
-                <div className="mt-6 flex items-center justify-end gap-3 border-t border-slate-200 pt-5">
-                  <button className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" disabled={assignmentSubmitting} onClick={closeAssignmentModal} type="button">Close</button>
-                  <button className="inline-flex items-center justify-center rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60" disabled={assignmentSubmitting || stagedChangeCount === 0} onClick={() => void handleAssignmentSave()} type="button">
+                <div className="mt-6 flex items-center justify-end gap-3 border-t border-[#727D97]/45 pt-5">
+                  <button className="inline-flex items-center justify-center rounded-full border border-[#727D97] bg-[#F7F7F1] px-4 py-3 text-sm font-semibold text-[#111111] transition hover:bg-[#E6E9F0]" disabled={assignmentSubmitting} onClick={closeAssignmentModal} type="button">Close</button>
+                  <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={assignmentSubmitting || stagedChangeCount === 0} onClick={() => void handleAssignmentSave()} type="button">
                     {assignmentSubmitting ? "Saving..." : `Save changes${stagedChangeCount > 0 ? ` (${stagedChangeCount})` : ""}`}
                   </button>
                 </div>
               </>
             ) : (
-              <div className="mt-6 rounded-[1.6rem] border border-slate-200 bg-white/80 px-4 py-10 text-center">
-                <p className="text-base font-semibold text-slate-800">Assignment manager unavailable.</p>
-                <p className="mt-2 text-sm text-slate-500">We couldn’t load the interviewer assignment summary just yet.</p>
+              <div className="mt-6 rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] px-4 py-10 text-center">
+                <p className="text-base font-semibold text-[#111111]">Assignment manager unavailable.</p>
+                <p className="mt-2 text-sm text-[#5F6C86]">We couldn’t load the interviewer assignment summary just yet.</p>
               </div>
             )}
           </div>
@@ -646,14 +669,14 @@ function AdminInterviewersContent() {
 
       {selectedInterviewer ? (
         <FloatingSheet onClose={closeEditSheet}>
-          <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_28px_80px_rgba(15,23,42,0.18)]">
+          <div className="overflow-hidden rounded-[2rem] border border-[#727D97] bg-[#F7F7F1] shadow-[0_28px_80px_rgba(114,125,151,0.28)]">
             <div className="interviewer-sheet-scroll max-h-[calc(100vh-3rem)] overflow-y-auto px-6 py-6">
               <SurfaceHeader eyebrow="Edit interviewer" title={selectedInterviewer.name} onClose={closeEditSheet} />
-              <div className="mt-5 flex items-center gap-4 rounded-[1.4rem] border border-slate-200 bg-white/80 p-4">
+              <div className="mt-5 flex items-center gap-4 rounded-[1.4rem] border border-[#727D97] bg-[#E6E9F0] p-4">
                 <InterviewerAvatar item={selectedInterviewer} sizeClassName="size-14" />
                 <div className="min-w-0">
-                  <p className="truncate text-lg font-semibold text-slate-800">{selectedInterviewer.name}</p>
-                  <p className="truncate text-sm text-slate-500">{selectedInterviewer.email}</p>
+                  <p className="truncate text-lg font-semibold text-[#111111]">{selectedInterviewer.name}</p>
+                  <p className="truncate text-sm text-[#49536B]">{selectedInterviewer.email}</p>
                 </div>
               </div>
 
@@ -661,7 +684,7 @@ function AdminInterviewersContent() {
                 <EditSection icon={UserRound} title="Display name">
                   <Input label="Display name" value={profileForm.name} onChange={(event) => setProfileForm({ name: event.target.value })} />
                   <div className="mt-4 flex justify-end">
-                    <button className="inline-flex items-center justify-center rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60" disabled={profileSubmitting || !profileForm.name.trim() || !profileChanged} onClick={() => void handleProfileUpdate()} type="button">
+                    <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={profileSubmitting || !profileForm.name.trim() || !profileChanged} onClick={() => void handleProfileUpdate()} type="button">
                       {profileSubmitting ? "Saving..." : "Save name"}
                     </button>
                   </div>
@@ -670,7 +693,7 @@ function AdminInterviewersContent() {
                 <EditSection icon={Mail} title="Email">
                   <Input label="Email" type="email" value={accountForm.email} onChange={(event) => setAccountForm({ email: event.target.value })} />
                   <div className="mt-4 flex justify-end">
-                    <button className="inline-flex items-center justify-center rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60" disabled={accountSubmitting || !accountForm.email.trim() || !emailChanged} onClick={() => void handleEmailUpdate()} type="button">
+                    <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={accountSubmitting || !accountForm.email.trim() || !emailChanged} onClick={() => void handleEmailUpdate()} type="button">
                       {accountSubmitting ? "Saving..." : "Update email"}
                     </button>
                   </div>
@@ -679,25 +702,25 @@ function AdminInterviewersContent() {
                 <EditSection icon={KeyRound} title="Password">
                   <Input label="New password" type="password" minLength={8} value={passwordForm.password} onChange={(event) => setPasswordForm((current) => ({ ...current, password: event.target.value }))} />
                   <Input label="Confirm new password" type="password" minLength={8} value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, confirmPassword: event.target.value }))} />
-                  {updatePasswordMismatch ? <p className="mt-3 rounded-[1rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">Passwords must match before the update can be confirmed.</p> : null}
+                  {updatePasswordMismatch ? <p className="mt-3 rounded-[1rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">Passwords must match before the update can be confirmed.</p> : null}
                   <div className="mt-4 flex justify-end">
-                    <button className="inline-flex items-center justify-center rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60" disabled={passwordSubmitting || !passwordForm.password || updatePasswordMismatch} onClick={() => void handlePasswordUpdate()} type="button">
+                    <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={passwordSubmitting || !passwordForm.password || updatePasswordMismatch} onClick={() => void handlePasswordUpdate()} type="button">
                       {passwordSubmitting ? "Saving..." : "Change password"}
                     </button>
                   </div>
                 </EditSection>
               </div>
 
-              <div className="mt-6 rounded-[1.4rem] border border-rose-200 bg-rose-50 p-4">
+              <div className="mt-6 rounded-[1.4rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] p-4">
                 <div className="flex items-start gap-3">
-                  <span className="inline-flex rounded-full bg-rose-100 p-2 text-rose-700">
+                  <span className="inline-flex rounded-full bg-[#FF6B9D]/18 p-2 text-[#9A315A]">
                     <ShieldAlert className="size-4" />
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-base font-semibold text-[#7F2247]">Danger zone</p>
                     <p className="mt-2 text-sm leading-6 text-[#9A315A]">Removal fails if this interviewer still has active assignments.</p>
                     <div className="mt-4">
-                      <button className="inline-flex items-center justify-center rounded-full bg-rose-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-800 disabled:cursor-not-allowed disabled:opacity-60" disabled={removeSubmitting} onClick={() => void handleRemove()} type="button">
+                      <button className="inline-flex items-center justify-center rounded-full bg-[#AF3030] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#932626] disabled:cursor-not-allowed disabled:opacity-60" disabled={removeSubmitting} onClick={() => void handleRemove()} type="button">
                         {removeSubmitting ? "Removing..." : "Remove interviewer"}
                       </button>
                     </div>
@@ -740,29 +763,29 @@ function InterviewerCard({
   onEdit: () => void;
 }) {
   return (
-    <article className="rounded-[1.8rem] border border-slate-200 bg-white/80 text-slate-900 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+    <article className="rounded-3xl border border-slate-200 bg-white text-slate-900 shadow-[0_10px_30px_rgba(2,12,32,0.05)] transition-all hover:shadow-md">
       <div className="space-y-4 px-5 py-5">
         <div className="flex min-w-0 items-center gap-3">
           <InterviewerAvatar item={item} sizeClassName="size-12" />
           <div className="min-w-0 flex-1 space-y-2">
-            <h4 className="text-[1.8rem] font-black leading-none tracking-tight text-slate-800" style={{ fontFamily: "var(--font-display)" }}>
+            <h4 className="text-xl font-black tracking-tight text-slate-800" style={{ fontFamily: "var(--font-reports-display)" }}>
               {item.name}
             </h4>
-            <p className="truncate text-sm text-[#66685D]">{item.email}</p>
+            <p className="truncate text-sm text-slate-500">{item.email}</p>
           </div>
         </div>
 
-        <div className="rounded-[1.3rem] border border-[#111111]/10 bg-[#FAFAF6] p-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6C6C64]">Active assignments</p>
-          <p className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-slate-800">{item.active_assignment_count}</p>
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Active assignments</p>
+          <p className="mt-3 text-3xl font-black text-slate-800 tracking-tight">{item.active_assignment_count}</p>
         </div>
 
         <div className="grid gap-2">
-          <button className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-800" onClick={onManageAssignments} type="button">
+          <button className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700" onClick={onManageAssignments} type="button">
             <ArrowLeftRight className="size-4" />
             Manage assignments
           </button>
-          <button className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" onClick={onEdit} type="button">
+          <button className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-blue-300 hover:text-blue-700" onClick={onEdit} type="button">
             <PencilLine className="size-4" />
             Edit interviewer
           </button>
@@ -774,15 +797,15 @@ function InterviewerCard({
 
 function InterviewerAvatar({ item, sizeClassName }: { item: InterviewerListItem; sizeClassName: string }) {
   return (
-    <Avatar className={`${sizeClassName} overflow-hidden border border-slate-200 bg-slate-100`}>
-      <AvatarFallback className="bg-slate-200 text-slate-700">{getInitials(item.name)}</AvatarFallback>
+    <Avatar className={`${sizeClassName} overflow-hidden border border-[#727D97] bg-[#E6E9F0]`}>
+      <AvatarFallback className="bg-[#AAB4C8] text-[#111111]">{getInitials(item.name)}</AvatarFallback>
     </Avatar>
   );
 }
 
 function CenteredOverlay({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-40 grid place-items-center bg-slate-900/24 px-5 py-8 backdrop-blur-[10px]" onClick={onClose} role="presentation">
+    <div className="fixed inset-0 z-40 grid place-items-center bg-[#111111]/42 px-5 py-8 backdrop-blur-[10px]" onClick={onClose} role="presentation">
       <div className="w-full max-w-[72rem]" onClick={(event) => event.stopPropagation()} role="presentation">
         {children}
       </div>
@@ -792,7 +815,7 @@ function CenteredOverlay({ children, onClose }: { children: React.ReactNode; onC
 
 function FloatingSheet({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-40 overflow-y-auto bg-slate-900/20 backdrop-blur-[8px]" onClick={onClose} role="presentation">
+    <div className="fixed inset-0 z-40 overflow-y-auto bg-[#111111]/34 backdrop-blur-[8px]" onClick={onClose} role="presentation">
       <div className="flex min-h-screen justify-end p-4 md:p-6">
         <div className="w-full max-w-[34rem] self-start" onClick={(event) => event.stopPropagation()} role="presentation">
           {children}
@@ -806,12 +829,12 @@ function SurfaceHeader({ eyebrow, title, onClose }: { eyebrow: string; title: st
   return (
     <div className="flex items-start justify-between gap-4">
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">{eyebrow}</p>
-        <h2 className="mt-3 text-[2.2rem] font-black leading-[0.98] tracking-tight text-slate-800" style={{ fontFamily: "var(--font-display)" }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#5F6C86]">{eyebrow}</p>
+        <h2 className="mt-3 text-[2.4rem] leading-[0.96] tracking-[-0.06em] text-[#111111]" style={{ fontFamily: "var(--font-reports-cormorant)" }}>
           {title}
         </h2>
       </div>
-      <button className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50" onClick={onClose} type="button">
+      <button className="grid size-10 place-items-center rounded-full border border-[#727D97] bg-[#E6E9F0] text-[#111111] transition hover:bg-[#D8DBE2]" onClick={onClose} type="button">
         <X className="size-4" />
       </button>
     </div>
@@ -832,12 +855,12 @@ function FieldEditor({
   type?: string;
 }) {
   return (
-    <div className="rounded-[1.3rem] border border-slate-200 bg-white/70 p-4">
+    <div className="rounded-[1.3rem] border border-[#727D97] bg-[#E6E9F0] p-4">
       <div className="mb-4 flex items-center gap-2">
-        <span className="inline-flex rounded-full bg-blue-50 p-2 text-blue-700">
+        <span className="inline-flex rounded-full bg-[#198FF0]/14 p-2 text-[#198FF0]">
           <Icon className="size-4" />
         </span>
-        <p className="text-sm font-semibold text-slate-800">{label}</p>
+        <p className="text-sm font-semibold text-[#111111]">{label}</p>
       </div>
       <Input label={label} type={type} value={value} onChange={(event) => onChange(event.target.value)} />
     </div>
@@ -846,12 +869,12 @@ function FieldEditor({
 
 function EditSection({ icon: Icon, title, children }: { icon: typeof UserRound; title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-[1.4rem] border border-slate-200 bg-white/70 p-4">
+    <div className="rounded-[1.4rem] border border-[#727D97] bg-[#E6E9F0] p-4">
       <div className="mb-4 flex items-start gap-3">
-        <span className="inline-flex rounded-full bg-blue-50 p-2 text-blue-700">
+        <span className="inline-flex rounded-full bg-[#198FF0]/14 p-2 text-[#198FF0]">
           <Icon className="size-4" />
         </span>
-        <p className="text-base font-semibold text-slate-800">{title}</p>
+        <p className="text-base font-semibold text-[#111111]">{title}</p>
       </div>
       <div className="space-y-3">{children}</div>
     </div>
@@ -872,9 +895,9 @@ function AssignmentBucket({
   showCurrentOwner: boolean;
 }) {
   return (
-    <section className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)]">
+    <section className="rounded-[1.6rem] border border-[#727D97] bg-[#E6E9F0] p-4 shadow-[0_12px_34px_rgba(114,125,151,0.12)]">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="text-lg font-semibold tracking-[-0.03em] text-slate-800">{title}</p>
+        <p className="text-lg font-semibold tracking-[-0.03em] text-[#111111]">{title}</p>
         <Badge variant="outline">{items.length}</Badge>
       </div>
       <div className="space-y-3">
@@ -884,11 +907,11 @@ function AssignmentBucket({
               <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <StatusBadge status={item.status} />
-                  <p className="text-sm font-semibold text-slate-800">{item.application_display_id}</p>
+                  <p className="text-sm font-semibold text-[#111111]">{item.application_display_id}</p>
                 </div>
-                {showCurrentOwner && item.current_interviewer ? <p className="text-sm text-slate-600">Current interviewer: {item.current_interviewer.name}</p> : null}
+                {showCurrentOwner && item.current_interviewer ? <p className="text-sm text-[#49536B]">Current interviewer: {item.current_interviewer.name}</p> : null}
               </div>
-              <button className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" onClick={() => onAction(item.application_id)} type="button">
+              <button className="inline-flex items-center justify-center rounded-full border border-[#727D97] bg-[#F7F7F1] px-3 py-2 text-sm font-semibold text-[#111111] transition hover:bg-[#E6E9F0]" onClick={() => onAction(item.application_id)} type="button">
                 {actionLabel}
               </button>
             </div>
@@ -901,17 +924,17 @@ function AssignmentBucket({
 
 function MetricStrip({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-white px-3 py-3">
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{label}</span>
-      <span className="text-sm font-semibold text-slate-800">{value}</span>
+    <div className="flex items-center justify-between gap-3 rounded-[1rem] border border-[#727D97] bg-[#CBD2DE] px-3 py-3">
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86]">{label}</span>
+      <span className="text-sm font-semibold text-[#111111]">{value}</span>
     </div>
   );
 }
 
 function getAssignmentClassName(item: AssignmentModalItem) {
-  if (item.source === "assigned") return "rounded-[1.15rem] border border-amber-200 bg-amber-50 px-4 py-3";
-  if (item.source === "reassign") return "rounded-[1.15rem] border border-blue-200 bg-blue-50 px-4 py-3";
-  return "rounded-[1.15rem] border border-slate-200 bg-white px-4 py-3";
+  if (item.source === "assigned") return "rounded-[1.15rem] border border-[#FFB347]/45 bg-[#FFF1DF] px-4 py-3";
+  if (item.source === "reassign") return "rounded-[1.15rem] border border-[#198FF0]/28 bg-[#EAF4FD] px-4 py-3";
+  return "rounded-[1.15rem] border border-[#727D97] bg-[#F7F7F1] px-4 py-3";
 }
 
 function getInitials(name: string) {

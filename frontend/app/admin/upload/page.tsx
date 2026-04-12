@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight, FileUp, Sparkles, Stars, Trash2 } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, FileUp, Sparkles, Stars, Trash2 } from "lucide-react";
 import {
-  IBM_Plex_Sans,
   Libre_Franklin,
+  IBM_Plex_Sans,
 } from "next/font/google";
 import { fetchApplications, retryApplication, uploadApplication } from "@/lib/api";
 import type { ApplicationListItem } from "@/lib/types";
@@ -46,17 +46,16 @@ type QueueRow =
       action: "retry" | "none";
     };
 
+const libreFranklin = Libre_Franklin({
+  subsets: ["latin"],
+  weight: ["900"],
+  variable: "--font-reports-display",
+});
+
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-reports-plex",
-});
-
-const libreFranklin = Libre_Franklin({
-  subsets: ["latin"],
-  weight: ["900"],
-  variable: "--font-display",
-  display: "swap",
 });
 
 function sortQueueRows(rows: QueueRow[]) {
@@ -90,7 +89,26 @@ function AdminUploadContent() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [duplicateMessage, setDuplicateMessage] = useState<string | null>(null);
+  const [showSidebar, setShowSidebar] = useState(true);
   const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
+
+  // Load sidebar preference
+  useEffect(() => {
+    const saved = localStorage.getItem("agis_admin_sidebar_visible");
+    if (saved !== null) {
+      setShowSidebar(saved === "true");
+    } else {
+      // Default to open for first-time visitors
+      setShowSidebar(true);
+    }
+  }, []);
+
+  // Save sidebar preference
+  const toggleSidebar = () => {
+    const next = !showSidebar;
+    setShowSidebar(next);
+    localStorage.setItem("agis_admin_sidebar_visible", String(next));
+  };
 
   async function loadUploads() {
     try {
@@ -364,49 +382,54 @@ function AdminUploadContent() {
 
   return (
     <div
-      className={`${plexSans.variable} ${libreFranklin.variable} space-y-6`}
+      className={`${libreFranklin.variable} ${plexSans.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className={`grid gap-6 transition-all duration-500 ease-in-out ${showSidebar ? "xl:grid-cols-[1fr_22rem]" : "grid-cols-1"}`}>
         <div className="space-y-6">
-            <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
-              <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm xl:h-full">
-                <div className="flex h-full flex-col">
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-slate-500">
-                    <span className="inline-flex items-center gap-2 text-slate-800">
-                      <Stars className="size-3.5" />
-                      Document ingestion
-                    </span>
-                  </div>
-                  <div className="mt-5 space-y-4">
-                    <h1
-                      className="max-w-4xl text-5xl font-black leading-[1.04] tracking-tight text-slate-800 md:text-[3.5rem]"
-                      style={{ fontFamily: "var(--font-display)" }}
-                    >
-                      Upload Queue
-                    </h1>
-                    <p className="max-w-3xl text-base leading-[1.6] text-slate-600">
-                      Queue PDFs, monitor processing, retry failures, and remove stale items before they re-enter the
-                      pipeline.
-                    </p>
-                  </div>
+            <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="relative">
+                {/* Header Toggle */}
+                <div className="absolute right-0 top-0 flex items-center gap-2 group">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    {showSidebar ? "Hide Sidebar" : "Show Sidebar"}
+                  </span>
+                  <button 
+                    onClick={toggleSidebar}
+                    className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white shadow-sm text-slate-400 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md active:scale-95"
+                  >
+                    {showSidebar ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
+                  </button>
                 </div>
-              </div>
 
-              <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm xl:h-full">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Status totals</p>
-                <div className="mt-4 space-y-3">
-                  <MetricStrip label="Queued" value={metrics.queued} />
-                  <MetricStrip label="Processing" value={metrics.processing} />
-                  <MetricStrip label="Failed" value={metrics.failed} />
+                <div className="space-y-3">
+                  <h1
+                    className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
+                    style={{ fontFamily: "var(--font-reports-display)" }}
+                  >
+                    Upload Queue
+                  </h1>
+                  <p className="max-w-3xl text-sm text-slate-600 leading-relaxed">
+                    Queue PDFs, monitor processing, retry failures, and remove stale items before they re-enter the
+                    pipeline.
+                  </p>
                 </div>
               </div>
             </section>
 
-            <section className="grid gap-4 xl:grid-cols-[24rem_minmax(0,1fr)] xl:items-start">
-              <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Add PDFs</p>
-                <div className="mt-4 flex flex-col gap-4 rounded-[1.4rem] border border-slate-200 bg-white/70 p-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Status totals</p>
+              <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+                <MetricStrip label="Queued" value={metrics.queued} />
+                <MetricStrip label="Processing" value={metrics.processing} />
+                <MetricStrip label="Failed" value={metrics.failed} />
+              </div>
+            </div>
+
+            <section className="grid gap-6 xl:grid-cols-[24rem_minmax(0,1fr)] xl:items-start">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Add PDFs</p>
+                <div className="mt-5 flex flex-col gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
                   <input
                     id="application-pdf"
                     className="sr-only"
@@ -416,31 +439,31 @@ function AdminUploadContent() {
                     onChange={handleFileSelection}
                   />
 
-                  <div className="rounded-[1.4rem] border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center">
-                    <div className="mx-auto grid size-11 place-items-center rounded-full bg-blue-700 text-white">
-                      <FileUp className="size-5" />
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-8 text-center transition-colors hover:border-blue-400">
+                    <div className="mx-auto grid size-12 place-items-center rounded-full bg-blue-100 text-blue-600">
+                      <FileUp className="size-6" />
                     </div>
-                    <div className="mt-4 flex flex-col items-center gap-3">
-                      <Badge variant={selectedFiles.length > 0 ? "secondary" : "outline"}>
+                    <div className="mt-5 flex flex-col items-center gap-4">
+                      <Badge variant={selectedFiles.length > 0 ? "secondary" : "outline"} className="px-3 py-1">
                         {selectedFiles.length > 0
                           ? `${selectedFiles.length} PDF${selectedFiles.length === 1 ? "" : "s"} selected`
                           : "No PDFs selected yet"}
                       </Badge>
-                          <label
+                      <label
                         htmlFor="application-pdf"
-                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50"
+                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-blue-500 hover:text-blue-700 hover:shadow-md"
                       >
                         Choose PDFs
                       </label>
                     </div>
                   </div>
 
-                  <Separator />
+                  <Separator className="bg-slate-200/60" />
 
-                  <div className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
-                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <Sparkles className="size-4 text-blue-700" />
-                      <span>
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm text-blue-700">
+                      <Sparkles className="size-4" />
+                      <span className="text-xs font-medium">
                         {selectedFiles.length > 0
                           ? "Ready to append these PDFs to the upload queue"
                           : hasPendingBrowserWork
@@ -449,17 +472,17 @@ function AdminUploadContent() {
                       </span>
                     </div>
                     {selectedFiles.length > 0 ? (
-                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Batch ready</span>
+                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#198FF0]">Batch ready</span>
                     ) : null}
                   </div>
 
-                  <div className="rounded-[1.2rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-[11px] leading-relaxed text-amber-800">
                     Batch execution pauses if you refresh or leave this page. Any files already processed by the backend
                     stay saved with their latest status.
                   </div>
 
                   <ShadButton
-                    className="w-full justify-center bg-blue-700 text-white hover:bg-blue-800"
+                    className="w-full justify-center bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md transition-all rounded-full h-11"
                     disabled={selectedFiles.length === 0}
                     onClick={handleAddToBatch}
                   >
@@ -471,21 +494,21 @@ function AdminUploadContent() {
 
               <div className="space-y-4">
                 {message ? (
-                  <p className="rounded-[1.2rem] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{message}</p>
+                  <p className="rounded-[1.2rem] border border-[#198FF0]/35 bg-[#EAF4FD] px-4 py-3 text-sm text-[#24527A]">{message}</p>
                 ) : null}
                 {error ? (
-                  <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p>
+                  <p className="rounded-[1.2rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">{error}</p>
                 ) : null}
                 {duplicateMessage ? (
-                  <p className="rounded-[1.2rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  <p className="rounded-[1.2rem] border border-[#FFB347]/45 bg-[#FFF1DF] px-4 py-3 text-sm text-[#8C5B1C]">
                     {duplicateMessage}
                   </p>
                 ) : null}
 
-                <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Upload queue</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Upload queue</p>
                       <p className="mt-2 text-sm leading-6 text-slate-600">
                         Queued, processing, and failed files stay visible in one operational list.
                       </p>
@@ -493,32 +516,32 @@ function AdminUploadContent() {
                   </div>
 
                   {loading ? (
-                    <div className="mt-5 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-10">
+                    <div className="mt-5 rounded-[1.4rem] border border-[#727D97] bg-[#F7F7F1] px-4 py-10">
                       <Loader label="Loading upload queue..." />
                     </div>
                   ) : queueRows.length === 0 ? (
-                    <div className="mt-5 rounded-[1.4rem] border border-slate-200 bg-white px-4 py-10 text-center">
-                      <p className="text-base font-semibold text-slate-800">No uploads in queue.</p>
-                      <p className="mt-2 text-sm text-slate-500">QUEUED, PROCESSING, and FAILED items appear here.</p>
+                    <div className="mt-5 rounded-[1.4rem] border border-[#727D97] bg-[#F7F7F1] px-4 py-10 text-center">
+                      <p className="text-base font-semibold text-[#111111]">No uploads in queue.</p>
+                      <p className="mt-2 text-sm text-[#5F6C86]">QUEUED, PROCESSING, and FAILED items appear here.</p>
                     </div>
                   ) : (
-                    <div className="mt-5 overflow-hidden rounded-[1.4rem] border border-slate-200 bg-white/70">
-                      <div className="grid gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 md:grid-cols-[1.2fr_0.8fr_0.9fr_0.8fr]">
+                    <div className="mt-6 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm ring-1 ring-slate-100">
+                      <div className="grid gap-3 border-b border-slate-50 bg-slate-50 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-400 md:grid-cols-[1.2fr_0.8fr_0.9fr_0.8fr]">
                         <span>Application</span>
                         <span>Status</span>
                         <span>Created</span>
                         <span>Action</span>
                       </div>
 
-                      <div className="divide-y divide-slate-200">
+                      <div className="divide-y divide-slate-100">
                         {queueRows.map((row) => (
-                          <div key={row.key} className="grid gap-4 px-4 py-4 md:grid-cols-[1.2fr_0.8fr_0.9fr_0.8fr] md:items-center">
+                          <div key={row.key} className="grid gap-4 px-4 py-4 md:grid-cols-[1.2fr_0.8fr_0.9fr_0.8fr] md:items-center transition-colors hover:bg-slate-100/50">
                             <div className="space-y-1">
-                              <p className="text-base font-semibold tracking-tight text-slate-800">{row.label}</p>
-                              {row.kind === "pending" ? <p className="text-xs text-slate-500">{row.note}</p> : null}
+                              <p className="text-sm font-bold tracking-tight text-slate-800">{row.label}</p>
+                              {row.kind === "pending" ? <p className="text-[11px] text-slate-500">{row.note}</p> : null}
                             </div>
                             <UploadStatusMark status={row.status} />
-                            <p className="text-sm text-slate-600">{new Date(row.createdAt).toLocaleString()}</p>
+                            <p className="text-xs text-slate-500">{new Date(row.createdAt).toLocaleString()}</p>
                             <div className="flex items-center gap-2">
                               {row.action === "retry" && row.kind === "application" ? (
                                 <Button disabled={busyRetryId === row.id} onClick={() => void handleRetry(row.id)}>
@@ -546,7 +569,7 @@ function AdminUploadContent() {
             </section>
           </div>
 
-        <aside className="grid gap-5 self-start">
+        <aside className={`grid gap-5 self-start transition-all duration-500 ease-in-out ${showSidebar ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8 pointer-events-none hidden"}`}>
           <AdminSessionLogPanel entries={sessionHistoryEntries} />
         </aside>
       </div>
@@ -556,8 +579,8 @@ function AdminUploadContent() {
 
 function MetricStrip({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-white px-3 py-3">
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{label}</span>
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 transition-all hover:bg-white hover:shadow-sm">
+      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{label}</span>
       <span className="text-sm font-semibold text-slate-800">{value}</span>
     </div>
   );
@@ -565,13 +588,13 @@ function MetricStrip({ label, value }: { label: string; value: number }) {
 
 function UploadStatusMark({ status }: { status: QueueRow["status"] }) {
   const styles = {
-    QUEUED: "border-blue-200 bg-blue-100 text-blue-900",
-    PROCESSING: "border-sky-200 bg-sky-100 text-sky-900",
-    FAILED: "border-rose-200 bg-rose-100 text-rose-800",
+    QUEUED: "bg-[#198FF0] text-[#F7F7F1]",
+    PROCESSING: "bg-[#7CF0FF] text-[#111111]",
+    FAILED: "bg-[#FF6B9D] text-[#111111]",
   } satisfies Record<QueueRow["status"], string>;
 
   return (
-    <span className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${styles[status]}`}>
+    <span className={`inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${styles[status]}`}>
       {status}
     </span>
   );

@@ -2,17 +2,16 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Stars } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileChartColumn, LayoutPanelLeft, ListTodo, Search, Settings2, Stars } from "lucide-react";
 import {
-  IBM_Plex_Sans,
   Libre_Franklin,
+  IBM_Plex_Sans,
 } from "next/font/google";
 import {
   assignApplication,
   deleteApplication,
   fetchApplications,
   fetchInterviewers,
-  generateReport,
   hideApplication,
   reassignApplication,
   unhideApplication,
@@ -39,8 +38,7 @@ const plexSans = IBM_Plex_Sans({
 const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
   weight: ["900"],
-  variable: "--font-display",
-  display: "swap",
+  variable: "--font-reports-display",
 });
 
 export default function AdminReportsPage() {
@@ -57,7 +55,6 @@ function AdminReportsContent() {
   const [statusFilter, setStatusFilter] = useState<(typeof REPORT_STATUSES)[number]>("ALL");
   const [loading, setLoading] = useState(true);
   const [busyAppId, setBusyAppId] = useState<string | null>(null);
-  const [generatingAppId, setGeneratingAppId] = useState<string | null>(null);
   const [hiddenBusyAppId, setHiddenBusyAppId] = useState<string | null>(null);
   const [deletingAppId, setDeletingAppId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +63,26 @@ function AdminReportsContent() {
   const [editingDisplayIdAppId, setEditingDisplayIdAppId] = useState<string | null>(null);
   const [pendingDisplayIdByApp, setPendingDisplayIdByApp] = useState<Record<string, string>>({});
   const [savingDisplayIdAppId, setSavingDisplayIdAppId] = useState<string | null>(null);
+  const [showSidebar, setShowSidebar] = useState(true);
   const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
+
+  // Load sidebar preference
+  useEffect(() => {
+    const saved = localStorage.getItem("agis_admin_sidebar_visible");
+    if (saved !== null) {
+      setShowSidebar(saved === "true");
+    } else {
+      // Default to open for first-time visitors
+      setShowSidebar(true);
+    }
+  }, []);
+
+  // Save sidebar preference
+  const toggleSidebar = () => {
+    const next = !showSidebar;
+    setShowSidebar(next);
+    localStorage.setItem("agis_admin_sidebar_visible", String(next));
+  };
 
   async function loadData() {
     try {
@@ -140,32 +156,6 @@ function AdminReportsContent() {
       setError(mutationError instanceof Error ? mutationError.message : "Assignment update failed.");
     } finally {
       setBusyAppId(null);
-    }
-  }
-
-  async function handleGenerate(applicationId: string) {
-    setGeneratingAppId(applicationId);
-    setMessage(null);
-    setError(null);
-    try {
-      const report = items.find((item) => item.id === applicationId);
-      await generateReport(applicationId);
-      setMessage("Final report generated.");
-
-      if (report) {
-        addEntry({
-          action: "Generated",
-          reportId: report.display_id,
-          detail: "Pages 4-5 and annotations were created for assignment-ready review.",
-          tone: "lime",
-        });
-      }
-
-      await loadData();
-    } catch (generationError) {
-      setError(generationError instanceof Error ? generationError.message : "Final report generation failed.");
-    } finally {
-      setGeneratingAppId(null);
     }
   }
 
@@ -309,66 +299,61 @@ function AdminReportsContent() {
       className={`${plexSans.variable} ${libreFranklin.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_22rem]">
+      <div className={`grid gap-6 transition-all duration-500 ease-in-out ${showSidebar ? "xl:grid-cols-[1fr_22rem]" : "grid-cols-1"}`}>
         <div className="space-y-6">
-            <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
-              <div className="space-y-4 xl:flex xl:h-full xl:flex-col xl:gap-4 xl:space-y-0">
-                <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm xl:flex-1">
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-slate-500">
-                    <span className="inline-flex items-center gap-2 text-slate-800">
-                      <Stars className="size-3.5" />
-                      Admin review desk
-                    </span>
-                  </div>
-                  <div className="mt-5 space-y-4">
-                    <h3
-                      className="max-w-4xl text-5xl font-black leading-[1.04] tracking-tight text-slate-800 md:text-[3.5rem]"
-                      style={{ fontFamily: "var(--font-display)" }}
-                    >
-                      Generated Reports
-                    </h3>
-                    <p className="max-w-3xl text-base leading-[1.6] text-slate-600">
-                      Open generated reports, update report IDs, assign or reassign interviewers, manage visibility, and
-                      remove reports when necessary.
-                    </p>
-                  </div>
+            <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="relative">
+                {/* Header Toggle */}
+                <div className="absolute right-0 top-0 flex items-center gap-2 group">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    {showSidebar ? "Hide Sidebar" : "Show Sidebar"}
+                  </span>
+                  <button 
+                    onClick={toggleSidebar}
+                    className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white shadow-sm text-slate-400 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md active:scale-95"
+                  >
+                    {showSidebar ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
+                  </button>
                 </div>
 
-                <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm">
-                  <div className="rounded-[1.4rem] border border-slate-200 bg-white/70 p-1.5">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {REPORT_STATUSES.map((status) => (
-                        <button
-                          key={status}
-                          className={`rounded-[1rem] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 ${
-                            statusFilter === status
-                              ? getFilterActiveClasses(status)
-                              : "border border-transparent bg-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-blue-700"
-                          }`}
-                          onClick={() => setStatusFilter(status)}
-                          type="button"
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm xl:flex xl:h-full xl:flex-col">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Status totals</p>
-                <div className="mt-4 flex flex-1 flex-col gap-3">
-                  <StatusTotal className="flex-1" label="Ready" value={metrics.ready} />
-                  <StatusTotal className="flex-1" label="Complete" value={metrics.complete} />
-                  <StatusTotal className="flex-1" label="Assigned" value={metrics.assigned} />
-                  <StatusTotal className="flex-1" label="Hidden" value={metrics.hidden} />
+                <div className="space-y-3">
+                  <h3
+                    className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
+                    style={{ fontFamily: "var(--font-reports-display)" }}
+                  >
+                    Generated Reports
+                  </h3>
+                  <p className="max-w-3xl text-sm text-slate-600 leading-relaxed">
+                    Open generated reports, update report IDs, assign or reassign interviewers, manage visibility, and
+                    remove reports when necessary.
+                  </p>
                 </div>
               </div>
             </section>
 
-            {message ? <p className="rounded-[1.2rem] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{message}</p> : null}
-            {error ? <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p> : null}
+            <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+              <div className="rounded-xl border border-slate-100 bg-slate-50 p-1.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {REPORT_STATUSES.map((status) => (
+                    <button
+                      key={status}
+                      className={`rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-widest transition-all duration-200 ${
+                        statusFilter === status
+                          ? "bg-blue-600 text-white shadow-md"
+                          : "text-slate-500 hover:bg-white hover:text-blue-700 hover:shadow-sm"
+                      }`}
+                      onClick={() => setStatusFilter(status)}
+                      type="button"
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
+            {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
 
         {loading ? (
           <Loader label="Loading reports..." />
@@ -385,7 +370,6 @@ function AdminReportsContent() {
                 onSelectedInterviewerChange={(value) =>
                   setSelectedInterviewerByApp((current) => ({ ...current, [item.id]: value }))
                 }
-                onGenerate={() => void handleGenerate(item.id)}
                 onAssign={(mode) => void mutateAssignment(item.id, mode)}
                 onToggleHidden={() => void toggleHidden(item.id, !item.is_hidden)}
                 onDelete={() => void removeReport(item.id)}
@@ -396,7 +380,6 @@ function AdminReportsContent() {
                   setPendingDisplayIdByApp((current) => ({ ...current, [item.id]: value }))
                 }
                 pendingDisplayId={pendingDisplayIdByApp[item.id] ?? ""}
-                isGenerating={generatingAppId === item.id}
                 isBusy={busyAppId === item.id}
                 isHiddenBusy={hiddenBusyAppId === item.id}
                 isDeleting={deletingAppId === item.id}
@@ -408,24 +391,38 @@ function AdminReportsContent() {
         )}
           </div>
 
-        <aside className="grid gap-5 self-start">
-          <AdminSessionLogPanel entries={sessionHistoryEntries} />
-        </aside>
+        {showSidebar && (
+          <aside className="grid gap-5 self-start transition-all duration-500 ease-in-out">
+            <AdminSessionLogPanel entries={sessionHistoryEntries} />
+            
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Status totals</p>
+              <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50">
+                <div className="divide-y divide-slate-200">
+                  <div className="px-4 py-3"><StatusTotal label="Ready" value={metrics.ready} /></div>
+                  <div className="px-4 py-3"><StatusTotal label="Complete" value={metrics.complete} /></div>
+                  <div className="px-4 py-3"><StatusTotal label="Assigned" value={metrics.assigned} /></div>
+                  <div className="px-4 py-3"><StatusTotal label="Hidden" value={metrics.hidden} /></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        )}
       </div>
     </div>
   );
 }
 
 function getFilterActiveClasses(status: (typeof REPORT_STATUSES)[number]) {
-  if (status === "ALL") return "border border-blue-100 bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-slate-800 shadow-[0_10px_22px_rgba(148,163,184,0.16)]";
-  if (status === "READY") return "border border-lime-200 bg-lime-100 text-lime-900 shadow-[0_8px_20px_rgba(190,242,100,0.28)]";
-  if (status === "COMPLETE") return "border border-amber-200 bg-amber-100 text-amber-900 shadow-[0_8px_20px_rgba(253,230,138,0.26)]";
-  if (status === "ASSIGNED") return "border border-sky-200 bg-sky-100 text-sky-900 shadow-[0_8px_20px_rgba(186,230,253,0.28)]";
-  return "border border-slate-200 bg-slate-100 text-slate-700 shadow-[0_8px_20px_rgba(226,232,240,0.24)]";
+  if (status === "ALL") return "bg-blue-600 text-white shadow-md";
+  if (status === "READY") return "bg-lime-500 text-white shadow-md";
+  if (status === "COMPLETE") return "bg-amber-500 text-white shadow-md";
+  if (status === "ASSIGNED") return "bg-sky-500 text-white shadow-md";
+  return "bg-slate-400 text-white shadow-md";
 }
 
 function getEmptyStateBorderClasses(status: (typeof REPORT_STATUSES)[number]) {
-  return "border-slate-200 shadow-[0_18px_36px_rgba(15,23,42,0.08)]";
+  return "border-[#727D97] shadow-[0_18px_44px_rgba(114,125,151,0.14)]";
 }
 
 function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
@@ -439,14 +436,7 @@ function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
   if (status === "READY") {
     return {
       title: "No ready reports yet.",
-      description: "Reports waiting for Pages 4-5 generation will appear here.",
-    };
-  }
-
-  if (status === "COMPLETE") {
-    return {
-      title: "No complete reports yet.",
-      description: "Reports ready for assignment will appear here.",
+      description: "Reports waiting for first assignment will appear here.",
     };
   }
 
@@ -454,6 +444,13 @@ function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
     return {
       title: "No assigned reports yet.",
       description: "Reports currently owned by an interviewer will appear here.",
+    };
+  }
+
+  if (status === "COMPLETE") {
+    return {
+      title: "No complete reports yet.",
+      description: "Reports ready for assignment will appear here.",
     };
   }
 
@@ -468,10 +465,10 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
 
   return (
     <div
-      className={`rounded-[1.9rem] border bg-white/80 px-6 py-10 text-center backdrop-blur-sm ${getEmptyStateBorderClasses(statusFilter)}`}
+      className={`rounded-[1.9rem] border bg-[#F7F7F1] px-6 py-10 text-center ${getEmptyStateBorderClasses(statusFilter)}`}
     >
       <div className="mx-auto flex max-w-md flex-col items-center">
-        <div className="grid size-16 place-items-center overflow-hidden rounded-2xl border border-blue-200 bg-blue-50 shadow-sm">
+        <div className="grid size-16 place-items-center overflow-hidden rounded-2xl border border-[#198FF0]/25 bg-[#EAF4FD] shadow-[0_0_40px_rgba(25,143,240,0.2)]">
           <Image
             alt="Interview Standardiser logo"
             className="h-14 w-14 scale-[1.28] object-cover"
@@ -481,12 +478,12 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
           />
         </div>
         <h4
-          className="mt-5 text-[2.1rem] font-black leading-[0.98] tracking-tight text-slate-800"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="mt-5 text-[2.1rem] leading-[0.95] tracking-[-0.05em] text-[#111111]"
+          style={{ fontFamily: "var(--font-reports-cormorant)" }}
         >
           {copy.title}
         </h4>
-        <p className="mt-3 text-sm leading-7 text-slate-600">{copy.description}</p>
+        <p className="mt-3 text-sm leading-7 text-[#49536B]">{copy.description}</p>
       </div>
     </div>
   );
@@ -494,8 +491,8 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
 
 function StatusTotal({ label, value, className }: { label: string; value: number; className?: string }) {
   return (
-    <div className={`${className ?? ""} flex items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-white px-3 py-3`}>
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{label}</span>
+    <div className={`${className ?? ""} flex items-center justify-between gap-3`}>
+      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
       <span className="text-sm font-semibold text-slate-800">{value}</span>
     </div>
   );

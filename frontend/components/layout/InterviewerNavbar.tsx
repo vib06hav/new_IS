@@ -86,23 +86,35 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
       <div className="mx-auto max-w-[106rem] px-5 py-4 md:px-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex items-center gap-5">
-            <div className="flex items-center gap-3">
-              <div className="grid size-11 place-items-center overflow-hidden rounded-xl border border-blue-200 bg-blue-50 shadow-sm">
-                <Image
-                  alt="Interview Standardiser logo"
-                  className="h-10 w-10 scale-[1.28] object-cover"
-                  height={40}
-                  src="/Logo-removebg-preview.png"
-                  width={40}
-                />
+            <div className="flex items-center space-x-2">
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 shadow-sm border border-blue-200/50">
+                <svg
+                  aria-hidden="true"
+                  className="size-6 text-blue-900"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                  />
+                </svg>
+                <span className="absolute -bottom-1 -right-1 rounded border border-blue-200 bg-white px-1 text-[10px] font-bold text-blue-900">
+                  IS
+                </span>
               </div>
-              <div>
+              <div className="hidden min-w-0 sm:block">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-800">
                   Interview Standardiser
                 </p>
               </div>
             </div>
+          </div>
 
+          <div className="relative flex items-center gap-5 self-end xl:self-auto" ref={menuRef}>
             <nav className="hidden items-center gap-2 xl:flex">
               {navItems.map((item) => (
                 <Link
@@ -118,9 +130,7 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
                 </Link>
               ))}
             </nav>
-          </div>
 
-          <div className="relative flex items-center gap-2 self-end xl:self-auto" ref={menuRef}>
             <button
               className="rounded-full"
               onClick={() => setMenuOpen((current) => !current)}
