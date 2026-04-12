@@ -188,11 +188,10 @@ function ReviewPageTwoSectionLegacy({
                   return (
                     <article
                       key={`${key}-${entityId || index}`}
-                      className={`rounded-[1.2rem] border p-4 transition-colors ${
-                        highlighted
+                      className={`rounded-[1.2rem] border p-4 transition-colors ${highlighted
                           ? "border-blue-200 bg-[linear-gradient(180deg,rgba(239,246,255,0.98),rgba(255,255,255,0.96))] shadow-[0_16px_30px_rgba(59,130,246,0.10)]"
                           : "border-slate-200 bg-white/80 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
-                      }`}
+                        }`}
                       title={buildAnnotationTitle(annotation)}
                     >
                       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -430,12 +429,12 @@ export function ReviewPageTwoSection({
                 {[readString(activeLeadership.activity_name), readString(activeLeadership.level)].filter(Boolean)
                   .length ? (
                   <p className="text-sm leading-6 text-[color:var(--muted)]">
-                      {[readString(activeLeadership.activity_name), readString(activeLeadership.level)]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </p>
-                  ) : null}
-                </div>
+                    {[readString(activeLeadership.activity_name), readString(activeLeadership.level)]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                ) : null}
+              </div>
 
               <div className="grid gap-3">
                 <InfoRow label="Duration" value={formatDuration(activeLeadership.duration)} />
@@ -446,15 +445,15 @@ export function ReviewPageTwoSection({
                 />
               </div>
 
-                {readString(activeLeadership.description_raw) ? (
-                  <section className="rounded-[1.1rem] border border-slate-200 bg-white/78 p-4">
-                    <UserProvidedText
-                      label="Description"
-                      value={readString(activeLeadership.description_raw)!}
-                      className="mt-2 whitespace-pre-wrap text-sm leading-7 text-[color:var(--ink)]"
-                    />
-                  </section>
-                ) : null}
+              {readString(activeLeadership.description_raw) ? (
+                <section className="rounded-[1.1rem] border border-slate-200 bg-white/78 p-4">
+                  <UserProvidedText
+                    label="Description"
+                    value={readString(activeLeadership.description_raw)!}
+                    className="mt-2 whitespace-pre-wrap text-sm leading-7 text-[color:var(--ink)]"
+                  />
+                </section>
+              ) : null}
 
               {!hasDisplayValue([
                 readString(activeLeadership.achievement),
@@ -486,13 +485,13 @@ export function ReviewPageTwoSection({
           {activeTest ? (
             <div className="space-y-4">
               <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div className="space-y-1">
-                    <p className="text-lg font-semibold tracking-tight text-[color:var(--ink)]">
-                      {readString(activeTest.test_name) || "Test"}
-                    </p>
-                  </div>
-                  <CompactMetric label="Overall Result" value={formatTestScore(activeTest)} />
+                <div className="space-y-1">
+                  <p className="text-lg font-semibold tracking-tight text-[color:var(--ink)]">
+                    {readString(activeTest.test_name) || "Test"}
+                  </p>
                 </div>
+                <CompactMetric label="Overall Result" value={formatTestScore(activeTest)} />
+              </div>
 
               <div className="overflow-hidden rounded-[1.1rem] border border-slate-200 bg-white/80">
                 <table className="min-w-full divide-y divide-[color:var(--line)] text-sm">
@@ -550,7 +549,7 @@ export function ReviewPageThreeSection({
 
   return (
     <Card title="Writing" description="Essays and highlighted excerpts" eyebrow={null}>
-      <div className="space-y-5">
+      <div className="space-y-6">
         {pageData.essays.map((essay, index) => {
           const entityId = essay.entity_id || `essay-${index}`;
           const essayAnnotations = normalizeEssayAnnotations(fragmentAnnotations[entityId] || []);
@@ -558,25 +557,29 @@ export function ReviewPageThreeSection({
           return (
             <article
               key={entityId}
-              className="rounded-[1.2rem] border border-slate-200 bg-white/82 p-4 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
+              className="rounded-[1.8rem] border border-slate-200 bg-white/85 p-6 shadow-[0_18px_38px_rgba(15,23,42,0.06)] md:p-10"
             >
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <div className="space-y-1">
-                  <p className="text-sm font-semibold text-[color:var(--ink)]">{essay.prompt || "Essay"}</p>
-                  <p className="hidden text-xs text-[color:var(--muted)]">
-                    {essay.entity_id || "Unknown essay"} · {essay.word_count || 0} words
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-6">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">Essay {index + 1}</span>
+                    <p className="text-sm font-bold tracking-tight text-slate-800">{essay.prompt || "Personal Statement"}</p>
+                  </div>
+                  <p className="text-[11px] font-medium tracking-wide text-slate-400">
+                    {essay.word_count || 0} words {essay.entity_id ? `· ID: ${essay.entity_id}` : ""}
                   </p>
-                  <p className="text-xs text-[color:var(--muted)]">{essay.word_count || 0} words</p>
                 </div>
                 {essayAnnotations.length ? (
-                  <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800">
-                    {essayAnnotations.length} highlighted passage{essayAnnotations.length > 1 ? "s" : ""}
+                  <span className="rounded-full bg-blue-50 px-3 py-1.5 text-[11px] font-bold tracking-tight text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                    {essayAnnotations.length} Highlighted Excerpt{essayAnnotations.length > 1 ? "s" : ""}
                   </span>
                 ) : null}
               </div>
-              <div className="text-sm leading-7 text-[color:var(--ink)]">
-                <ApplicantProvidedLabel label="Essay" />
-                {renderEssayText(essay.full_text || "", essayAnnotations)}
+              <div className="text-base leading-relaxed text-slate-700">
+                <ApplicantProvidedLabel label="Writing Sample" />
+                <div className="mt-4">
+                  {renderEssayText(essay.full_text || "", essayAnnotations)}
+                </div>
               </div>
             </article>
           );
@@ -712,9 +715,9 @@ function parsePageOneData(data: unknown): PageOneData | null {
     location: formatLocation(identity?.geographic_context),
     familyMembers: familyBackground
       ? [
-          buildFamilyMember("Parent / Guardian 1", familyBackground.father),
-          buildFamilyMember("Parent / Guardian 2", familyBackground.mother),
-        ].filter((member) => hasDisplayValue([member.name, member.education, member.occupation, member.organization, member.role]))
+        buildFamilyMember("Parent / Guardian 1", familyBackground.father),
+        buildFamilyMember("Parent / Guardian 2", familyBackground.mother),
+      ].filter((member) => hasDisplayValue([member.name, member.education, member.occupation, member.organization, member.role]))
       : [],
     schoolHistory: schoolHistory.map((entry) => ({
       level: readString(entry.level),
@@ -756,38 +759,92 @@ function normalizeEssayAnnotations(annotations: FragmentAnnotation[]) {
 }
 
 function renderEssayText(text: string, annotations: FragmentAnnotation[]) {
-  if (!annotations.length) {
-    return <p className="whitespace-pre-wrap">{text}</p>;
-  }
+  if (!text) return null;
 
-  const elements: ReactNode[] = [];
-  let cursor = 0;
-
-  annotations.forEach((annotation) => {
-    const start = Math.max(cursor, annotation.start_char);
-    const end = Math.min(text.length, annotation.end_char);
-    if (start > cursor) {
-      elements.push(<Fragment key={`plain-${cursor}`}>{text.slice(cursor, start)}</Fragment>);
+  // Stable segmentation: We identify [start, end] ranges for each paragraph
+  // to ensure 100% character coverage and stable highlight offsets.
+  const createSegments = (rawText: string) => {
+    const segs: Array<{ start: number; end: number }> = [];
+    
+    // Primary split: Existing double newlines
+    if (rawText.includes("\n\n")) {
+      let last = 0;
+      const splitRegex = /\n\s*\n/g;
+      let match;
+      while ((match = splitRegex.exec(rawText)) !== null) {
+        segs.push({ start: last, end: match.index });
+        last = match.index + match[0].length;
+      }
+      if (last < rawText.length) {
+        segs.push({ start: last, end: rawText.length });
+      }
+      return segs;
     }
-    if (end > start) {
-      elements.push(
-        <span
-          key={annotation.fragment_id}
-          className="rounded-sm bg-amber-100/80 px-0.5 underline decoration-amber-600 decoration-2 underline-offset-4"
-          title={buildAnnotationTitle(annotation)}
-        >
-          {text.slice(start, end)}
-        </span>,
-      );
-      cursor = end;
+
+    // Secondary split: Visual paragraphs every 4 sentences
+    const sentenceRegex = /[^.!?]+[.!?]+(?:\s+|$)/g;
+    let match;
+    let last = 0;
+    let count = 0;
+    while ((match = sentenceRegex.exec(rawText)) !== null) {
+      count++;
+      if (count >= 4) {
+        const end = match.index + match[0].length;
+        segs.push({ start: last, end: end });
+        last = end;
+        count = 0;
+      }
     }
-  });
+    if (last < rawText.length) {
+      segs.push({ start: last, end: rawText.length });
+    }
+    return segs.length > 0 ? segs : [{ start: 0, end: rawText.length }];
+  };
 
-  if (cursor < text.length) {
-    elements.push(<Fragment key={`plain-${cursor}`}>{text.slice(cursor)}</Fragment>);
-  }
+  const segments = createSegments(text);
 
-  return <p className="whitespace-pre-wrap">{elements}</p>;
+  return (
+    <div className="space-y-6">
+      {segments.map((seg, i) => {
+        const segText = text.slice(seg.start, seg.end);
+        const pAnnotations = annotations.filter(a => a.end_char > seg.start && a.start_char < seg.end);
+
+        if (!pAnnotations.length) {
+          return <p key={i} className="mb-6 whitespace-pre-wrap last:mb-0">{segText}</p>;
+        }
+
+        const elements: ReactNode[] = [];
+        let cursor = 0;
+
+        pAnnotations.forEach((annotation) => {
+          const startInP = Math.max(0, annotation.start_char - seg.start);
+          const endInP = Math.min(segText.length, annotation.end_char - seg.start);
+
+          if (startInP > cursor) {
+            elements.push(<Fragment key={`plain-${cursor}`}>{segText.slice(cursor, startInP)}</Fragment>);
+          }
+          if (endInP > startInP) {
+            elements.push(
+              <span
+                key={annotation.fragment_id}
+                className="rounded-sm bg-blue-100/60 px-0.5 font-medium underline decoration-blue-500/40 decoration-2 underline-offset-4 transition-colors hover:bg-blue-100"
+                title={buildAnnotationTitle(annotation)}
+              >
+                {segText.slice(startInP, endInP)}
+              </span>
+            );
+            cursor = endInP;
+          }
+        });
+
+        if (cursor < segText.length) {
+          elements.push(<Fragment key={`plain-${cursor}`}>{segText.slice(cursor)}</Fragment>);
+        }
+
+        return <p key={i} className="mb-6 whitespace-pre-wrap last:mb-0">{elements}</p>;
+      })}
+    </div>
+  );
 }
 
 function buildAnnotationTitle(annotation?: EntityAnnotation | FragmentAnnotation) {
@@ -922,11 +979,10 @@ function PageTwoPanel({
 }) {
   return (
     <section
-      className={`isolate overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_18px_36px_rgba(15,23,42,0.08)] transition-colors ${
-        highlighted
+      className={`isolate overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_18px_36px_rgba(15,23,42,0.08)] transition-colors ${highlighted
           ? "border-blue-200 shadow-[0_18px_32px_rgba(59,130,246,0.12)]"
           : "border-slate-200"
-      }`}
+        }`}
       title={annotationTitle}
     >
       {tabs.length ? (
@@ -945,11 +1001,10 @@ function PageTwoPanel({
                   }}
                   onClick={() => onSelect(index)}
                   title={tab.title}
-                  className={`relative touch-manipulation rounded-t-[1rem] border px-4 py-2.5 text-left transition-all focus:outline-none ${
-                    active
+                  className={`relative touch-manipulation rounded-t-[1rem] border px-4 py-2.5 text-left transition-all focus:outline-none ${active
                       ? "z-10 border-slate-200 border-b-white bg-white text-[color:var(--ink)] shadow-[0_-4px_14px_rgba(15,23,42,0.08)]"
                       : "z-0 border-transparent bg-white/45 text-[color:var(--muted)] hover:bg-white/75"
-                  }`}
+                    }`}
                   aria-pressed={active}
                 >
                   <span className="text-sm font-semibold tracking-tight">{tab.label}</span>

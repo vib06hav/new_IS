@@ -34,6 +34,14 @@ const libreFranklin = Libre_Franklin({
 });
 
 export default function InterviewerSettingsPage() {
+  return (
+    <InterviewerShell>
+      <InterviewerProfileContent />
+    </InterviewerShell>
+  );
+}
+
+function InterviewerProfileContent() {
   const [session, setSession] = useState<SessionResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -82,6 +90,9 @@ export default function InterviewerSettingsPage() {
 
   const roleLabel = useMemo(() => formatRole(session?.user.role), [session?.user.role]);
 
+  const mismatch =
+    Boolean(form.newPassword || form.confirmPassword) && form.newPassword !== form.confirmPassword;
+
   async function handlePasswordChange() {
     if (mismatch) {
       setError("New password confirmation does not match.");
@@ -95,6 +106,7 @@ export default function InterviewerSettingsPage() {
     setSubmitting(true);
     setError(null);
     setMessage(null);
+
     try {
       await changeMyPassword({
         current_password: form.currentPassword,
@@ -125,6 +137,7 @@ export default function InterviewerSettingsPage() {
     setSavingProfile(true);
     setError(null);
     setMessage(null);
+
     try {
       const updated = await updateMyProfile({ name: nextName });
       setSession(updated);
@@ -137,90 +150,102 @@ export default function InterviewerSettingsPage() {
     }
   }
 
-  const mismatch =
-    Boolean(form.newPassword || form.confirmPassword) && form.newPassword !== form.confirmPassword;
-
   return (
-    <InterviewerShell>
-      <div
-        className={[
-          plexSans.variable,
-          libreFranklin.variable,
-        ].join(" ")}
-        style={{ fontFamily: "var(--font-reports-plex)" }}
+    <div
+      className={[
+        plexSans.variable,
+        libreFranklin.variable,
+      ].join(" ")}
+      style={{ fontFamily: "var(--font-reports-plex)" }}
+    >
+      <motion.div
+        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 26 }}
+        transition={{ duration: 0.55, ease: "easeOut" }}
       >
-        <motion.div
-          animate={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 26 }}
-          transition={{ duration: 0.55, ease: "easeOut" }}
-        >
-          <div className="mx-auto max-w-[72rem] px-0 py-0">
-            {loading ? (
-              <Loader label="Loading profile..." />
-            ) : (
-              <div className="space-y-6">
-                {message ? (
-                  <p className="rounded-[1.2rem] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
-                    {message}
-                  </p>
-                ) : null}
-                {error ? (
-                  <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
-                    {error}
-                  </p>
-                ) : null}
+        <div className="mx-auto max-w-[106rem] px-0 py-0">
+          {loading ? (
+            <Loader label="Loading profile..." />
+          ) : (
+            <div className="space-y-6">
+              {message ? (
+                <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-blue-50/50 px-4 py-3 text-sm font-medium text-blue-900 backdrop-blur-sm">
+                  <div className="size-2 rounded-full bg-blue-500 animate-pulse" />
+                  {message}
+                </div>
+              ) : null}
+              {error ? (
+                <div className="flex items-center gap-3 rounded-2xl border border-rose-100 bg-rose-50/50 px-4 py-3 text-sm font-medium text-rose-900 backdrop-blur-sm">
+                  <div className="size-2 rounded-full bg-rose-500" />
+                  {error}
+                </div>
+              ) : null}
 
-                <section className="rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-                  <div className="flex flex-col items-center text-center">
-                    <Avatar className="size-24 border border-slate-200 bg-slate-100">
-                      <AvatarFallback className="bg-slate-200 text-2xl font-semibold text-slate-700">
+              {/* Identity Card: Stands alone at the top */}
+              <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_15px_30px_rgba(15,23,42,0.05)]">
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative group">
+                    <Avatar className="size-20 border border-slate-200 bg-slate-100 ring-2 ring-white shadow-sm transition-transform group-hover:scale-105 duration-500">
+                      <AvatarFallback className="bg-slate-200 text-xl font-semibold text-slate-700">
                         {initials}
                       </AvatarFallback>
                     </Avatar>
                     <button
-                      className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 opacity-75 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                      className="absolute -bottom-1 -right-1 grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-400 shadow-md transition-all hover:bg-blue-50 hover:text-blue-700 active:scale-90"
                       disabled
-                      title="Profile image upload will be enabled when MinIO storage is added."
+                      title="Storage integration pending."
                       type="button"
                     >
                       <Camera className="size-4" />
-                      Change profile image
                     </button>
-
-                    <h1
-                      className="mt-6 text-5xl font-black leading-[1.04] tracking-tight text-slate-800 md:text-[3.5rem]"
-                      style={{ fontFamily: "var(--font-display)" }}
-                    >
-                      {session?.user.name ?? "Interviewer"}
-                    </h1>
-                    <p className="mt-2 text-base leading-[1.6] text-slate-600">
-                      Personal account details for the interviewer workspace.
-                    </p>
                   </div>
 
-                  <div className="mt-8 grid gap-4">
+                  <h1
+                    className="mt-4 text-3xl font-black leading-none tracking-tight text-slate-800"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {session?.user.name ?? "Interviewer"}
+                  </h1>
+                </div>
+              </section>
+
+              {/* Grid: Equal sized dual panes below */}
+              <div className="grid gap-6 lg:grid-cols-2 items-start">
+                {/* Profile Details Area */}
+                <section className="h-full rounded-[2rem] border border-slate-200 bg-white/80 p-8 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="grid size-10 place-items-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400">
+                      <UserRound className="size-5" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 leading-none">Settings</p>
+                      <h2 className="mt-1 text-xl font-bold text-slate-800">Profile Information</h2>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
                     <ProfileField
                       icon={UserRound}
                       label="Display name"
-                      note="Interviewer identity is shown across your assigned reports and workspace."
                     >
                       <div className="space-y-3">
                         <input
-                          className="w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200/70"
+                          className="w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                           onChange={(event) => setProfileName(event.target.value)}
                           value={profileName}
                         />
                         <div className="flex justify-end">
                           <Button
+                            className="h-9 px-6 text-xs font-bold"
                             disabled={savingProfile || !profileName.trim() || profileName.trim() === session?.user.name}
                             onClick={() => void handleProfileSave()}
                           >
                             {savingProfile ? (
-                              <LoaderCircle className="size-4 animate-spin" />
+                              <LoaderCircle className="size-3.5 animate-spin" />
                             ) : (
-                              <PencilLine className="size-4" />
+                              <PencilLine className="size-3.5" />
                             )}
-                            {savingProfile ? "Saving..." : "Save display name"}
+                            {savingProfile ? "Saving..." : "Update Name"}
                           </Button>
                         </div>
                       </div>
@@ -228,31 +253,28 @@ export default function InterviewerSettingsPage() {
                     <ProfileField
                       icon={Mail}
                       label="Email"
-                      note="Email is backend-managed during interviewer onboarding and remains read-only."
                       value={session?.user.email ?? "Not available"}
                     />
                     <ProfileField
                       icon={ShieldCheck}
                       label="Role"
-                      note="Interviewer access is limited to assigned reports and account security."
                       value={roleLabel}
                     />
                   </div>
                 </section>
 
-                <section className="rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Security</p>
-                  <h2
-                    className="mt-4 text-[2.4rem] font-black leading-[0.98] tracking-tight text-slate-800"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    Change password
-                  </h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-                    Update your password without changing the backend-managed interviewer email or role assignment.
-                  </p>
+                {/* Security Area */}
+                <section className="h-full rounded-[2rem] border border-slate-200 bg-white/80 p-8 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="grid size-10 place-items-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400">
+                      <KeyRound className="size-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-800">Security Credentials</h2>
+                    </div>
+                  </div>
 
-                  <div className="mt-6 grid gap-4">
+                  <div className="space-y-6">
                     <SecurityField
                       autoComplete="current-password"
                       label="Current password"
@@ -282,34 +304,43 @@ export default function InterviewerSettingsPage() {
                       type="password"
                       value={form.confirmPassword}
                     />
-                  </div>
 
-                  {mismatch ? (
-                    <p className="mt-4 text-sm text-rose-800">New password confirmation does not match.</p>
-                  ) : null}
+                    {mismatch ? (
+                      <div className="flex items-center gap-2 rounded-xl bg-rose-50 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-rose-800 border border-rose-100">
+                        Passwords do not match
+                      </div>
+                    ) : null}
 
-                  <div className="mt-6 flex justify-end">
-                    <Button
-                      disabled={
-                        submitting ||
-                        !form.currentPassword ||
-                        !form.newPassword ||
-                        !form.confirmPassword ||
-                        mismatch
-                      }
-                      onClick={() => void handlePasswordChange()}
-                    >
-                      {submitting ? <LoaderCircle className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
-                      {submitting ? "Saving..." : "Update password"}
-                    </Button>
+                    <div className="flex justify-end pt-2">
+                      <Button
+                        className="w-full lg:w-auto px-8"
+                        disabled={
+                          submitting ||
+                          !form.currentPassword ||
+                          !form.newPassword ||
+                          !form.confirmPassword ||
+                          mismatch
+                        }
+                        onClick={() => void handlePasswordChange()}
+                      >
+                        {submitting ? <LoaderCircle className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
+                        {submitting ? "Processing..." : "Secure Account"}
+                      </Button>
+                    </div>
                   </div>
                 </section>
               </div>
-            )}
-          </div>
-        </motion.div>
-      </div>
-    </InterviewerShell>
+
+              <div className="rounded-[2rem] border border-slate-100 bg-white/50 p-6 text-center">
+                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-400">
+                  Last session activity: {new Date().toLocaleDateString()} • Secure Interviewer Environment
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -317,13 +348,11 @@ function ProfileField({
   icon: Icon,
   label,
   value,
-  note,
   children,
 }: {
   icon: typeof UserRound;
   label: string;
   value?: string;
-  note: string;
   children?: ReactNode;
 }) {
   return (
@@ -346,7 +375,6 @@ function ProfileField({
               {value}
             </div>
           )}
-          <p className="mt-3 text-sm leading-6 text-slate-600">{note}</p>
         </div>
       </div>
     </div>
@@ -358,10 +386,10 @@ function SecurityField({
   ...props
 }: InputHTMLAttributes<HTMLInputElement> & { label: string }) {
   return (
-    <label className="rounded-[1.3rem] border border-slate-200 bg-white/70 p-4">
-      <p className="text-sm font-semibold text-slate-800">{label}</p>
+    <label className="block space-y-2">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">{label}</p>
       <input
-        className="mt-3 w-full rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200/70"
+        className="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100 shadow-sm"
         {...props}
       />
     </label>

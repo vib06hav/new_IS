@@ -28,8 +28,6 @@ export default function InterviewerApplicationPage() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [activePageTab, setActivePageTab] = useState<ReviewPageTab>("page1");
-  const [showStickyPageTabs, setShowStickyPageTabs] = useState(false);
-  const pageControlCardRef = useRef<HTMLElement | null>(null);
 
   async function loadDetail() {
     try {
@@ -79,28 +77,6 @@ export default function InterviewerApplicationPage() {
     }
   }, [activePageTab, item]);
 
-  useEffect(() => {
-    function updateStickyState() {
-      const card = pageControlCardRef.current;
-      if (!card) {
-        setShowStickyPageTabs(false);
-        return;
-      }
-
-      const rect = card.getBoundingClientRect();
-      const stickyThreshold = 112;
-      setShowStickyPageTabs(rect.bottom <= stickyThreshold);
-    }
-
-    updateStickyState();
-    window.addEventListener("scroll", updateStickyState, { passive: true });
-    window.addEventListener("resize", updateStickyState);
-
-    return () => {
-      window.removeEventListener("scroll", updateStickyState);
-      window.removeEventListener("resize", updateStickyState);
-    };
-  }, []);
 
   if (loading) {
     return (
@@ -168,55 +144,26 @@ export default function InterviewerApplicationPage() {
           <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p>
         ) : null}
 
-        <section className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(21rem,0.92fr)]">
-          <article className="flex min-h-[8.9rem] flex-col justify-between rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-            <div className="space-y-1.5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-700">Report workflow</p>
-              <div className="space-y-1">
-                <h2 className="text-[1.05rem] font-semibold tracking-[-0.03em] text-slate-800">Completed report</h2>
-                <p className="max-w-2xl text-sm leading-5 text-slate-600">
-                  This report was completed by an admin before assignment. You can review the full Pages 1-5 package
-                  without any generation or publishing steps.
-                </p>
+        <section>
+          <article
+            className="flex min-h-[8.9rem] flex-col rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm"
+          >
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Report pages</p>
+              <h2 className="text-[1.05rem] font-semibold tracking-[0] text-slate-800">Page controls</h2>
+              <p className="text-sm leading-5 text-slate-600">
+                Pages 4 and 5 appear once the final report has been generated and stay available throughout assignment.
+              </p>
+            </div>
+
+            <div className="mt-2.5 flex flex-1 items-center">
+              <div className="w-full rounded-[1.1rem] border border-slate-200 bg-white/70 p-1.5">
+                <SegmentedControl value={activePageTab} onChange={setActivePageTab} options={pageOptions} />
               </div>
             </div>
           </article>
-
-          <div>
-            <article
-              ref={pageControlCardRef}
-              className="flex min-h-[8.9rem] flex-col rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm"
-            >
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Report pages</p>
-                <h2 className="text-[1.05rem] font-semibold tracking-[0] text-slate-800">Page controls</h2>
-                <p className="text-sm leading-5 text-slate-600">
-                  Pages 4 and 5 appear once the final report has been generated and stay available throughout assignment.
-                </p>
-              </div>
-
-              <div className="mt-2.5 flex flex-1 items-center">
-                <div className="w-full rounded-[1.1rem] border border-slate-200 bg-white/70 p-1.5">
-                  <SegmentedControl value={activePageTab} onChange={setActivePageTab} options={pageOptions} />
-                </div>
-              </div>
-            </article>
-          </div>
         </section>
 
-        <div className="pointer-events-none hidden h-0 xl:block">
-          <div className="sticky top-[calc(var(--portal-header-height)+1rem)] z-20 flex justify-end">
-            <div
-              className={`pointer-events-auto w-[min(100%,31rem)] rounded-[1.2rem] border border-slate-200 bg-white/90 p-1.5 shadow-[0_18px_36px_rgba(15,23,42,0.12)] backdrop-blur transition-all duration-300 ${
-                showStickyPageTabs
-                  ? "pointer-events-auto translate-y-0 opacity-100"
-                  : "pointer-events-none -translate-y-3 opacity-0"
-              }`}
-            >
-              <SegmentedControl value={activePageTab} onChange={setActivePageTab} options={pageOptions} />
-            </div>
-          </div>
-        </div>
 
         {item.review_package ? (
           <ReviewPackageSection
