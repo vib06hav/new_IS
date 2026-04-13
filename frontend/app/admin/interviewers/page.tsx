@@ -36,7 +36,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { AdminSessionLogPanel } from "@/components/layout/AdminSessionLogPanel";
 import { useAdminSessionHistory } from "@/components/layout/AdminSessionHistory";
-import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 import { Badge } from "@/components/shadcn/badge";
 
 type AssignmentSource = "assigned" | "available" | "reassign";
@@ -798,6 +798,7 @@ function InterviewerCard({
 function InterviewerAvatar({ item, sizeClassName }: { item: InterviewerListItem; sizeClassName: string }) {
   return (
     <Avatar className={`${sizeClassName} overflow-hidden border border-[#727D97] bg-[#E6E9F0]`}>
+      {item.profile_image_url ? <AvatarImage src={item.profile_image_url} alt={`${item.name} profile image`} /> : null}
       <AvatarFallback className="bg-[#AAB4C8] text-[#111111]">{getInitials(item.name)}</AvatarFallback>
     </Avatar>
   );

@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { LogOut, UserRound } from "lucide-react";
 import { IBM_Plex_Sans } from "next/font/google";
 import { getSession } from "@/lib/auth";
-import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -28,6 +28,7 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [initials, setInitials] = useState("IS");
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const activeItem = useMemo(() => {
@@ -45,6 +46,7 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
       }
 
       setInitials(getInitials(session?.user.name));
+      setProfileImageUrl(session?.user.profile_image_url ?? null);
     }
 
     void loadSession();
@@ -137,6 +139,7 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
               type="button"
             >
               <Avatar className="size-11 border border-slate-200 bg-slate-100">
+                {profileImageUrl ? <AvatarImage src={profileImageUrl} alt="Interviewer profile image" /> : null}
                 <AvatarFallback className="bg-slate-200 text-slate-700">{initials}</AvatarFallback>
               </Avatar>
             </button>

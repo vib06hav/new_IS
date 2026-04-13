@@ -14,7 +14,7 @@ import { Libre_Franklin } from "next/font/google";
 import type { ApplicationListItem, InterviewerListItem } from "@/lib/types";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 import {
   Select,
   SelectContent,
@@ -176,6 +176,9 @@ export function AdminReportCard({
           {item.assigned_interviewer ? (
             <div className="mt-3 flex items-center gap-3">
               <Avatar className="size-10 border border-[#111111]/10">
+                {item.assigned_interviewer.profile_image_url ? (
+                  <AvatarImage src={item.assigned_interviewer.profile_image_url} alt={`${item.assigned_interviewer.name} profile image`} />
+                ) : null}
                 <AvatarFallback className="bg-[#111111] text-[#fafaf6]">{getInitials(item.assigned_interviewer.name)}</AvatarFallback>
               </Avatar>
               <div className="min-w-0">
@@ -211,6 +214,9 @@ export function AdminReportCard({
                   {selectedInterviewer ? (
                     <div className="flex min-w-0 flex-1 items-center gap-2">
                       <Avatar className="size-8">
+                        {selectedInterviewer.profile_image_url ? (
+                          <AvatarImage src={selectedInterviewer.profile_image_url} alt={`${selectedInterviewer.name} profile image`} />
+                        ) : null}
                         <AvatarFallback>{getInitials(selectedInterviewer.name)}</AvatarFallback>
                       </Avatar>
                       <span className="min-w-0 flex-1 space-y-0.5">
@@ -228,6 +234,9 @@ export function AdminReportCard({
                     {interviewers.map((interviewer) => (
                       <SelectItem key={interviewer.id} value={interviewer.id}>
                         <Avatar className="size-8 self-center">
+                          {interviewer.profile_image_url ? (
+                            <AvatarImage src={interviewer.profile_image_url} alt={`${interviewer.name} profile image`} />
+                          ) : null}
                           <AvatarFallback>{getInitials(interviewer.name)}</AvatarFallback>
                         </Avatar>
                         <span className="min-w-0 flex-1 flex-col justify-center space-y-0.5">

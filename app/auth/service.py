@@ -28,6 +28,18 @@ def build_profile_image_url(user: User) -> str | None:
     return f"/api/auth/profile/image{version}"
 
 
+def build_public_profile_image_url(user: User) -> str | None:
+    if not user.profile_image_key:
+        return None
+    version = ""
+    if user.profile_image_updated_at:
+        normalized = user.profile_image_updated_at
+        if normalized.tzinfo is None:
+            normalized = normalized.replace(tzinfo=timezone.utc)
+        version = f"?v={int(normalized.timestamp())}"
+    return f"/api/users/{user.id}/profile-image{version}"
+
+
 def create_user(db: Session, *, name: str, email: str, password: str, role: str) -> User:
     existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:

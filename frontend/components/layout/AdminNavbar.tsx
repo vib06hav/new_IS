@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { LogOut, UserRound } from "lucide-react";
 import { IBM_Plex_Sans } from "next/font/google";
 import { getSession } from "@/lib/auth";
-import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -30,6 +30,7 @@ export function AdminNavbar({ onSignOut }: AdminNavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [adminInitials, setAdminInitials] = useState("IS");
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const activeItem = useMemo(() => {
@@ -47,6 +48,7 @@ export function AdminNavbar({ onSignOut }: AdminNavbarProps) {
       }
 
       setAdminInitials(getInitials(session?.user.name));
+      setProfileImageUrl(session?.user.profile_image_url ?? null);
     }
 
     void loadSession();
@@ -137,6 +139,7 @@ export function AdminNavbar({ onSignOut }: AdminNavbarProps) {
               type="button"
             >
               <Avatar className="size-11 border border-slate-200 bg-slate-100 hover:border-blue-300 transition-colors">
+                {profileImageUrl ? <AvatarImage src={profileImageUrl} alt="Admin profile image" /> : null}
                 <AvatarFallback className="bg-slate-200 text-slate-600">{adminInitials}</AvatarFallback>
               </Avatar>
             </button>

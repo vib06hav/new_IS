@@ -53,6 +53,7 @@ class UserSummary(BaseModel):
     id: UUID
     name: str
     email: str
+    profile_image_url: Optional[str] = None
 
 
 class FinalReportSummary(BaseModel):
@@ -186,6 +187,7 @@ class InterviewerListItem(BaseModel):
     name: str
     email: str
     active_assignment_count: int
+    profile_image_url: Optional[str] = None
 
 
 class FinalReportMutationResponse(BaseModel):

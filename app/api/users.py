@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.api.helpers import build_interviewer_list_item, build_user_summary
@@ -13,7 +14,7 @@ from app.api.schemas import (
     InterviewerListItem,
 )
 from app.auth.schemas import AdminPasswordChange, InterviewerCreate, InterviewerUpdate, UserResponse
-from app.auth.dependencies import require_admin
+from app.auth.dependencies import get_current_user, require_admin
 from app.auth.service import admin_set_user_password, create_interviewer, update_interviewer
 from app.database import get_db
 from app.models.application import Application
@@ -26,6 +27,38 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 
 ACTIVE_ASSIGNMENT_STATUSES = {"ASSIGNED"}
+
+
+@router.get("/{user_id}/profile-image")
+def get_user_profile_image(
+    user_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if not user.profile_image_key or not user.profile_image_content_type:
+        raise HTTPException(status_code=404, detail="Profile image not found")
+
+    storage = get_storage_service()
+    if not storage.exists(user.profile_image_key):
+        raise HTTPException(status_code=404, detail="Profile image not found")
+
+    handle_context = storage.open_stream(user.profile_image_key)
+    handle = handle_context.__enter__()
+
+    def iterator():
+        try:
+            while True:
+                chunk = handle.read(1024 * 1024)
+                if not chunk:
+                    break
+                yield chunk
+        finally:
+            handle_context.__exit__(None, None, None)
+
+    return StreamingResponse(iterator(), media_type=user.profile_image_content_type)
 
 
 def _get_interviewer_or_404(db: Session, user_id: UUID) -> User:

@@ -26,6 +26,7 @@ from app.models.interview_workspace import InterviewWorkspace
 from app.models.user import User
 from app.projection.ros_projector import project_ros
 from app.interview_workspace import normalize_workspace_content
+from app.auth.service import build_public_profile_image_url
 
 
 def get_application_or_404(db: Session, application_id: UUID) -> Application:
@@ -102,7 +103,12 @@ def build_review_package_summary(
 def build_user_summary(user: Optional[User]) -> Optional[UserSummary]:
     if not user:
         return None
-    return UserSummary(id=user.id, name=user.name, email=user.email)
+    return UserSummary(
+        id=user.id,
+        name=user.name,
+        email=user.email,
+        profile_image_url=build_public_profile_image_url(user),
+    )
 
 
 def build_final_report_summary(final_report: Optional[FinalReport]) -> Optional[FinalReportSummary]:
@@ -213,4 +219,5 @@ def build_interviewer_list_item(user: User, active_assignment_count: int) -> Int
         name=user.name,
         email=user.email,
         active_assignment_count=active_assignment_count,
+        profile_image_url=build_public_profile_image_url(user),
     )

@@ -16,6 +16,7 @@ export type UserSummary = {
   id: string;
   name: string;
   email: string;
+  profile_image_url?: string | null;
 };
 
 export type CanonicalSummary = {
@@ -160,6 +161,7 @@ export type InterviewerListItem = {
   name: string;
   email: string;
   active_assignment_count: number;
+  profile_image_url?: string | null;
 };
 
 export type InterviewerAssignmentSummaryItem = {
