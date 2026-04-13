@@ -60,6 +60,7 @@ class FinalReportSummary(BaseModel):
     report_version: str
     created_at: datetime
     content: Dict[str, Any]
+    export_url: Optional[str] = None
 
 
 InterviewWorkspaceStatus = Literal["draft", "launched", "postgame", "completed"]

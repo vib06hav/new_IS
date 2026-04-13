@@ -4,6 +4,7 @@ from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+import base64
 
 from app.auth.security import create_access_token, get_password_hash
 from app.auth.service import bootstrap_admin_user, ensure_dev_admin_user
@@ -11,6 +12,7 @@ from app.config import settings
 from app.database import Base, get_db
 from app.main import app
 from app.models.user import User
+from app.storage.service import get_storage_service
 
 
 @compiles(JSONB, "sqlite")
@@ -321,6 +323,56 @@ def test_cookie_session_can_update_own_profile_name():
     assert response.status_code == 200
     assert response.json()["user"]["name"] == "Updated Interviewer"
     assert client.get("/auth/session").json()["user"]["name"] == "Updated Interviewer"
+
+
+def test_cookie_session_can_upload_and_fetch_profile_image(tmp_path):
+    client = make_client()
+    db = TestingSessionLocal()
+    original_storage_backend = settings.STORAGE_BACKEND
+    original_upload_directory = settings.UPLOAD_DIRECTORY
+    try:
+        settings.STORAGE_BACKEND = "local"
+        settings.UPLOAD_DIRECTORY = str(tmp_path)
+        get_storage_service.cache_clear()
+
+        db.query(User).delete()
+        db.add(
+            User(
+                name="Image User",
+                email="image-user@example.com",
+                password_hash=get_password_hash("securepassword123"),
+                role="interviewer",
+            )
+        )
+        db.commit()
+
+        login_response = client.post(
+            "/auth/login",
+            data={"username": "image-user@example.com", "password": "securepassword123"},
+        )
+        assert login_response.status_code == 200
+
+        png_bytes = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9l9m8AAAAASUVORK5CYII="
+        )
+        response = client.post(
+            "/auth/profile/image",
+            files={"file": ("avatar.png", png_bytes, "image/png")},
+            headers=session_csrf_headers(client),
+        )
+        assert response.status_code == 200
+        session_data = response.json()
+        assert session_data["user"]["profile_image_url"]
+
+        image_response = client.get("/auth/profile/image")
+        assert image_response.status_code == 200
+        assert image_response.headers["content-type"] == "image/png"
+        assert image_response.content == png_bytes
+    finally:
+        settings.STORAGE_BACKEND = original_storage_backend
+        settings.UPLOAD_DIRECTORY = original_upload_directory
+        get_storage_service.cache_clear()
+        db.close()
 
 
 def test_cookie_session_rejects_cross_site_origin_even_with_csrf_token():

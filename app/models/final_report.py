@@ -15,4 +15,7 @@ class FinalReport(Base):
     content = Column(JSONB, nullable=False)
     generated_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     report_version = Column(String(50), nullable=False)
+    export_key = Column(String(512), nullable=True)
+    export_content_type = Column(String(255), nullable=True)
+    export_updated_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False, server_default=func.now())

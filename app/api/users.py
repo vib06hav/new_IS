@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.helpers import build_interviewer_list_item, build_user_summary
+from app.auth.service import build_profile_image_url
 from app.api.schemas import (
     InterviewerAssignmentSaveRequest,
     InterviewerAssignmentSummary,
@@ -18,6 +19,7 @@ from app.database import get_db
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.user import User
+from app.storage import get_storage_service
 
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -110,6 +112,7 @@ def create_interviewer_account(
         "name": interviewer.name,
         "email": interviewer.email,
         "role": interviewer.role,
+        "profile_image_url": build_profile_image_url(interviewer),
     }
 
 
@@ -235,6 +238,7 @@ def update_interviewer_account(
         "name": interviewer.name,
         "email": interviewer.email,
         "role": interviewer.role,
+        "profile_image_url": build_profile_image_url(interviewer),
     }
 
 
@@ -252,6 +256,7 @@ def update_interviewer_password(
         "name": interviewer.name,
         "email": interviewer.email,
         "role": interviewer.role,
+        "profile_image_url": build_profile_image_url(interviewer),
     }
 
 
@@ -292,6 +297,9 @@ def delete_interviewer(
     assignments = db.query(Assignment).filter(Assignment.interviewer_id == user_id).all()
     for assignment in assignments:
         db.delete(assignment)
+
+    if interviewer.profile_image_key:
+        get_storage_service().delete(interviewer.profile_image_key)
 
     db.delete(interviewer)
     db.commit()

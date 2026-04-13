@@ -1,4 +1,5 @@
 import uuid
+import tempfile
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
@@ -17,6 +18,8 @@ from app.models.canonical_record import CanonicalRecord
 from app.models.final_report import FinalReport
 from app.models.interview_workspace import InterviewWorkspace
 from app.models.user import User
+from app.config import settings
+from app.storage.service import get_storage_service
 
 
 @compiles(JSONB, "sqlite")
@@ -105,81 +108,231 @@ def _pages_1_3_payload():
 
 def test_admin_generate_report_and_interviewer_visibility():
     db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
+    original_storage_backend = settings.STORAGE_BACKEND
+    original_upload_directory = settings.UPLOAD_DIRECTORY
+    try:
+        settings.STORAGE_BACKEND = "local"
+        settings.UPLOAD_DIRECTORY = tempfile.gettempdir()
+        get_storage_service.cache_clear()
 
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-flow@example.com", password_hash="x", role="admin")
-    interviewer = User(
-        id=uuid.uuid4(),
-        name="Interviewer",
-        email="interviewer-flow@example.com",
-        password_hash="x",
-        role="interviewer",
-    )
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-INT-001",
-        uploaded_by=admin.id,
-        file_path="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3={
+        db.query(FinalReport).delete()
+        db.query(Assignment).delete()
+        db.query(CanonicalRecord).delete()
+        db.query(Application).delete()
+        db.query(User).delete()
+
+        admin = User(id=uuid.uuid4(), name="Admin", email="admin-flow@example.com", password_hash="x", role="admin")
+        interviewer = User(
+            id=uuid.uuid4(),
+            name="Interviewer",
+            email="interviewer-flow@example.com",
+            password_hash="x",
+            role="interviewer",
+        )
+        application = Application(
+            id=uuid.uuid4(),
+            display_id="APP-INT-001",
+            uploaded_by=admin.id,
+            storage_key="demo.pdf",
+            status="PROCESSED",
+        )
+        canonical = CanonicalRecord(
+            id=uuid.uuid4(),
+            application_id=application.id,
+            canonical_version="1.0",
+            canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+            pages_1_3={
+                "page_1_background_profile": {},
+                "page_2_academic_and_engagement": {},
+                "page_3_essays": {},
+            },
+        )
+        db.add_all([admin, interviewer, application, canonical])
+        db.commit()
+        admin_email = admin.email
+        admin_role = admin.role
+        application_id = application.id
+        interviewer_email = interviewer.email
+        interviewer_role = interviewer.role
+        interviewer_id = interviewer.id
+        db.close()
+
+        app.dependency_overrides[get_db] = override_get_db
+        client = TestClient(app)
+        admin_headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+        interviewer_headers = {"Authorization": f"Bearer {_token_for(interviewer_email, interviewer_role)}"}
+
+        fake_ros = {
+            "report_metadata": {"report_version": "ROS_v1"},
             "page_1_background_profile": {},
             "page_2_academic_and_engagement": {},
             "page_3_essays": {},
-        },
-    )
-    db.add_all([admin, interviewer, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    interviewer_email = interviewer.email
-    interviewer_role = interviewer.role
-    interviewer_id = interviewer.id
-    db.close()
+            "page_4_focus_areas": {"themes": [], "signals": []},
+            "page_5_question_groups": {"question_groups": []},
+            "signal_data": {"annotations": {}},
+        }
 
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    admin_headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-    interviewer_headers = {"Authorization": f"Bearer {_token_for(interviewer_email, interviewer_role)}"}
+        with patch("app.api.admin.run_synthesis_pipeline", return_value={"ros_v1": fake_ros, "confidence": 0.9}):
+            generate_response = client.post(f"/applications/{application_id}/generate-report", headers=admin_headers)
 
-    fake_ros = {
-        "report_metadata": {"report_version": "ROS_v1"},
-        "page_1_background_profile": {},
-        "page_2_academic_and_engagement": {},
-        "page_3_essays": {},
-        "page_4_focus_areas": {"themes": [], "signals": []},
-        "page_5_question_groups": {"question_groups": []},
-        "signal_data": {"annotations": {}},
-    }
+        assert generate_response.status_code == 200
+        assert generate_response.json()["status"] == "READY"
+        assert generate_response.json()["final_report"]["report_version"] == "ROS_v1"
 
-    with patch("app.api.admin.run_synthesis_pipeline", return_value={"ros_v1": fake_ros, "confidence": 0.9}):
-        generate_response = client.post(f"/applications/{application_id}/generate-report", headers=admin_headers)
+        assign_response = client.post(
+            f"/applications/{application_id}/assign",
+            json={"interviewer_id": str(interviewer_id)},
+            headers=admin_headers,
+        )
+        assert assign_response.status_code == 200
+        assert assign_response.json()["status"] == "ASSIGNED"
 
-    assert generate_response.status_code == 200
-    assert generate_response.json()["status"] == "READY"
-    assert generate_response.json()["final_report"]["report_version"] == "ROS_v1"
+        interviewer_detail = client.get(f"/applications/{application_id}", headers=interviewer_headers)
+        assert interviewer_detail.status_code == 200
+        assert interviewer_detail.json()["final_report"]["report_version"] == "ROS_v1"
+    finally:
+        settings.STORAGE_BACKEND = original_storage_backend
+        settings.UPLOAD_DIRECTORY = original_upload_directory
+        get_storage_service.cache_clear()
 
-    assign_response = client.post(
-        f"/applications/{application_id}/assign",
-        json={"interviewer_id": str(interviewer_id)},
-        headers=admin_headers,
-    )
-    assert assign_response.status_code == 200
-    assert assign_response.json()["status"] == "ASSIGNED"
 
-    interviewer_detail = client.get(f"/applications/{application_id}", headers=interviewer_headers)
-    assert interviewer_detail.status_code == 200
-    assert interviewer_detail.json()["final_report"]["report_version"] == "ROS_v1"
+def test_generated_final_report_is_exported_to_storage_and_downloadable(tmp_path):
+    db = TestingSessionLocal()
+    original_storage_backend = settings.STORAGE_BACKEND
+    original_upload_directory = settings.UPLOAD_DIRECTORY
+    try:
+        settings.STORAGE_BACKEND = "local"
+        settings.UPLOAD_DIRECTORY = str(tmp_path)
+        get_storage_service.cache_clear()
+
+        db.query(FinalReport).delete()
+        db.query(Assignment).delete()
+        db.query(CanonicalRecord).delete()
+        db.query(Application).delete()
+        db.query(User).delete()
+
+        admin = User(id=uuid.uuid4(), name="Admin", email="admin-export@example.com", password_hash="x", role="admin")
+        application = Application(
+            id=uuid.uuid4(),
+            display_id="APP-EXPORT-001",
+            uploaded_by=admin.id,
+            storage_key="applications/demo/source.pdf",
+            status="PROCESSED",
+        )
+        canonical = CanonicalRecord(
+            id=uuid.uuid4(),
+            application_id=application.id,
+            canonical_version="1.0",
+            canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+            pages_1_3={
+                "page_1_background_profile": {},
+                "page_2_academic_and_engagement": {},
+                "page_3_essays": {},
+            },
+        )
+        db.add_all([admin, application, canonical])
+        db.commit()
+        admin_email = admin.email
+        admin_role = admin.role
+        application_id = application.id
+        db.close()
+
+        app.dependency_overrides[get_db] = override_get_db
+        client = TestClient(app)
+        admin_headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+        fake_ros = {
+            "report_metadata": {"report_version": "ROS_v1"},
+            "page_1_background_profile": {},
+            "page_2_academic_and_engagement": {},
+            "page_3_essays": {},
+            "page_4_focus_areas": {"themes": [], "signals": []},
+            "page_5_question_groups": {"question_groups": []},
+        }
+
+        with patch("app.api.admin.run_synthesis_pipeline", return_value={"ros_v1": fake_ros, "confidence": 0.9}):
+            generate_response = client.post(f"/applications/{application_id}/generate-report", headers=admin_headers)
+
+        assert generate_response.status_code == 200
+        export_url = generate_response.json()["final_report"]["export_url"]
+        assert export_url == f"/api/applications/{application_id}/final-report/export"
+
+        export_response = client.get(f"/applications/{application_id}/final-report/export", headers=admin_headers)
+        assert export_response.status_code == 200
+        assert export_response.headers["content-type"] == "application/json"
+        assert export_response.json()["report_metadata"]["report_version"] == "ROS_v1"
+
+        db = TestingSessionLocal()
+        final_report = db.query(FinalReport).filter(FinalReport.application_id == application_id).first()
+        assert final_report is not None
+        assert final_report.export_key == f"reports/{application_id}/exports/final-report.json"
+        assert final_report.export_updated_at is not None
+        storage = get_storage_service()
+        assert storage.exists(final_report.export_key)
+        db.close()
+    finally:
+        settings.STORAGE_BACKEND = original_storage_backend
+        settings.UPLOAD_DIRECTORY = original_upload_directory
+        get_storage_service.cache_clear()
+
+
+def test_delete_application_removes_stored_final_report_export(tmp_path):
+    db = TestingSessionLocal()
+    original_storage_backend = settings.STORAGE_BACKEND
+    original_upload_directory = settings.UPLOAD_DIRECTORY
+    try:
+        settings.STORAGE_BACKEND = "local"
+        settings.UPLOAD_DIRECTORY = str(tmp_path)
+        get_storage_service.cache_clear()
+        storage = get_storage_service()
+
+        db.query(FinalReport).delete()
+        db.query(Assignment).delete()
+        db.query(CanonicalRecord).delete()
+        db.query(Application).delete()
+        db.query(User).delete()
+
+        admin = User(id=uuid.uuid4(), name="Admin", email="admin-delete-export@example.com", password_hash="x", role="admin")
+        application = Application(
+            id=uuid.uuid4(),
+            display_id="APP-EXPORT-DELETE",
+            uploaded_by=admin.id,
+            storage_key="applications/demo/source.pdf",
+            status="READY",
+        )
+        final_report = FinalReport(
+            id=uuid.uuid4(),
+            application_id=application.id,
+            content={"report_metadata": {"report_version": "ROS_v1"}},
+            generated_by=admin.id,
+            report_version="ROS_v1",
+            export_key=f"reports/{application.id}/exports/final-report.json",
+            export_content_type="application/json",
+        )
+        db.add_all([admin, application, final_report])
+        db.commit()
+        admin_email = admin.email
+        admin_role = admin.role
+        application_id = application.id
+        export_key = final_report.export_key
+        db.close()
+
+        export_payload_path = tmp_path / "seed-export.json"
+        export_payload_path.write_text('{"report_metadata":{"report_version":"ROS_v1"}}', encoding="utf-8")
+        storage.put_file(str(export_payload_path), export_key, "application/json")
+        assert storage.exists(export_key)
+
+        app.dependency_overrides[get_db] = override_get_db
+        client = TestClient(app)
+        admin_headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+        delete_response = client.delete(f"/applications/{application_id}", headers=admin_headers)
+        assert delete_response.status_code == 204
+        assert not storage.exists(export_key)
+    finally:
+        settings.STORAGE_BACKEND = original_storage_backend
+        settings.UPLOAD_DIRECTORY = original_upload_directory
+        get_storage_service.cache_clear()
 
 
 def test_admin_generate_failure_moves_application_to_failed():
@@ -195,7 +348,7 @@ def test_admin_generate_failure_moves_application_to_failed():
         id=uuid.uuid4(),
         display_id="APP-INT-FAIL",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="PROCESSED",
     )
     canonical = CanonicalRecord(
@@ -247,7 +400,7 @@ def test_interviewer_personal_hide_is_separate_from_admin_visibility():
         id=uuid.uuid4(),
         display_id="APP-INT-003",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="ASSIGNED",
     )
     final_report = FinalReport(
@@ -319,7 +472,7 @@ def test_admin_global_hide_removes_application_from_interviewer_list():
         id=uuid.uuid4(),
         display_id="APP-INT-004",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="ASSIGNED",
     )
     final_report = FinalReport(
@@ -379,7 +532,7 @@ def test_report_chat_admin_uses_pages_1_to_3_without_final_report():
         id=uuid.uuid4(),
         display_id="APP-CHAT-ADMIN",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="PROCESSED",
     )
     canonical = CanonicalRecord(
@@ -439,7 +592,7 @@ def test_report_chat_interviewer_can_use_final_report_pages():
         id=uuid.uuid4(),
         display_id="APP-CHAT-INT",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="ASSIGNED",
     )
     canonical = CanonicalRecord(
@@ -515,7 +668,7 @@ def test_report_chat_blocks_unassigned_interviewer():
         id=uuid.uuid4(),
         display_id="APP-CHAT-BLOCKED",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="PROCESSED",
     )
     canonical = CanonicalRecord(
@@ -558,7 +711,7 @@ def test_report_chat_rejects_blank_question():
         id=uuid.uuid4(),
         display_id="APP-CHAT-BLANK",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="PROCESSED",
     )
     canonical = CanonicalRecord(
@@ -602,7 +755,7 @@ def test_report_chat_returns_controlled_502_on_invalid_llm_payload():
         id=uuid.uuid4(),
         display_id="APP-CHAT-FAIL",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="PROCESSED",
     )
     canonical = CanonicalRecord(
@@ -655,7 +808,7 @@ def test_interviewer_can_create_finish_and_complete_workspace():
         id=uuid.uuid4(),
         display_id="APP-WS-001",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="ASSIGNED",
     )
     assignment = Assignment(

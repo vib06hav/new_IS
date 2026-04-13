@@ -1,13 +1,15 @@
 import os
+import tempfile
 import uuid
+from contextlib import contextmanager
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 import fitz
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.agents.orchestrator import run_deterministic_pipeline
 from app.api.helpers import (
     build_admin_detail,
     build_interviewer_detail,
@@ -28,10 +30,13 @@ from app.api.schemas import (
 from app.auth.dependencies import get_current_user, require_admin
 from app.config import settings
 from app.database import get_db
+from app.final_report_exports import final_report_export_stream, FINAL_REPORT_EXPORT_CONTENT_TYPE
 from app.models.application import Application
 from app.models.user import User
+from app.processing import enqueue_processing_job
 from app.report_chat import ReportChatError, answer_report_question, build_report_chat_context
 from app.security.rate_limit import limiter
+from app.storage import get_storage_service, storage_key_for_source_pdf
 
 import logging
 
@@ -65,8 +70,8 @@ def validate_uploaded_pdf(file_path: str) -> None:
         raise HTTPException(status_code=400, detail="Uploaded file is not a valid PDF") from exc
 
 
-def write_upload_with_limit(file: UploadFile, file_path: str) -> None:
-    max_bytes = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+def write_upload_with_limit(file: UploadFile, file_path: str, max_size_mb: int | None = None) -> None:
+    max_bytes = (max_size_mb or settings.MAX_UPLOAD_SIZE_MB) * 1024 * 1024
     bytes_written = 0
     try:
         with open(file_path, "wb") as buffer:
@@ -89,6 +94,21 @@ def write_upload_with_limit(file: UploadFile, file_path: str) -> None:
         file.file.close()
 
 
+@contextmanager
+def staged_upload_file(file: UploadFile, suffix: str, max_size_mb: int):
+    temp_dir = Path(settings.UPLOAD_DIRECTORY)
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    temp_path = ""
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix, dir=temp_dir) as temp_file:
+            temp_path = temp_file.name
+        write_upload_with_limit(file, temp_path, max_size_mb=max_size_mb)
+        yield temp_path
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
+
+
 @router.post("/upload", response_model=ApplicationUploadResponse, status_code=status.HTTP_201_CREATED)
 def upload_application(
     file: UploadFile = File(...),
@@ -105,7 +125,8 @@ def upload_application(
         raise HTTPException(status_code=409, detail="Application display ID already exists")
 
     application_id = uuid.uuid4()
-    file_path = os.path.join(settings.UPLOAD_DIRECTORY, f"{application_id}.pdf")
+    storage = get_storage_service()
+    storage_key = storage_key_for_source_pdf(application_id)
 
     limiter.check(
         f"upload:{current_user.id}",
@@ -113,54 +134,34 @@ def upload_application(
         window_seconds=60,
         detail="Upload rate limit exceeded. Please wait before uploading again.",
     )
-    write_upload_with_limit(file, file_path)
 
-    try:
-        validate_uploaded_pdf(file_path)
-    except HTTPException:
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        raise
+    with staged_upload_file(file, ".pdf", settings.MAX_UPLOAD_SIZE_MB) as staged_file_path:
+        validate_uploaded_pdf(staged_file_path)
+        storage.put_file(staged_file_path, storage_key, "application/pdf")
 
     db_app = Application(
         id=application_id,
         display_id=display_id,
         uploaded_by=current_user.id,
-        file_path=file_path,
-        status="UPLOADED",
+        storage_key=storage_key,
+        status="PROCESSING",
     )
     db.add(db_app)
     try:
+        enqueue_processing_job(db, application_id)
         db.commit()
     except IntegrityError as exc:
         db.rollback()
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        storage.delete(storage_key)
         raise _handle_application_insert_integrity_error(exc) from exc
     db.refresh(db_app)
-
-    try:
-        db_app.status = "PROCESSING"
-        db.commit()
-        run_deterministic_pipeline(str(application_id), file_path, db)
-        db.refresh(db_app)
-        logger.info(f"Upload pipeline completed for {application_id} with status {db_app.status}")
-        return ApplicationUploadResponse(
-            id=db_app.id,
-            display_id=db_app.display_id,
-            status=db_app.status,
-            created_at=db_app.created_at,
-        )
-    except HTTPException:
-        db.rollback()
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        raise
-    except Exception:
-        db.rollback()
-        db_app.status = "FAILED"
-        db.commit()
-        raise
+    logger.info("Upload queued for background processing for %s", application_id)
+    return ApplicationUploadResponse(
+        id=db_app.id,
+        display_id=db_app.display_id,
+        status=db_app.status,
+        created_at=db_app.created_at,
+    )
 
 
 @router.get(
@@ -206,14 +207,62 @@ def get_application_source_pdf(
         if not assignment or assignment.interviewer_id != current_user.id:
             raise HTTPException(status_code=403, detail="Not authorized to view this application")
 
-    if not application.file_path or not os.path.exists(application.file_path):
+    storage = get_storage_service()
+    if not application.storage_key or not storage.exists(application.storage_key):
         raise HTTPException(status_code=404, detail="Source PDF not found")
 
-    return FileResponse(
-        path=application.file_path,
-        media_type="application/pdf",
-        filename=f"{application.display_id}.pdf",
-    )
+    handle_context = storage.open_stream(application.storage_key)
+    handle = handle_context.__enter__()
+
+    def iterator():
+        try:
+            while True:
+                chunk = handle.read(1024 * 1024)
+                if not chunk:
+                    break
+                yield chunk
+        finally:
+            handle_context.__exit__(None, None, None)
+
+    response = StreamingResponse(iterator(), media_type="application/pdf")
+    response.headers["Content-Disposition"] = f'attachment; filename="{application.display_id}.pdf"'
+    return response
+
+
+@router.get("/{application_id}/final-report/export")
+def get_application_final_report_export(
+    application_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    application = get_application_or_404(db, application_id)
+    assignment = get_assignment_for_application(db, application_id)
+
+    if current_user.role != "admin":
+        if not assignment or assignment.interviewer_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized to view this application")
+
+    final_report = get_final_report(db, application_id)
+    if not final_report:
+        raise HTTPException(status_code=404, detail="Final report not found")
+
+    storage = get_storage_service()
+    stream_context = final_report_export_stream(storage=storage, final_report=final_report)
+    stream_handle, media_type = stream_context.__enter__()
+
+    def iterator():
+        try:
+            while True:
+                chunk = stream_handle.read(1024 * 1024)
+                if not chunk:
+                    break
+                yield chunk
+        finally:
+            stream_context.__exit__(None, None, None)
+
+    response = StreamingResponse(iterator(), media_type=media_type or FINAL_REPORT_EXPORT_CONTENT_TYPE)
+    response.headers["Content-Disposition"] = f'attachment; filename="{application.display_id}-final-report.json"'
+    return response
 
 
 @router.post("/{application_id}/report-chat", response_model=ReportChatResponse)

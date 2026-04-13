@@ -10,7 +10,7 @@ class Application(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     display_id = Column(String(255), nullable=False, unique=True)
     uploaded_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    file_path = Column(String(512), nullable=False)
+    storage_key = Column(String(512), nullable=False)
     status = Column(String(50), nullable=False)
     is_hidden = Column(Boolean, nullable=False, default=False, server_default="false")
     created_at = Column(DateTime, nullable=False, server_default=func.now())

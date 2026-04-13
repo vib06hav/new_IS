@@ -113,6 +113,7 @@ def build_final_report_summary(final_report: Optional[FinalReport]) -> Optional[
         report_version=final_report.report_version,
         created_at=final_report.created_at,
         content=final_report.content,
+        export_url=f"/api/applications/{final_report.application_id}/final-report/export",
     )
 
 

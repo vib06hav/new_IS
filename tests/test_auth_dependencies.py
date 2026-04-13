@@ -67,7 +67,7 @@ def test_require_interviewer_blocks_admin():
 def test_require_assigned_interviewer_allows_assignee(db):
     interviewer = User(id=uuid.uuid4(), name="Interviewer", email="assigned@example.com", password_hash="x", role="interviewer")
     admin = User(id=uuid.uuid4(), name="Admin", email="owner@example.com", password_hash="x", role="admin")
-    application = Application(id=uuid.uuid4(), display_id="APP-001", uploaded_by=admin.id, file_path="demo.pdf", status="ASSIGNED")
+    application = Application(id=uuid.uuid4(), display_id="APP-001", uploaded_by=admin.id, storage_key="demo.pdf", status="ASSIGNED")
     assignment = Assignment(
         application_id=application.id,
         interviewer_id=interviewer.id,
@@ -84,7 +84,7 @@ def test_require_assigned_interviewer_blocks_other_interviewer(db):
     interviewer = User(id=uuid.uuid4(), name="Interviewer", email="assigned2@example.com", password_hash="x", role="interviewer")
     other = User(id=uuid.uuid4(), name="Other", email="other@example.com", password_hash="x", role="interviewer")
     admin = User(id=uuid.uuid4(), name="Admin", email="owner2@example.com", password_hash="x", role="admin")
-    application = Application(id=uuid.uuid4(), display_id="APP-002", uploaded_by=admin.id, file_path="demo.pdf", status="ASSIGNED")
+    application = Application(id=uuid.uuid4(), display_id="APP-002", uploaded_by=admin.id, storage_key="demo.pdf", status="ASSIGNED")
     assignment = Assignment(
         application_id=application.id,
         interviewer_id=interviewer.id,

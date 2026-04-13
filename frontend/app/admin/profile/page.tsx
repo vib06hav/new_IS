@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type InputHTMLAttributes, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type InputHTMLAttributes, type ReactNode } from "react";
 import { motion } from "motion/react";
 import {
   Camera,
@@ -12,11 +12,11 @@ import {
   UserRound,
 } from "lucide-react";
 import { IBM_Plex_Sans, Libre_Franklin } from "next/font/google";
-import { changeMyPassword, updateMyProfile } from "@/lib/api";
+import { changeMyPassword, updateMyProfile, uploadMyProfileImage } from "@/lib/api";
 import { getSession } from "@/lib/auth";
 import type { SessionResponse, UserRole } from "@/lib/types";
 import { AdminShell } from "@/components/layout/AdminShell";
-import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 import { Button } from "@/components/ui/Button";
 import { Loader } from "@/components/ui/Loader";
 
@@ -49,11 +49,13 @@ function AdminProfileContent() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [profileName, setProfileName] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [form, setForm] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+  const profileImageInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -150,6 +152,27 @@ function AdminProfileContent() {
     }
   }
 
+  async function handleProfileImageChange(event: ChangeEvent<HTMLInputElement>) {
+    const nextFile = event.target.files?.[0];
+    event.target.value = "";
+    if (!nextFile) {
+      return;
+    }
+
+    setUploadingImage(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const updated = await uploadMyProfileImage(nextFile);
+      setSession(updated);
+      setMessage("Profile image updated.");
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : "Failed to update profile image.");
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
   return (
     <div
       className={[
@@ -184,21 +207,30 @@ function AdminProfileContent() {
               {/* Identity Card: Stands alone at the top */}
               <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_15px_30px_rgba(15,23,42,0.05)]">
                 <div className="flex flex-col items-center text-center">
-                  <div className="relative group">
-                    <Avatar className="size-20 border border-slate-200 bg-slate-100 ring-2 ring-white shadow-sm transition-transform group-hover:scale-105 duration-500">
-                      <AvatarFallback className="bg-slate-200 text-xl font-semibold text-slate-700">
-                        {initials}
-                      </AvatarFallback>
-                    </Avatar>
-                    <button
-                      className="absolute -bottom-1 -right-1 grid size-8 place-items-center rounded-full border border-slate-200 bg-white text-slate-400 shadow-md transition-all hover:bg-blue-50 hover:text-blue-700 active:scale-90"
-                      disabled
-                      title="Storage integration pending."
-                      type="button"
-                    >
-                      <Camera className="size-4" />
-                    </button>
-                  </div>
+                  <Avatar className="size-24 border border-slate-200 bg-slate-100">
+                    {session?.user.profile_image_url ? (
+                      <AvatarImage src={session.user.profile_image_url} alt={`${session.user.name} profile image`} />
+                    ) : null}
+                    <AvatarFallback className="bg-slate-200 text-2xl font-semibold text-slate-700">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <button
+                    className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 opacity-75 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                    disabled={uploadingImage}
+                    onClick={() => profileImageInputRef.current?.click()}
+                    type="button"
+                  >
+                    <Camera className="size-4" />
+                    {uploadingImage ? "Uploading..." : "Change profile image"}
+                  </button>
+                  <input
+                    ref={profileImageInputRef}
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(event) => void handleProfileImageChange(event)}
+                    type="file"
+                  />
 
                   <h1
                     className="mt-4 text-3xl font-black leading-none tracking-tight text-slate-800"

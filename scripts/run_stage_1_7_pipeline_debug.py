@@ -73,7 +73,7 @@ def _application_row_payload(app_row: Application | None) -> dict[str, Any] | No
     return {
         "id": str(app_row.id),
         "uploaded_by": str(app_row.uploaded_by),
-        "file_path": app_row.file_path,
+        "storage_key": app_row.storage_key,
         "pipeline_status": app_row.pipeline_status,
         "pipeline_confidence": app_row.pipeline_confidence,
         "created_at": app_row.created_at,

@@ -5,6 +5,7 @@ export type SessionUser = {
   name: string;
   email: string;
   role: UserRole;
+  profile_image_url?: string | null;
 };
 
 export type SessionResponse = {
@@ -39,6 +40,7 @@ export type FinalReportSummary = {
   report_version: string;
   created_at: string;
   content: Record<string, unknown>;
+  export_url?: string | null;
 };
 
 export type InterviewWorkspaceStatus = "draft" | "launched" | "postgame" | "completed";

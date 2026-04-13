@@ -14,3 +14,4 @@ braintrust
 python-dotenv
 pytest
 pymupdf
+minio

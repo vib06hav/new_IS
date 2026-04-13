@@ -1,7 +1,6 @@
 import argparse
 from datetime import datetime
 import json
-import shutil
 import sys
 from pathlib import Path
 from uuid import UUID
@@ -13,11 +12,13 @@ if str(PROJECT_ROOT) not in sys.path:
 from app.auth.security import get_password_hash
 from app.config import settings
 from app.database import SessionLocal
+from app.final_report_exports import sync_final_report_export
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
 from app.models.final_report import FinalReport
 from app.models.user import User
+from app.storage import get_storage_service, storage_key_for_source_pdf
 
 
 SEED_APPLICATION_ID = UUID("11111111-1111-1111-1111-111111111111")
@@ -123,11 +124,9 @@ def copy_source_pdf(application_id: UUID) -> str:
     if not source_pdf.exists():
         raise FileNotFoundError(f"Seed PDF not found: {source_pdf}")
 
-    upload_dir = Path(settings.UPLOAD_DIRECTORY)
-    upload_dir.mkdir(parents=True, exist_ok=True)
-    target_pdf = upload_dir / f"{application_id}.pdf"
-    shutil.copy2(source_pdf, target_pdf)
-    return str(target_pdf)
+    storage_key = storage_key_for_source_pdf(application_id)
+    get_storage_service().put_file(str(source_pdf), storage_key, "application/pdf")
+    return storage_key
 
 
 def upsert_seed_application(
@@ -136,7 +135,7 @@ def upsert_seed_application(
     application_id: UUID,
     admin_user: User,
     interviewer_user: User | None,
-    file_path: str,
+    storage_key: str,
     display_id: str,
     canonical_data: dict,
     ros_content: dict,
@@ -147,7 +146,7 @@ def upsert_seed_application(
             id=application_id,
             display_id=display_id,
             uploaded_by=admin_user.id,
-            file_path=file_path,
+            storage_key=storage_key,
             status="ASSIGNED" if interviewer_user else "READY",
             is_hidden=False,
         )
@@ -156,7 +155,7 @@ def upsert_seed_application(
     else:
         application.display_id = display_id
         application.uploaded_by = admin_user.id
-        application.file_path = file_path
+        application.storage_key = storage_key
         application.status = "ASSIGNED" if interviewer_user else "READY"
         application.is_hidden = False
     application.last_activity_at = datetime.utcnow()
@@ -202,6 +201,8 @@ def upsert_seed_application(
         final_report.content = ros_content
         final_report.generated_by = admin_user.id
         final_report.report_version = report_version
+    sync_final_report_export(storage=get_storage_service(), final_report=final_report)
+    final_report.export_updated_at = datetime.utcnow()
 
     assignment = db.query(Assignment).filter(Assignment.application_id == application_id).first()
     if interviewer_user is None:
@@ -233,7 +234,7 @@ def main() -> int:
     ros_path = PROJECT_ROOT / "tests" / "stage17_fake_llm_output" / "09_final_ros.json"
     canonical_data = load_json(canonical_path)
     ros_content = load_json(ros_path)
-    file_path = copy_source_pdf(application_id)
+    storage_key = copy_source_pdf(application_id)
 
     db = SessionLocal()
     seeded_application_id = str(application_id)
@@ -262,7 +263,7 @@ def main() -> int:
             application_id=application_id,
             admin_user=admin_user,
             interviewer_user=interviewer_user,
-            file_path=file_path,
+            storage_key=storage_key,
             display_id=SEED_DISPLAY_ID,
             canonical_data=canonical_data,
             ros_content=ros_content,
@@ -280,7 +281,7 @@ def main() -> int:
     print(f"Admin: {args.admin_email}")
     print(f"Interviewer: {seeded_interviewer_label}")
     print(f"Status: {'ASSIGNED' if args.interviewer.strip() else 'READY'}")
-    print(f"PDF path: {file_path}")
+    print(f"Storage key: {storage_key}")
     if args.interviewer.strip():
         print("The seeded report is visible in admin reports and interviewer application views.")
     else:

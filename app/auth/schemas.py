@@ -38,6 +38,7 @@ class SessionUser(BaseModel):
     name: str
     email: str
     role: str
+    profile_image_url: str | None = None
 
 
 class SessionResponse(BaseModel):
@@ -50,3 +51,4 @@ class UserResponse(BaseModel):
     name: str
     email: str
     role: str
+    profile_image_url: str | None = None

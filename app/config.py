@@ -64,7 +64,19 @@ class Settings:
         self.LLM_PAYLOAD_MODE = os.environ.get("LLM_PAYLOAD_MODE", "full")
         self.PARSER_ENGINE_VERSION = os.environ.get("PARSER_ENGINE_VERSION", "v2")
         self.UPLOAD_DIRECTORY = os.environ.get("UPLOAD_DIRECTORY")
+        self.STORAGE_BACKEND = os.environ.get("STORAGE_BACKEND", "local").strip().lower()
+        self.MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT", "")
+        self.MINIO_ACCESS_KEY = os.environ.get("MINIO_ACCESS_KEY", "")
+        self.MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY", "")
+        self.MINIO_BUCKET = os.environ.get("MINIO_BUCKET", "")
+        self.MINIO_SECURE = os.environ.get("MINIO_SECURE", "false")
         self.MAX_UPLOAD_SIZE_MB = os.environ.get("MAX_UPLOAD_SIZE_MB")
+        self.MAX_PROFILE_IMAGE_SIZE_MB = os.environ.get("MAX_PROFILE_IMAGE_SIZE_MB", "5")
+        self.ENABLE_BACKGROUND_WORKERS = os.environ.get("ENABLE_BACKGROUND_WORKERS", "true")
+        self.PROCESSING_WORKER_POLL_SECONDS = os.environ.get("PROCESSING_WORKER_POLL_SECONDS", "2")
+        self.PROCESSING_JOB_MAX_ATTEMPTS = os.environ.get("PROCESSING_JOB_MAX_ATTEMPTS", "3")
+        self.PROCESSING_JOB_BACKOFF_SECONDS = os.environ.get("PROCESSING_JOB_BACKOFF_SECONDS", "5")
+        self.PROCESSING_JOB_STALE_AFTER_SECONDS = os.environ.get("PROCESSING_JOB_STALE_AFTER_SECONDS", "300")
         self.APP_ENV = os.environ.get("APP_ENV")
         self.LOG_LEVEL = os.environ.get("LOG_LEVEL")
         self.DEV_BOOTSTRAP_ADMIN = os.environ.get("DEV_BOOTSTRAP_ADMIN", "false")
@@ -133,6 +145,20 @@ class Settings:
         if self.PARSER_ENGINE_VERSION not in {"v1", "v2"}:
             errors.append("PARSER_ENGINE_VERSION must be one of {v1, v2}")
 
+        if self.STORAGE_BACKEND not in {"local", "minio"}:
+            errors.append("STORAGE_BACKEND must be one of {local, minio}")
+
+        self.MINIO_SECURE = str(self.MINIO_SECURE).strip().lower() in {"1", "true", "yes", "on"}
+        if self.STORAGE_BACKEND == "minio":
+            if not self.MINIO_ENDPOINT:
+                errors.append("MINIO_ENDPOINT is required when STORAGE_BACKEND=minio")
+            if not self.MINIO_ACCESS_KEY:
+                errors.append("MINIO_ACCESS_KEY is required when STORAGE_BACKEND=minio")
+            if not self.MINIO_SECRET_KEY:
+                errors.append("MINIO_SECRET_KEY is required when STORAGE_BACKEND=minio")
+            if not self.MINIO_BUCKET:
+                errors.append("MINIO_BUCKET is required when STORAGE_BACKEND=minio")
+
         if self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES:
             try:
                 self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -166,6 +192,39 @@ class Settings:
                     errors.append("MAX_UPLOAD_SIZE_MB must be > 0")
             except ValueError:
                 errors.append("MAX_UPLOAD_SIZE_MB must be an integer")
+
+        try:
+            self.MAX_PROFILE_IMAGE_SIZE_MB = int(self.MAX_PROFILE_IMAGE_SIZE_MB)
+            if self.MAX_PROFILE_IMAGE_SIZE_MB <= 0:
+                errors.append("MAX_PROFILE_IMAGE_SIZE_MB must be > 0")
+        except ValueError:
+            errors.append("MAX_PROFILE_IMAGE_SIZE_MB must be an integer")
+
+        self.ENABLE_BACKGROUND_WORKERS = str(self.ENABLE_BACKGROUND_WORKERS).strip().lower() in {"1", "true", "yes", "on"}
+        try:
+            self.PROCESSING_WORKER_POLL_SECONDS = float(self.PROCESSING_WORKER_POLL_SECONDS)
+            if self.PROCESSING_WORKER_POLL_SECONDS <= 0:
+                errors.append("PROCESSING_WORKER_POLL_SECONDS must be > 0")
+        except ValueError:
+            errors.append("PROCESSING_WORKER_POLL_SECONDS must be a number")
+        try:
+            self.PROCESSING_JOB_MAX_ATTEMPTS = int(self.PROCESSING_JOB_MAX_ATTEMPTS)
+            if self.PROCESSING_JOB_MAX_ATTEMPTS <= 0:
+                errors.append("PROCESSING_JOB_MAX_ATTEMPTS must be > 0")
+        except ValueError:
+            errors.append("PROCESSING_JOB_MAX_ATTEMPTS must be an integer")
+        try:
+            self.PROCESSING_JOB_BACKOFF_SECONDS = float(self.PROCESSING_JOB_BACKOFF_SECONDS)
+            if self.PROCESSING_JOB_BACKOFF_SECONDS < 0:
+                errors.append("PROCESSING_JOB_BACKOFF_SECONDS must be >= 0")
+        except ValueError:
+            errors.append("PROCESSING_JOB_BACKOFF_SECONDS must be a number")
+        try:
+            self.PROCESSING_JOB_STALE_AFTER_SECONDS = float(self.PROCESSING_JOB_STALE_AFTER_SECONDS)
+            if self.PROCESSING_JOB_STALE_AFTER_SECONDS <= 0:
+                errors.append("PROCESSING_JOB_STALE_AFTER_SECONDS must be > 0")
+        except ValueError:
+            errors.append("PROCESSING_JOB_STALE_AFTER_SECONDS must be a number")
 
         if self.APP_ENV and self.APP_ENV not in {"development", "production"}:
             errors.append("APP_ENV must be 'development' or 'production'")
@@ -225,6 +284,7 @@ class Settings:
         logger.info(f"LLM_PROVIDER: {self.LLM_PROVIDER}")
         logger.info(f"LLM_PAYLOAD_MODE: {self.LLM_PAYLOAD_MODE}")
         logger.info(f"PARSER_ENGINE_VERSION: {self.PARSER_ENGINE_VERSION}")
+        logger.info(f"STORAGE_BACKEND: {self.STORAGE_BACKEND}")
         logger.info(f"LLM_ENDPOINT: {self.LLM_ENDPOINT}")
         logger.info(f"LLM_MODEL_NAME: {self.LLM_MODEL_NAME}")
         logger.info("LLM_API_KEY: ***[REDACTED]***")

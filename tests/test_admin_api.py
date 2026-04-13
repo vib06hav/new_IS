@@ -66,7 +66,7 @@ def test_admin_assignments_and_interviewer_listing():
         id=uuid.uuid4(),
         display_id="APP-ADM-001",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="READY",
     )
     db.add_all([admin, interviewer, application])
@@ -125,7 +125,7 @@ def test_delete_interviewer_blocks_when_user_uploaded_applications():
         id=uuid.uuid4(),
         display_id="APP-ADM-002",
         uploaded_by=interviewer.id,
-        file_path="uploaded-by-interviewer.pdf",
+        storage_key="uploaded-by-interviewer.pdf",
         status="READY",
     )
     db.add_all([admin, interviewer, application])
@@ -164,7 +164,7 @@ def test_delete_interviewer_blocks_when_active_assignments_exist():
         id=uuid.uuid4(),
         display_id="APP-ADM-003",
         uploaded_by=admin.id,
-        file_path="assigned.pdf",
+        storage_key="assigned.pdf",
         status="ASSIGNED",
     )
     assignment = Assignment(
@@ -206,7 +206,7 @@ def test_admin_hide_sets_global_flag_without_affecting_personal_flag():
         id=uuid.uuid4(),
         display_id="APP-ADM-004",
         uploaded_by=admin.id,
-        file_path="demo.pdf",
+        storage_key="demo.pdf",
         status="ASSIGNED",
     )
     assignment = Assignment(
@@ -243,7 +243,7 @@ def test_application_insert_populates_last_activity_at_by_default():
         id=uuid.uuid4(),
         display_id="APP-ADM-005",
         uploaded_by=admin.id,
-        file_path="default-last-activity.pdf",
+        storage_key="default-last-activity.pdf",
         status="PROCESSING",
     )
     db.add_all([admin, application])

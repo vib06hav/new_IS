@@ -1,12 +1,11 @@
 from datetime import datetime
-import os
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.agents.orchestrator import run_deterministic_pipeline, run_synthesis_pipeline
+from app.agents.orchestrator import run_synthesis_pipeline
 from app.api.helpers import (
     build_application_list_item,
     build_assignment_list_item,
@@ -25,11 +24,15 @@ from app.api.schemas import (
 )
 from app.auth.dependencies import require_admin
 from app.database import get_db
+from app.final_report_exports import sync_final_report_export
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
 from app.models.final_report import FinalReport
+from app.models.processing_job import ProcessingJob
 from app.models.user import User
+from app.processing import enqueue_processing_job
+from app.storage import get_storage_service
 
 
 router = APIRouter(tags=["Admin"])
@@ -43,9 +46,14 @@ def _get_interviewer_or_400(db: Session, interviewer_id: UUID) -> User:
 
 
 def _delete_application_with_related_data(db: Session, application: Application) -> None:
-    db.query(FinalReport).filter(FinalReport.application_id == application.id).delete()
+    final_report = db.query(FinalReport).filter(FinalReport.application_id == application.id).first()
+    if final_report is not None:
+        if final_report.export_key:
+            get_storage_service().delete(final_report.export_key)
+        db.delete(final_report)
     db.query(CanonicalRecord).filter(CanonicalRecord.application_id == application.id).delete()
     db.query(Assignment).filter(Assignment.application_id == application.id).delete()
+    db.query(ProcessingJob).filter(ProcessingJob.application_id == application.id).delete()
     db.delete(application)
 
 
@@ -108,14 +116,19 @@ def retry_application(
                     report_version=report_version,
                 )
             )
+            db.flush()
+            persisted_final_report = get_final_report(db, application_id)
+            if persisted_final_report is not None:
+                sync_final_report_export(storage=get_storage_service(), final_report=persisted_final_report)
+                persisted_final_report.export_updated_at = datetime.utcnow()
             application.status = "READY"
             application.last_activity_at = datetime.utcnow()
             db.commit()
         else:
             application.status = "PROCESSING"
             application.last_activity_at = datetime.utcnow()
+            enqueue_processing_job(db, application_id)
             db.commit()
-            run_deterministic_pipeline(str(application_id), application.file_path, db)
 
         db.refresh(application)
         return build_application_list_item(application)
@@ -169,6 +182,9 @@ def generate_final_report(
             report_version=report_version,
         )
         db.add(final_report)
+        db.flush()
+        sync_final_report_export(storage=get_storage_service(), final_report=final_report)
+        final_report.export_updated_at = datetime.utcnow()
         application.status = "READY"
         application.last_activity_at = datetime.utcnow()
         db.commit()
@@ -268,15 +284,15 @@ def remove_application_from_queue(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status not in {"UPLOADED", "FAILED"}:
-        raise HTTPException(status_code=409, detail="Only UPLOADED or FAILED queue items can be removed")
+    if application.status not in {"PROCESSING", "FAILED"}:
+        raise HTTPException(status_code=409, detail="Only PROCESSING or FAILED queue items can be removed")
 
-    file_path = application.file_path
+    storage_key = application.storage_key
     _delete_application_with_related_data(db, application)
     db.commit()
 
-    if file_path and os.path.exists(file_path):
-        os.remove(file_path)
+    if storage_key:
+        get_storage_service().delete(storage_key)
     return None
 
 
@@ -287,13 +303,13 @@ def delete_application(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    file_path = application.file_path
+    storage_key = application.storage_key
 
     _delete_application_with_related_data(db, application)
     db.commit()
 
-    if file_path and os.path.exists(file_path):
-        os.remove(file_path)
+    if storage_key:
+        get_storage_service().delete(storage_key)
     return None
 
 

@@ -1,3 +1,5 @@
+from datetime import timezone
+
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.models.user import User
@@ -12,6 +14,19 @@ from app.auth.schemas import (
 )
 from app.auth.security import get_password_hash, verify_password, create_access_token
 from app.config import settings
+
+
+def build_profile_image_url(user: User) -> str | None:
+    if not user.profile_image_key:
+        return None
+    version = ""
+    if user.profile_image_updated_at:
+        normalized = user.profile_image_updated_at
+        if normalized.tzinfo is None:
+            normalized = normalized.replace(tzinfo=timezone.utc)
+        version = f"?v={int(normalized.timestamp())}"
+    return f"/api/auth/profile/image{version}"
+
 
 def create_user(db: Session, *, name: str, email: str, password: str, role: str) -> User:
     existing_user = db.query(User).filter(User.email == email).first()

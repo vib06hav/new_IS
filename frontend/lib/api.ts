@@ -332,3 +332,12 @@ export async function updateMyProfile(payload: SelfProfileUpdatePayload) {
     body: JSON.stringify(payload),
   });
 }
+
+export async function uploadMyProfileImage(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  return apiRequest<SessionResponse>("/auth/profile/image", {
+    method: "POST",
+    body: formData,
+  });
+}

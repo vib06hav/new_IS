@@ -12,6 +12,7 @@ logger.info("Application startup success")
 import app.models
 from app.database import get_db
 from app.database import SessionLocal
+from app.processing import ProcessingWorker, should_start_background_workers
 from app.auth.router import router as auth_router
 from app.auth.service import ensure_dev_admin_user
 from app.api.admin import router as admin_router
@@ -21,6 +22,7 @@ from app.api.users import router as users_router
 from app.security.csrf import ensure_csrf_protection
 
 app = FastAPI(title="Interview Standardiser API", version="0.1.0")
+processing_worker: ProcessingWorker | None = None
 
 
 @app.middleware("http")
@@ -72,6 +74,7 @@ from sqlalchemy import text
 
 @app.on_event("startup")
 def bootstrap_dev_admin():
+    global processing_worker
     db = SessionLocal()
     try:
         user = ensure_dev_admin_user(db)
@@ -79,6 +82,17 @@ def bootstrap_dev_admin():
             logger.info("Development admin available at %s", user.email)
     finally:
         db.close()
+    if settings.ENABLE_BACKGROUND_WORKERS and should_start_background_workers():
+        processing_worker = ProcessingWorker(poll_seconds=settings.PROCESSING_WORKER_POLL_SECONDS)
+        processing_worker.start()
+
+
+@app.on_event("shutdown")
+def stop_background_workers():
+    global processing_worker
+    if processing_worker is not None:
+        processing_worker.stop()
+        processing_worker = None
 
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):

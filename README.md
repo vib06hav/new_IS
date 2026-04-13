@@ -29,7 +29,7 @@ Notes:
 
 - `npm` and `npx` come with `Node.js`. Do not install `npx` separately.
 - `docker compose` comes with modern `Docker Desktop`.
-- This project uses Docker for the backend stack and OpenRouter for LLM calls.
+- This project uses Docker for the backend stack, OpenRouter for LLM calls, and MinIO for asset storage.
 
 ## Recommended Windows Setup
 
@@ -123,7 +123,19 @@ LLM_TEMPERATURE=0.0
 LLM_JSON_MODE=true
 LLM_PAYLOAD_MODE=full
 UPLOAD_DIRECTORY=/app/uploads
+STORAGE_BACKEND=minio
+MINIO_ENDPOINT=minio:9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+MINIO_BUCKET=ag-assets
+MINIO_SECURE=false
 MAX_UPLOAD_SIZE_MB=10
+MAX_PROFILE_IMAGE_SIZE_MB=5
+ENABLE_BACKGROUND_WORKERS=true
+PROCESSING_WORKER_POLL_SECONDS=2
+PROCESSING_JOB_MAX_ATTEMPTS=3
+PROCESSING_JOB_BACKOFF_SECONDS=5
+PROCESSING_JOB_STALE_AFTER_SECONDS=300
 APP_ENV=development
 LOG_LEVEL=DEBUG
 DEV_BOOTSTRAP_ADMIN=true
@@ -185,6 +197,9 @@ This starts:
 
 - the API
 - PostgreSQL
+- MinIO
+
+The API also starts the background processing worker in development, which now pulls source PDFs from MinIO/object storage, materializes them locally for parsing, and updates application status asynchronously.
 
 When it works, the backend should be available at:
 
