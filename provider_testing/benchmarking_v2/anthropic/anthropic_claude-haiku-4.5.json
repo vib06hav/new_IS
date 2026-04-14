@@ -1,0 +1,202 @@
+{
+  "metrics": {
+    "model": "anthropic/claude-haiku-4.5",
+    "status": "PASSED",
+    "call_1_latency_seconds": 22.17,
+    "call_2_latency_seconds": 9.74,
+    "signal_count": 5,
+    "theme_count": 3,
+    "question_group_count": 3,
+    "call_1_prompt_tokens": 9962,
+    "call_1_completion_tokens": 2176,
+    "call_1_cost_inr": 2.3071,
+    "call_2_prompt_tokens": 8518,
+    "call_2_completion_tokens": 703,
+    "call_2_cost_inr": 1.332,
+    "total_cost_inr": 3.6391
+  },
+  "call_1_signals_themes": {
+    "signals": [
+      {
+        "signal_id": "SIG-001",
+        "title": "Technology Identity Built on Early Exposure, Not Self-Directed Building",
+        "evidence_anchor": "The essay narrates a cumulative journey from Grade 4 QBasic through competitions and internships, but lists only Java and HTML as self-taught technical skills, with no evidence of self-initiated projects, open-source work, or independent building.",
+        "direct_read": "The applicant presents technology as central to identity and future direction across multiple essay references, yet the activity profile and essay contain no documented self-directed technical work or projects beyond school coursework.",
+        "depth_opening": "Whether the applicant's technology identity is grounded in lived, independent technical practice or remains primarily aspirational\u2014and if technical building has occurred, where, in what form, and with what depth of ownership.",
+        "why_it_matters": "Understanding whether this applicant is a builder or an achiever in technical domains materially shapes how to evaluate readiness for a CS-focused program and independent research.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-001",
+          "ACT-002",
+          "ACT-003",
+          "ACT-004"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-004"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-001:F02",
+          "ESS-001:F08"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-002",
+        "title": "Leadership Identity Asserted but Scope and Sustained Impact Unclear",
+        "evidence_anchor": "The applicant claims leadership as central to identity (ESS-002:F08, ESS-001:F08) and holds the title School Prefect, but the activity profile lists it without duration, context, or scale; the leadership essay focuses on a two-month SignBee project with limited evidence of ongoing leadership structures.",
+        "direct_read": "Leadership experience is named as important and reflected in formal role, but the application provides minimal specificity about what that role entailed, how long it lasted, or what structural or organizational change resulted from it.",
+        "depth_opening": "The actual scope, duration, and measured impact of the applicant's leadership work\u2014whether leadership is a demonstrated pattern across multiple initiatives or concentrated in specific, time-bounded projects.",
+        "why_it_matters": "The distinction between titled leadership and substantive, sustained leadership practice is material to understanding this applicant's actual organizational capacity and maturity.",
+        "referenced_entity_ids": [
+          "ESS-002",
+          "LEAD-005"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-005"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-002:F08"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-003",
+        "title": "Sustained Quantitative Excellence With Unexplained Grade 11 Contraction",
+        "evidence_anchor": "Grade 10 overall: 99%. Grade 11 overall: 90%. Board transition from ICSE to ISC, and subject drop particularly in Physics (88%) and English (84%) despite consistent strength in Mathematics and Computer Science.",
+        "direct_read": "A 9-point overall decline despite maintaining strong CS performance suggests either board difficulty adjustment, subject-specific struggle (particularly in Physics), or competing demands\u2014but the application provides no explanation or reflection on this shift.",
+        "depth_opening": "What caused the Grade 11 performance contraction, whether it reflects adjustment to a new board system, deliberate reallocation of effort, or substantive academic struggle\u2014and how the applicant processed and learned from that experience.",
+        "why_it_matters": "Understanding the applicant's resilience, self-awareness, and response to performance setback\u2014rather than just the fact of setback\u2014clarifies maturity and trajectory for future intensive study.",
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003",
+          "ACA-004"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-001",
+          "DET-002",
+          "DET-003"
+        ],
+        "supporting_fragment_ids": [],
+        "theme_id": "THEME-002"
+      },
+      {
+        "signal_id": "SIG-004",
+        "title": "Community Engagement Reframed as Personal Epiphany Without Visible Structural Change",
+        "evidence_anchor": "The SignBee essay positions the project as transformative for the applicant's understanding of leadership and responsibility, but describes community reception as 'lukewarm' and impact as confined to two months of workshops in the applicant's locality.",
+        "direct_read": "The narrative centers on the applicant's internal learning ('made me a better human being') rather than on documented community outcome or sustained institutional change; impact measurement is personal realization rather than behavioral or structural change in the community.",
+        "depth_opening": "Whether the applicant's community impact work is genuinely oriented toward community change or primarily serves as a vehicle for personal growth and self-reflection\u2014and what the applicant would measure as success in community engagement.",
+        "why_it_matters": "The distinction clarifies whether this applicant's social responsibility is externally accountable or self-directed, which shapes how to understand commitment to service in a university context.",
+        "referenced_entity_ids": [
+          "ESS-002",
+          "ACT-003"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-002:F04",
+          "ESS-002:F05",
+          "ESS-002:F09"
+        ],
+        "theme_id": "THEME-003"
+      },
+      {
+        "signal_id": "SIG-005",
+        "title": "Intellectual Curiosity Stated as Motivation for JEE, But Connection to Engineering Work Unclear",
+        "evidence_anchor": "The applicant claims the JEE preparation equipped them with 'invaluable skills' in algorithms and data structures, yet the application shows no evidence of applying those skills to engineering problems, computational projects, or domain-specific work beyond exam preparation.",
+        "direct_read": "The essay frames JEE as intellectually driven ('develop academic rigour', 'understand algorithms') but provides no evidence of translating that mathematical and analytical preparation into applied engineering or CS work.",
+        "depth_opening": "Whether the applicant's mathematics and algorithm study is motivated by intellectual curiosity about problem-solving or primarily driven by exam achievement and credentials\u2014and whether that distinction would be evident in how they approach independent technical work.",
+        "why_it_matters": "Understanding whether the applicant is motivated by intellectual depth or by credential accumulation affects how to evaluate their likely engagement with open-ended engineering and research problems.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "TEST-001"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F06",
+          "ESS-001:F07"
+        ],
+        "theme_id": "THEME-001"
+      }
+    ],
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "Identity Claims Without Visible Independent Practice",
+        "unifying_axis": "This applicant asserts multiple core identity dimensions\u2014technologist, leader, problem-solver\u2014through essay narrative and credentials, but the application lacks evidence of self-directed, unsupervised work that would demonstrate ownership of those identities.",
+        "interview_direction": "Understanding where this applicant's sense of self in technology, leadership, and intellectual inquiry comes from\u2014whether rooted in independent practice and real consequences, or constructed through achievement in structured environments and external recognition.",
+        "supporting_signal_ids": [
+          "SIG-001",
+          "SIG-002",
+          "SIG-005"
+        ],
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-001",
+          "ACT-002",
+          "ACT-003",
+          "ACT-004",
+          "ESS-002",
+          "LEAD-005",
+          "TEST-001"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "title": "Resilience and Accountability in Performance Setback",
+        "unifying_axis": "The applicant experienced measurable academic contraction in Grade 11 and shows no documented reflection on, explanation of, or learning extracted from that setback in the application.",
+        "interview_direction": "Exploring how this applicant processes difficulty and setback\u2014whether they examine their own role, seek understanding of causation, and extract learning\u2014as a window into maturity and growth mindset when facing challenges in university.",
+        "supporting_signal_ids": [
+          "SIG-003"
+        ],
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003",
+          "ACA-004"
+        ]
+      },
+      {
+        "theme_id": "THEME-003",
+        "title": "Orientation Toward Personal Growth Versus Community Change",
+        "unifying_axis": "This applicant frames community and social engagement primarily as vehicles for personal transformation and internal learning rather than as opportunities to create measurable external change or structural impact.",
+        "interview_direction": "Understanding what this applicant means by social responsibility and leadership\u2014whether the goal is to change conditions and systems, or to develop themselves through exposure to need and difference.",
+        "supporting_signal_ids": [
+          "SIG-004"
+        ],
+        "referenced_entity_ids": [
+          "ESS-002",
+          "ACT-003"
+        ]
+      }
+    ]
+  },
+  "call_2_question_groups": {
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "Grounding of Core Identity Claims in Independent Practice",
+        "questions": [
+          "Your essay describes becoming fascinated by algorithms after your chess coach mentioned that computer programs could outsmart humans, and you say you 'spent months trying to comprehend algorithms behind these programs'\u2014what specifically did you build or create during that time, and what was the outcome of those months of work?",
+          "You list Java and HTML as self-taught technical skills in your essay, but the application shows no projects, repositories, or tangible work built with those languages\u2014where have you actually used Java or HTML to solve a problem or create something, and what drove you to learn each one?",
+          "The essay frames JEE preparation as equipping you with 'invaluable skills that are beneficial in understanding algorithms, data structures, and software development,' yet there's no evidence in your application of applying those skills to a computational or engineering problem outside exam preparation\u2014have you used what you learned in JEE to build or analyze something real, and if so, what?"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "group_title": "Processing and Learning From Academic Setback",
+        "questions": [
+          "Your Grade 10 overall was 99%, but Grade 11 dropped to 90% despite your Computer Science remaining strong at 96%\u2014what happened in Grade 11 that you think caused that shift, and how did you respond to it?",
+          "Physics dropped from 99% in Grade 10 Science to 88% in Grade 11\u2014was that subject-specific struggle, a consequence of the board change from ICSE to ISC, or something else, and what did you do to understand what was happening?",
+          "Looking back at that Grade 11 year, what do you think you learned about yourself as a student when facing that kind of performance change, and how did that shape how you approached Grade 12?"
+        ]
+      },
+      {
+        "theme_id": "THEME-003",
+        "group_title": "Definition of Impact and Success in Community Work",
+        "questions": [
+          "In the SignBee project, you describe the community's reception as 'lukewarm at first' and say you organized workshops over two months\u2014what would have constituted real success for you in that project, and how would you measure whether you actually achieved it?",
+          "You write that the experience 'made me a better human being with a new perspective of the world and society'\u2014that's a personal transformation\u2014but what changed for the people in your locality or the differently-abled community as a result of your work, beyond the workshops you ran?",
+          "When you think about your School Prefect role and the social impact activities you've done, are you primarily trying to create change in your school or community, or trying to develop yourself as a person, and why does that distinction matter to you?"
+        ]
+      }
+    ]
+  }
+}

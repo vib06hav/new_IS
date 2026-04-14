@@ -1,0 +1,24 @@
+{
+  "status_code": 200,
+  "headers": {
+    "date": "Mon, 13 Apr 2026 18:18:31 GMT",
+    "server": "uvicorn",
+    "content-length": "165",
+    "content-type": "application/json",
+    "set-cookie": "agis_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0X2FkbWluX3BpcGVsaW5lQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzc2MTA3OTEyfQ.4ZyEkn16JCY02VUNv-WC_2DLp1gadcLU0ZS8QanbNLI; HttpOnly; Max-Age=3600; Path=/; SameSite=lax, agis_csrf=M95PG7VgXAZC1u42hwO03nGsP0zuIYmbTrDnSxcJwD0; Path=/; SameSite=lax",
+    "content-security-policy": "default-src 'self'; img-src 'self' data: blob: https://fastapi.tiangolo.com; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval'; connect-src 'self' http: https: ws: wss:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "user": {
+      "id": "f9c11e03-3b39-484b-8c14-9a8b65fe0f87",
+      "name": "Pipeline Test Admin",
+      "email": "test_admin_pipeline@example.com",
+      "role": "admin",
+      "profile_image_url": null
+    }
+  }
+}

@@ -34,7 +34,12 @@ from app.final_report_exports import final_report_export_stream, FINAL_REPORT_EX
 from app.models.application import Application
 from app.models.user import User
 from app.processing import enqueue_processing_job
-from app.report_chat import ReportChatError, answer_report_question, build_report_chat_context
+from app.report_chat import (
+    ReportChatError,
+    answer_report_question,
+    build_report_chat_context,
+    validate_report_chat_question,
+)
 from app.security.rate_limit import limiter
 from app.storage import get_storage_service, storage_key_for_source_pdf
 
@@ -272,9 +277,21 @@ def ask_report_chat(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    question = payload.question.strip()
-    if not question:
-        raise HTTPException(status_code=400, detail="Question cannot be empty")
+    try:
+        question = validate_report_chat_question(
+            payload.question,
+            max_chars=settings.REPORT_CHAT_MAX_QUESTION_CHARS,
+            max_words=settings.REPORT_CHAT_MAX_QUESTION_WORDS,
+        )
+    except ReportChatError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    limiter.check(
+        f"report-chat:{current_user.id}",
+        limit=settings.AICREDITS_REPORT_CHAT_PER_USER_LIMIT,
+        window_seconds=settings.AICREDITS_REPORT_CHAT_WINDOW_SECONDS,
+        detail="Report assistant limit reached for your account. Please wait a moment and try again.",
+    )
 
     application = get_application_or_404(db, application_id)
     assignment = get_assignment_for_application(db, application_id)
@@ -289,7 +306,7 @@ def ask_report_chat(
 
     final_report = get_final_report(db, application_id)
     final_report_content = final_report.content if final_report and isinstance(final_report.content, dict) else None
-    context = build_report_chat_context(review_package.pages_1_3.model_dump(), final_report_content)
+    context = build_report_chat_context(question, review_package.pages_1_3.model_dump(), final_report_content)
 
     try:
         return answer_report_question(question, context)

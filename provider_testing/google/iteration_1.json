@@ -1,0 +1,124 @@
+{
+  "signals": [
+    {
+      "signal_id": "SIG-001",
+      "title": "Stated Tech Ambition vs. Demonstrated Practice",
+      "evidence_anchor": "Applicant's essay expresses excitement about technology's problem-solving potential and future impact, aligning with a Computer Science and Artificial Intelligence major.",
+      "direct_read": "The applicant articulates a strong, future-oriented interest in technology and its applications for societal good, framing it as a core part of their aspirations.",
+      "depth_opening": "The extent to which this stated ambition is currently grounded in self-directed technical exploration or project-based learning beyond academic coursework.",
+      "why_it_matters": "Understanding the applicant's level of practical engagement with technology will differentiate between a strong theoretical interest and a demonstrable capacity for building and innovation.",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACA-002",
+        "ACA-003",
+        "ACA-004"
+      ],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": [
+        "ESS-001:F01",
+        "ESS-001:F02"
+      ]
+    },
+    {
+      "signal_id": "SIG-002",
+      "title": "Academic Performance Shift Across Boards and Subjects",
+      "evidence_anchor": "Applicant's academic records show high scores in 10th grade under CBSE, followed by strong but slightly lower scores in 11th and 12th grades under the Telangana State Board, with notable variations in science subjects.",
+      "direct_read": "The applicant maintained a high overall academic performance across different boards and years, with a perfect score in 10th-grade Artificial Intelligence, but shows some fluctuation in Physics and Chemistry scores in later years.",
+      "depth_opening": "The reasons for the observed shifts in performance in specific science subjects (Physics, Chemistry) between the CBSE 10th grade and the Telangana State Board 11th/12th grades, and how this impacts their approach to rigorous technical coursework.",
+      "why_it_matters": "This will clarify the applicant's academic resilience and adaptability in the face of curriculum changes, and their underlying aptitude for foundational scientific principles crucial for technology fields.",
+      "referenced_entity_ids": [
+        "ACA-002",
+        "ACA-003",
+        "ACA-004"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-001"
+      ],
+      "supporting_fragment_ids": []
+    },
+    {
+      "signal_id": "SIG-003",
+      "title": "Interdisciplinary Learning and Project Application",
+      "evidence_anchor": "The applicant expresses a keen interest in interdisciplinary learning, blending tech with design, data, and human behavior, and notes their enjoyment of applying learning to practical challenges.",
+      "direct_read": "The applicant highlights a conscious interest in connecting technological concepts with other domains and values the application of knowledge to solve problems.",
+      "depth_opening": "Specific examples or experiences where this interest in interdisciplinary learning has been actively pursued or manifested in project work, demonstrating how they integrate diverse knowledge areas.",
+      "why_it_matters": "Understanding this will reveal the applicant's capacity for creative problem-solving and their ability to see the broader context and applications of technical knowledge, which is critical for innovation.",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACA-002"
+      ],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": [
+        "ESS-001:F04"
+      ]
+    },
+    {
+      "signal_id": "SIG-004",
+      "title": "Community Impact Driven by Personal Empathy and Strategic Engagement",
+      "evidence_anchor": "Applicant initiated and led a project to support stray animals, facing resident concerns and addressing them through an awareness campaign.",
+      "direct_read": "The applicant took initiative to address a community issue (stray animals) with a multi-faceted approach involving direct action, education, and engagement with resistant stakeholders.",
+      "depth_opening": "The applicant's process of strategizing the awareness campaign and managing the varied perspectives within the community, particularly how they navigated and influenced those who were initially uncomfortable.",
+      "why_it_matters": "This will illuminate the applicant's capacity for nuanced community engagement, problem-solving under social pressure, and the development of leadership strategies beyond simple directive action.",
+      "referenced_entity_ids": [
+        "ESS-002",
+        "LEAD-005"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-002"
+      ],
+      "supporting_fragment_ids": [
+        "ESS-002:F03",
+        "ESS-002:F04",
+        "ESS-002:F05"
+      ]
+    },
+    {
+      "signal_id": "SIG-005",
+      "title": "Sustained Commitment to Diverse Disciplines",
+      "evidence_anchor": "Applicant has 5 years of participation in Music Piano at an International level and 7 years of participation in Olympiads at a District level.",
+      "direct_read": "The applicant demonstrates sustained dedication over multiple years to two distinct and demanding extracurricular pursuits: a performing art and academic competitions.",
+      "depth_opening": "The interplay between these diverse long-term commitments and how they have shaped the applicant's time management, discipline, and ability to achieve proficiency across different domains.",
+      "why_it_matters": "Understanding how the applicant balances and draws from these varied long-term commitments can reveal their capacity for dedication, skill development, and holistic personal growth.",
+      "referenced_entity_ids": [
+        "ACT-001",
+        "ACT-003"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-003",
+        "DET-004"
+      ],
+      "supporting_fragment_ids": []
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "Bridging Aspiration and Practice in Technology",
+      "unifying_axis": "The degree to which the applicant's stated passion for technology is currently manifesting in tangible, self-driven technical activities beyond academic requirements.",
+      "interview_direction": "Exploring the applicant's hands-on engagement with technology, seeking to understand how their intellectual curiosity translates into practical application and innovation.",
+      "supporting_signal_ids": [
+        "SIG-001",
+        "SIG-003"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "Academic Breadth, Depth, and Adaptability",
+      "unifying_axis": "The applicant's demonstrated academic capabilities, including consistent high performance, adaptability across different educational systems, and specific subject strengths.",
+      "interview_direction": "Investigating the applicant's academic journey, focusing on patterns of achievement, any shifts in performance, and the underlying aptitude for diverse subjects relevant to a technical curriculum.",
+      "supporting_signal_ids": [
+        "SIG-002",
+        "SIG-005"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "title": "Applied Leadership and Community Engagement",
+      "unifying_axis": "The applicant's approach to initiating and leading community-oriented projects, particularly in navigating challenges and influencing diverse stakeholders.",
+      "interview_direction": "Understanding the applicant's leadership style and effectiveness through their experiences in community impact, specifically how they strategize, persevere, and foster positive change in social contexts.",
+      "supporting_signal_ids": [
+        "SIG-004"
+      ]
+    }
+  ]
+}

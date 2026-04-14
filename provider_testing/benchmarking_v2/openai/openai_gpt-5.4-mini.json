@@ -1,0 +1,206 @@
+{
+  "metrics": {
+    "model": "openai/gpt-5.4-mini",
+    "status": "PASSED",
+    "call_1_latency_seconds": 11.84,
+    "call_2_latency_seconds": 6.23,
+    "signal_count": 6,
+    "theme_count": 2,
+    "question_group_count": 2,
+    "call_1_prompt_tokens": 8431,
+    "call_1_completion_tokens": 1644,
+    "call_1_cost_inr": 1.5189,
+    "call_2_prompt_tokens": 7100,
+    "call_2_completion_tokens": 528,
+    "call_2_cost_inr": 0.8525,
+    "total_cost_inr": 2.3714
+  },
+  "call_1_signals_themes": {
+    "signals": [
+      {
+        "signal_id": "SIG-001",
+        "title": "Computing Interest Seeded by Early School Exposure",
+        "evidence_anchor": "\u201cMy first tryst with computers was probably in Grade 4 when it was introduced in our school curriculum. This curriculum, entailing foundational coding languages like QBasic and Scratch, piqued my interest and I tried to develop a simple arithmetic calculator.\u201d",
+        "direct_read": "The applicant traces their computing interest to an early school coding curriculum and an attempt to build a calculator.",
+        "depth_opening": "What that early spark became in practice: whether it remained a school-based curiosity or grew into repeated self-directed building and experimentation.",
+        "why_it_matters": "Understanding the shape of this origin story would show whether the applicant's computer science interest is anchored in hands-on making or mainly in classroom exposure.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-004"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F01",
+          "ESS-001:F02"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-002",
+        "title": "Algorithms as a Long-Horizon Intellectual Hook",
+        "evidence_anchor": "\u201cThis interest was further strengthened when my chess coach told me that computer programs could outsmart humans. Intrigued by this notion, I spent months trying to comprehend algorithms behind these programs.\u201d",
+        "direct_read": "A chess-related remark led the applicant to spend months trying to understand the algorithms behind computer programs.",
+        "depth_opening": "How deeply that curiosity was pursued, and whether chess still functions as a technical lens, a strategic habit, or simply an early trigger.",
+        "why_it_matters": "This would clarify whether the applicant's interest in algorithms comes from sustained pattern-based thinking or from an inspiring anecdote that opened the door.",
+        "referenced_entity_ids": [
+          "ACT-001",
+          "ESS-001"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F02",
+          "ESS-001:F03"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-003",
+        "title": "Math-to-Computing Bridge Built Through Competitive Work",
+        "evidence_anchor": "\u201cMy penchant for mathematics from my formative days was another factor... Apart from being my top-scoring subject, I enjoyed the challenge of participating and excelling in competitions like the SOF Olympiad and UNSW.\u201d",
+        "direct_read": "Mathematics is presented as both a top subject and a competitive arena, and the applicant explicitly connects it to computing interest.",
+        "depth_opening": "How the applicant translates mathematical strength into technical reasoning beyond contest performance, especially in problems that are not purely exam-shaped.",
+        "why_it_matters": "That would show whether the applicant's quantitative strength is mainly academic, competitively trained, or actively being converted into a computing habit of mind.",
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003",
+          "ACA-004",
+          "ACT-004",
+          "ESS-001"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-006"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-001:F03",
+          "ESS-001:F04"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-004",
+        "title": "JEE Intensity as a Training Ground for Technical Work",
+        "evidence_anchor": "\u201cOver the past two years, I have dedicated myself to an intensive study regimen, solving intricate problems and tackling baffling concepts from calculus to mechanics.\u201d",
+        "direct_read": "The applicant describes a two-year, highly structured preparation period centered on difficult problems across math and physics.",
+        "depth_opening": "How that discipline actually operates day to day, and which parts of the habit transfer into programming, systems thinking, or sustained project work.",
+        "why_it_matters": "This would distinguish between exam discipline as a strong academic trait and a broader problem-solving style that could matter in engineering study.",
+        "referenced_entity_ids": [
+          "ACA-003",
+          "ACA-004",
+          "TEST-001",
+          "ESS-001"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-004"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-001:F06",
+          "ESS-001:F07"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-005",
+        "title": "Leadership That Moves from Explanation to Adaptation",
+        "evidence_anchor": "In the SignBee project, \u201cReception to this idea was lukewarm at first,\u201d so the applicant \u201corganiz[ed] personalized sessions over weekends and us[ed] different pneumonic tools,\u201d then \u201cinvolve[d] my family.\u201d",
+        "direct_read": "The applicant responded to weak initial reception by iterating on format, adding family support, and adapting how the material was taught.",
+        "depth_opening": "What part of this was personal initiative versus team coordination, and how the applicant decides when to persist, redesign, or recruit others.",
+        "why_it_matters": "This would reveal the applicant's real operating style in leadership: whether they lead by direct instruction, by redesigning the approach, or by mobilizing a support network.",
+        "referenced_entity_ids": [
+          "ESS-002",
+          "ACT-003",
+          "LEAD-005"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-005"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-002:F05",
+          "ESS-002:F06",
+          "ESS-002:F07"
+        ],
+        "theme_id": "THEME-002"
+      },
+      {
+        "signal_id": "SIG-006",
+        "title": "Service Work Shaped by Translation, Not Just Intention",
+        "evidence_anchor": "The applicant says the SignBee project was an \u201ceye-opener\u201d about \u201cconverting theory to practice,\u201d then describes an online presentation and society workshops to sensitize others to sign language.",
+        "direct_read": "The essay shows a move from learning sign language to public-facing education and community sensitization.",
+        "depth_opening": "What the applicant actually learned about making people change behavior, and how they judge whether a service effort has been meaningfully effective.",
+        "why_it_matters": "This would show whether the applicant's community work is primarily participation, persuasion, or a repeatable model for outreach and inclusion.",
+        "referenced_entity_ids": [
+          "ESS-002",
+          "ACT-003"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-002:F03",
+          "ESS-002:F04",
+          "ESS-002:F05"
+        ],
+        "theme_id": "THEME-002"
+      }
+    ],
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "How Curiosity Became a Technical Identity",
+        "unifying_axis": "This applicant seems to build technical identity by converting early sparks, quantitative comfort, and long study habits into a coherent sense of future work.",
+        "interview_direction": "Understand how early exposure, chess-based abstraction, mathematics, and JEE preparation combine into the way this applicant actually thinks about computing.",
+        "supporting_signal_ids": [
+          "SIG-001",
+          "SIG-002",
+          "SIG-003",
+          "SIG-004"
+        ],
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-004",
+          "ACT-001",
+          "ACA-002",
+          "ACA-003",
+          "ACA-004",
+          "TEST-001"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "title": "Leading by Reframing for Other People",
+        "unifying_axis": "This applicant approaches leadership through adaptation: making ideas legible, adjusting delivery, and bringing other people into the work when the first version does not land.",
+        "interview_direction": "Understand the applicant's leadership style in practice, especially how they respond when communication, buy-in, or execution needs to be redesigned.",
+        "supporting_signal_ids": [
+          "SIG-005",
+          "SIG-006"
+        ],
+        "referenced_entity_ids": [
+          "ESS-002",
+          "ACT-003",
+          "LEAD-005"
+        ]
+      }
+    ]
+  },
+  "call_2_question_groups": {
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "From early sparks to technical habit",
+        "questions": [
+          "In your essay, you describe trying to build a simple arithmetic calculator after Grade 4 QBasic and Scratch were introduced at school; after that first attempt, what did you keep building or experimenting with on your own, and what kept pulling you back to it?",
+          "You link your chess coach's comment about programs outsmarting humans to spending months trying to understand the algorithms behind them, and you also list Chess and maths competitions like IPM, Mental Maths, and NSEJS; how did those three spaces shape the way you think when you face a problem that is not labeled as a chess puzzle or an exam question?",
+          "Across your Grade 10 Computer Applications 100, Grade 11 Computer Science 96, and the Java and Html you mention in your essay, what was the actual sequence of learning and building that turned those subjects into something more than coursework for you?",
+          "In the two years of JEE Advanced preparation you describe, solving intricate problems from calculus to mechanics, what parts of that discipline now show up when you approach computing tasks, and what parts stay specific to exam practice rather than transferring?"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "group_title": "Leadership through redesign and outreach",
+        "questions": [
+          "In the SignBee project, you write that reception to your workshops was lukewarm at first, so you moved to personalized weekend sessions and different mnemonic tools; when the first format did not land, how did you decide what to change, and what did you personally keep doing versus hand off to family or colleagues?",
+          "You say the SignBee experience taught you about converting theory to practice, and in the same essay you mention an online presentation plus society workshops; what did you notice about how people actually changed their behavior after those sessions, and how did that shape the way you judged whether the effort was working?",
+          "As School Prefect and through School Events Organization and Social Impaact, what kind of situation has made you shift from explaining an idea once to redesigning how others would hear it, and what did that shift look like in practice?",
+          "In your account of involving your family because they could present the ideas better than you could envisage, what does that say about how you think about leadership when your first approach is not the most effective one?"
+        ]
+      }
+    ]
+  }
+}

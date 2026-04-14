@@ -1,0 +1,151 @@
+{
+  "metrics": {
+    "model": "openai/gpt-4o-mini",
+    "status": "PASSED",
+    "call_1_latency_seconds": 18.01,
+    "call_2_latency_seconds": 7.96,
+    "signal_count": 4,
+    "theme_count": 2,
+    "question_group_count": 2,
+    "call_1_prompt_tokens": 8432,
+    "call_1_completion_tokens": 891,
+    "call_1_cost_inr": 0.1992,
+    "call_2_prompt_tokens": 5552,
+    "call_2_completion_tokens": 307,
+    "call_2_cost_inr": 0.1126,
+    "total_cost_inr": 0.3118
+  },
+  "call_1_signals_themes": {
+    "signals": [
+      {
+        "signal_id": "SIG-001",
+        "title": "Early Technology Engagement and Development",
+        "evidence_anchor": "The applicant's first experience with computers was in Grade 4, where foundational coding languages were introduced.",
+        "direct_read": "The applicant has a long-standing interest in technology that began at a young age.",
+        "depth_opening": "How this early engagement with technology has shaped their current skills and aspirations in computer science.",
+        "why_it_matters": "Understanding this trajectory could clarify the depth of their commitment to technology and its influence on their academic choices.",
+        "referenced_entity_ids": [
+          "ESS-001"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F01",
+          "ESS-001:F02",
+          "ESS-001:F03"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-002",
+        "title": "Competitive Spirit in Mathematics and Technology",
+        "evidence_anchor": "The applicant has excelled in mathematics competitions and has a strong academic record in computer science.",
+        "direct_read": "The applicant demonstrates a competitive nature and a strong aptitude for mathematics and technology.",
+        "depth_opening": "The relationship between their competitive experiences and their motivation to pursue a career in computer science.",
+        "why_it_matters": "This could reveal how their competitive experiences have influenced their academic and career aspirations.",
+        "referenced_entity_ids": [
+          "ACT-004",
+          "ESS-001"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-006"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-001:F04",
+          "ESS-001:F06"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-003",
+        "title": "Leadership Through Community Engagement",
+        "evidence_anchor": "The applicant led the SignBee project to teach sign language and promote inclusivity.",
+        "direct_read": "The applicant has taken initiative in community service and demonstrated leadership skills.",
+        "depth_opening": "The challenges faced during the project and how they shaped their understanding of leadership and social responsibility.",
+        "why_it_matters": "This insight could provide a deeper understanding of their leadership style and commitment to community service.",
+        "referenced_entity_ids": [
+          "ESS-002",
+          "LEAD-005"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-002:F01",
+          "ESS-002:F04",
+          "ESS-002:F08"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-004",
+        "title": "Academic Resilience and Adaptation",
+        "evidence_anchor": "The applicant's performance shifted from 10TH to 11TH grade, with a notable drop in overall score.",
+        "direct_read": "The applicant faced academic challenges during the transition to 11TH grade.",
+        "depth_opening": "How they adapted to these challenges and what strategies they employed to maintain their academic performance.",
+        "why_it_matters": "Understanding their resilience could provide insights into their ability to handle future academic pressures.",
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-001",
+          "DET-002"
+        ],
+        "supporting_fragment_ids": [],
+        "theme_id": "THEME-002"
+      }
+    ],
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "Foundational Experiences in Technology and Leadership",
+        "unifying_axis": "The interplay between early technological engagement and leadership experiences in shaping the applicant's identity and aspirations.",
+        "interview_direction": "Exploring how their early experiences with technology and leadership roles have influenced their academic and career goals.",
+        "supporting_signal_ids": [
+          "SIG-001",
+          "SIG-002",
+          "SIG-003"
+        ],
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-004",
+          "ESS-002",
+          "LEAD-005"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "title": "Navigating Academic Challenges with Resilience",
+        "unifying_axis": "The applicant's ability to adapt and respond to academic challenges, particularly during transitions between grades.",
+        "interview_direction": "Understanding the strategies they employed to overcome academic difficulties and how these experiences have shaped their approach to learning.",
+        "supporting_signal_ids": [
+          "SIG-004"
+        ],
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003"
+        ]
+      }
+    ]
+  },
+  "call_2_question_groups": {
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "Exploring Technology and Leadership Experiences",
+        "questions": [
+          "Your essay mentions that your first experience with computers was in Grade 4, where you learned foundational coding languages like QBasic and Scratch. How did this early engagement shape your current skills and aspirations in computer science?",
+          "You have excelled in mathematics competitions and have a strong academic record in computer science. How do you think your competitive experiences in mathematics have influenced your motivation to pursue a career in technology?",
+          "In your SignBee project, you faced challenges in teaching sign language to your community. What specific lessons about leadership and social responsibility did you learn from overcoming these challenges?"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "group_title": "Understanding Academic Resilience",
+        "questions": [
+          "You experienced a notable drop in your overall score when transitioning from 10th to 11th grade. What specific strategies did you employ to adapt to these academic challenges?",
+          "Reflecting on your performance in 10th grade, where you scored 99%, and then in 11th grade with a score of 90%, how did you maintain your motivation and resilience during this transition?",
+          "What insights did you gain about your learning style and approach to studying as a result of navigating the challenges you faced in 11th grade?"
+        ]
+      }
+    ]
+  }
+}

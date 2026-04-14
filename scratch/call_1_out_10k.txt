@@ -1,0 +1,85 @@
+INFO  [app.config] Configuration loaded. APP_ENV=development, LOG_LEVEL=DEBUG
+INFO  [app.config] DATABASE_URL: ***[REDACTED]***
+INFO  [app.config] JWT_SECRET: ***[REDACTED]***
+INFO  [app.config] JWT_ALGORITHM: HS256
+INFO  [app.config] LLM_PROVIDER: aicredits
+INFO  [app.config] LLM_PAYLOAD_MODE: full
+INFO  [app.config] PARSER_ENGINE_VERSION: v2
+INFO  [app.config] STORAGE_BACKEND: minio
+INFO  [app.config] LLM_ENDPOINT: https://api.aicredits.in/v1/chat/completions
+INFO  [app.config] LLM_MODEL_NAME: openai/gpt-oss-120b
+INFO  [app.config] AICREDITS_BASE_URL: https://api.aicredits.in/v1
+INFO  [app.config] AICREDITS_GENERATION_MODEL_PRIMARY: openai/gpt-oss-120b
+INFO  [app.config] AICREDITS_GENERATION_MODEL_FALLBACK: openai/gpt-oss-120b
+INFO  [app.config] AICREDITS_REPORT_CHAT_MODEL_PRIMARY: openai/gpt-oss-120b
+INFO  [app.config] AICREDITS_REPORT_CHAT_MODEL_FALLBACK: openai/gpt-oss-120b
+INFO  [app.config] LLM_API_KEY: ***[REDACTED]***
+INFO  [app.config] AICREDITS_GENERATION_API_KEY: ***[REDACTED]***
+INFO  [app.config] AICREDITS_REPORT_CHAT_API_KEY: ***[REDACTED]***
+DEBUG [git.cmd] Popen(['git', 'version'], cwd=/app, stdin=None, shell=False, universal_newlines=False)
+DEBUG [httpcore.connection] connect_tcp.started host='api.aicredits.in' port=443 local_address=None timeout=300.0 socket_options=None
+DEBUG [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7a7a5d58e210>
+DEBUG [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x7a7a5d59c4d0> server_hostname='api.aicredits.in' timeout=300.0
+DEBUG [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7a7a5eb3be50>
+DEBUG [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+DEBUG [httpcore.http11] send_request_headers.complete
+DEBUG [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+DEBUG [httpcore.http11] send_request_body.complete
+DEBUG [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+DEBUG [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Mon, 13 Apr 2026 18:40:54 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'vary', b'Origin'), (b'x-ratelimit-limit', b'1000'), (b'x-ratelimit-remaining', b'999'), (b'x-ratelimit-reset', b'60'), (b'cf-cache-status', b'DYNAMIC'), (b'Nel', b'{"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}'), (b'Report-To', b'{"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=FhhtafCCz4vR1NkUjJczzBzwX31lnUJ5iXZTlm2IkpTiR1g1lFQ17eT2c%2B33f2S1GIg2t3NEpLyFZoMoMVpkf61w%2BGmVy3IYfsYWnh31mVL7%2F434RFtEqcDKyubKzmq%2FBy0w"}]}'), (b'Content-Encoding', b'gzip'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9ebc995c8cfbce3f-SIN'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO  [httpx] HTTP Request: POST https://api.aicredits.in/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+DEBUG [httpcore.http11] receive_response_body.complete
+DEBUG [httpcore.http11] response_closed.started
+DEBUG [httpcore.http11] response_closed.complete
+DEBUG [httpcore.connection] close.started
+DEBUG [httpcore.connection] close.complete
+Sending direct request to LLM (Call 1)...
+Status Code: 200
+
+--- RAW JSON RESPONSE ---
+{
+  "id": "gen-1776105626-Q8ZNGf6mc80n7zF3bmoX",
+  "object": "chat.completion",
+  "created": 1776105626,
+  "model": "openai/gpt-oss-120b",
+  "provider": "SiliconFlow",
+  "system_fingerprint": null,
+  "choices": [
+    {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"signals\": [\n    {\n      \"signal_id\": \"SIG-001\",\n      \"title\": \"Tech\u2011Centric Identity Without Documented Build Experience\",\n      \"evidence_anchor\": \"Essay ESS-001 repeatedly frames technology as central to identity and future direction.\",\n      \"direct_read\": \"The applicant describes fascination with how things work, excitement about solving real\u2011world problems, and a desire to blend tech with design and data.\",\n      \"depth_opening\": \"Whether the applicant\u2019s self\u2011described tech identity is grounded in concrete, self\u2011directed building or programming projects beyond classroom work.\",\n      \"why_it_matters\": \"Clarifying lived technical practice would determine if the applicant\u2019s stated engineering motivation is experiential or primarily aspirational.\",\n      \"referenced_entity_ids\": [\"ESS-001\", \"ACA-002\", \"ACA-003\", \"ACA-004\"],\n      \"supporting_det_signal_ids\": [],\n      \"supporting_fragment_ids\": [\"ESS-001:F01\", \"ESS-001:F02\", \"ESS-001:F04\"]\n    },\n    {\n      \"signal_id\": \"SIG-002\",\n      \"title\": \"Leadership Through Empathy in Community Animal\u2011Care Project\",\n      \"evidence_anchor\": \"Essay ESS-002 recounts initiating a stray\u2011dog feeding and awareness campaign.\",\n      \"direct_read\": \"The applicant organized feeding drives, coordinated with NGOs, and addressed resident concerns through dialogue.\",\n      \"depth_opening\": \"How the applicant translated empathy into concrete leadership actions, decision\u2011making processes, and measurable impact on the community.\",\n      \"why_it_matters\": \"Understanding the depth of this leadership experience informs the applicant\u2019s capacity for socially\u2011oriented engineering initiatives.\",\n      \"referenced_entity_ids\": [\"ESS-002\", \"LEAD-005\"],\n      \"supporting_det_signal_ids\": [\"DET-002\"],\n      \"supporting_fragment_ids\": [\"ESS-002:F01\", \"ESS-002:F02\", \"ESS-002:F03\", \"ESS-002:F05\"]\n    },\n    {\n      \"signal_id\": \"SIG-003\",\n      \"title\": \"Sustained Excellence in Quantitative Olympiads\",\n      \"evidence_anchor\": \"Activity ACT-003 notes 7\u2011year district\u2011level participation in Maths and Science Olympiads.\",\n      \"direct_read\": \"The applicant has regularly competed in quantitative competitions throughout middle and high school.\",\n      \"depth_opening\": \"What specific achievements, problem\u2011solving approaches, and learning outcomes have resulted from this long\u2011term Olympiad involvement.\",\n      \"why_it_matters\": \"Detailing this depth reveals the applicant\u2019s analytical rigor and how it may translate to success in a CS/AI curriculum.\",\n      \"referenced_entity_ids\": [\"ACT-003\", \"ACA-002\", \"ACA-003\", \"ACA-004\"],\n      \"supporting_det_signal_ids\": [\"DET-004\"],\n      \"supporting_fragment_ids\": []\n    },\n    {\n      \"signal_id\": \"SIG-004\",\n      \"title\": \"International\u2011Level Piano Commitment as Indicator of Discipline\",\n      \"evidence_anchor\": \"Activity ACT-001 records 5\u2011year international\u2011level piano experience.\",\n      \"direct_read\": \"The applicant has pursued piano performance at an international level for five years.\",\n      \"depth_opening\": \"How the discipline, practice routines, and performance experiences from piano inform the applicant\u2019s approach to engineering challenges.\",\n      \"why_it_matters\": \"Linking artistic discipline to technical problem\u2011solving can illuminate a unique cognitive style valuable for CS/AI work.\",\n      \"referenced_entity_ids\": [\"ACT-001\"],\n      \"supporting_det_signal_ids\": [\"DET-003\"],\n      \"supporting_fragment_ids\": []\n    },\n    {\n      \"signal_id\": \"SIG-005\",\n      \"title\": \"Academic Consistency Across Board Transition\",\n      \"evidence_anchor\": \"Academic entries ACA-002 (CBSE) and ACA-003/ACA-004 (Telangana State Board) show sustained high scores.\",\n      \"direct_read\": \"Overall percentages remain above 96% despite a change in curriculum and assessment standards.\",\n      \"depth_opening\": \"What strategies or adaptations enabled the applicant to maintain top performance during the board transition.\",\n      \"why_it_matters\": \"Understanding adaptability reveals resilience and learning agility relevant to fast\u2011changing tech fields.\",\n      \"referenced_entity_ids\": [\"ACA-002\", \"ACA-003\", \"ACA-004\"],\n      \"supporting_det_signal_ids\": [\"DET-001\"],\n      \"supporting_fragment_ids\": []\n    }\n  ],\n  \"themes\": [\n    {\n      \"theme_id\": \"THEME-001\",\n      \"title\": \"Tech Motivation vs. Demonstrated Practice\",\n      \"unifying_axis\": \"The applicant presents a strong narrative of technology enthusiasm but provides limited evidence of self\u2011directed technical creation.\",\n      \"interview_direction\": \"Explore whether the applicant\u2019s engineering drive is backed by concrete project experience or remains aspirational.\",\n      \"supporting_signal_ids\": [\"SIG-001\"]\n    },\n    {\n      \"theme_id\": \"THEME-002\",\n      \"title\": \"Leadership Rooted in Empathy and Community Impact\",\n      \"unifying_axis\": \"Leadership experiences are framed around empathy\u2011driven community service, especially the stray\u2011dog initiative.\",\n      \"interview_direction\": \"Probe the applicant\u2019s decision\u2011making, influence tactics, and scalability of socially\u2011focused projects.\",\n      \"supporting_signal_ids\": [\"SIG-002\"]\n    },\n    {\n      \"theme_id\": \"THEME-003\",\n      \"title\": \"Sustained Discipline Across Academic and Extracurricular Domains\",\n      \"unifying_axis\": \"Long\u2011term high\u2011performance commitments in Olympiads, piano, and consistent academic excellence indicate a pattern of disciplined effort.\",\n      \"interview_direction\": \"Assess how the applicant translates disciplined practice from varied domains into a rigorous CS/AI curriculum.\",\n      \"supporting_signal_ids\": [\"SIG-003\", \"SIG-004\", \"SIG-005\"]\n    }\n  ]\n}",
+        "refusal": null,
+        "reasoning": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 6512,
+    "completion_tokens": 1250,
+    "total_tokens": 7762,
+    "cost": 0.0008881,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.0008881,
+      "upstream_inference_prompt_cost": 0.0003256,
+      "upstream_inference_completions_cost": 0.0005625
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  }
+}

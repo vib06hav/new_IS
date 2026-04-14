@@ -26,7 +26,7 @@ from app.agents.report_annotations import build_report_annotations
 from app.llm.client import LLMClientError
 
 # Policy and ROS
-from app.policy.guard import validate_question_groups, validate_signals
+from app.policy.guard import validate_question_groups, validate_signals, sanitise_llm_output
 from app.ros.assembler import assemble_ros_v1
 
 # Models and Utilities
@@ -337,6 +337,16 @@ def run_synthesis_pipeline(
         }
         _handle_abort(application_id, abort_res, db)
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": abort_res, "confidence": agg_conf}
+
+    logger.debug("Policy Guard: Signal Sanitiser (pre-validation auto-repair)")
+    try:
+        raw_call_1_json = __import__("json").loads(raw_call_1_output)
+        valid_fragment_ids = {f.get("fragment_id") for f in essay_fragments if f.get("fragment_id")}
+        valid_entity_ids = {e.get("entity_id") for e in entity_id_map if e.get("entity_id")}
+        sanitised_call_1_json = sanitise_llm_output(raw_call_1_json, valid_fragment_ids, valid_entity_ids)
+        raw_call_1_output = __import__("json").dumps(sanitised_call_1_json)
+    except Exception as san_err:
+        logger.warning(f"[SANITISER] Skipped — could not parse LLM output for repair: {san_err}")
 
     logger.debug("Policy Guard: Signal Validation")
     val_res_1 = validate_signals(

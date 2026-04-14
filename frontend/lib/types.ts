@@ -218,3 +218,13 @@ export type FinalReportMutationResponse = {
   status: string;
   final_report: FinalReportSummary;
 };
+
+export type CapacityStatus = {
+  active: number;
+  limit: number;
+};
+
+export type LLMCapacityStatusResponse = {
+  generation: CapacityStatus;
+  report_chat: CapacityStatus;
+};

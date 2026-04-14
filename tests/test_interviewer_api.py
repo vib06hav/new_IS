@@ -569,6 +569,7 @@ def test_report_chat_admin_uses_pages_1_to_3_without_final_report():
     assert body["results"][0]["anchor_id"] == "report-page1-overview"
     prompt_payload = mocked_generate.call_args.args[0][1]["content"]
     assert '"source_scope": "pages_1_3"' in prompt_payload
+    assert '"selected_sections": ["page1_overview"]' in prompt_payload
     assert "page_4_focus_areas" not in prompt_payload
 
 
@@ -644,8 +645,9 @@ def test_report_chat_interviewer_can_use_final_report_pages():
     assert body["results"][0]["target_tab"] == "page4"
     prompt_payload = mocked_generate.call_args.args[0][1]["content"]
     assert '"source_scope": "pages_1_5"' in prompt_payload
+    assert '"selected_sections": ["page4_focus_areas"]' in prompt_payload
     assert '"page4": {"themes": [{"theme_id": "T1", "title": "Intellectual vitality"}], "signals": []}' in prompt_payload
-    assert '"page5": {"question_groups": [{"theme_id": "T1", "group_title": "Curiosity"' in prompt_payload
+    assert '"page5"' not in prompt_payload
 
 
 def test_report_chat_blocks_unassigned_interviewer():
@@ -740,6 +742,50 @@ def test_report_chat_rejects_blank_question():
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Question cannot be empty"
+
+
+def test_report_chat_rejects_oversized_question():
+    db = TestingSessionLocal()
+    db.query(FinalReport).delete()
+    db.query(Assignment).delete()
+    db.query(CanonicalRecord).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-oversized@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-CHAT-LONG",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3=_pages_1_3_payload(),
+    )
+    db.add_all([admin, application, canonical])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    response = client.post(
+        f"/applications/{application_id}/report-chat",
+        json={"question": "word " * 120},
+        headers=headers,
+    )
+
+    assert response.status_code == 400
+    assert "under" in response.json()["detail"]
 
 
 def test_report_chat_returns_controlled_502_on_invalid_llm_payload():

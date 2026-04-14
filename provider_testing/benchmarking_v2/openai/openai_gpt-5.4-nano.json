@@ -1,0 +1,179 @@
+{
+  "metrics": {
+    "model": "openai/gpt-5.4-nano",
+    "status": "PASSED",
+    "call_1_latency_seconds": 9.92,
+    "call_2_latency_seconds": 4.42,
+    "signal_count": 5,
+    "theme_count": 2,
+    "question_group_count": 2,
+    "call_1_prompt_tokens": 8431,
+    "call_1_completion_tokens": 1442,
+    "call_1_cost_inr": 0.3862,
+    "call_2_prompt_tokens": 6163,
+    "call_2_completion_tokens": 505,
+    "call_2_cost_inr": 0.2063,
+    "total_cost_inr": 0.5925
+  },
+  "call_1_signals_themes": {
+    "signals": [
+      {
+        "signal_id": "SIG-001",
+        "title": "Early tech curiosity evolving into algorithm work",
+        "evidence_anchor": "In ESS-001, they trace first exposure to computers in Grade 4, then describe building a simple arithmetic calculator and later spending months \u201ctrying to comprehend algorithms.\u201d",
+        "direct_read": "Their essay presents a progression from early exposure to computers (QBasic/Scratch) \u2192 a small project (arithmetic calculator) \u2192 sustained effort to understand algorithms.",
+        "depth_opening": "What specific algorithmic ideas or problems they pursued during those \u201cmonths,\u201d and how they converted that learning into progressively more capable software (even if informal or personal).",
+        "why_it_matters": "Resolving this would clarify whether their stated fit for CS/AI is grounded in iterative building and concept-to-code translation, not just motivation and exam study.",
+        "referenced_entity_ids": [
+          "ESS-001"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F01",
+          "ESS-001:F02",
+          "ESS-001:F03"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-002",
+        "title": "CS motivation reinforced by competitions, global exposure, and internships",
+        "evidence_anchor": "In ESS-001, they link participation in SOF Olympiad/UNSW, IJSO and international trips (NASA, Silicon Valley, CERN), plus \u201cindustry internships\u201d to understanding the IT landscape and valuing sophisticated computing technologies.",
+        "direct_read": "Their essay connects multiple competitive and exposure experiences to a reinforced desire to study computers, citing internships as especially informative about the IT landscape.",
+        "depth_opening": "Which internship responsibilities or artifacts (projects, roles, or technical takeaways) most concretely shaped their understanding of computing\u2019s role in innovation\u2014and how that shaped their interest in CS/AI specifically.",
+        "why_it_matters": "This would change how their \u201cglobal exposure \u2192 computing ambition\u201d story is interpreted\u2014whether it reflects deep technical engagement or mostly inspirational exposure.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-004"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F04",
+          "ESS-001:F05",
+          "ESS-001:F10"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-003",
+        "title": "Exam-driven rigor and the mechanics of sustained study",
+        "evidence_anchor": "In ESS-001, they describe choosing JEE Advanced for \u201cacademic rigour,\u201d then a two-year intensive regimen solving problems from calculus to mechanics, and adding Java/HTML.",
+        "direct_read": "Their essay frames JEE Advanced preparation as a structured, high-intensity learning period intended to build analytical capability, with additional self-study in Java and HTML.",
+        "depth_opening": "How they operationalized the study process (e.g., selection of problems, feedback loops, error analysis, and how they decided when to switch from theory to implementation).",
+        "why_it_matters": "Understanding this would reveal whether their analytical strengths are supported by repeatable learning systems that transfer into software engineering and CS problem-solving.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACA-004",
+          "TEST-001"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F06",
+          "ESS-001:F07",
+          "ESS-001:F08"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-004",
+        "title": "Leadership as execution under low buy-in (SignBee project)",
+        "evidence_anchor": "In ESS-002, they describe the SignBee project\u2019s \u201clukewarm\u201d reception, then multiple iterations (personalized weekend sessions, pneumonic tools) and motivating colleagues/family to sustain the work.",
+        "direct_read": "Their community-project story emphasizes adapting the approach when others were unwilling, iterating tactics, and sustaining motivation for collaborators.",
+        "depth_opening": "How they decided what to change across the iterations, and how they measured whether the communication approach (story/presentation/workshops) was actually improving learning and inclusion.",
+        "why_it_matters": "Resolving this would show whether their leadership strengths are primarily motivational or whether they have a disciplined, test-and-learn approach that can map onto product/engineering work.",
+        "referenced_entity_ids": [
+          "ESS-002",
+          "ACT-003"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-005"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-002:F05",
+          "ESS-002:F06",
+          "ESS-002:F08"
+        ],
+        "theme_id": "THEME-002"
+      },
+      {
+        "signal_id": "SIG-005",
+        "title": "Parallel identities: CS focus alongside speech/drama and non-profit work",
+        "evidence_anchor": "In ESS-001, they mention Trinity College London (speech/drama), student council and inter-school events, plus non-profit activities (waste collection drives, beach clean-ups).",
+        "direct_read": "Their essay presents non-academic skill development and service/community activities running alongside their CS/exam track.",
+        "depth_opening": "How these communication and service experiences influenced the way they express technical ideas, lead teams, or choose to apply computing toward societal outcomes.",
+        "why_it_matters": "This would refine understanding of how communication competency and service motivation intersect with technical direction\u2014important for CS/AI work that requires collaboration and human-centered applications.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-002",
+          "ACT-003"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F08",
+          "ESS-001:F09",
+          "ESS-001:F10"
+        ],
+        "theme_id": "THEME-002"
+      }
+    ],
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "From curiosity to computable understanding",
+        "unifying_axis": "The applicant\u2019s stated CS identity is built by moving from early interest into sustained conceptual learning and technology-facing practice.",
+        "interview_direction": "Unpack how their motivation became concrete technical understanding that can be demonstrated in what they build and the way they learn algorithms.",
+        "supporting_signal_ids": [
+          "SIG-001",
+          "SIG-002",
+          "SIG-003"
+        ],
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-004",
+          "ACA-004",
+          "TEST-001"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "title": "Leadership as adaptive delivery for real people",
+        "unifying_axis": "Their leadership narrative centers on execution under real constraints, where persuasion, iteration, and collaboration determine impact.",
+        "interview_direction": "Understand how they approach planning, iteration, and feedback in community-facing work and what that reveals about their leadership mechanics.",
+        "supporting_signal_ids": [
+          "SIG-004",
+          "SIG-005"
+        ],
+        "referenced_entity_ids": [
+          "ESS-002",
+          "ACT-003",
+          "ESS-001",
+          "ACT-002"
+        ]
+      }
+    ]
+  },
+  "call_2_question_groups": {
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "Concept-to-code trajectory",
+        "questions": [
+          "In ESS-001 you describe trying to comprehend algorithms after your chess coach told you computer programs could outsmart humans\u2014during those \u201cmonths,\u201d which specific algorithmic ideas or problems were you trying to understand, and what did you build or test to check your understanding?",
+          "Your ESS-001 progression goes from Grade 4 QBasic/Scratch \u2192 a simple arithmetic calculator \u2192 months of algorithm study\u2014what concrete steps did you take to translate what you learned about algorithms into progressively more capable software (even if it stayed informal/personal)?",
+          "In ESS-001 you mention internships that \u201chelped me understand Indian IT landscape\u201d and reinforced the importance of sophisticated computing\u2014what were the most concrete responsibilities or artifacts from those internships that changed your view of how computing drives innovation?",
+          "In ESS-001 you frame your two-year JEE Advanced preparation as \u201cacademic rigour,\u201d and you added Java and HTML afterward\u2014what was your operational study loop (how you selected problems, handled wrong answers, and decided when to shift from theory to implementation)?"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "group_title": "Iterate leadership for real inclusion",
+        "questions": [
+          "In ESS-002 (SignBee by V-shesh), you describe lukewarm reception when people seemed unwilling to learn sign language\u2014across the iterations (personalized weekend sessions and pneumonic tools), what decision rules did you use to choose what to change next?",
+          "Still in ESS-002, you mention story performance, then an online presentation, then workshops in your society\u2014how did you measure whether each communication format improved learning or inclusion for the differently-abled kids or the wider audience?",
+          "In ESS-002 you write that involving your family helped \u201cput forth the ideas\u201d better\u2014what specific division of labor or collaboration did that enable, and what did you adapt in your leadership approach as a result?",
+          "In ESS-001 you note Trinity College London (speech/drama) alongside your CS/exam track, and in ESS-002 you led workshops/presentations for SignBee\u2014how did your communication training influence the way you expressed technical or instructional ideas and motivated people during SignBee?"
+        ]
+      }
+    ]
+  }
+}

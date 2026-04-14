@@ -1,0 +1,147 @@
+{
+  "metrics": {
+    "model": "google/gemini-3.1-flash-lite-preview",
+    "status": "PASSED",
+    "call_1_latency_seconds": 7.52,
+    "call_2_latency_seconds": 4.75,
+    "signal_count": 4,
+    "theme_count": 2,
+    "question_group_count": 2,
+    "call_1_prompt_tokens": 9765,
+    "call_1_completion_tokens": 1090,
+    "call_1_cost_inr": 0.4512,
+    "call_2_prompt_tokens": 5866,
+    "call_2_completion_tokens": 422,
+    "call_2_cost_inr": 0.2324,
+    "total_cost_inr": 0.6836
+  },
+  "call_1_signals_themes": {
+    "signals": [
+      {
+        "signal_id": "SIG-001",
+        "title": "Technical Exposure vs. Creative Implementation",
+        "evidence_anchor": "Applicant describes multiple international trips and industry internships alongside foundational coding in school.",
+        "direct_read": "The application mentions high-level exposure to global tech hubs like Silicon Valley and CERN but provides little detail on the applicant's specific contributions during industry internships.",
+        "depth_opening": "The internal structure of these experiences\u2014what the applicant actually did versus what they observed\u2014to determine the depth of their technical engagement.",
+        "why_it_matters": "Distinguishes between a passive observer of the technology landscape and an active practitioner.",
+        "referenced_entity_ids": [
+          "ESS-001"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F04",
+          "ESS-001:F05"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-002",
+        "title": "Calculus-focused Academic Rigor",
+        "evidence_anchor": "Essay mentions two years of intensive study for JEE Advanced with a focus on calculus and mechanics.",
+        "direct_read": "The applicant frames their academic preparation through the lens of extreme competitive test-taking rather than independent technical projects.",
+        "depth_opening": "How the applicant translates these analytical skills into practical, non-curricular software development or problem-solving environments.",
+        "why_it_matters": "Clarifies whether their technical identity is restricted to exam-based problem solving or extensible to open-ended engineering challenges.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACA-004"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-004"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-001:F06",
+          "ESS-001:F07"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-003",
+        "title": "Iterative Social Leadership",
+        "evidence_anchor": "Applicant details the SignBee project, specifically the transition from initial failure to iterative adjustments.",
+        "direct_read": "The applicant encountered lukewarm reception and pivoted by creating personalized sessions and involving family members.",
+        "depth_opening": "The applicant's internal process for recalibrating strategy when faced with social resistance, rather than just the success of the outcome.",
+        "why_it_matters": "Reveals the applicant's resilience and adaptability when leading community-based projects compared to structured academic tasks.",
+        "referenced_entity_ids": [
+          "ESS-002"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-002:F05",
+          "ESS-002:F06",
+          "ESS-002:F08"
+        ],
+        "theme_id": "THEME-002"
+      },
+      {
+        "signal_id": "SIG-004",
+        "title": "Long-term Math Commitment",
+        "evidence_anchor": "Ten-year participation in national-level math competitions.",
+        "direct_read": "This is a long-standing, sustained engagement that predates the high school academic pressure.",
+        "depth_opening": "The evolution of their relationship with mathematics from early competitive milestones to their current, more academic and applied interest.",
+        "why_it_matters": "Provides a baseline for the applicant's intellectual stamina and consistency in high-difficulty domains.",
+        "referenced_entity_ids": [
+          "ACT-004"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-006"
+        ],
+        "supporting_fragment_ids": [],
+        "theme_id": "THEME-002"
+      }
+    ],
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "Technical Depth and Practical Agency",
+        "unifying_axis": "The extent to which this applicant's technical capabilities are defined by external prestige milestones versus internal, self-directed construction.",
+        "interview_direction": "Exploring the move from competitive exam-solving and passive industry observation toward tangible, self-initiated technical building.",
+        "supporting_signal_ids": [
+          "SIG-001",
+          "SIG-002"
+        ],
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACA-004"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "title": "Adaptability in Social and Intellectual Arenas",
+        "unifying_axis": "The applicant's capacity to modify their approach in response to social friction or complex problem-solving constraints.",
+        "interview_direction": "Unpacking the specific cognitive and social pivots used when initial attempts at community engagement or technical comprehension hit roadblocks.",
+        "supporting_signal_ids": [
+          "SIG-003",
+          "SIG-004"
+        ],
+        "referenced_entity_ids": [
+          "ESS-002",
+          "ACT-004"
+        ]
+      }
+    ]
+  },
+  "call_2_question_groups": {
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "Transitioning from Competitive Preparation to Technical Construction",
+        "questions": [
+          "Beyond the structured environment of JEE Advanced preparation, what is an example of a technical problem you have investigated or built solely because you wanted to understand how it worked?",
+          "You mention industry internships and visits to sites like CERN, but your essay describes these primarily as exposure; what specific technical contribution or design decision were you personally responsible for during any of these experiences?",
+          "How do you distinguish between the 'analytical capabilities' required to solve complex calculus problems for an exam and the 'analytical capabilities' required to debug or build an actual software system?",
+          "When you look at your foundational projects like your initial calculator in Scratch, what technical limitation did you hit that you have since addressed through your more recent study of Java or HTML?"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "group_title": "Strategy Recalibration in Social and Intellectual Domains",
+        "questions": [
+          "When your initial approach to the SignBee project was met with lukewarm reception, what was the specific logic that led you to shift toward personalized weekend sessions rather than changing your outreach medium?",
+          "You have maintained a decade-long engagement with math competitions; how has the way you approach a 'dead-end' problem in a competition evolved compared to how you approached the social resistance in your SignBee project?",
+          "When you found that your family could communicate your SignBee ideas more effectively than you, how did you analyze the gap between your own communication style and the needs of your audience?",
+          "In what ways does the consistency required for ten years of math competition participation differ from the flexibility needed to lead a community-based project like SignBee when the original plan fails?"
+        ]
+      }
+    ]
+  }
+}

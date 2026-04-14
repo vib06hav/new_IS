@@ -61,17 +61,89 @@ class ReportChatError(Exception):
     """Raised when the report chatbot cannot safely answer."""
 
 
-def build_report_chat_context(
+def validate_report_chat_question(question: str, *, max_chars: int, max_words: int) -> str:
+    normalized = " ".join(question.split())
+    if not normalized:
+        raise ReportChatError("Question cannot be empty")
+    if len(normalized) > max_chars:
+        raise ReportChatError(
+            f"Question is too long. Keep it under {max_chars} characters so the report assistant stays focused."
+        )
+    if len(normalized.split()) > max_words:
+        raise ReportChatError(
+            f"Question is too long. Keep it under {max_words} words so the report assistant can answer efficiently."
+        )
+    return normalized
+
+
+def _question_sections(question: str, has_final_report: bool) -> list[str]:
+    lowered = question.lower()
+    matched: list[str] = []
+    rules = [
+        ("page1_overview", ("name", "major", "background", "profile", "family", "home", "city", "state", "country", "identity")),
+        ("page2_academics", ("academic", "academics", "school", "grades", "gpa", "board", "class 10", "class 12", "marks", "score")),
+        ("page2_tests", ("sat", "act", "ielts", "toefl", "test", "tests", "standardized")),
+        ("page2_activities", ("activity", "activities", "club", "competition", "extracurricular", "co-curricular", "sports", "robotics")),
+        ("page2_leadership", ("leadership", "captain", "president", "head", "leader", "role")),
+        ("page3_essays", ("essay", "essays", "writing", "prompt", "why this major", "statement")),
+        ("page4_focus_areas", ("focus area", "focus areas", "theme", "themes", "signal", "signals", "page 4")),
+        ("page5_question_groups", ("question group", "question groups", "interview question", "interview questions", "questions", "page 5")),
+    ]
+    for section_key, keywords in rules:
+        if section_key in {"page4_focus_areas", "page5_question_groups"} and not has_final_report:
+            continue
+        if any(keyword in lowered for keyword in keywords):
+            matched.append(section_key)
+
+    if matched:
+        return matched
+
+    fallback = ["page1_overview", "page2_academics", "page2_tests", "page2_activities", "page2_leadership", "page3_essays"]
+    if has_final_report and any(keyword in lowered for keyword in ("interview", "final report", "generated report")):
+        fallback.extend(["page4_focus_areas", "page5_question_groups"])
+    return fallback
+
+
+def _build_selected_pages(
+    selected_sections: list[str],
     review_package_pages: dict[str, Any],
     final_report_content: Optional[dict[str, Any]],
 ) -> dict[str, Any]:
+    pages: dict[str, Any] = {}
+    if "page1_overview" in selected_sections:
+        pages["page1"] = review_package_pages.get("page_1_background_profile", {})
+    if any(section in selected_sections for section in ("page2_academics", "page2_tests", "page2_activities", "page2_leadership")):
+        page2 = review_package_pages.get("page_2_academic_and_engagement", {})
+        pages["page2"] = {
+            key: value
+            for key, value in {
+                "academic_records": page2.get("academic_records", []) if "page2_academics" in selected_sections else [],
+                "standardized_tests": page2.get("standardized_tests", []) if "page2_tests" in selected_sections else [],
+                "extracurricular_activities": page2.get("extracurricular_activities", []) if "page2_activities" in selected_sections else [],
+                "leadership_roles": page2.get("leadership_roles", []) if "page2_leadership" in selected_sections else [],
+            }.items()
+            if value
+        }
+    if "page3_essays" in selected_sections:
+        pages["page3"] = review_package_pages.get("page_3_essays", {})
+    if final_report_content and "page4_focus_areas" in selected_sections:
+        pages["page4"] = final_report_content.get("page_4_focus_areas", {})
+    if final_report_content and "page5_question_groups" in selected_sections:
+        pages["page5"] = final_report_content.get("page_5_question_groups", {})
+    return pages
+
+
+def build_report_chat_context(
+    question: str,
+    review_package_pages: dict[str, Any],
+    final_report_content: Optional[dict[str, Any]],
+) -> dict[str, Any]:
+    selected_sections = _question_sections(question, has_final_report=bool(final_report_content))
+    pages = _build_selected_pages(selected_sections, review_package_pages, final_report_content)
     context: dict[str, Any] = {
-        "source_scope": "pages_1_3",
-        "pages": {
-            "page1": review_package_pages.get("page_1_background_profile", {}),
-            "page2": review_package_pages.get("page_2_academic_and_engagement", {}),
-            "page3": review_package_pages.get("page_3_essays", {}),
-        },
+        "source_scope": "pages_1_5" if final_report_content else "pages_1_3",
+        "selected_sections": selected_sections,
+        "pages": pages,
         "section_targets": [
             {
                 "section_key": section_key,
@@ -81,13 +153,9 @@ def build_report_chat_context(
                 "section_label": target["section_label"],
             }
             for section_key, target in REPORT_CHAT_SECTION_TARGETS.items()
+            if section_key in selected_sections
         ],
     }
-
-    if final_report_content:
-        context["source_scope"] = "pages_1_5"
-        context["pages"]["page4"] = final_report_content.get("page_4_focus_areas", {})
-        context["pages"]["page5"] = final_report_content.get("page_5_question_groups", {})
 
     return context
 

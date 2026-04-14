@@ -1,0 +1,148 @@
+{
+  "metrics": {
+    "model": "google/gemini-2.5-flash-lite",
+    "call_1_latency_seconds": 5.51,
+    "call_2_latency_seconds": 2.81
+  },
+  "stage_1_signals_themes": {
+    "signals": [
+      {
+        "signal_id": "SIG-001",
+        "title": "Early Tech Exposure without Clear Self-Directed Projects",
+        "evidence_anchor": "Essay describes early exposure to coding (QBasic, Scratch) in Grade 4 and an attempt to build an arithmetic calculator.",
+        "direct_read": "Applicant encountered foundational coding and attempted a simple project in elementary school.",
+        "depth_opening": "The extent and nature of self-directed technical exploration and building that stemmed from this early exposure, beyond the mentioned calculator attempt.",
+        "why_it_matters": "Clarifies whether the applicant's long-stated interest in technology has translated into consistent, proactive technical creation from a young age.",
+        "referenced_entity_ids": [
+          "ESS-001"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F01",
+          "ESS-001:F02"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-002",
+        "title": "Academics Bridging Foundational and Advanced STEM",
+        "evidence_anchor": "Applicant consistently excels in Mathematics, Computer Science/Applications, and Physics, with strong scores across 10th, 11th, and 12th grade.",
+        "direct_read": "Applicant demonstrates sustained high achievement in core STEM subjects, including advanced computer science and physics.",
+        "depth_opening": "The conceptual understanding and problem-solving approaches employed in these advanced subjects, particularly how they connect the foundational elements mentioned in the essay to more complex algorithms and systems.",
+        "why_it_matters": "Reveals the depth of academic preparation for a demanding computer science and AI program, and how theoretical knowledge translates to practical application understanding.",
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003",
+          "ACA-004",
+          "TEST-001"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-004"
+        ],
+        "supporting_fragment_ids": [],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-003",
+        "title": "Breadth of Experience Beyond Core STEM",
+        "evidence_anchor": "Applicant highlights involvement in Speech and Drama (Trinity College, Grade 7), student council, and non-profit activities (waste collection, beach clean-ups).",
+        "direct_read": "Applicant has engaged in activities that develop communication, leadership, and social responsibility outside of technical pursuits.",
+        "depth_opening": "How these diverse experiences have shaped the applicant's worldview, interpersonal skills, and approach to problem-solving, particularly in contexts requiring collaboration and empathy.",
+        "why_it_matters": "Provides insight into the applicant's character, potential for collaboration, and ability to integrate diverse skills and perspectives in a technical field.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ESS-002",
+          "ACT-002",
+          "ACT-003",
+          "LEAD-005"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-005"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-001:F09",
+          "ESS-002:F01",
+          "ESS-002:F04"
+        ],
+        "theme_id": "THEME-002"
+      },
+      {
+        "signal_id": "SIG-004",
+        "title": "Community Project with Iterative Adaptation",
+        "evidence_anchor": "The SignBee project essay details challenges in sensitizing the local community to sign language and the applicant's multi-pronged approach to overcome lukewarm reception.",
+        "direct_read": "Applicant led an initiative that faced initial resistance and required adaptation in strategy to achieve its goals.",
+        "depth_opening": "The specific decision-making process behind adapting the approach, the internal evaluation of effectiveness of different methods, and how these adaptations informed the applicant's understanding of community engagement and leadership.",
+        "why_it_matters": "Illustrates the applicant's capacity for practical problem-solving, resilience in the face of social challenges, and ability to learn and iterate on strategies for impact.",
+        "referenced_entity_ids": [
+          "ESS-002"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-002:F05",
+          "ESS-002:F06",
+          "ESS-002:F08"
+        ],
+        "theme_id": "THEME-001"
+      }
+    ],
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "Bridging Early Interest and Applied STEM",
+        "unifying_axis": "The applicant's journey from early exposure to technology and mathematics to developing a deep academic foundation and engaging in impactful community initiatives.",
+        "interview_direction": "Exploring the evolution of the applicant's technical interests, the depth of their academic preparation in STEM, and how their diverse experiences inform their approach to innovation and community.",
+        "supporting_signal_ids": [
+          "SIG-001",
+          "SIG-002",
+          "SIG-004"
+        ],
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACA-002",
+          "ACA-003",
+          "ACA-004",
+          "TEST-001",
+          "ESS-002"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "title": "Holistic Development Beyond Technical Skills",
+        "unifying_axis": "The applicant's cultivation of essential soft skills and community-mindedness through a range of extracurricular and leadership activities, complementing their STEM focus.",
+        "interview_direction": "Understanding how experiences in communication, leadership, and social impact have shaped the applicant's character and their potential to contribute to a collaborative and innovative environment.",
+        "supporting_signal_ids": [
+          "SIG-003"
+        ],
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ESS-002",
+          "ACT-002",
+          "ACT-003",
+          "LEAD-005"
+        ]
+      }
+    ]
+  },
+  "stage_2_questions": {
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "Technical Interest and Academic Application",
+        "questions": [
+          "Your essay mentions attempting to build a simple arithmetic calculator after learning QBasic and Scratch in Grade 4. Can you describe what technical challenges you encountered during that attempt and how you approached solving them?",
+          "Looking at your strong academic performance in Computer Science and Mathematics across 10th, 11th, and 12th grades, can you articulate a specific instance where you applied foundational programming concepts, similar to those in QBasic, to solve a more complex problem in your advanced studies?",
+          "The SignBee project essay describes adapting your approach to sensitize the local community to sign language due to lukewarm reception. How did the process of iterating on your strategy with the community, particularly engaging the younger generation and involving your family, inform your understanding of translating technical concepts into impactful, real-world applications?"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "group_title": "Integrated Development and Community Impact",
+        "questions": [
+          "You've participated in Trinity College London Speech and Drama, student council, and led community impact initiatives. How has the experience of learning and applying formal communication skills, like those from Trinity College, influenced your approach when leading discussions or motivating peers in technical projects or community endeavors like SignBee?",
+          "Your essay highlights leadership challenges in the SignBee project, noting the need to motivate colleagues and adapt strategies. Can you describe a specific instance from your time as a School Prefect or during other leadership roles where you had to balance diverse perspectives to achieve a common goal, and what this taught you about collaborative problem-solving?",
+          "Considering your engagement in diverse activities from Speech and Drama to non-profit work, how do you see these experiences shaping your approach to innovation and problem-solving within a technical or engineering context, particularly when encountering challenges that require empathy and community understanding?"
+        ]
+      }
+    ]
+  }
+}

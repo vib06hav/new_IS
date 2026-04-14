@@ -231,6 +231,106 @@ def _append_text_violations(
     return found_violation
 
 
+def sanitise_llm_output(
+    raw_output: dict,
+    valid_fragment_ids: set,
+    valid_entity_ids: set,
+) -> dict:
+    """
+    Pre-validation auto-repair layer.
+    Silently fixes all recoverable LLM output violations before the strict
+    guard runs. Repairs are logged at INFO level.
+
+    Handles:
+    - HC-1 / too_many_fragment_ids   → truncates supporting_fragment_ids to MAX
+    - HC-2 / invented_fragment_id    → strips unknown fragment IDs
+    - HC-3 / invented_entity_id      → strips unknown entity IDs
+    - HC-4 / unknown_supporting_signal_id → strips ghost SIG-IDs from themes
+    - HC-5 / missing_signal_coverage → assigns orphaned signals to smallest theme
+    """
+    repairs = []
+
+    signals = raw_output.get("signals", [])
+    themes = raw_output.get("themes", [])
+
+    # Build the set of SIG-IDs actually emitted in this response
+    emitted_signal_ids = {s.get("signal_id") for s in signals if isinstance(s, dict) and s.get("signal_id")}
+
+    # --- Repair signals ---
+    for idx, sig in enumerate(signals):
+        if not isinstance(sig, dict):
+            continue
+
+        field_prefix = f"signals[{idx}]"
+
+        # HC-3: Strip invented entity IDs
+        raw_entity_ids = sig.get("referenced_entity_ids", [])
+        if isinstance(raw_entity_ids, list):
+            clean_entity_ids = [eid for eid in raw_entity_ids if eid in valid_entity_ids]
+            removed = set(raw_entity_ids) - set(clean_entity_ids)
+            if removed:
+                logger.info(f"[SANITISER] {field_prefix}.referenced_entity_ids: stripped invented entity IDs {removed}")
+                repairs.append({"field": f"{field_prefix}.referenced_entity_ids", "action": "strip_invented_entity_ids", "removed": list(removed)})
+                sig["referenced_entity_ids"] = clean_entity_ids
+
+        # HC-2: Strip invented fragment IDs
+        raw_fragment_ids = sig.get("supporting_fragment_ids", [])
+        if isinstance(raw_fragment_ids, list) and valid_fragment_ids:
+            clean_fragment_ids = [fid for fid in raw_fragment_ids if fid in valid_fragment_ids]
+            removed = set(raw_fragment_ids) - set(clean_fragment_ids)
+            if removed:
+                logger.info(f"[SANITISER] {field_prefix}.supporting_fragment_ids: stripped invented fragment IDs {removed}")
+                repairs.append({"field": f"{field_prefix}.supporting_fragment_ids", "action": "strip_invented_fragment_ids", "removed": list(removed)})
+                raw_fragment_ids = clean_fragment_ids
+                sig["supporting_fragment_ids"] = raw_fragment_ids
+
+            # HC-1: Truncate fragment overflow after stripping
+            if len(raw_fragment_ids) > MAX_FRAGMENT_IDS_PER_SIGNAL:
+                truncated = raw_fragment_ids[MAX_FRAGMENT_IDS_PER_SIGNAL:]
+                sig["supporting_fragment_ids"] = raw_fragment_ids[:MAX_FRAGMENT_IDS_PER_SIGNAL]
+                logger.info(f"[SANITISER] {field_prefix}.supporting_fragment_ids: truncated {truncated} (limit={MAX_FRAGMENT_IDS_PER_SIGNAL})")
+                repairs.append({"field": f"{field_prefix}.supporting_fragment_ids", "action": "truncate_fragment_overflow", "removed": truncated})
+
+    # --- Repair themes: HC-4 strip ghost signal IDs ---
+    for idx, theme in enumerate(themes):
+        if not isinstance(theme, dict):
+            continue
+        raw_sig_ids = theme.get("supporting_signal_ids", [])
+        if isinstance(raw_sig_ids, list):
+            clean_sig_ids = [sid for sid in raw_sig_ids if sid in emitted_signal_ids]
+            removed = set(raw_sig_ids) - set(clean_sig_ids)
+            if removed:
+                logger.info(f"[SANITISER] themes[{idx}].supporting_signal_ids: stripped ghost signal IDs {removed}")
+                repairs.append({"field": f"themes[{idx}].supporting_signal_ids", "action": "strip_ghost_signal_ids", "removed": list(removed)})
+                theme["supporting_signal_ids"] = clean_sig_ids
+
+    # --- Repair orphaned signals: HC-5 assign to smallest theme ---
+    all_theme_signal_ids = set()
+    for theme in themes:
+        if isinstance(theme, dict):
+            for sid in theme.get("supporting_signal_ids", []):
+                all_theme_signal_ids.add(sid)
+
+    orphaned_sigs = [s["signal_id"] for s in signals if isinstance(s, dict) and s.get("signal_id") and s["signal_id"] not in all_theme_signal_ids]
+    if orphaned_sigs and themes:
+        for orphan_id in orphaned_sigs:
+            # Pick the theme with the fewest signals currently
+            valid_themes = [t for t in themes if isinstance(t, dict) and isinstance(t.get("supporting_signal_ids"), list)]
+            if not valid_themes:
+                break
+            target_theme = min(valid_themes, key=lambda t: len(t.get("supporting_signal_ids", [])))
+            target_theme["supporting_signal_ids"].append(orphan_id)
+            logger.info(f"[SANITISER] Assigned orphaned signal {orphan_id} to theme {target_theme.get('theme_id')}")
+            repairs.append({"field": "themes.supporting_signal_ids", "action": "assign_orphaned_signal", "signal_id": orphan_id, "assigned_to": target_theme.get("theme_id")})
+
+    if repairs:
+        logger.info(f"[SANITISER] Auto-repair complete. {len(repairs)} repair(s) applied.")
+    else:
+        logger.info("[SANITISER] No repairs needed.")
+
+    return raw_output
+
+
 def validate_signals(
     raw_text: str,
     entity_id_map: List[dict],
@@ -270,19 +370,19 @@ def validate_signals(
 
     signals = normalized_output.get("signals")
     themes = normalized_output.get("themes")
-    if not isinstance(signals, list):
+    if not isinstance(signals, list) or len(signals) == 0:
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
             "field": "signals",
             "type": "structure_error",
-            "context": "'signals' must be an array.",
+            "context": "'signals' array is missing or empty. At least one signal must be generated.",
         })
-    if not isinstance(themes, list):
+    if not isinstance(themes, list) or len(themes) == 0:
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
             "field": "themes",
             "type": "structure_error",
-            "context": "'themes' must be an array.",
+            "context": "'themes' array is missing or empty. At least one theme must be generated.",
         })
     if violations_log:
         return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
@@ -657,12 +757,12 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
         return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
 
     question_groups = normalized_output.get("question_groups")
-    if not isinstance(question_groups, list):
+    if not isinstance(question_groups, list) or len(question_groups) == 0:
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
             "field": "question_groups",
             "type": "structure_error",
-            "context": "Missing or invalid 'question_groups' array.",
+            "context": "Missing or empty 'question_groups' array. At least one group must be generated.",
         })
         return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
 

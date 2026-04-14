@@ -196,6 +196,16 @@ class FinalReportMutationResponse(BaseModel):
     final_report: FinalReportSummary
 
 
+class CapacityStatus(BaseModel):
+    active: int
+    limit: int
+
+
+class LLMCapacityStatusResponse(BaseModel):
+    generation: CapacityStatus
+    report_chat: CapacityStatus
+
+
 ReportChatTargetTab = Literal["page1", "page2", "page3", "page4", "page5"]
 ReportChatSectionKey = Literal[
     "page1_overview",

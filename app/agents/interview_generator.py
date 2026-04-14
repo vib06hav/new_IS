@@ -97,7 +97,7 @@ satisfied simultaneously in every question you write.
 
 ---
 
-HOW TO BUILD QUESTIONS:
+HOW TO BUILD QUESTIONS - apply these steps silently in your head. Do not write any of this into your output:
 
 For each provided theme, produce exactly one question_group using the same theme_id.
 Each question_group must contain 3 to 4 questions.
@@ -210,6 +210,12 @@ created something, and what drove you to do it?"
 
 PROHIBITED TERMS: """ + ", ".join(prohibited_terms) + """
 
+CRITICAL: Do not include any key not defined in the OUTPUT SCHEMA below.
+Your reasoning, planning, or question-testing process must remain entirely internal.
+Do not create an "analysis", "reasoning", "thinking", or any other extra key.
+Tokens spent on reasoning text in the output are wasted tokens that reduce the
+number of question groups that can be generated.
+
 ---
 
 OUTPUT SCHEMA - return exactly this structure, nothing else:
@@ -244,22 +250,7 @@ THEME SIGNAL-EVIDENCE BUNDLE:
 ENTITY REFERENCE MAP:
 {json.dumps(entity_id_map, indent=2)}
 
-Before writing any question:
-1. Read each theme's interview_direction. This is the direction every question in
-   that group must serve. Do not write a single question until you can state in
-   one sentence what you are trying to understand for each theme.
-2. Read each signal's depth_opening and evidence_anchor. Identify the specific
-   referent each question must contain.
-3. Check that your group covers at least three of the four angles: grounding,
-   reasoning, connection, depth.
-
-Before returning, verify each question passes all four tests:
-- Contains a specific referent from this application (not a general category)
-- Cannot be answered well without engaging that referent
-- Clearly serves the theme's interview_direction
-- Probes reasoning or grounding, not elaboration
-
-Return exactly valid JSON matching the output schema.
+Apply your internal question-building framework silently. Return only valid JSON matching the output schema.
 Produce exactly one question_group for every theme_id in the bundle, and no others.
 """
 

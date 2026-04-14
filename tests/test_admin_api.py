@@ -1,4 +1,5 @@
 import uuid
+from contextlib import ExitStack
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -9,9 +10,11 @@ from sqlalchemy.pool import StaticPool
 
 from app.auth.security import create_access_token
 from app.database import Base, get_db
+from app.llm.control import generation_job_limiter
 from app.main import app
 from app.models.application import Application
 from app.models.assignment import Assignment
+from app.models.canonical_record import CanonicalRecord
 from app.models.user import User
 
 
@@ -253,3 +256,70 @@ def test_application_insert_populates_last_activity_at_by_default():
     assert application.last_activity_at is not None
 
     db.close()
+
+
+def test_admin_reports_capacity_endpoint_returns_generation_limits():
+    db = TestingSessionLocal()
+    db.query(Assignment).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-capacity@example.com", password_hash="x", role="admin")
+    db.add(admin)
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    response = client.get("/llm-capacity", headers=headers)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["generation"]["limit"] >= 1
+    assert body["generation"]["active"] >= 0
+    assert body["report_chat"]["limit"] >= 1
+
+
+def test_generate_report_rejects_when_generation_capacity_is_full():
+    db = TestingSessionLocal()
+    db.query(Assignment).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-full@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-ADM-FULL",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+    )
+    db.add_all([admin, application, canonical])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    with ExitStack() as stack:
+        limit = generation_job_limiter.snapshot()["limit"]
+        for _ in range(limit):
+            stack.enter_context(generation_job_limiter.acquire())
+        response = client.post(f"/applications/{application_id}/generate-report", headers=headers)
+
+    assert response.status_code == 429
+    assert "temporarily at capacity" in response.json()["detail"]

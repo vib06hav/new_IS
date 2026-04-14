@@ -1,0 +1,210 @@
+{
+  "metrics": {
+    "model": "openai/gpt-4.1-mini",
+    "status": "PASSED",
+    "call_1_latency_seconds": 54.02,
+    "call_2_latency_seconds": 8.46,
+    "signal_count": 5,
+    "theme_count": 3,
+    "question_group_count": 3,
+    "call_1_prompt_tokens": 16864,
+    "call_1_completion_tokens": 2856,
+    "call_1_cost_inr": 1.0712,
+    "call_2_prompt_tokens": 6944,
+    "call_2_completion_tokens": 498,
+    "call_2_cost_inr": 0.3957,
+    "total_cost_inr": 1.4669
+  },
+  "call_1_signals_themes": {
+    "signals": [
+      {
+        "signal_id": "SIG-001",
+        "title": "Sustained Excellence and Focus in Computer Science",
+        "evidence_anchor": "Consistently top scores in Computer Science from 10th to predicted 12th grade, with scores rising from 100% in 10th to 99% predicted in 12th and highest subject percentile in JEE Mains.",
+        "direct_read": "The applicant has demonstrated a strong and consistent academic focus on Computer Science, outperforming other subjects and maintaining top percentile ranks in competitive exams.",
+        "depth_opening": "How the applicant has developed and deepened their technical skills and understanding in Computer Science beyond academics, including the nature of their internships and self-driven learning.",
+        "why_it_matters": "Understanding this would clarify whether the applicant's academic excellence translates into practical, applied expertise and sustained passion in their chosen field.",
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003",
+          "ACA-004",
+          "TEST-001",
+          "ESS-001",
+          "ACT-004"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-003",
+          "DET-004",
+          "DET-006"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-001:F02",
+          "ESS-001:F05",
+          "ESS-001:F07"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-002",
+        "title": "Academic Performance Dip and Board Transition Impact",
+        "evidence_anchor": "Overall score dropped from 99% in 10th grade (ICSE) to 90% in 11th grade (ISC) coinciding with a board change.",
+        "direct_read": "The applicant experienced a notable decline in overall academic performance during the transition from 10th to 11th grade alongside a change in examination board.",
+        "depth_opening": "How the applicant adapted to the new academic environment and whether this dip reflects adjustment challenges, increased rigor, or shifting priorities.",
+        "why_it_matters": "This insight would help contextualize the applicant\u2019s academic trajectory and resilience, influencing how their academic record is interpreted.",
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-001",
+          "DET-002"
+        ],
+        "supporting_fragment_ids": [],
+        "theme_id": "THEME-002"
+      },
+      {
+        "signal_id": "SIG-003",
+        "title": "Integration of Technical and Leadership Development",
+        "evidence_anchor": "Participation in student council, school prefect role, inter-school events, and leadership in social impact projects like SignBee.",
+        "direct_read": "The applicant has actively pursued leadership roles and personality development alongside technical interests, engaging in both school governance and community service.",
+        "depth_opening": "How the applicant balances and integrates leadership and technical growth, and how these experiences shape their approach to teamwork, problem-solving, and impact.",
+        "why_it_matters": "Understanding this balance would reveal the applicant\u2019s potential for holistic development and leadership in technical environments.",
+        "referenced_entity_ids": [
+          "LEAD-005",
+          "ACT-003",
+          "ESS-001",
+          "ESS-002"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-005"
+        ],
+        "supporting_fragment_ids": [
+          "ESS-001:F08",
+          "ESS-002:F05",
+          "ESS-002:F08"
+        ],
+        "theme_id": "THEME-003"
+      },
+      {
+        "signal_id": "SIG-004",
+        "title": "Social Impact Through Innovative Community Engagement",
+        "evidence_anchor": "Led the SignBee project involving learning and teaching sign language, overcoming community resistance, and organizing workshops to promote inclusivity.",
+        "direct_read": "The applicant demonstrated initiative, perseverance, and creativity in driving a social project that required educating and motivating a reluctant community.",
+        "depth_opening": "The applicant\u2019s strategies for overcoming resistance, motivating peers, and scaling impact, and how this experience influenced their leadership philosophy and social awareness.",
+        "why_it_matters": "This would deepen understanding of the applicant\u2019s real-world leadership skills and commitment to social responsibility beyond academic and technical domains.",
+        "referenced_entity_ids": [
+          "ESS-002",
+          "ACT-003"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-002:F04",
+          "ESS-002:F05",
+          "ESS-002:F06"
+        ],
+        "theme_id": "THEME-003"
+      },
+      {
+        "signal_id": "SIG-005",
+        "title": "Early and Diverse Exposure to Technology and STEM",
+        "evidence_anchor": "Started coding in Grade 4 with QBasic and Scratch, developed a calculator, inspired by chess and algorithmic thinking, and participated in international STEM trips and competitions.",
+        "direct_read": "The applicant\u2019s interest in technology and STEM has been nurtured from an early age through diverse experiences including coding, chess, competitions, and global exposure.",
+        "depth_opening": "How these early experiences shaped the applicant\u2019s motivation, problem-solving approach, and long-term vision for a career in technology.",
+        "why_it_matters": "Understanding this foundation would clarify the depth and authenticity of the applicant\u2019s passion and how it informs their academic and career choices.",
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-001",
+          "ACT-004"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F01",
+          "ESS-001:F02",
+          "ESS-001:F04"
+        ],
+        "theme_id": "THEME-001"
+      }
+    ],
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "Depth and Breadth of Technical Mastery and Passion",
+        "unifying_axis": "This theme captures how the applicant\u2019s consistent academic excellence, early STEM exposure, and practical internships collectively shape their technical identity and readiness.",
+        "interview_direction": "Explore how the applicant\u2019s academic achievements in Computer Science connect with their hands-on experiences and evolving technical skills to form a coherent mastery and passion.",
+        "supporting_signal_ids": [
+          "SIG-001",
+          "SIG-005"
+        ],
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003",
+          "ACA-004",
+          "TEST-001",
+          "ESS-001",
+          "ACT-004",
+          "ACT-001"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "title": "Navigating Academic Transitions and Performance Dynamics",
+        "unifying_axis": "This theme focuses on the applicant\u2019s academic trajectory, particularly the performance dip and board change between 10th and 11th grade, and how they adapted to these challenges.",
+        "interview_direction": "Understand the factors behind the academic shift, the applicant\u2019s response to new academic demands, and what this reveals about their resilience and learning strategies.",
+        "supporting_signal_ids": [
+          "SIG-002"
+        ],
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003"
+        ]
+      },
+      {
+        "theme_id": "THEME-003",
+        "title": "Leadership Growth Through Social Impact and School Roles",
+        "unifying_axis": "This theme highlights the applicant\u2019s leadership development as expressed through formal school roles and meaningful community projects that required empathy, innovation, and perseverance.",
+        "interview_direction": "Delve into how the applicant\u2019s leadership experiences in both school governance and social initiatives inform their approach to leading teams and driving impact.",
+        "supporting_signal_ids": [
+          "SIG-003",
+          "SIG-004"
+        ],
+        "referenced_entity_ids": [
+          "LEAD-005",
+          "ACT-003",
+          "ESS-001",
+          "ESS-002"
+        ]
+      }
+    ]
+  },
+  "call_2_question_groups": {
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "Connecting Academic Excellence with Practical Technical Engagement",
+        "questions": [
+          "Your essay mentions multiple internships that helped you understand the Indian IT landscape; how did these internships deepen your technical skills beyond what you achieved in your top-scoring Computer Science classes?",
+          "Given your early coding experience starting in Grade 4 with QBasic and Scratch and your participation in chess at the district level, how have these early activities influenced your problem-solving approach and motivation as reflected in your later academic and competitive achievements like JEE Mains and national math competitions?",
+          "You have maintained consistently high Computer Science scores from 10th through predicted 12th grade; how have you actively developed your technical mastery outside of formal academics, and what role did self-driven learning or projects play in this progression?"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "group_title": "Adapting to Academic Transitions and Performance Shifts",
+        "questions": [
+          "Your overall score dropped from 99% in 10th grade (ICSE) to 90% in 11th grade (ISC) during a board transition; what specific challenges did you face adapting to the new academic environment and curriculum demands?",
+          "How did you adjust your study strategies or priorities in response to the increased rigor or different expectations you encountered after moving from ICSE to ISC, and what did you learn from that experience?",
+          "To what extent did this academic shift influence your focus on Computer Science and related subjects, and how did you maintain or regain your performance in those areas despite the overall dip?"
+        ]
+      },
+      {
+        "theme_id": "THEME-003",
+        "group_title": "Integrating Leadership and Social Impact with Technical Growth",
+        "questions": [
+          "Balancing your role as a school prefect and participation in student council with your technical pursuits, how do you integrate leadership responsibilities with your academic and technical development?",
+          "In leading the SignBee project, you faced community resistance and had to iterate your approach; what strategies did you use to motivate peers and overcome reluctance, and how did this shape your understanding of effective leadership?",
+          "How have your experiences organizing school events and social impact initiatives influenced your approach to teamwork and problem-solving in technical or academic settings?"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "status_code": 201,
+  "headers": {
+    "date": "Mon, 13 Apr 2026 18:55:58 GMT",
+    "server": "uvicorn",
+    "content-length": "169",
+    "content-type": "application/json",
+    "content-security-policy": "default-src 'self'; img-src 'self' data: blob: https://fastapi.tiangolo.com; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval'; connect-src 'self' http: https: ws: wss:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "id": "08139f94-6c85-40e8-b455-e4b185ce1a33",
+    "display_id": "Test_Run_Dummy_App_(1)_v8_filled_1776106559",
+    "status": "PROCESSING",
+    "created_at": "2026-04-13T18:55:59.293898Z"
+  }
+}

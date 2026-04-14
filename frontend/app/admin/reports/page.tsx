@@ -12,13 +12,14 @@ import {
   deleteApplication,
   fetchApplications,
   fetchInterviewers,
+  fetchLlmCapacity,
   generateReport,
   hideApplication,
   reassignApplication,
   unhideApplication,
   updateApplicationDisplayId,
 } from "@/lib/api";
-import type { ApplicationListItem, InterviewerListItem } from "@/lib/types";
+import type { ApplicationListItem, InterviewerListItem, LLMCapacityStatusResponse } from "@/lib/types";
 import { Loader } from "@/components/ui/Loader";
 import { usePolling } from "@/lib/usePolling";
 import {
@@ -61,6 +62,7 @@ function AdminReportsContent() {
   const [deletingAppId, setDeletingAppId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [llmCapacity, setLlmCapacity] = useState<LLMCapacityStatusResponse | null>(null);
   const [selectedInterviewerByApp, setSelectedInterviewerByApp] = useState<Record<string, string>>({});
   const [editingDisplayIdAppId, setEditingDisplayIdAppId] = useState<string | null>(null);
   const [pendingDisplayIdByApp, setPendingDisplayIdByApp] = useState<Record<string, string>>({});
@@ -88,10 +90,11 @@ function AdminReportsContent() {
 
   async function loadData() {
     try {
-      const [visibleApplications, hiddenApplications, interviewerList] = await Promise.all([
+      const [visibleApplications, hiddenApplications, interviewerList, capacity] = await Promise.all([
         fetchApplications(),
         fetchApplications("HIDDEN"),
         fetchInterviewers(),
+        fetchLlmCapacity(),
       ]);
 
       const applications = [...visibleApplications, ...hiddenApplications]
@@ -102,6 +105,7 @@ function AdminReportsContent() {
         applications,
       );
       setInterviewers(interviewerList);
+      setLlmCapacity(capacity);
       setError(null);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Failed to load reports.");
@@ -399,6 +403,18 @@ function AdminReportsContent() {
               </div>
             </div>
 
+            {llmCapacity ? (
+              <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Generation capacity</p>
+                <p className="mt-2 text-sm font-semibold text-slate-800">
+                  {llmCapacity.generation.active}/{llmCapacity.generation.limit} in use
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  New report generation is blocked while all slots are occupied.
+                </p>
+              </div>
+            ) : null}
+
             {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
             {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
 
@@ -430,6 +446,9 @@ function AdminReportsContent() {
                 pendingDisplayId={pendingDisplayIdByApp[item.id] ?? ""}
                 isBusy={busyAppId === item.id}
                 isGenerating={generatingAppId === item.id}
+                generationCapacityFull={
+                  (llmCapacity?.generation.active ?? 0) >= (llmCapacity?.generation.limit ?? Number.MAX_SAFE_INTEGER)
+                }
                 isHiddenBusy={hiddenBusyAppId === item.id}
                 isDeleting={deletingAppId === item.id}
                 isEditingDisplayId={editingDisplayIdAppId === item.id}

@@ -1,0 +1,41 @@
+INFO  [app.config] Configuration loaded. APP_ENV=development, LOG_LEVEL=DEBUG
+INFO  [app.config] DATABASE_URL: ***[REDACTED]***
+INFO  [app.config] JWT_SECRET: ***[REDACTED]***
+INFO  [app.config] JWT_ALGORITHM: HS256
+INFO  [app.config] LLM_PROVIDER: aicredits
+INFO  [app.config] LLM_PAYLOAD_MODE: full
+INFO  [app.config] PARSER_ENGINE_VERSION: v2
+INFO  [app.config] STORAGE_BACKEND: minio
+INFO  [app.config] LLM_ENDPOINT: https://api.aicredits.in/v1/chat/completions
+INFO  [app.config] LLM_MODEL_NAME: openai/gpt-oss-120b
+INFO  [app.config] AICREDITS_BASE_URL: https://api.aicredits.in/v1
+INFO  [app.config] AICREDITS_GENERATION_MODEL_PRIMARY: openai/gpt-oss-120b
+INFO  [app.config] AICREDITS_GENERATION_MODEL_FALLBACK: openai/gpt-oss-120b
+INFO  [app.config] AICREDITS_REPORT_CHAT_MODEL_PRIMARY: openai/gpt-oss-120b
+INFO  [app.config] AICREDITS_REPORT_CHAT_MODEL_FALLBACK: openai/gpt-oss-120b
+INFO  [app.config] LLM_API_KEY: ***[REDACTED]***
+INFO  [app.config] AICREDITS_GENERATION_API_KEY: ***[REDACTED]***
+INFO  [app.config] AICREDITS_REPORT_CHAT_API_KEY: ***[REDACTED]***
+DEBUG [git.cmd] Popen(['git', 'version'], cwd=/app, stdin=None, shell=False, universal_newlines=False)
+DEBUG [httpcore.connection] connect_tcp.started host='api.aicredits.in' port=443 local_address=None timeout=300.0 socket_options=None
+DEBUG [httpcore.connection] connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7fb4ba8e2290>
+DEBUG [httpcore.connection] start_tls.started ssl_context=<ssl.SSLContext object at 0x7fb4b7e9c4d0> server_hostname='api.aicredits.in' timeout=300.0
+DEBUG [httpcore.connection] start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7fb4b7e8e6d0>
+DEBUG [httpcore.http11] send_request_headers.started request=<Request [b'POST']>
+DEBUG [httpcore.http11] send_request_headers.complete
+DEBUG [httpcore.http11] send_request_body.started request=<Request [b'POST']>
+DEBUG [httpcore.http11] send_request_body.complete
+DEBUG [httpcore.http11] receive_response_headers.started request=<Request [b'POST']>
+DEBUG [httpcore.http11] receive_response_headers.complete return_value=(b'HTTP/1.1', 502, b'Bad Gateway', [(b'Date', b'Mon, 13 Apr 2026 17:50:04 GMT'), (b'Content-Type', b'text/html; charset=UTF-8'), (b'Content-Length', b'6414'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0'), (b'Expires', b'Thu, 01 Jan 1970 00:00:01 GMT'), (b'Referrer-Policy', b'same-origin'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9ebc4ca9fc34658b-MRS'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO  [httpx] HTTP Request: POST https://api.aicredits.in/v1/chat/completions "HTTP/1.1 502 Bad Gateway"
+DEBUG [httpcore.http11] receive_response_body.started request=<Request [b'POST']>
+DEBUG [httpcore.http11] receive_response_body.complete
+DEBUG [httpcore.http11] response_closed.started
+DEBUG [httpcore.http11] response_closed.complete
+DEBUG [httpcore.connection] close.started
+DEBUG [httpcore.connection] close.complete
+Sending direct request to LLM (Call 1)...
+Status Code: 502
+
+--- RAW JSON RESPONSE ---
+Error: Expecting value: line 1 column 1 (char 0)

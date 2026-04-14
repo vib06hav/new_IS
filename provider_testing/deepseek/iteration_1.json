@@ -1,0 +1,109 @@
+{
+  "signals": [
+    {
+      "signal_id": "SIG-001",
+      "title": "Tech Aspiration vs Demonstrated Technical Practice",
+      "evidence_anchor": "Essay emphasizes solving real-world problems through tech innovation (ESS-001:F01/F02) while activity profile shows Olympiads participation but no self-directed technical projects.",
+      "direct_read": "Strong conceptual interest in technology's societal impact is articulated, but activity profile emphasizes academic competitions and music rather than hands-on engineering/CS work.",
+      "depth_opening": "Whether this applicant's technical orientation is primarily theoretical or has been tested/developed through applied problem-solving outside classroom contexts.",
+      "why_it_matters": "Clarifies how their stated passion for 'designing solutions' connects to lived experience beyond academic achievement.",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACT-003",
+        "ACT-004"
+      ],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": [
+        "ESS-001:F01",
+        "ESS-001:F02",
+        "ESS-001:F04"
+      ]
+    },
+    {
+      "signal_id": "SIG-002",
+      "title": "Empathy-Driven Leadership Identity",
+      "evidence_anchor": "Community dog welfare project (ESS-002) frames leadership through listening and persuasion, contrasting with formal House Captain role.",
+      "direct_read": "Leadership essay emphasizes grassroots community engagement and emotional intelligence over positional authority.",
+      "depth_opening": "How this applicant reconciles two distinct leadership models - institutional (House Captain) and community-organizing (stray animal project) - in their self-concept.",
+      "why_it_matters": "Reveals whether their leadership philosophy is consciously integrated or contextually adaptive.",
+      "referenced_entity_ids": [
+        "ESS-002",
+        "LEAD-005"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-002"
+      ],
+      "supporting_fragment_ids": [
+        "ESS-002:F02",
+        "ESS-002:F03",
+        "ESS-002:F05"
+      ]
+    },
+    {
+      "signal_id": "SIG-003",
+      "title": "Interdisciplinary Claims Without Visible Cross-Training",
+      "evidence_anchor": "Essay states interest in blending tech with design/data/human behavior (ESS-001:F04), but activities show deep specialization in STEM/music.",
+      "direct_read": "Claims interdisciplinary orientation while demonstrating sustained commitment to domain-specific pursuits (7 years Olympiads, 5 years piano).",
+      "depth_opening": "How concrete experiences of synthesis across domains have shaped their understanding of interdisciplinary work versus aspirational interest.",
+      "why_it_matters": "Distinguishes between conceptual appreciation of interdisciplinarity and demonstrated capacity to integrate disparate fields.",
+      "referenced_entity_ids": [
+        "ESS-001",
+        "ACT-001",
+        "ACT-003"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-003",
+        "DET-004"
+      ],
+      "supporting_fragment_ids": [
+        "ESS-001:F04"
+      ]
+    },
+    {
+      "signal_id": "SIG-004",
+      "title": "Academic Transition Without Narrative",
+      "evidence_anchor": "Board change from CBSE to Telangana State between 10th-11th grades with maintained high performance (ACA-002/ACA-003).",
+      "direct_read": "Successfully navigated significant curriculum shift without apparent academic disruption.",
+      "depth_opening": "How this transition influenced their learning strategies or self-concept beyond numerical outcomes.",
+      "why_it_matters": "Reveals adaptability skills and meta-cognitive awareness not captured by grades alone.",
+      "referenced_entity_ids": [
+        "ACA-002",
+        "ACA-003"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-001"
+      ],
+      "supporting_fragment_ids": []
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "Integration of Conceptual and Applied Tech Identity",
+      "unifying_axis": "The relationship between this applicant's strongly articulated technology philosophy and their demonstrated modes of engagement with technical challenges.",
+      "interview_direction": "Explore how classroom achievements, extracurricular activities, and personal projects have collectively shaped their understanding of technology's role in problem-solving.",
+      "supporting_signal_ids": [
+        "SIG-001",
+        "SIG-003"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "Leadership as Contextual Adaptation",
+      "unifying_axis": "The applicant's ability to flex leadership approaches between formal institutional roles and grassroots community initiatives.",
+      "interview_direction": "Understand how different leadership experiences inform their approach to motivating others and driving change in varied environments.",
+      "supporting_signal_ids": [
+        "SIG-002"
+      ]
+    },
+    {
+      "theme_id": "THEME-003",
+      "title": "Resilience Through Educational Transitions",
+      "unifying_axis": "The interplay between academic adaptability and personal growth during structural changes in learning environment.",
+      "interview_direction": "Surface the strategies and self-awareness developed through navigating curriculum shifts while maintaining excellence.",
+      "supporting_signal_ids": [
+        "SIG-004"
+      ]
+    }
+  ]
+}

@@ -21,10 +21,13 @@ from app.api.schemas import (
     AssignmentListItem,
     AssignmentUpsertRequest,
     FinalReportMutationResponse,
+    LLMCapacityStatusResponse,
 )
 from app.auth.dependencies import require_admin
 from app.database import get_db
 from app.final_report_exports import sync_final_report_export
+from app.llm.client import get_llm_capacity_snapshot
+from app.llm.control import CapacityFullError, generation_job_limiter
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
@@ -36,6 +39,18 @@ from app.storage import get_storage_service
 
 
 router = APIRouter(tags=["Admin"])
+
+
+@router.get("/llm-capacity", response_model=LLMCapacityStatusResponse)
+def get_llm_capacity(
+    current_user: User = Depends(require_admin),
+):
+    llm_snapshot = get_llm_capacity_snapshot()
+    generation_snapshot = generation_job_limiter.snapshot()
+    return LLMCapacityStatusResponse(
+        generation=generation_snapshot,
+        report_chat=llm_snapshot["report_chat"],
+    )
 
 
 def _get_interviewer_or_400(db: Session, interviewer_id: UUID) -> User:
@@ -164,36 +179,40 @@ def generate_final_report(
         raise HTTPException(status_code=409, detail="Final report already exists")
 
     try:
-        synthesis_result = run_synthesis_pipeline(
-            str(application_id),
-            canonical_record.canonical_data,
-            db=db,
-            persisted_review=canonical_record,
-        )
-        ros_output = synthesis_result.get("ros_v1")
-        if not isinstance(ros_output, dict):
-            raise HTTPException(status_code=502, detail="Final report generation failed before a report was produced.")
+        with generation_job_limiter.acquire():
+            synthesis_result = run_synthesis_pipeline(
+                str(application_id),
+                canonical_record.canonical_data,
+                db=db,
+                persisted_review=canonical_record,
+            )
+            ros_output = synthesis_result.get("ros_v1")
+            if not isinstance(ros_output, dict):
+                raise HTTPException(status_code=502, detail="Final report generation failed before a report was produced.")
 
-        report_version = str((ros_output.get("report_metadata") or {}).get("report_version") or "ROS_v1")
-        final_report = FinalReport(
-            application_id=application_id,
-            content=ros_output,
-            generated_by=current_user.id,
-            report_version=report_version,
-        )
-        db.add(final_report)
-        db.flush()
-        sync_final_report_export(storage=get_storage_service(), final_report=final_report)
-        final_report.export_updated_at = datetime.utcnow()
-        application.status = "READY"
-        application.last_activity_at = datetime.utcnow()
-        db.commit()
-        db.refresh(final_report)
-        return FinalReportMutationResponse(
-            application_id=application_id,
-            status=application.status,
-            final_report=build_final_report_summary(final_report),
-        )
+            report_version = str((ros_output.get("report_metadata") or {}).get("report_version") or "ROS_v1")
+            final_report = FinalReport(
+                application_id=application_id,
+                content=ros_output,
+                generated_by=current_user.id,
+                report_version=report_version,
+            )
+            db.add(final_report)
+            db.flush()
+            sync_final_report_export(storage=get_storage_service(), final_report=final_report)
+            final_report.export_updated_at = datetime.utcnow()
+            application.status = "READY"
+            application.last_activity_at = datetime.utcnow()
+            db.commit()
+            db.refresh(final_report)
+            return FinalReportMutationResponse(
+                application_id=application_id,
+                status=application.status,
+                final_report=build_final_report_summary(final_report),
+            )
+    except CapacityFullError as exc:
+        db.rollback()
+        raise HTTPException(status_code=429, detail=str(exc)) from exc
     except HTTPException:
         db.rollback()
         application.status = "FAILED"

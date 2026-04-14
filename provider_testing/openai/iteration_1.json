@@ -1,0 +1,91 @@
+{
+  "signals": [
+    {
+      "signal_id": "SIG-001",
+      "title": "Interdisciplinary Approach to Technology",
+      "evidence_anchor": "The applicant expresses a keen interest in blending technology with design, data, and human behavior.",
+      "direct_read": "The applicant values interdisciplinary learning as a core aspect of their educational aspirations.",
+      "depth_opening": "How this interdisciplinary interest has been applied in practice or projects, and what specific experiences have shaped this perspective.",
+      "why_it_matters": "Understanding this would clarify how the applicant's approach to technology is informed by diverse fields and how that might influence their contributions in a collaborative environment.",
+      "referenced_entity_ids": [
+        "ESS-001"
+      ],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": [
+        "ESS-001:F04"
+      ]
+    },
+    {
+      "signal_id": "SIG-002",
+      "title": "Empathy-Driven Leadership Experience",
+      "evidence_anchor": "The applicant initiated a project to support stray dogs, demonstrating leadership through empathy and community engagement.",
+      "direct_read": "The applicant has practical leadership experience that emphasizes listening and understanding community needs.",
+      "depth_opening": "The specific strategies the applicant used to engage the community and how they navigated challenges during the project.",
+      "why_it_matters": "This insight would reveal the applicant's leadership style and how they balance action with empathy, which is crucial for collaborative environments.",
+      "referenced_entity_ids": [
+        "ESS-002",
+        "LEAD-005"
+      ],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": [
+        "ESS-002:F01",
+        "ESS-002:F05"
+      ]
+    },
+    {
+      "signal_id": "SIG-003",
+      "title": "Strong Academic Performance with Transition Challenges",
+      "evidence_anchor": "The applicant has consistently high academic scores but experienced a board change between 10th and 11th grade.",
+      "direct_read": "The applicant's academic performance is strong, but the transition may have introduced new challenges.",
+      "depth_opening": "How the applicant adapted to the new board's curriculum and what strategies they employed to maintain their performance.",
+      "why_it_matters": "Understanding this adaptation process would provide insight into the applicant's resilience and ability to navigate change.",
+      "referenced_entity_ids": [
+        "ACA-002",
+        "ACA-003"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-001"
+      ],
+      "supporting_fragment_ids": []
+    },
+    {
+      "signal_id": "SIG-004",
+      "title": "Commitment to Extracurricular Excellence",
+      "evidence_anchor": "The applicant has sustained commitment to music and Olympiads over several years.",
+      "direct_read": "The applicant has demonstrated long-term dedication to extracurricular activities, indicating strong time management and passion.",
+      "depth_opening": "The specific skills and lessons learned from these extracurricular commitments and how they relate to the applicant's academic and career goals.",
+      "why_it_matters": "This would highlight the applicant's ability to balance multiple commitments and how these experiences contribute to their overall development.",
+      "referenced_entity_ids": [
+        "ACT-001",
+        "ACT-003"
+      ],
+      "supporting_det_signal_ids": [
+        "DET-003",
+        "DET-004"
+      ],
+      "supporting_fragment_ids": []
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "Integrating Empathy and Innovation",
+      "unifying_axis": "The applicant's approach to technology and leadership is characterized by a blend of empathy and innovative thinking.",
+      "interview_direction": "Understanding how the applicant's empathetic leadership experiences inform their innovative approach to technology and problem-solving.",
+      "supporting_signal_ids": [
+        "SIG-001",
+        "SIG-002"
+      ]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "Resilience in Academic and Extracurricular Pursuits",
+      "unifying_axis": "The applicant's academic journey and extracurricular commitments reflect resilience and adaptability in the face of challenges.",
+      "interview_direction": "Exploring how the applicant has navigated academic transitions and sustained commitments in extracurricular activities, and what this reveals about their character.",
+      "supporting_signal_ids": [
+        "SIG-003",
+        "SIG-004"
+      ]
+    }
+  ]
+}

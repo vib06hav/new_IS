@@ -12,6 +12,7 @@ import type {
   FinalReportMutationResponse,
   InterviewerListItem,
   InterviewerUpdatePayload,
+  LLMCapacityStatusResponse,
   PasswordChangePayload,
   ReportChatRequestPayload,
   ReportChatResponse,
@@ -251,6 +252,10 @@ export async function generateReport(applicationId: string) {
   return apiRequest<FinalReportMutationResponse>(`/applications/${applicationId}/generate-report`, {
     method: "POST",
   });
+}
+
+export async function fetchLlmCapacity() {
+  return apiRequest<LLMCapacityStatusResponse>("/llm-capacity");
 }
 
 export async function askReportChat(applicationId: string, payload: ReportChatRequestPayload) {

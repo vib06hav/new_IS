@@ -46,6 +46,7 @@ export function AdminReportCard({
   pendingDisplayId,
   isBusy,
   isGenerating,
+  generationCapacityFull,
   isHiddenBusy,
   isDeleting,
   isEditingDisplayId,
@@ -66,6 +67,7 @@ export function AdminReportCard({
   pendingDisplayId: string;
   isBusy: boolean;
   isGenerating: boolean;
+  generationCapacityFull?: boolean;
   isHiddenBusy: boolean;
   isDeleting: boolean;
   isEditingDisplayId: boolean;
@@ -75,6 +77,7 @@ export function AdminReportCard({
   const overflowRef = useRef<HTMLDivElement | null>(null);
   const selectedInterviewer = interviewers.find((interviewer) => interviewer.id === selectedInterviewerId);
   const canGenerate = item.status === "PROCESSED";
+  const generateDisabled = isGenerating || generationCapacityFull;
   const canAssign = item.status === "READY";
   const canReassign = item.status === "ASSIGNED";
   const canMutateAssignment = canAssign || canReassign;
@@ -258,11 +261,11 @@ export function AdminReportCard({
             {canGenerate ? (
               <button
                 className="w-full rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-45"
-                disabled={isGenerating}
+                disabled={generateDisabled}
                 onClick={onGenerate}
                 type="button"
               >
-                {isGenerating ? "Generating..." : "Generate report"}
+                {isGenerating ? "Generating..." : generationCapacityFull ? "Generation full" : "Generate report"}
               </button>
             ) : item.status === "COMPLETE" ? null : (
               <button

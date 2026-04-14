@@ -1,0 +1,163 @@
+{
+  "metrics": {
+    "model": "google/gemini-2.5-flash-lite",
+    "status": "PASSED",
+    "call_1_latency_seconds": 6.72,
+    "call_2_latency_seconds": 2.89,
+    "signal_count": 5,
+    "theme_count": 2,
+    "question_group_count": 2,
+    "call_1_prompt_tokens": 9765,
+    "call_1_completion_tokens": 1487,
+    "call_1_cost_inr": 0.1739,
+    "call_2_prompt_tokens": 6529,
+    "call_2_completion_tokens": 432,
+    "call_2_cost_inr": 0.0914,
+    "total_cost_inr": 0.2653
+  },
+  "call_1_signals_themes": {
+    "signals": [
+      {
+        "signal_id": "SIG-001",
+        "title": "Early Technical Spark vs. Later Academic Rigor",
+        "evidence_anchor": "Essay describing early interest in QBasic and Scratch, contrasted with intensive JEE Advanced preparation and advanced CS/Maths coursework.",
+        "direct_read": "The applicant describes a foundational, hands-on technical interest from grade 4 alongside a later, intense academic focus on rigorous problem-solving for competitive exams and advanced subjects.",
+        "depth_opening": "The nature of the transition from early, self-directed exploration to structured, high-stakes academic pursuit in technology and mathematics, and how these two aspects inform each other.",
+        "why_it_matters": "Understanding this transition clarifies the applicant's primary drivers and learning methodologies in technical fields.",
+        "referenced_entity_ids": [
+          "ESS-001"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F01",
+          "ESS-001:F02",
+          "ESS-001:F06"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-002",
+        "title": "Broad Exposure to Global Innovation & Industry",
+        "evidence_anchor": "Essay mentioning international trips to NASA, Silicon Valley, CERN, and multiple industry internships.",
+        "direct_read": "The applicant has had exposure to diverse global scientific and technological environments, as well as practical experience within the Indian IT landscape.",
+        "depth_opening": "The specific insights gained from these varied international and industry experiences and how they have shaped the applicant's career aspirations and understanding of technological advancement.",
+        "why_it_matters": "This helps contextualize the applicant's aspirations and their perception of global technology trends.",
+        "referenced_entity_ids": [
+          "ESS-001"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-001:F04",
+          "ESS-001:F05"
+        ],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-003",
+        "title": "Project Leadership with Iterative Problem-Solving",
+        "evidence_anchor": "Description of the SignBee project involving organizing workshops, encountering lukewarm reception, and employing iterative strategies.",
+        "direct_read": "The applicant led a community project that required adapting approaches and persisting through initial challenges to achieve a meaningful outcome.",
+        "depth_opening": "The specific iterative processes and problem-solving strategies employed when facing resistance to the project, and how those experiences refined their leadership approach.",
+        "why_it_matters": "Illuminates the applicant's practical leadership capabilities and their ability to drive social impact through sustained effort.",
+        "referenced_entity_ids": [
+          "ESS-002"
+        ],
+        "supporting_det_signal_ids": [],
+        "supporting_fragment_ids": [
+          "ESS-002:F05",
+          "ESS-002:F06",
+          "ESS-002:F08"
+        ],
+        "theme_id": "THEME-002"
+      },
+      {
+        "signal_id": "SIG-004",
+        "title": "Sustained Mathematical Competition Acumen",
+        "evidence_anchor": "10 years of participation in mathematics competitions at the National level (IPM Mental Maths NSEJS).",
+        "direct_read": "The applicant has demonstrated long-term dedication and achievement in mathematics competitions across a decade.",
+        "depth_opening": "The applicant's intrinsic motivations for sustained engagement in high-level mathematics competitions and how this has shaped their analytical thinking.",
+        "why_it_matters": "Provides insight into the depth and longevity of the applicant's commitment to quantitative reasoning.",
+        "referenced_entity_ids": [
+          "ACT-004"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-006"
+        ],
+        "supporting_fragment_ids": [],
+        "theme_id": "THEME-001"
+      },
+      {
+        "signal_id": "SIG-005",
+        "title": "Academic Performance Shift and Board Transition",
+        "evidence_anchor": "A 9.0 percentage point drop from 10th to 11th grade, coinciding with a change in academic board (ICSE to ISC).",
+        "direct_read": "The applicant's overall academic performance showed a noticeable decline in 11th grade immediately following a transition between examination boards.",
+        "depth_opening": "The factors contributing to the shift in academic performance during the transition between examination boards and its impact on their learning experience.",
+        "why_it_matters": "Helps to understand the applicant's academic adaptability and resilience during periods of transition.",
+        "referenced_entity_ids": [
+          "ACA-002",
+          "ACA-003"
+        ],
+        "supporting_det_signal_ids": [
+          "DET-001",
+          "DET-002"
+        ],
+        "supporting_fragment_ids": [],
+        "theme_id": "THEME-002"
+      }
+    ],
+    "themes": [
+      {
+        "theme_id": "THEME-001",
+        "title": "From Foundational Spark to Rigorous Pursuit",
+        "unifying_axis": "The applicant's trajectory in technical and mathematical fields, from early explorations to intense academic preparation and broad exposure.",
+        "interview_direction": "Exploring the evolution of the applicant's technical interests and how early curiosity has translated into a deep, sustained commitment to rigorous study and global engagement.",
+        "supporting_signal_ids": [
+          "SIG-001",
+          "SIG-002",
+          "SIG-004"
+        ],
+        "referenced_entity_ids": [
+          "ESS-001",
+          "ACT-004"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "title": "Applied Leadership and Academic Navigation",
+        "unifying_axis": "The applicant's demonstrated leadership through community engagement and their navigation of academic transitions.",
+        "interview_direction": "Understanding the applicant's capacity for leadership through problem-solving and community impact, alongside their approach to academic challenges and transitions.",
+        "supporting_signal_ids": [
+          "SIG-003",
+          "SIG-005"
+        ],
+        "referenced_entity_ids": [
+          "ESS-002",
+          "ACA-002",
+          "ACA-003"
+        ]
+      }
+    ]
+  },
+  "call_2_question_groups": {
+    "question_groups": [
+      {
+        "theme_id": "THEME-001",
+        "group_title": "Evolution of Technical Interest and Global Perspective",
+        "questions": [
+          "Your essay describes a shift from early QBasic and Scratch exploration to intensive JEE Advanced preparation. Can you articulate how the foundational problem-solving learned in those initial explorations influenced your approach to the more complex mathematical and analytical challenges required for JEE?",
+          "You mention international trips to NASA, Silicon Valley, and CERN, alongside industry internships in India. From these diverse experiences, what specific trends or innovations in technology stood out to you, and how did they shape your view of your future contributions?",
+          "Having participated in mathematics competitions like IPM Mental Maths and NSEJS for a decade, how has this sustained engagement with quantitative problem-solving informed your understanding of computer science and engineering concepts, beyond what is typically taught in a curriculum?"
+        ]
+      },
+      {
+        "theme_id": "THEME-002",
+        "group_title": "Leadership through Community Impact and Academic Navigation",
+        "questions": [
+          "During the SignBee project, you encountered lukewarm reception to learning sign language and organized personalized sessions and used mnemonic tools. Can you describe the specific thought process behind choosing those iterative strategies when faced with initial resistance, and what you learned about motivating others through that experience?",
+          "Your academic record shows a 9.0 percentage point drop from 10th grade (ICSE) to 11th grade (ISC). Beyond the board transition itself, what were the most significant differences in your learning environment or expectations that you had to adapt to, and how did you navigate those challenges?",
+          "You mention that involving your family was instrumental in conveying the ideas for the SignBee project. Can you elaborate on how you leveraged your family's involvement, and what it taught you about leadership and enlisting support for a community initiative?"
+        ]
+      }
+    ]
+  }
+}

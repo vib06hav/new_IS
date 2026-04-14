@@ -1,0 +1,438 @@
+##API REFERENCE 
+
+"""
+API
+API Reference
+AICredits provides an OpenAI-compatible REST API. All endpoints accept and return JSON.
+
+Base URL
+bash
+Copy
+https://api.aicredits.in/v1
+OpenAI-compatible endpoints use this base URL. Authentication is via Bearer token in the Authorization header.
+
+Endpoint Matrix
+Use this matrix to choose the correct endpoint family for your integration.
+
+Endpoint	Auth	Use Case
+/v1/chat/completions	Bearer API key	OpenAI SDK-compatible text generation
+/v1/images/generations	Bearer API key	OpenAI SDK-compatible image generation
+/api/models or /api/v1/models	None	Public model catalog and pricing metadata
+/api/api-keys	Dashboard JWT cookie	Key management from authenticated dashboard sessions
+Chat Completions
+POST
+/chat/completions
+Creates a chat completion. Fully compatible with the OpenAI Chat Completions API.
+
+Request Body
+Parameter	Type	Required	Description
+model	string	Yes	Model ID, e.g. openai/gpt-4o-mini
+messages	array	Yes	Array of message objects with role and content
+stream	boolean	No	Enable streaming via Server-Sent Events. Default: false
+temperature	number	No	Sampling temperature (0-2). Default: 1
+max_tokens	integer	No	Maximum tokens in the completion
+top_p	number	No	Nucleus sampling parameter
+response_format	object	No	Set {"type": "json_object"} for JSON mode
+Request
+Copy
+curl https://api.aicredits.in/v1/chat/completions \
+  -H "Authorization: Bearer sk-your-key-here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "openai/gpt-4o-mini",
+    "messages": [
+      {"role": "system", "content": "You are a helpful assistant."},
+      {"role": "user", "content": "What is the capital of France?"}
+    ],
+    "temperature": 0.7,
+    "max_tokens": 256
+  }'
+Response
+Response
+Copy
+{
+  "id": "chatcmpl-abc123",
+  "object": "chat.completion",
+  "created": 1706745600,
+  "model": "gpt-4o-mini",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "The capital of France is Paris."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 25,
+    "completion_tokens": 8,
+    "total_tokens": 33
+  }
+}
+Streaming
+Set stream: true to receive chunks as Server-Sent Events. Each chunk contains a delta object with incremental content.
+
+SSE Stream
+Copy
+data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"The"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":" capital"},"finish_reason":null}]}
+
+data: [DONE]
+Image Generation
+POST
+/images/generations
+Generate images using DALL-E or other image generation models.
+
+Request
+Copy
+curl https://api.aicredits.in/v1/images/generations \
+  -H "Authorization: Bearer sk-your-key-here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "dall-e-3",
+    "prompt": "A serene mountain landscape at sunset",
+    "size": "1024x1024",
+    "n": 1
+  }'
+List Models
+GET
+/api/models
+(public, absolute path)
+GET
+/api/v1/models
+(alias of /api/models)
+Returns a list of all available models with pricing, context length, and capabilities.
+
+Response
+Copy
+{
+  "data": [
+    {
+      "id": "openai/gpt-4o-mini",
+      "name": "GPT-4o Mini",
+      "provider": "openai",
+      "context_length": 128000,
+      "pricing": {
+        "prompt": "0.00015",
+        "completion": "0.0006"
+      },
+      "input_modalities": ["text", "image"],
+      "output_modalities": ["text"],
+      "tags": ["fast", "affordable"]
+    }
+  ]
+}
+Info
+/api/models and /api/v1/models are equivalent aliases and both return the model catalog with base pricing.
+
+Check Credits
+GET
+/credits
+Returns your current wallet balance in both USD equivalent and INR.
+
+Response
+Copy
+{
+  "data": {
+    "total_credits": 10.50,
+    "total_usage": 0,
+    "credits_inr": 955.50
+  }
+}
+Key Info
+GET
+/auth/key
+Returns information about the API key being used, including usage and rate limits.
+
+Response
+Copy
+{
+  "data": {
+    "label": "Production Key",
+    "usage": 42.50,
+    "limit": 1000.00,
+    "rate_limit": {
+      "requests": 60,
+      "interval": "1m"
+    }
+  }
+}
+"""
+
+##AUTHENTICATION 
+
+"""
+API
+Authentication
+AICredits uses API keys for authenticating requests to the LLM proxy endpoints.
+
+API Key Authentication
+Pass your API key in the Authorization header using the Bearer scheme:
+
+bash
+Copy
+Authorization: Bearer sk-your-api-key-here
+This header is required for all proxy endpoints (/v1/*). Dashboard API endpoints use JWT cookies instead (handled automatically by the browser).
+
+Key Format
+API keys follow the format sk- followed by 64 hexadecimal characters:
+
+bash
+Copy
+sk-a1b2c3d4e5f6...  (64 hex characters)
+Keys are stored as SHA256 hashes in the database — AICredits never stores your raw key. The key is cached in Redis for 5 minutes for fast validation on every request.
+
+Creating API Keys
+The easiest way to create an API key is through the Dashboard → API Keys page. Click Create New Key, configure your options, and copy the key.
+
+One-Time Display
+Your API key is displayed only once when created. If you lose it, you'll need to create a new one.
+
+Key Options
+Option	Default	Description
+name	—	A label for identifying the key
+rate_limit	10000	Max requests per minute (RPM)
+budget	Unlimited	Spending cap in INR. Key stops working when exceeded.
+expires_at	Never	Expiration date (ISO 8601 or YYYY-MM-DD)
+Creating via API
+You can also create keys programmatically using the dashboard API (/api/*, outside the OpenAI /v1 base URL) with JWT cookie authentication:
+
+Create Key
+Copy
+curl -X POST https://api.aicredits.in/api/api-keys \
+  -H "Content-Type: application/json" \
+  --cookie "token=your-jwt-token" \
+  -d '{
+    "name": "Production Key",
+    "rate_limit": 100,
+    "budget": 1000,
+    "expires_at": "2026-12-31"
+  }'
+Security Best Practices
+Never expose keys in client-side code. Use environment variables and server-side proxies.
+Set budget limits on keys to control costs in case of accidental overuse or key compromise.
+Set expiration dates for short-lived use cases like demos or testing.
+Use separate keys for development and production environments.
+Rotate keys periodically. Delete old keys from the dashboard and create new ones.
+Store keys securely using environment variables or a secrets manager.
+Environment Variable
+Copy
+# Store your key as an environment variable
+export AICREDITS_API_KEY="sk-your-key-here"
+
+# Use it in your code
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.aicredits.in/v1",
+    api_key=os.environ["AICREDITS_API_KEY"],
+)
+"""
+
+##MODELS 
+
+"""
+API
+Models
+AICredits supports 300+ models across multiple providers through a single API.
+
+Supported Providers
+Provider	Example Models	Routing
+OpenAI	gpt-5.4, gpt-4o, gpt-4o-mini, o1, o3-mini	Direct
+Anthropic	claude-sonnet-4-20250514, claude-3-5-haiku	Direct
+Google	gemini-2.0-flash, gemini-2.5-pro	Direct
+DeepSeek	deepseek-chat, deepseek-reasoner	Direct
+Mistral	mistral-large, mistral-small	Direct
+xAI	grok-2, grok-3-mini	Direct
+More	300+ models via aggregation	Aggregated
+Reasoning models require a higher max_tokens budget
+Models that perform internal reasoning (e.g. openai/o1, openai/o3-mini, deepseek/deepseek-reasoner) consume their thinking tokens from the same max_tokens pool as the visible response. If the limit is too low, the model may exhaust all available tokens during its thinking phase and return an empty response — even though tokens were consumed and billed. Set max_tokens to at least 4 096 (and ideally 8 000–16 000) when using reasoning models. Learn more →
+
+Model ID Format
+You can specify models in two ways: explicit (recommended) or heuristic.
+
+Explicit Format (Recommended)
+Use the provider/model-name format for unambiguous routing:
+
+Explicit Model IDs
+Copy
+"model": "openai/gpt-4o-mini"
+"model": "anthropic/claude-sonnet-4-20250514"
+"model": "google/gemini-2.0-flash"
+"model": "deepseek/deepseek-chat"
+"model": "mistral/mistral-large-latest"
+"model": "xai/grok-2"
+Heuristic Format
+You can also pass just the model name. AICredits will auto-detect the provider based on the prefix:
+
+Prefix	Detected Provider	Example
+gpt-, o1-, o3-	OpenAI	gpt-4o-mini
+claude-	Anthropic	claude-sonnet-4-20250514
+gemini-	Google	gemini-2.0-flash
+deepseek-	DeepSeek	deepseek-chat
+mistral-	Mistral	mistral-large-latest
+grok-	xAI	grok-2
+other	Auto-routed	any unrecognized model
+Tip
+Use the explicit format for production applications. Heuristic detection is convenient for quick testing but may route unexpectedly for ambiguous names.
+
+Provider Routing
+AICredits uses a shadow routing system that automatically handles provider failures. When you make a request, it follows a chain of providers to maximize availability.
+
+Fallback Chain
+1
+Primary Provider
+Direct API call to the provider (e.g., OpenAI, Anthropic) with round-robin key selection.
+2
+Secondary Provider
+If the primary is unavailable, AICredits automatically falls back to an alternative route at no extra cost when possible.
+3
+Fallback Provider
+Last resort fallback through an aggregated provider pool for maximum availability.
+Info
+This fallback is automatic and transparent. You always receive a response as long as any provider in the chain is available.
+
+Circuit Breaker
+AICredits tracks the health of each provider key. If a key fails multiple times, it's temporarily marked as unhealthy and skipped for 30 seconds. This prevents repeated failures from adding latency to your requests.
+
+Browse Models
+View all available models with real-time pricing on the Models page, or query the API:
+
+bash
+Copy
+# Public model catalog endpoint (outside OpenAI /v1 base URL)
+curl https://api.aicredits.in/api/models
+"""
+
+##PRICING
+
+"""
+API
+Pricing
+Pay-per-token billing in INR. Costs are calculated per request based on the model used and tokens consumed.
+
+How Pricing Works
+Each model has separate rates for input (prompt) tokens and output (completion) tokens. After each request, AICredits calculates the cost and deducts it from your wallet.
+
+Token costs are based on each model's published per-token rates, converted to INR at the current USD/INR rate. The final INR price you see in the cost calculator and on your usage page is exactly what gets deducted from your wallet — no hidden charges.
+
+Info
+The current exchange rate is shown on your Dashboard. Prices are locked at the rate active at the time of each request.
+
+INR Conversion
+All model costs are denominated in USD by providers. AICredits converts them to INR using a live exchange rate that is refreshed periodically and visible on your Dashboard. A small buffer is included to account for rate fluctuations between request time and settlement.
+
+Special Token Pricing
+Some providers have non-standard token pricing for caching and reasoning:
+
+Provider	Token Type	Multiplier
+Anthropic (Claude)	Cache writes	1.25× base input price
+Cache reads	0.1× base input price
+Long context (>200K tokens)	2× input price
+OpenAI	Cached input	0.5× input price (50% discount)
+Reasoning tokens	Billed as output tokens
+Google (Gemini)	Cache writes	0.25× base price
+Thinking tokens	Billed separately
+Pricing Tiers
+Some models support multiple pricing tiers with different cost and latency trade-offs:
+
+Tier	Description
+Standard	Default pricing with standard latency
+Batch	Lower cost for non-time-sensitive tasks (higher latency)
+Flex	Dynamic pricing based on demand
+Priority	Premium pricing for lowest latency and highest availability
+FIFO Credit System
+Credits are consumed in first-in, first-out order. When you add credits, they are stored as ledger entries with a 1-year expiration. Oldest credits are used first. This ensures you always use your earliest credits before they expire.
+
+Checking Your Balance
+Check your balance via the Dashboard or programmatically:
+
+Check Balance
+Copy
+curl https://api.aicredits.in/v1/credits \
+  -H "Authorization: Bearer sk-your-key-here"
+
+# Response:
+# {
+#   "data": {
+#     "total_credits": 10.50,     ← USD equivalent
+#     "total_usage": 0,
+#     "credits_inr": 955.50       ← Actual INR balance
+#   }
+# }
+Low Balance
+A low balance alert triggers when your wallet drops below ₹10. Ensure you maintain sufficient credits to avoid request failures.
+"""
+
+##RATE LIMITS 
+
+"""
+API
+Rate Limits
+AICredits enforces rate limits and concurrency limits to ensure fair usage and system stability.
+
+RPM Limits (Requests Per Minute)
+Each API key has a maximum number of requests per minute. The default is 60 RPM, but this is configurable per key (up to 10,000 RPM).
+
+Rate limits are enforced per API key using a rolling 1-minute window backed by Redis. When you exceed the limit, requests return a 429 Too Many Requests response.
+
+Concurrency Limits
+Concurrency limits cap the number of simultaneous active requests per user. This prevents a single user from monopolizing system resources.
+
+Aspect	Details
+Default Limit	5 concurrent requests
+Error Code	429 with concurrency-specific message
+Response Headers
+Every API response includes rate limit headers so you can monitor your usage:
+
+Header	Description
+X-RateLimit-Limit	Maximum requests per minute for this key
+X-RateLimit-Remaining	Requests remaining in current window
+X-RateLimit-Reset	Seconds until the rate limit window resets
+Response Headers
+Copy
+HTTP/1.1 200 OK
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 42
+X-RateLimit-Reset: 35
+Content-Type: application/json
+Budget Limits
+Each API key can have an optional budget limit in INR. When the key's cumulative usage exceeds the budget, further requests are rejected with a 402 status.
+
+Tip
+Use budget limits to prevent unexpected costs. Set them when creating API keys, especially for development or testing keys.
+
+Handling 429 Errors
+When rate limited, implement exponential backoff with jitter:
+
+Python
+TypeScript
+python
+Copy
+import time
+import random
+from openai import OpenAI, RateLimitError
+
+client = OpenAI(
+    base_url="https://api.aicredits.in/v1",
+    api_key="sk-your-key-here",
+)
+
+def chat_with_retry(messages, max_retries=5):
+    for attempt in range(max_retries):
+        try:
+            return client.chat.completions.create(
+                model="openai/gpt-4o-mini",
+                messages=messages,
+            )
+        except RateLimitError:
+            if attempt == max_retries - 1:
+                raise
+            wait = (2 ** attempt) + random.uniform(0, 1)
+            print(f"Rate limited. Retrying in {wait:.1f}s...")
+            time.sleep(wait)
+"""

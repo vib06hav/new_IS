@@ -1,0 +1,70 @@
+{
+  "signals": [
+    {
+      "signal_id": "SIG-001",
+      "title": "Tech Passion Without Visible Building Projects",
+      "evidence_anchor": "Essay emphasizes solving real-world problems through tech (ESS-001:F01/F02/F04) but activity profile lacks technical projects.",
+      "direct_read": "Strong narrative about technology's societal impact contrasts with activity profile showing Olympiads/reading rather than hands-on engineering work.",
+      "depth_opening": "Whether technical problem-solving exists in undocumented projects/personal exploration, or remains primarily conceptual at this stage.",
+      "why_it_matters": "Clarifies if tech identity is rooted in applied experience or aspirational thinking - critical for engineering program alignment.",
+      "referenced_entity_ids": ["ESS-001", "ACT-003", "ACT-004"],
+      "supporting_det_signal_ids": [],
+      "supporting_fragment_ids": ["ESS-001:F01", "ESS-001:F02", "ESS-001:F04"]
+    },
+    {
+      "signal_id": "SIG-002",
+      "title": "Leadership Through Animal Welfare Initiative",
+      "evidence_anchor": "ESS-002 details organizing stray dog care project with community resistance resolution (F02-F04).",
+      "direct_read": "Demonstrated community leadership through animal welfare initiative contrasts with generic 'School House Captain' activity entry.",
+      "depth_opening": "How this specific experience informs their understanding of leadership compared to formal positional authority.",
+      "why_it_matters": "Reveals whether leadership philosophy emerges from grassroots problem-solving vs institutional roles.",
+      "referenced_entity_ids": ["ESS-002", "LEAD-005"],
+      "supporting_det_signal_ids": ["DET-002"],
+      "supporting_fragment_ids": ["ESS-002:F02", "ESS-002:F03", "ESS-002:F04"]
+    },
+    {
+      "signal_id": "SIG-003",
+      "title": "Math Strength Amid Science Fluctuations",
+      "evidence_anchor": "Consistent 98-150 Math scores vs 52-60/60 Physics/Chemistry in 11TH-12TH (ACA-003/ACA-004).",
+      "direct_read": "Exceptional mathematics performance persists through board changes while science scores show more variability.",
+      "depth_opening": "How they conceptualize/applied mathematical strengths in contexts beyond pure academics.",
+      "why_it_matters": "Indicates whether CS/AI interest stems from abstract mathematical aptitude or applied science integration.",
+      "referenced_entity_ids": ["ACA-003", "ACA-004", "supporting_det_signal_ids": ["DET-001"],
+      "supporting_fragment_ids": []
+    },
+    {
+      "signal_id": "SIG-004",
+      "title": "Sustained Commitments vs Expressed Interests",
+      "evidence_anchor": "7-year Olympiad participation (ACT-003) and 5-year piano (ACT-001) vs essay's tech/innovation focus.",
+      "direct_read": "Longest-duration activities (Olympiads, music) don't directly connect to stated engineering aspirations in essays.",
+      "depth_opening": "How these enduring commitments inform or contrast with their tech identity and interdisciplinary claims.",
+      "why_it_matters": "Reveals integration capacity - whether they see activities as separate domains or part of holistic growth for tech leadership.",
+      "referenced_entity_ids": ["ACT-001", "ACT-003", "ESS-001"],
+      "supporting_det_signal_ids": ["DET-003", "DET-004"],
+      "supporting_fragment_ids": []
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "THEME-001",
+      "title": "Tech Identity Grounding",
+      "unifying_axis": "The relationship between stated technological aspirations and demonstrated hands-on practice across academic/activity domains.",
+      "interview_direction": "Mapping where and how technical problem-solving manifests beyond conceptual understanding.",
+      "supporting_signal_ids": ["SIG-001", "SIG-003"]
+    },
+    {
+      "theme_id": "THEME-002",
+      "title": "Leadership Beyond Position Titles",
+      "unifying_axis": "Emerging leadership philosophy shaped by community initiative versus formal institutional roles.",
+      "interview_direction": "Understanding how challenge-driven leadership in animal welfare project informs their approach to tech innovation.",
+      "supporting_signal_ids": ["SIG-002"]
+    },
+    {
+      "theme_id": "THEME-003",
+      "title": "Integration of Long-Term Commitments",
+      "unifying_axis": "Connection between sustained non-tech activities (music, Olympiads) and claimed interdisciplinary approach to engineering.",
+      "interview_direction": "Exploring how enduring commitments shape problem-solving styles and complement technical aspirations.",
+      "supporting_signal_ids": ["SIG-004"]
+    }
+  ]
+}

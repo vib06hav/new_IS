@@ -54,7 +54,7 @@ class Settings:
         self.JWT_SECRET = os.environ.get("JWT_SECRET")
         self.JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM")
         self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get("JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
-        self.LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openrouter")
+        self.LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "aicredits")
         self.LLM_ENDPOINT = os.environ.get("LLM_ENDPOINT")
         self.LLM_MODEL_NAME = os.environ.get("LLM_MODEL_NAME")
         self.LLM_API_KEY = os.environ.get("LLM_API_KEY")
@@ -62,6 +62,27 @@ class Settings:
         self.LLM_TEMPERATURE = os.environ.get("LLM_TEMPERATURE", "0.0")
         self.LLM_JSON_MODE = os.environ.get("LLM_JSON_MODE", "true")
         self.LLM_PAYLOAD_MODE = os.environ.get("LLM_PAYLOAD_MODE", "full")
+        self.AICREDITS_BASE_URL = os.environ.get("AICREDITS_BASE_URL", "https://api.aicredits.in/v1")
+        self.AICREDITS_GENERATION_API_KEY = os.environ.get("AICREDITS_GENERATION_API_KEY", self.LLM_API_KEY or "")
+        self.AICREDITS_GENERATION_MODEL_PRIMARY = os.environ.get("AICREDITS_GENERATION_MODEL_PRIMARY", self.LLM_MODEL_NAME or "")
+        self.AICREDITS_GENERATION_MODEL_FALLBACK = os.environ.get("AICREDITS_GENERATION_MODEL_FALLBACK", self.LLM_MODEL_NAME or "")
+        self.AICREDITS_GENERATION_MAX_RETRIES = os.environ.get("AICREDITS_GENERATION_MAX_RETRIES", "2")
+        self.AICREDITS_GENERATION_BACKOFF_SECONDS = os.environ.get("AICREDITS_GENERATION_BACKOFF_SECONDS", "1")
+        self.AICREDITS_GENERATION_MAX_CONCURRENCY = os.environ.get("AICREDITS_GENERATION_MAX_CONCURRENCY", "3")
+        self.AICREDITS_GENERATION_MAX_ACTIVE_JOBS = os.environ.get("AICREDITS_GENERATION_MAX_ACTIVE_JOBS", "3")
+        self.AICREDITS_REPORT_CHAT_API_KEY = os.environ.get("AICREDITS_REPORT_CHAT_API_KEY", self.LLM_API_KEY or "")
+        self.AICREDITS_REPORT_CHAT_MODEL_PRIMARY = os.environ.get("AICREDITS_REPORT_CHAT_MODEL_PRIMARY", self.LLM_MODEL_NAME or "")
+        self.AICREDITS_REPORT_CHAT_MODEL_FALLBACK = os.environ.get("AICREDITS_REPORT_CHAT_MODEL_FALLBACK", self.LLM_MODEL_NAME or "")
+        self.AICREDITS_REPORT_CHAT_MAX_RETRIES = os.environ.get("AICREDITS_REPORT_CHAT_MAX_RETRIES", "3")
+        self.AICREDITS_REPORT_CHAT_BACKOFF_SECONDS = os.environ.get("AICREDITS_REPORT_CHAT_BACKOFF_SECONDS", "1")
+        self.AICREDITS_REPORT_CHAT_MAX_CONCURRENCY = os.environ.get("AICREDITS_REPORT_CHAT_MAX_CONCURRENCY", "2")
+        self.AICREDITS_GENERATION_MAX_TOKENS = os.environ.get("AICREDITS_GENERATION_MAX_TOKENS", "1600")
+        self.AICREDITS_REPORT_CHAT_MAX_TOKENS = os.environ.get("AICREDITS_REPORT_CHAT_MAX_TOKENS", "350")
+        self.AICREDITS_REPORT_CHAT_PER_USER_LIMIT = os.environ.get("AICREDITS_REPORT_CHAT_PER_USER_LIMIT", "12")
+        self.AICREDITS_REPORT_CHAT_WINDOW_SECONDS = os.environ.get("AICREDITS_REPORT_CHAT_WINDOW_SECONDS", "60")
+        self.AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER = os.environ.get("AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER", "1")
+        self.REPORT_CHAT_MAX_QUESTION_CHARS = os.environ.get("REPORT_CHAT_MAX_QUESTION_CHARS", "500")
+        self.REPORT_CHAT_MAX_QUESTION_WORDS = os.environ.get("REPORT_CHAT_MAX_QUESTION_WORDS", "80")
         self.PARSER_ENGINE_VERSION = os.environ.get("PARSER_ENGINE_VERSION", "v2")
         self.UPLOAD_DIRECTORY = os.environ.get("UPLOAD_DIRECTORY")
         self.STORAGE_BACKEND = os.environ.get("STORAGE_BACKEND", "local").strip().lower()
@@ -94,17 +115,22 @@ class Settings:
         required_vars = [
             ("DATABASE_URL", self.DATABASE_URL), ("JWT_SECRET", self.JWT_SECRET),
             ("JWT_ALGORITHM", self.JWT_ALGORITHM), ("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
-            ("LLM_ENDPOINT", self.LLM_ENDPOINT), ("LLM_MODEL_NAME", self.LLM_MODEL_NAME),
             ("LLM_TIMEOUT_SECONDS", self.LLM_TIMEOUT_SECONDS),
             ("UPLOAD_DIRECTORY", self.UPLOAD_DIRECTORY), ("MAX_UPLOAD_SIZE_MB", self.MAX_UPLOAD_SIZE_MB),
             ("APP_ENV", self.APP_ENV), ("LOG_LEVEL", self.LOG_LEVEL)
         ]
 
+        if self.LLM_PROVIDER == "openrouter":
+            required_vars.extend([
+                ("LLM_ENDPOINT", self.LLM_ENDPOINT),
+                ("LLM_MODEL_NAME", self.LLM_MODEL_NAME),
+            ])
+
         for name, val in required_vars:
             if val is None or val.strip() == "":
                 errors.append(f"Missing required environment variable: {name}")
 
-        if self.LLM_API_KEY is None or self.LLM_API_KEY.strip() == "":
+        if self.LLM_PROVIDER == "openrouter" and (self.LLM_API_KEY is None or self.LLM_API_KEY.strip() == ""):
             errors.append("Missing required environment variable: LLM_API_KEY")
 
         # OPTIONAL VARIABLES
@@ -135,8 +161,8 @@ class Settings:
         if self.JWT_ALGORITHM and self.JWT_ALGORITHM not in {"HS256", "HS384", "HS512"}:
             errors.append("JWT_ALGORITHM must be one of {HS256, HS384, HS512}")
 
-        if self.LLM_PROVIDER != "openrouter":
-            errors.append("LLM_PROVIDER must be 'openrouter'")
+        if self.LLM_PROVIDER not in {"openrouter", "aicredits"}:
+            errors.append("LLM_PROVIDER must be one of {openrouter, aicredits}")
 
         if self.LLM_PAYLOAD_MODE not in {"full", "compact"}:
             errors.append("LLM_PAYLOAD_MODE must be one of {full, compact}")
@@ -182,6 +208,117 @@ class Settings:
             self.LLM_TEMPERATURE = float(self.LLM_TEMPERATURE)
         except ValueError:
             errors.append("LLM_TEMPERATURE must be a float")
+
+        if self.AICREDITS_BASE_URL and not self.AICREDITS_BASE_URL.startswith("https://"):
+            errors.append("AICREDITS_BASE_URL must be an HTTPS URL")
+
+        if self.LLM_PROVIDER == "aicredits":
+            if not self.AICREDITS_GENERATION_API_KEY:
+                errors.append("AICREDITS_GENERATION_API_KEY is required when LLM_PROVIDER=aicredits")
+            if not self.AICREDITS_REPORT_CHAT_API_KEY:
+                errors.append("AICREDITS_REPORT_CHAT_API_KEY is required when LLM_PROVIDER=aicredits")
+            if not self.AICREDITS_GENERATION_MODEL_PRIMARY:
+                errors.append("AICREDITS_GENERATION_MODEL_PRIMARY is required when LLM_PROVIDER=aicredits")
+            if not self.AICREDITS_REPORT_CHAT_MODEL_PRIMARY:
+                errors.append("AICREDITS_REPORT_CHAT_MODEL_PRIMARY is required when LLM_PROVIDER=aicredits")
+
+        try:
+            self.AICREDITS_GENERATION_MAX_RETRIES = int(self.AICREDITS_GENERATION_MAX_RETRIES)
+            if self.AICREDITS_GENERATION_MAX_RETRIES < 0:
+                errors.append("AICREDITS_GENERATION_MAX_RETRIES must be >= 0")
+        except ValueError:
+            errors.append("AICREDITS_GENERATION_MAX_RETRIES must be an integer")
+
+        try:
+            self.AICREDITS_REPORT_CHAT_MAX_RETRIES = int(self.AICREDITS_REPORT_CHAT_MAX_RETRIES)
+            if self.AICREDITS_REPORT_CHAT_MAX_RETRIES < 0:
+                errors.append("AICREDITS_REPORT_CHAT_MAX_RETRIES must be >= 0")
+        except ValueError:
+            errors.append("AICREDITS_REPORT_CHAT_MAX_RETRIES must be an integer")
+
+        try:
+            self.AICREDITS_GENERATION_BACKOFF_SECONDS = float(self.AICREDITS_GENERATION_BACKOFF_SECONDS)
+            if self.AICREDITS_GENERATION_BACKOFF_SECONDS < 0:
+                errors.append("AICREDITS_GENERATION_BACKOFF_SECONDS must be >= 0")
+        except ValueError:
+            errors.append("AICREDITS_GENERATION_BACKOFF_SECONDS must be a number")
+
+        try:
+            self.AICREDITS_REPORT_CHAT_BACKOFF_SECONDS = float(self.AICREDITS_REPORT_CHAT_BACKOFF_SECONDS)
+            if self.AICREDITS_REPORT_CHAT_BACKOFF_SECONDS < 0:
+                errors.append("AICREDITS_REPORT_CHAT_BACKOFF_SECONDS must be >= 0")
+        except ValueError:
+            errors.append("AICREDITS_REPORT_CHAT_BACKOFF_SECONDS must be a number")
+
+        try:
+            self.AICREDITS_GENERATION_MAX_CONCURRENCY = int(self.AICREDITS_GENERATION_MAX_CONCURRENCY)
+            if self.AICREDITS_GENERATION_MAX_CONCURRENCY <= 0:
+                errors.append("AICREDITS_GENERATION_MAX_CONCURRENCY must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_GENERATION_MAX_CONCURRENCY must be an integer")
+
+        try:
+            self.AICREDITS_REPORT_CHAT_MAX_CONCURRENCY = int(self.AICREDITS_REPORT_CHAT_MAX_CONCURRENCY)
+            if self.AICREDITS_REPORT_CHAT_MAX_CONCURRENCY <= 0:
+                errors.append("AICREDITS_REPORT_CHAT_MAX_CONCURRENCY must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_REPORT_CHAT_MAX_CONCURRENCY must be an integer")
+
+        try:
+            self.AICREDITS_GENERATION_MAX_TOKENS = int(self.AICREDITS_GENERATION_MAX_TOKENS)
+            if self.AICREDITS_GENERATION_MAX_TOKENS <= 0:
+                errors.append("AICREDITS_GENERATION_MAX_TOKENS must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_GENERATION_MAX_TOKENS must be an integer")
+
+        try:
+            self.AICREDITS_REPORT_CHAT_MAX_TOKENS = int(self.AICREDITS_REPORT_CHAT_MAX_TOKENS)
+            if self.AICREDITS_REPORT_CHAT_MAX_TOKENS <= 0:
+                errors.append("AICREDITS_REPORT_CHAT_MAX_TOKENS must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_REPORT_CHAT_MAX_TOKENS must be an integer")
+
+        try:
+            self.AICREDITS_GENERATION_MAX_ACTIVE_JOBS = int(self.AICREDITS_GENERATION_MAX_ACTIVE_JOBS)
+            if self.AICREDITS_GENERATION_MAX_ACTIVE_JOBS <= 0:
+                errors.append("AICREDITS_GENERATION_MAX_ACTIVE_JOBS must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_GENERATION_MAX_ACTIVE_JOBS must be an integer")
+
+        try:
+            self.AICREDITS_REPORT_CHAT_PER_USER_LIMIT = int(self.AICREDITS_REPORT_CHAT_PER_USER_LIMIT)
+            if self.AICREDITS_REPORT_CHAT_PER_USER_LIMIT <= 0:
+                errors.append("AICREDITS_REPORT_CHAT_PER_USER_LIMIT must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_REPORT_CHAT_PER_USER_LIMIT must be an integer")
+
+        try:
+            self.AICREDITS_REPORT_CHAT_WINDOW_SECONDS = int(self.AICREDITS_REPORT_CHAT_WINDOW_SECONDS)
+            if self.AICREDITS_REPORT_CHAT_WINDOW_SECONDS <= 0:
+                errors.append("AICREDITS_REPORT_CHAT_WINDOW_SECONDS must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_REPORT_CHAT_WINDOW_SECONDS must be an integer")
+
+        try:
+            self.AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER = int(self.AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER)
+            if self.AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER <= 0:
+                errors.append("AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER must be an integer")
+
+        try:
+            self.REPORT_CHAT_MAX_QUESTION_CHARS = int(self.REPORT_CHAT_MAX_QUESTION_CHARS)
+            if self.REPORT_CHAT_MAX_QUESTION_CHARS <= 0:
+                errors.append("REPORT_CHAT_MAX_QUESTION_CHARS must be > 0")
+        except ValueError:
+            errors.append("REPORT_CHAT_MAX_QUESTION_CHARS must be an integer")
+
+        try:
+            self.REPORT_CHAT_MAX_QUESTION_WORDS = int(self.REPORT_CHAT_MAX_QUESTION_WORDS)
+            if self.REPORT_CHAT_MAX_QUESTION_WORDS <= 0:
+                errors.append("REPORT_CHAT_MAX_QUESTION_WORDS must be > 0")
+        except ValueError:
+            errors.append("REPORT_CHAT_MAX_QUESTION_WORDS must be an integer")
 
         self.LLM_JSON_MODE = str(self.LLM_JSON_MODE).strip().lower() in {"1", "true", "yes", "on"}
 
@@ -287,6 +424,13 @@ class Settings:
         logger.info(f"STORAGE_BACKEND: {self.STORAGE_BACKEND}")
         logger.info(f"LLM_ENDPOINT: {self.LLM_ENDPOINT}")
         logger.info(f"LLM_MODEL_NAME: {self.LLM_MODEL_NAME}")
+        logger.info(f"AICREDITS_BASE_URL: {self.AICREDITS_BASE_URL}")
+        logger.info(f"AICREDITS_GENERATION_MODEL_PRIMARY: {self.AICREDITS_GENERATION_MODEL_PRIMARY}")
+        logger.info(f"AICREDITS_GENERATION_MODEL_FALLBACK: {self.AICREDITS_GENERATION_MODEL_FALLBACK}")
+        logger.info(f"AICREDITS_REPORT_CHAT_MODEL_PRIMARY: {self.AICREDITS_REPORT_CHAT_MODEL_PRIMARY}")
+        logger.info(f"AICREDITS_REPORT_CHAT_MODEL_FALLBACK: {self.AICREDITS_REPORT_CHAT_MODEL_FALLBACK}")
         logger.info("LLM_API_KEY: ***[REDACTED]***")
+        logger.info("AICREDITS_GENERATION_API_KEY: ***[REDACTED]***")
+        logger.info("AICREDITS_REPORT_CHAT_API_KEY: ***[REDACTED]***")
 
 settings = Settings()
