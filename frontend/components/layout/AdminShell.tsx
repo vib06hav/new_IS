@@ -6,10 +6,6 @@ import { getSession, signOut } from "@/lib/auth";
 import { Loader } from "@/components/ui/Loader";
 import { Libre_Franklin, IBM_Plex_Sans } from "next/font/google";
 import { AdminNavbar } from "@/components/layout/AdminNavbar";
-import {
-  AdminSessionHistoryProvider,
-  clearPersistedAdminSessionHistory,
-} from "@/components/layout/AdminSessionHistory";
 
 const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
@@ -60,7 +56,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   async function handleSignOut() {
-    clearPersistedAdminSessionHistory();
     await signOut();
     router.replace("/admin/login");
   }
@@ -70,7 +65,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AdminSessionHistoryProvider>
+    <>
       <style>{`
         :root {
           --canvas: #f8fafc;
@@ -92,7 +87,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
-    </AdminSessionHistoryProvider>
+    </>
   );
 }
 

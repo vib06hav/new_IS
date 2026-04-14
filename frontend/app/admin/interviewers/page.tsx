@@ -34,8 +34,7 @@ import { Input } from "@/components/ui/Input";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AdminShell } from "@/components/layout/AdminShell";
-import { AdminSessionLogPanel } from "@/components/layout/AdminSessionLogPanel";
-import { useAdminSessionHistory } from "@/components/layout/AdminSessionHistory";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 import { Badge } from "@/components/shadcn/badge";
 
@@ -86,26 +85,7 @@ function AdminInterviewersContent() {
   const [profileForm, setProfileForm] = useState({ name: "" });
   const [accountForm, setAccountForm] = useState({ email: "" });
   const [passwordForm, setPasswordForm] = useState({ password: "", confirmPassword: "" });
-  const [showSidebar, setShowSidebar] = useState(true);
-  const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
 
-  // Load sidebar preference
-  useEffect(() => {
-    const saved = localStorage.getItem("agis_admin_sidebar_visible");
-    if (saved !== null) {
-      setShowSidebar(saved === "true");
-    } else {
-      // Default to open for first-time visitors
-      setShowSidebar(true);
-    }
-  }, []);
-
-  // Save sidebar preference
-  const toggleSidebar = () => {
-    const next = !showSidebar;
-    setShowSidebar(next);
-    localStorage.setItem("agis_admin_sidebar_visible", String(next));
-  };
 
   async function loadInterviewers() {
     try {
@@ -200,12 +180,6 @@ function AdminInterviewersContent() {
       setCreateOpen(false);
       setCreateForm({ name: "", email: "", password: "", confirmPassword: "" });
       setMessage("Interviewer created.");
-      addEntry({
-        action: "Created",
-        reportId: interviewerName,
-        detail: "New interviewer account added and made available for assignment.",
-        tone: "lime",
-      });
       await loadInterviewers();
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : "Failed to create interviewer.");
@@ -228,12 +202,6 @@ function AdminInterviewersContent() {
         email: selectedInterviewer.email,
       });
       setMessage("Interviewer name updated.");
-      addEntry({
-        action: "Edited",
-        reportId: selectedInterviewer.name,
-        detail: `Display name updated to ${nextName}.`,
-        tone: "cyan",
-      });
       await loadInterviewers();
       setSelectedInterviewer((current) => (current ? { ...current, name: nextName } : current));
     } catch (updateError) {
@@ -257,12 +225,6 @@ function AdminInterviewersContent() {
         email: nextEmail,
       });
       setMessage("Interviewer email updated.");
-      addEntry({
-        action: "Edited",
-        reportId: selectedInterviewer.name,
-        detail: `Account email updated to ${nextEmail}.`,
-        tone: "cyan",
-      });
       await loadInterviewers();
       setSelectedInterviewer((current) => (current ? { ...current, email: nextEmail } : current));
     } catch (updateError) {
@@ -289,12 +251,6 @@ function AdminInterviewersContent() {
       });
       setPasswordForm({ password: "", confirmPassword: "" });
       setMessage("Interviewer password updated.");
-      addEntry({
-        action: "Password",
-        reportId: selectedInterviewer.name,
-        detail: "Password reset requested through the edit sheet.",
-        tone: "orange",
-      });
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Failed to update interviewer password.");
     } finally {
@@ -319,22 +275,10 @@ function AdminInterviewersContent() {
       await deleteInterviewer(selectedInterviewer.id);
       setSelectedInterviewer(null);
       setMessage("Interviewer removed.");
-      addEntry({
-        action: "Removed",
-        reportId: selectedInterviewer.name,
-        detail: "Interviewer account removed from the active roster.",
-        tone: "slate",
-      });
       await loadInterviewers();
     } catch (removeError) {
       const detail = removeError instanceof Error ? removeError.message : "Failed to remove interviewer.";
       setError(detail);
-      addEntry({
-        action: "Blocked",
-        reportId: "Remove interviewer",
-        detail,
-        tone: "pink",
-      });
     } finally {
       setRemoveSubmitting(false);
     }
@@ -483,24 +427,6 @@ function AdminInterviewersContent() {
       setStagedAssignedIds(summary.currently_assigned.map((item) => item.application_id));
       setMessage("Assignments updated.");
 
-      if (reassignedApplications.length > 0) {
-        reassignedApplications.forEach((item) => {
-          addEntry({
-            action: "Reassigned",
-            reportId: item.application_display_id,
-            detail: `Moved from ${item.current_interviewer?.name ?? "another interviewer"} to ${assignmentInterviewer.name}.`,
-            tone: "blue",
-          });
-        });
-      } else if (stagedChangeCount > 0) {
-        addEntry({
-          action: "Edited",
-          reportId: assignmentInterviewer.name,
-          detail: `Assignment buckets updated with ${stagedChangeCount} change${stagedChangeCount === 1 ? "" : "s"}.`,
-          tone: "cyan",
-        });
-      }
-
       await loadInterviewers();
     } catch (saveError) {
       setAssignmentError(saveError instanceof Error ? saveError.message : "Failed to update assignments.");
@@ -514,23 +440,9 @@ function AdminInterviewersContent() {
       className={`${libreFranklin.variable} ${plexSans.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
-      <div className={`grid gap-6 transition-all duration-500 ease-in-out ${showSidebar ? "xl:grid-cols-[1fr_22rem]" : "grid-cols-1"}`}>
-        <div className="space-y-6">
+      <div className="space-y-6">
           <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
             <div className="relative flex flex-col h-full justify-between gap-6">
-                {/* Header Toggle */}
-                <div className="absolute right-0 top-0 flex items-center gap-2 group">
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                    {showSidebar ? "Hide Sidebar" : "Show Sidebar"}
-                  </span>
-                  <button 
-                    onClick={toggleSidebar}
-                    className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white shadow-sm text-slate-400 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md active:scale-95"
-                  >
-                    {showSidebar ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
-                  </button>
-                </div>
-                
                 <div className="space-y-3">
                   <h1
                     className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
@@ -589,11 +501,6 @@ function AdminInterviewersContent() {
             </section>
           )}
         </div>
-
-        <aside className={`grid gap-5 self-start transition-all duration-500 ease-in-out ${showSidebar ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8 pointer-events-none hidden"}`}>
-          <AdminSessionLogPanel entries={sessionHistoryEntries} />
-        </aside>
-      </div>
 
       {createOpen ? (
         <CenteredOverlay onClose={() => !createSubmitting && setCreateOpen(false)}>

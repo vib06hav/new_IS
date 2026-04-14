@@ -15,8 +15,6 @@ import { AdminShell } from "@/components/layout/AdminShell";
 import { Badge } from "@/components/shadcn/badge";
 import { Button as ShadButton } from "@/components/shadcn/button";
 import { Separator } from "@/components/shadcn/separator";
-import { AdminSessionLogPanel } from "@/components/layout/AdminSessionLogPanel";
-import { useAdminSessionHistory } from "@/components/layout/AdminSessionHistory";
 
 type LocalQueueItem = {
   name: string;
@@ -89,26 +87,6 @@ function AdminUploadContent() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [duplicateMessage, setDuplicateMessage] = useState<string | null>(null);
-  const [showSidebar, setShowSidebar] = useState(true);
-  const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
-
-  // Load sidebar preference
-  useEffect(() => {
-    const saved = localStorage.getItem("agis_admin_sidebar_visible");
-    if (saved !== null) {
-      setShowSidebar(saved === "true");
-    } else {
-      // Default to open for first-time visitors
-      setShowSidebar(true);
-    }
-  }, []);
-
-  // Save sidebar preference
-  const toggleSidebar = () => {
-    const next = !showSidebar;
-    setShowSidebar(next);
-    localStorage.setItem("agis_admin_sidebar_visible", String(next));
-  };
 
   async function loadUploads() {
     try {
@@ -203,13 +181,6 @@ function AdminUploadContent() {
           setUploading(true);
         }
 
-        addEntry({
-          action: "Processing",
-          reportId: nextItem.name,
-          detail: "Backend extraction has started for this PDF.",
-          tone: "cyan",
-        });
-
         setLocalQueue((currentItems) => currentItems.filter((currentItem) => currentItem.name !== nextItem.name));
         await loadUploads();
 
@@ -233,12 +204,6 @@ function AdminUploadContent() {
             ...currentItems,
           ]);
           setError(errorMessage);
-          addEntry({
-            action: "Failed",
-            reportId: nextItem.name,
-            detail: errorMessage,
-            tone: "pink",
-          });
           await loadUploads();
         } finally {
           if (isMountedRef.current) {
@@ -251,7 +216,7 @@ function AdminUploadContent() {
     }
 
     void processQueueLoop();
-  }, [addEntry, localQueue]);
+  }, [localQueue]);
 
   function handleFileSelection(event: React.ChangeEvent<HTMLInputElement>) {
     const chosenFiles = Array.from(event.target.files ?? []);
@@ -294,14 +259,6 @@ function AdminUploadContent() {
     if (validSelections.length > 0) {
       setLocalQueue((currentItems) => [...validSelections, ...currentItems]);
       setMessage(`${validSelections.length} PDF${validSelections.length === 1 ? "" : "s"} added to the upload queue.`);
-      validSelections.forEach((selection) => {
-        addEntry({
-          action: "Queued",
-          reportId: selection.name,
-          detail: "Added to browser batch and waiting for upload.",
-          tone: "blue",
-        });
-      });
     }
 
     if (duplicates.length > 0) {
@@ -321,12 +278,6 @@ function AdminUploadContent() {
     setBusyPendingRemoveName(name);
     setLocalQueue((currentItems) => currentItems.filter((item) => item.name !== name));
     setMessage(`Removed ${name} from the queue.`);
-    addEntry({
-      action: "Removed",
-      reportId: name,
-      detail: "Pending file cleared from the browser queue.",
-      tone: "lime",
-    });
     setBusyPendingRemoveName(null);
   }
 
@@ -338,14 +289,6 @@ function AdminUploadContent() {
     setBusyRetryId(applicationId);
     try {
       await retryApplication(applicationId);
-      if (item) {
-        addEntry({
-          action: "Retry",
-          reportId: item.display_id,
-          detail: "Failed upload sent back into processing.",
-          tone: "orange",
-        });
-      }
       setMessage("Retry triggered.");
       await loadUploads();
     } catch (retryError) {
@@ -385,23 +328,10 @@ function AdminUploadContent() {
       className={`${libreFranklin.variable} ${plexSans.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
-      <div className={`grid gap-6 transition-all duration-500 ease-in-out ${showSidebar ? "xl:grid-cols-[1fr_22rem]" : "grid-cols-1"}`}>
-        <div className="space-y-6">
+      <div className="space-y-6">
             <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="relative">
-                {/* Header Toggle */}
-                <div className="absolute right-0 top-0 flex items-center gap-2 group">
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                    {showSidebar ? "Hide Sidebar" : "Show Sidebar"}
-                  </span>
-                  <button 
-                    onClick={toggleSidebar}
-                    className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white shadow-sm text-slate-400 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md active:scale-95"
-                  >
-                    {showSidebar ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
-                  </button>
-                </div>
-
+                
                 <div className="space-y-3">
                   <h1
                     className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
@@ -567,11 +497,6 @@ function AdminUploadContent() {
                 </div>
               </div>
             </section>
-          </div>
-
-        <aside className={`grid gap-5 self-start transition-all duration-500 ease-in-out ${showSidebar ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8 pointer-events-none hidden"}`}>
-          <AdminSessionLogPanel entries={sessionHistoryEntries} />
-        </aside>
       </div>
     </div>
   );

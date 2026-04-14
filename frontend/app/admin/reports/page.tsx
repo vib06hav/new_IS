@@ -22,10 +22,6 @@ import {
 import type { ApplicationListItem, InterviewerListItem, LLMCapacityStatusResponse } from "@/lib/types";
 import { Loader } from "@/components/ui/Loader";
 import { usePolling } from "@/lib/usePolling";
-import {
-  useAdminSessionHistory,
-} from "@/components/layout/AdminSessionHistory";
-import { AdminSessionLogPanel } from "@/components/layout/AdminSessionLogPanel";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { AdminReportCard } from "@/components/admin/AdminReportCard";
 
@@ -67,26 +63,6 @@ function AdminReportsContent() {
   const [editingDisplayIdAppId, setEditingDisplayIdAppId] = useState<string | null>(null);
   const [pendingDisplayIdByApp, setPendingDisplayIdByApp] = useState<Record<string, string>>({});
   const [savingDisplayIdAppId, setSavingDisplayIdAppId] = useState<string | null>(null);
-  const [showSidebar, setShowSidebar] = useState(true);
-  const { entries: sessionHistoryEntries, addEntry } = useAdminSessionHistory();
-
-  // Load sidebar preference
-  useEffect(() => {
-    const saved = localStorage.getItem("agis_admin_sidebar_visible");
-    if (saved !== null) {
-      setShowSidebar(saved === "true");
-    } else {
-      // Default to open for first-time visitors
-      setShowSidebar(true);
-    }
-  }, []);
-
-  // Save sidebar preference
-  const toggleSidebar = () => {
-    const next = !showSidebar;
-    setShowSidebar(next);
-    localStorage.setItem("agis_admin_sidebar_visible", String(next));
-  };
 
   async function loadData() {
     try {
@@ -143,20 +119,6 @@ function AdminReportsContent() {
         setMessage("Application reassigned.");
       }
 
-      if (report && nextInterviewer) {
-        addEntry({
-          action: mode === "assign" ? "Assigned" : "Reassigned",
-          reportId: report.display_id,
-          detail:
-            mode === "assign"
-              ? `${nextInterviewer.name} added as first interviewer`
-              : report.assigned_interviewer
-                ? `${report.assigned_interviewer.name} -> ${nextInterviewer.name}`
-                : `${nextInterviewer.name} selected as interviewer`,
-          tone: mode === "assign" ? "lime" : "blue",
-        });
-      }
-
       await loadData();
     } catch (mutationError) {
       setError(mutationError instanceof Error ? mutationError.message : "Assignment update failed.");
@@ -173,15 +135,6 @@ function AdminReportsContent() {
       const report = items.find((item) => item.id === applicationId);
       await generateReport(applicationId);
       setMessage("Final report generated.");
-
-      if (report) {
-        addEntry({
-          action: "Generated",
-          reportId: report.display_id,
-          detail: "Pages 4-5 and annotations were created, and the report is now ready for assignment.",
-          tone: "lime",
-        });
-      }
 
       await loadData();
     } catch (generationError) {
@@ -203,17 +156,6 @@ function AdminReportsContent() {
       } else {
         await unhideApplication(applicationId);
         setMessage("Report restored.");
-      }
-
-      if (report) {
-        addEntry({
-          action: nextHidden ? "Hidden" : "Unhidden",
-          reportId: report.display_id,
-          detail: nextHidden
-            ? "Removed from visible list for this session"
-            : "Restored to the visible report list",
-          tone: nextHidden ? "orange" : "pink",
-        });
       }
 
       await loadData();
@@ -239,12 +181,6 @@ function AdminReportsContent() {
     setError(null);
     try {
       await deleteApplication(applicationId);
-      addEntry({
-        action: "Deleted",
-        reportId: report.display_id,
-        detail: "Removed report from the current review set",
-        tone: "slate",
-      });
       setMessage("Report deleted.");
       await loadData();
     } catch (deleteError) {
@@ -286,15 +222,6 @@ function AdminReportsContent() {
       setEditingDisplayIdAppId(null);
       setMessage("Application ID updated.");
 
-      if (report) {
-        addEntry({
-          action: "Updated ID",
-          reportId: report.display_id,
-          detail: `Updated reporting identifier to ${displayId}`,
-          tone: "cyan",
-        });
-      }
-
       await loadData();
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Failed to update application ID.");
@@ -331,22 +258,9 @@ function AdminReportsContent() {
       className={`${plexSans.variable} ${libreFranklin.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
-      <div className={`grid gap-6 transition-all duration-500 ease-in-out ${showSidebar ? "xl:grid-cols-[1fr_22rem]" : "grid-cols-1"}`}>
-        <div className="space-y-6">
+      <div className="space-y-6">
             <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="relative">
-                {/* Header Toggle */}
-                <div className="absolute right-0 top-0 flex items-center gap-2 group">
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                    {showSidebar ? "Hide Sidebar" : "Show Sidebar"}
-                  </span>
-                  <button 
-                    onClick={toggleSidebar}
-                    className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white shadow-sm text-slate-400 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md active:scale-95"
-                  >
-                    {showSidebar ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
-                  </button>
-                </div>
 
                 <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm">
                   <div className="rounded-[1.4rem] border border-slate-200 bg-white/70 p-1.5">
@@ -459,10 +373,7 @@ function AdminReportsContent() {
         )}
           </div>
 
-        {showSidebar && (
-          <aside className="grid gap-5 self-start transition-all duration-500 ease-in-out">
-            <AdminSessionLogPanel entries={sessionHistoryEntries} />
-            
+          <div className="space-y-6">
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Status totals</p>
               <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50">
@@ -474,9 +385,7 @@ function AdminReportsContent() {
                 </div>
               </div>
             </div>
-          </aside>
-        )}
-      </div>
+          </div>
     </div>
   );
 }
