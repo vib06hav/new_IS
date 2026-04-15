@@ -81,6 +81,10 @@ export function AdminReportCard({
   const canAssign = item.status === "READY";
   const canReassign = item.status === "ASSIGNED";
   const canMutateAssignment = canAssign || canReassign;
+  const currentInterviewer = item.assigned_interviewer;
+  const isChanging = !!(selectedInterviewerId && currentInterviewer && selectedInterviewerId !== currentInterviewer.id);
+  const isInitialAssignment = !!(selectedInterviewerId && !currentInterviewer);
+  const displayedInterviewer = selectedInterviewer || currentInterviewer;
 
   useEffect(() => {
     if (!overflowOpen) {
@@ -106,7 +110,7 @@ export function AdminReportCard({
     <article
       className={`${libreFranklin.variable} rounded-3xl border border-slate-200 bg-white text-slate-900 shadow-[0_10px_30px_rgba(2,12,32,0.05)] transition-all hover:shadow-md`}
     >
-      <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
+      <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-4 py-3">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             {item.is_hidden ? <StatusMark status="HIDDEN" /> : null}
@@ -163,119 +167,146 @@ export function AdminReportCard({
         </div>
       </div>
 
-      <div className="space-y-4 px-5 py-5">
-        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
-          <BlacklineMeta label="Last updated" value={formatDateTime(item.last_activity_at)} />
-          <div className="sm:pt-0.5">
-            <PrimaryLink
-              href={`/admin/applications/${item.id}`}
-              label={item.status === "COMPLETE" ? "View final interview report" : "Open"}
-            />
+      <div className="space-y-4 px-4 py-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Last updated</span>
+            <span className="text-sm font-semibold text-slate-700">{formatDateTime(item.last_activity_at)}</span>
           </div>
+          <PrimaryLink
+            href={`/admin/applications/${item.id}`}
+            label="Open"
+          />
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6c6c64]">Assigned interviewer</p>
-          {item.assigned_interviewer ? (
-            <div className="mt-3 flex items-center gap-3">
-              <Avatar className="size-10 border border-[#111111]/10">
-                {item.assigned_interviewer.profile_image_url ? (
-                  <AvatarImage src={item.assigned_interviewer.profile_image_url} alt={`${item.assigned_interviewer.name} profile image`} />
-                ) : null}
-                <AvatarFallback className="bg-[#111111] text-[#fafaf6]">{getInitials(item.assigned_interviewer.name)}</AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[#111111]">{item.assigned_interviewer.name}</p>
-                <p className="truncate text-xs text-[#66685d]">{item.assigned_interviewer.email}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="mt-3 flex items-center gap-3">
-              <Avatar className="size-10 border border-[#111111]/10">
-                <AvatarFallback className="bg-[#D8DBE2] text-[#49536B]">UN</AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[#111111]">Unassigned</p>
-                <p className="truncate text-xs text-[#66685d]">No interviewer selected yet</p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-[1.3rem] border border-slate-200 bg-white/70 p-4">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
             {canGenerate ? "Report generation" : item.status === "COMPLETE" ? "Final interview report" : "Assignment"}
           </p>
-          <div className="mt-3 space-y-3">
+          <div className="mt-3 flex flex-col gap-3">
             {canGenerate ? (
-                <div className="flex w-full items-center rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-500">
+              <div className="space-y-3">
+                <div className="text-xs text-slate-500">
                   Generate Pages 4-5 to move this report into the ready queue.
                 </div>
-            ) : canMutateAssignment ? (
-              <Select value={selectedInterviewerId} onValueChange={(value) => onSelectedInterviewerChange(value ?? "")}>
-                <SelectTrigger className="h-auto w-full rounded-xl border-slate-200 bg-white px-3 py-3 transition-all duration-200 hover:border-blue-300 hover:shadow-sm">
-                  {selectedInterviewer ? (
-                    <div className="flex min-w-0 flex-1 items-center gap-2">
-                      <Avatar className="size-8">
-                        {selectedInterviewer.profile_image_url ? (
-                          <AvatarImage src={selectedInterviewer.profile_image_url} alt={`${selectedInterviewer.name} profile image`} />
-                        ) : null}
-                        <AvatarFallback>{getInitials(selectedInterviewer.name)}</AvatarFallback>
-                      </Avatar>
-                      <span className="min-w-0 flex-1 space-y-0.5">
-                        <span className="block truncate font-medium text-slate-800">{selectedInterviewer.name}</span>
-                        <span className="block truncate text-xs text-slate-500">{selectedInterviewer.email}</span>
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-slate-500">{canAssign ? "Choose interviewer" : "Choose new interviewer"}</span>
-                  )}
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border border-slate-200 bg-white shadow-xl">
-                  <SelectGroup>
-                    <SelectLabel>Available interviewers</SelectLabel>
-                    {interviewers.map((interviewer) => (
-                      <SelectItem key={interviewer.id} value={interviewer.id}>
-                        <Avatar className="size-8 self-center">
-                          {interviewer.profile_image_url ? (
-                            <AvatarImage src={interviewer.profile_image_url} alt={`${interviewer.name} profile image`} />
-                          ) : null}
-                          <AvatarFallback>{getInitials(interviewer.name)}</AvatarFallback>
-                        </Avatar>
-                        <span className="min-w-0 flex-1 flex-col justify-center space-y-0.5">
-                          <span className="block truncate font-medium text-[#111111]">{interviewer.name}</span>
-                          <span className="block truncate text-xs text-[#66685d]">{interviewer.email}</span>
-                        </span>
-                        <span className="rounded-full bg-[#D8DBE2] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#49536B]">{interviewer.active_assignment_count} active</span>
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            ) : (
-              <div className="flex w-full items-center rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-500">
-                {item.status === "COMPLETE" ? "Interview complete. Open the report to review the final postgame summary." : "Assignment locked"}
+                <button
+                  className="w-full rounded-full bg-blue-700 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-45"
+                  disabled={generateDisabled}
+                  onClick={onGenerate}
+                  type="button"
+                >
+                  {isGenerating ? "Generating..." : generationCapacityFull ? "Generation full" : "Generate report"}
+                </button>
               </div>
-            )}
+            ) : canMutateAssignment ? (
+              <div className="flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                  <Select value={selectedInterviewerId} onValueChange={(value) => onSelectedInterviewerChange(value ?? "")}>
+                    <SelectTrigger className="h-auto w-full rounded-xl border-slate-200 bg-white px-4 py-1.5 transition-all duration-200 hover:border-blue-300 hover:shadow-sm">
+                      {displayedInterviewer ? (
+                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                          <Avatar className="size-10">
+                            {displayedInterviewer.profile_image_url ? (
+                              <AvatarImage src={displayedInterviewer.profile_image_url} alt={`${displayedInterviewer.name} profile image`} />
+                            ) : null}
+                            <AvatarFallback>{getInitials(displayedInterviewer.name)}</AvatarFallback>
+                          </Avatar>
+                          <span className="min-w-0 flex-1 text-left">
+                            <span className="pt-0.5 mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-blue-600/80">
+                              {isChanging ? "Changing to:" : isInitialAssignment ? "Assigning to:" : "Current:"}
+                            </span>
+                            <span className="block truncate text-sm font-semibold text-slate-800">{displayedInterviewer.name}</span>
+                            <span className="block truncate text-xs text-slate-500">{displayedInterviewer.email}</span>
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          <Avatar className="size-10">
+                            <AvatarFallback className="bg-slate-100 text-slate-400">UN</AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm text-slate-500">Choose interviewer</span>
+                        </div>
+                      )}
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border border-slate-200 bg-white shadow-xl">
+                      <SelectGroup>
+                        <SelectLabel>Available interviewers</SelectLabel>
+                        {interviewers.map((interviewer) => {
+                          const isCurrentlyAssigned = interviewer.id === currentInterviewer?.id;
+                          return (
+                            <SelectItem
+                              key={interviewer.id}
+                              className={isCurrentlyAssigned ? "bg-blue-50/50" : ""}
+                              value={interviewer.id}
+                            >
+                              <div className="flex w-full items-center gap-3 py-1">
+                                <Avatar className="size-9">
+                                  {interviewer.profile_image_url ? (
+                                    <AvatarImage src={interviewer.profile_image_url} alt={`${interviewer.name} profile image`} />
+                                  ) : null}
+                                  <AvatarFallback>{getInitials(interviewer.name)}</AvatarFallback>
+                                </Avatar>
+                                <span className="min-w-0 flex-1 flex-col justify-center space-y-0.5">
+                                  <span className="flex items-center gap-2">
+                                    <span className="block truncate text-sm font-semibold text-[#111111]">{interviewer.name}</span>
+                                    {isCurrentlyAssigned && (
+                                      <span className="rounded-full bg-blue-100 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-blue-700">
+                                        Current
+                                      </span>
+                                    )}
+                                  </span>
+                                  <span className="block truncate text-xs text-[#66685d]">{interviewer.email}</span>
+                                </span>
+                                <span className="rounded-full bg-[#D8DBE2] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#49536B]">
+                                  {interviewer.active_assignment_count} active
+                                </span>
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <button
+                  className="rounded-full bg-blue-700 px-5 py-2.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-45 shrink-0"
+                  disabled={isBusy || !selectedInterviewerId}
+                  onClick={() => onAssign(canAssign ? "assign" : "reassign")}
+                  type="button"
+                >
+                  {isBusy ? "Saving..." : canAssign ? "Assign" : "Reassign"}
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {item.assigned_interviewer ? (
+                  <div className="flex items-center gap-4 py-2">
+                    <Avatar className="size-10 border border-slate-200">
+                      {item.assigned_interviewer.profile_image_url ? (
+                        <AvatarImage src={item.assigned_interviewer.profile_image_url} alt={`${item.assigned_interviewer.name} profile image`} />
+                      ) : null}
+                      <AvatarFallback className="bg-slate-900 text-slate-50">{getInitials(item.assigned_interviewer.name)}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold text-slate-800">{item.assigned_interviewer.name}</p>
+                      <p className="truncate text-xs text-slate-500">{item.assigned_interviewer.email}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <Avatar className="size-9 border border-slate-200">
+                      <AvatarFallback className="bg-slate-100 text-slate-400">UN</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-bold text-slate-800">Unassigned</p>
+                    </div>
+                  </div>
+                )}
 
-            {canGenerate ? (
-              <button
-                className="w-full rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-45"
-                disabled={generateDisabled}
-                onClick={onGenerate}
-                type="button"
-              >
-                {isGenerating ? "Generating..." : generationCapacityFull ? "Generation full" : "Generate report"}
-              </button>
-            ) : item.status === "COMPLETE" ? null : (
-              <button
-                className="w-full rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-45"
-                disabled={isBusy || !selectedInterviewerId || !canMutateAssignment}
-                onClick={() => onAssign(canAssign ? "assign" : "reassign")}
-                type="button"
-              >
-                {isBusy ? "Saving..." : getAssignmentActionLabel(item)}
-              </button>
+                {item.status === "COMPLETE" && (
+                  <p className="text-[10px] text-slate-500 italic">Interview complete. Open the report to review the final summary.</p>
+                )}
+              </div>
             )}
           </div>
         </div>

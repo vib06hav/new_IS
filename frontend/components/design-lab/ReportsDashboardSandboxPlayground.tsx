@@ -1,487 +1,392 @@
 "use client";
 
-import { motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
-import { IBM_Plex_Sans, Libre_Franklin } from "next/font/google";
-import Link from "next/link";
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight, FileChartColumn, LayoutPanelLeft, ListTodo, Search, Settings2, Stars } from "lucide-react";
 import {
-  ArrowUpRight,
-  Eye,
-  EyeOff,
-  MoreHorizontal,
-  PencilLine,
-  Stars,
-  Trash2,
-} from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
+  Libre_Franklin,
+  IBM_Plex_Sans,
+} from "next/font/google";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-} from "@/components/shadcn/select";
-import {
-  reportsDashboardInterviewers,
-  reportsDashboardItems,
-  reportsDashboardMetrics,
-  reportsDashboardStatuses,
-} from "@/lib/design-lab/reportsDashboardMock";
+  assignApplication,
+  deleteApplication,
+  fetchApplications,
+  fetchInterviewers,
+  fetchLlmCapacity,
+  generateReport,
+  hideApplication,
+  reassignApplication,
+  unhideApplication,
+  updateApplicationDisplayId,
+} from "@/lib/api";
+import type { ApplicationListItem, InterviewerListItem, LLMCapacityStatusResponse } from "@/lib/types";
+import { Loader } from "@/components/ui/Loader";
+import { usePolling } from "@/lib/usePolling";
 import { AdminDesignLabNavbar } from "@/components/design-lab/AdminDesignLabNavbar";
-import type { ApplicationListItem } from "@/lib/types";
+import { AdminReportCard } from "@/components/admin/AdminReportCard";
+
+const REPORT_STATUSES = ["ALL", "PROCESSED", "READY", "ASSIGNED", "COMPLETE", "HIDDEN"] as const;
+
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-reports-plex",
+});
 
 const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
   weight: ["900"],
-  variable: "--font-display",
-  display: "swap",
+  variable: "--font-reports-display",
 });
-
-const ibmPlexSans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-  variable: "--font-body",
-  display: "swap",
-});
-
-const dashboardCards = reportsDashboardItems;
-
-const sessionLogEntries = [
-  {
-    id: "log-1",
-    action: "Assigned",
-    reportId: "PLK-2026-0171",
-    detail: "Priya Sharma added as first interviewer",
-    time: "Just now",
-    accent: "#d9f99d",
-    badgeText: "#365314",
-  },
-  {
-    id: "log-2",
-    action: "Reassigned",
-    reportId: "PLK-2026-0169",
-    detail: "Rhea Kapoor -> Aanya Sen",
-    time: "2 min ago",
-    accent: "#dbeafe",
-    badgeText: "#1e3a8a",
-  },
-  {
-    id: "log-3",
-    action: "Updated ID",
-    reportId: "PLK-2026-0148",
-    detail: "Revised reporting identifier to match export record",
-    time: "6 min ago",
-    accent: "#e0f2fe",
-    badgeText: "#0c4a6e",
-  },
-  {
-    id: "log-4",
-    action: "Hidden",
-    reportId: "PLK-2026-0163",
-    detail: "Removed from visible list while review is pending",
-    time: "9 min ago",
-    accent: "#f1f5f9",
-    badgeText: "#475569",
-  },
-  {
-    id: "log-5",
-    action: "Completed",
-    reportId: "PLK-2026-0157",
-    detail: "Pages 4-5 generated and report moved to assignment-ready",
-    time: "14 min ago",
-    accent: "#fef3c7",
-    badgeText: "#92400e",
-  },
-  {
-    id: "log-6",
-    action: "Deleted",
-    reportId: "PLK-2026-0142",
-    detail: "Removed duplicate report from current session",
-    time: "21 min ago",
-    accent: "#fee2e2",
-    badgeText: "#9f1239",
-  },
-] as const;
 
 export function ReportsDashboardSandboxPlayground() {
+  const [items, setItems] = useState<ApplicationListItem[]>([]);
+  const [interviewers, setInterviewers] = useState<InterviewerListItem[]>([]);
+  const [statusFilter, setStatusFilter] = useState<(typeof REPORT_STATUSES)[number]>("ALL");
+  const [loading, setLoading] = useState(true);
+  const [busyAppId, setBusyAppId] = useState<string | null>(null);
+  const [generatingAppId, setGeneratingAppId] = useState<string | null>(null);
+  const [hiddenBusyAppId, setHiddenBusyAppId] = useState<string | null>(null);
+  const [deletingAppId, setDeletingAppId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [llmCapacity, setLlmCapacity] = useState<LLMCapacityStatusResponse | null>(null);
+  const [selectedInterviewerByApp, setSelectedInterviewerByApp] = useState<Record<string, string>>({});
+  const [editingDisplayIdAppId, setEditingDisplayIdAppId] = useState<string | null>(null);
+  const [pendingDisplayIdByApp, setPendingDisplayIdByApp] = useState<Record<string, string>>({});
+  const [savingDisplayIdAppId, setSavingDisplayIdAppId] = useState<string | null>(null);
+
+  async function loadData() {
+    try {
+      const [visibleApplications, hiddenApplications, interviewerList, capacity] = await Promise.all([
+        fetchApplications(),
+        fetchApplications("HIDDEN"),
+        fetchInterviewers(),
+        fetchLlmCapacity(),
+      ]);
+
+      const applications = [...visibleApplications, ...hiddenApplications]
+        .filter((item) => item.status !== "UPLOADED" && item.status !== "PROCESSING" && item.status !== "FAILED")
+        .sort((left, right) => new Date(right.last_activity_at).getTime() - new Date(left.last_activity_at).getTime());
+
+      setItems(applications);
+      setInterviewers(interviewerList);
+      setLlmCapacity(capacity);
+      setError(null);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Failed to load reports.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    void loadData();
+  }, []);
+
+  usePolling(loadData, 5000, !loading);
+
+  async function mutateAssignment(applicationId: string, mode: "assign" | "reassign") {
+    const interviewerId = selectedInterviewerByApp[applicationId];
+    if (!interviewerId) {
+      setError("Choose an interviewer first.");
+      return;
+    }
+
+    setBusyAppId(applicationId);
+    setMessage(null);
+    setError(null);
+    try {
+      if (mode === "assign") {
+        await assignApplication(applicationId, interviewerId);
+        setMessage("Application assigned.");
+      } else {
+        await reassignApplication(applicationId, interviewerId);
+        setMessage("Application reassigned.");
+      }
+
+      await loadData();
+    } catch (mutationError) {
+      setError(mutationError instanceof Error ? mutationError.message : "Assignment update failed.");
+    } finally {
+      setBusyAppId(null);
+    }
+  }
+
+  async function handleGenerate(applicationId: string) {
+    setGeneratingAppId(applicationId);
+    setMessage(null);
+    setError(null);
+    try {
+      await generateReport(applicationId);
+      setMessage("Final report generated.");
+      await loadData();
+    } catch (generationError) {
+      setError(generationError instanceof Error ? generationError.message : "Final report generation failed.");
+    } finally {
+      setGeneratingAppId(null);
+    }
+  }
+
+  async function toggleHidden(applicationId: string, nextHidden: boolean) {
+    setHiddenBusyAppId(applicationId);
+    setMessage(null);
+    setError(null);
+    try {
+      if (nextHidden) {
+        await hideApplication(applicationId);
+        setMessage("Report hidden.");
+      } else {
+        await unhideApplication(applicationId);
+        setMessage("Report restored.");
+      }
+      await loadData();
+    } catch (toggleError) {
+      setError(toggleError instanceof Error ? toggleError.message : "Failed to update report visibility.");
+    } finally {
+      setHiddenBusyAppId(null);
+    }
+  }
+
+  async function removeReport(applicationId: string) {
+    const report = items.find((item) => item.id === applicationId);
+    if (!report) return;
+
+    if (!window.confirm(`Delete report ${report.display_id}? This cannot be undone.`)) {
+      return;
+    }
+
+    setDeletingAppId(applicationId);
+    setMessage(null);
+    setError(null);
+    try {
+      await deleteApplication(applicationId);
+      setMessage("Report deleted.");
+      await loadData();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Failed to delete report.");
+    } finally {
+      setDeletingAppId(null);
+    }
+  }
+
+  function startEditingDisplayId(item: ApplicationListItem) {
+    setEditingDisplayIdAppId(item.id);
+    setPendingDisplayIdByApp((current) => ({ ...current, [item.id]: item.display_id }));
+    setMessage(null);
+    setError(null);
+  }
+
+  function cancelEditingDisplayId(applicationId: string) {
+    setEditingDisplayIdAppId((current) => (current === applicationId ? null : current));
+    setPendingDisplayIdByApp((current) => {
+      const next = { ...current };
+      delete next[applicationId];
+      return next;
+    });
+  }
+
+  async function saveDisplayId(applicationId: string) {
+    const displayId = pendingDisplayIdByApp[applicationId];
+    if (!displayId) {
+      setError("Display ID cannot be empty.");
+      return;
+    }
+
+    setSavingDisplayIdAppId(applicationId);
+    setMessage(null);
+    setError(null);
+    try {
+      await updateApplicationDisplayId(applicationId, { display_id: displayId });
+      setEditingDisplayIdAppId(null);
+      setMessage("Application ID updated.");
+      await loadData();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Failed to update application ID.");
+    } finally {
+      setSavingDisplayIdAppId(null);
+    }
+  }
+
+  const metrics = useMemo(
+    () => ({
+      ready: items.filter((item) => item.status === "READY").length,
+      processed: items.filter((item) => item.status === "PROCESSED").length,
+      complete: items.filter((item) => item.status === "COMPLETE").length,
+      assigned: items.filter((item) => item.status === "ASSIGNED").length,
+      hidden: items.filter((item) => item.is_hidden).length,
+    }),
+    [items],
+  );
+
+  const filteredItems = useMemo(() => {
+    if (statusFilter === "ALL") {
+      return items.filter((item) => !item.is_hidden);
+    }
+
+    if (statusFilter === "HIDDEN") {
+      return items.filter((item) => item.is_hidden);
+    }
+
+    return items.filter((item) => !item.is_hidden && item.status === statusFilter);
+  }, [items, statusFilter]);
+
   return (
     <div
-      className={`${libreFranklin.variable} ${ibmPlexSans.variable} min-h-screen text-slate-900`}
-      style={pageCanvasStyle}
-    >
-      <div className="min-h-screen">
-        <LandingStyledReviewDashboard />
-      </div>
-    </div>
-  );
-}
-
-function LandingStyledReviewDashboard() {
-  const [statusFilter, setStatusFilter] = useState<(typeof reportsDashboardStatuses)[number]>("ALL");
-  const filteredCards =
-    statusFilter === "ALL"
-      ? dashboardCards
-      : dashboardCards.filter((item) => {
-          if (statusFilter === "HIDDEN") return item.is_hidden;
-          return !item.is_hidden && item.status === statusFilter;
-        });
-
-  return (
-    <motion.div
-      animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen text-slate-900"
-      initial={{ opacity: 0, y: 26 }}
-      transition={{ duration: 0.55, ease: "easeOut" }}
+      className={`${plexSans.variable} ${libreFranklin.variable} min-h-screen bg-slate-50`}
+      style={{ fontFamily: "var(--font-reports-plex)" }}
     >
       <AdminDesignLabNavbar activeItem="Reports" />
 
-      <div className="mx-auto max-w-[106rem] px-5 py-7 md:px-8 md:py-8">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_22rem]">
-          <div className="space-y-6">
-            <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
-              <div className="space-y-4">
-                <div className="rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-slate-500">
-                    <span className="inline-flex items-center gap-2 text-slate-800">
-                      <Stars className="size-3.5" />
-                      Admin review desk
-                    </span>
-                  </div>
-                  <div className="mt-5 space-y-4">
-                    <h3
-                      className="max-w-4xl text-5xl font-black leading-[1.04] tracking-tight text-slate-800 md:text-[3.5rem]"
-                      style={{ fontFamily: "var(--font-display)" }}
+      <main className="mx-auto max-w-[106rem] px-5 py-7 md:px-8 md:py-8 space-y-6">
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_20rem] gap-6 items-stretch">
+            <div className="space-y-6">
+              <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-all duration-200 hover:shadow-md">
+                <div className="relative">
+                  <div className="space-y-3">
+                    <h1
+                      className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
+                      style={{ fontFamily: "var(--font-reports-display)" }}
                     >
-                      Generated Reports
-                    </h3>
-                    <p className="max-w-3xl text-base leading-[1.6] text-slate-600" style={{ fontFamily: "var(--font-body)" }}>
-                      Open generated reports, update report IDs, assign or reassign interviewers, manage visibility, and
-                      remove reports when necessary.
+                      Reports Dashboard
+                    </h1>
+                    <p className="max-w-3xl text-sm text-slate-600 leading-relaxed">
+                      Monitor the status of interview reports, manage assignments, and track generation capacity across the pipeline.
                     </p>
                   </div>
                 </div>
+              </section>
 
-                <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm">
-                  <div className="rounded-[1.4rem] border border-slate-200 bg-white/70 p-1.5">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {reportsDashboardStatuses.map((status) => (
-                        <button
-                          key={status}
-                          className={`rounded-[1rem] border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 ${
-                            statusFilter === status
-                              ? getFilterActiveClasses(status)
-                              : "border-transparent bg-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-blue-700"
-                          }`}
-                          onClick={() => setStatusFilter(status)}
-                          type="button"
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
+              <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                <div className="flex-1 rounded-xl border border-slate-100 bg-slate-50 p-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {REPORT_STATUSES.map((status) => (
+                      <button
+                        key={status}
+                        className={`rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-widest transition-all duration-200 ${
+                          statusFilter === status
+                            ? "bg-blue-600 text-white shadow-md"
+                            : "text-slate-500 hover:bg-white hover:text-blue-700 hover:shadow-sm"
+                        }`}
+                        onClick={() => setStatusFilter(status)}
+                        type="button"
+                      >
+                        {status}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              </div>
-
-              <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm xl:h-full">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Status totals</p>
-                <div className="mt-4 space-y-3">
-                  <DashboardMetric label="Ready" value={reportsDashboardMetrics.ready} />
-                  <DashboardMetric label="Complete" value={reportsDashboardMetrics.complete} />
-                  <DashboardMetric label="Assigned" value={reportsDashboardMetrics.assigned} />
-                </div>
-              </div>
-            </section>
-
-            <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {filteredCards.map((item) => (
-                <DashboardCard key={item.id} item={item} />
-              ))}
-            </section>
-          </div>
-
-          <aside className="grid gap-5 self-start">
-            <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Session log</p>
-              <p className="mt-3 text-sm leading-6 text-slate-600">Actions taken during this session appear here in order.</p>
-              <div className="mt-5 rounded-[1.4rem] border border-slate-200 bg-white/70">
-                <div className="border-b border-slate-200 px-4 py-3">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Current session</p>
-                </div>
-                <div className="divide-y divide-slate-200">
-                  {sessionLogEntries.map((entry) => (
-                    <div key={entry.id} className="px-4 py-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span
-                              className="inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em]"
-                              style={{ backgroundColor: entry.accent, color: entry.badgeText }}
-                            >
-                              {entry.action}
-                            </span>
-                            <p className="text-sm font-semibold text-slate-800">{entry.reportId}</p>
-                          </div>
-                          <p className="mt-2 text-sm leading-6 text-slate-600">{entry.detail}</p>
-                        </div>
-                        <p className="shrink-0 pt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                          {entry.time}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </aside>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function DashboardCard({ item }: { item: ApplicationListItem }) {
-  const [overflowOpen, setOverflowOpen] = useState(false);
-  const [selectedInterviewerId, setSelectedInterviewerId] = useState("");
-  const overflowRef = useRef<HTMLDivElement | null>(null);
-  const selectedInterviewer = reportsDashboardInterviewers.find((interviewer) => interviewer.id === selectedInterviewerId);
-  const assignmentActionLabel = item.assigned_interviewer ? "Reassign interviewer" : "Assign interviewer";
-
-  useEffect(() => {
-    if (!overflowOpen) return;
-
-    function handlePointerDown(event: PointerEvent) {
-      const target = event.target;
-      if (!(target instanceof Node)) return;
-      if (overflowRef.current?.contains(target)) return;
-      setOverflowOpen(false);
-    }
-
-    document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
-  }, [overflowOpen]);
-
-  return (
-    <motion.article
-      animate={{ opacity: 1, y: 0 }}
-      className="rounded-[1.8rem] border border-slate-200 bg-white/80 text-slate-900 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm"
-      initial={{ opacity: 0, y: 14 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-    >
-      <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            {item.is_hidden ? <StatusMark status="HIDDEN" /> : null}
-            <StatusMark status={item.status} />
-          </div>
-          <h4 className="text-[1.8rem] font-black leading-none tracking-tight text-slate-800" style={{ fontFamily: "var(--font-display)" }}>
-            {item.display_id}
-          </h4>
-        </div>
-        <div className="relative" ref={overflowRef}>
-          <button
-            className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-            onClick={() => setOverflowOpen((current) => !current)}
-            type="button"
-          >
-            <MoreHorizontal className="size-4" />
-          </button>
-          {overflowOpen ? (
-            <div className="absolute right-0 z-20 mt-2 min-w-44 rounded-[1rem] border border-slate-200 bg-white p-2 shadow-[0_18px_44px_rgba(15,23,42,0.12)]">
-              <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-50" type="button">
-                <span>Edit ID</span>
-                <PencilLine className="size-4" />
-              </button>
-              <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-50" type="button">
-                <span>{item.is_hidden ? "Unhide report" : "Hide report"}</span>
-                {item.is_hidden ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
-              </button>
-              <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-rose-700 transition-colors duration-200 hover:bg-rose-50" type="button">
-                <span>Delete report</span>
-                <Trash2 className="size-4" />
-              </button>
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="space-y-4 px-5 py-5">
-        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
-          <DashboardMeta label="Created" value={formatShortDate(item.created_at)} />
-          <div className="sm:pt-0.5">
-            <PrimaryLink href={`/admin/applications/${item.id}`} label="Open" />
-          </div>
-        </div>
-
-        <div className="rounded-[1.3rem] border border-slate-200 bg-white/70 p-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Assigned interviewer</p>
-          {item.assigned_interviewer ? (
-            <div className="mt-3 flex items-center gap-3">
-              <Avatar className="size-10 border border-slate-200 bg-slate-100">
-                <AvatarFallback className="bg-slate-800 text-white">
-                  {getInitials(item.assigned_interviewer.name)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-slate-800">{item.assigned_interviewer.name}</p>
-                <p className="truncate text-xs text-slate-500">{item.assigned_interviewer.email}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="mt-3 flex items-center gap-3">
-              <Avatar className="size-10 border border-slate-200 bg-slate-100">
-                <AvatarFallback className="bg-slate-100 text-slate-500">UN</AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-slate-800">Unassigned</p>
-                <p className="truncate text-xs text-slate-500">No interviewer selected yet</p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-[1.3rem] border border-slate-200 bg-white/70 p-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Assignment</p>
-          <div className="mt-3 space-y-3">
-            <Select
-              value={selectedInterviewerId}
-              onValueChange={(value) => {
-                setSelectedInterviewerId(value ?? "");
-                setOverflowOpen(false);
-              }}
-            >
-              <SelectTrigger
-                className="h-auto w-full rounded-xl border-slate-200 bg-white px-3 py-3 transition-all duration-200 hover:border-blue-200 hover:bg-blue-50/40"
-                onClick={() => setOverflowOpen(false)}
-              >
-                {selectedInterviewer ? (
-                  <div className="flex min-w-0 flex-1 items-center gap-2">
-                    <Avatar className="size-8">
-                      <AvatarFallback>{getInitials(selectedInterviewer.name)}</AvatarFallback>
-                    </Avatar>
-                    <span className="min-w-0 flex-1 space-y-0.5">
-                      <span className="block truncate font-medium text-slate-800">{selectedInterviewer.name}</span>
-                      <span className="block truncate text-xs text-slate-500">{selectedInterviewer.email}</span>
+                {llmCapacity ? (
+                  <div className="shrink-0 flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Generation</span>
+                    <span className={`text-xs font-semibold ${llmCapacity.generation.active >= llmCapacity.generation.limit ? "text-red-600" : "text-slate-800"}`}>
+                      {llmCapacity.generation.active}/{llmCapacity.generation.limit}
                     </span>
                   </div>
-                ) : (
-                  <span className="text-sm text-slate-500">
-                    {item.assigned_interviewer ? "Choose new interviewer" : "Choose interviewer"}
-                  </span>
-                )}
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border border-slate-200 bg-white shadow-[0_18px_38px_rgba(15,23,42,0.12)]">
-                <SelectGroup>
-                  <SelectLabel>Available interviewers</SelectLabel>
-                  {reportsDashboardInterviewers.map((interviewer) => (
-                    <SelectItem key={interviewer.id} value={interviewer.id}>
-                      <Avatar className="size-8 self-center">
-                        <AvatarFallback>{getInitials(interviewer.name)}</AvatarFallback>
-                      </Avatar>
-                      <span className="min-w-0 flex-1 flex-col justify-center space-y-0.5">
-                        <span className="block truncate font-medium text-slate-800">{interviewer.name}</span>
-                        <span className="block truncate text-xs text-slate-500">{interviewer.email}</span>
-                      </span>
-                      <span className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-800">
-                        {interviewer.active_assignment_count} active
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+                ) : null}
+              </div>
+            </div>
 
-            <button
-              className="w-full rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-45"
-              disabled={!selectedInterviewerId}
-              onClick={() => setOverflowOpen(false)}
-              type="button"
-            >
-              {assignmentActionLabel}
-            </button>
+            <div className="rounded-3xl border border-slate-200 bg-white py-5 px-6 shadow-sm flex flex-col justify-center">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Status totals</p>
+              <div className="flex flex-col gap-1.5">
+                <StatusTotalStrip label="Processed" value={metrics.processed} />
+                <StatusTotalStrip label="Ready" value={metrics.ready} />
+                <StatusTotalStrip label="Assigned" value={metrics.assigned} />
+                <StatusTotalStrip label="Complete" value={metrics.complete} />
+                <StatusTotalStrip label="Hidden" value={metrics.hidden} />
+              </div>
+            </div>
           </div>
+
+          {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
+          {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
+
+          {loading ? (
+            <Loader label="Loading reports..." />
+          ) : filteredItems.length === 0 ? (
+            <ReportsEmptyState statusFilter={statusFilter} />
+          ) : (
+            <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {filteredItems.map((item) => (
+                <AdminReportCard
+                  key={item.id}
+                  item={item}
+                  interviewers={interviewers}
+                  selectedInterviewerId={selectedInterviewerByApp[item.id] ?? ""}
+                  onSelectedInterviewerChange={(value) =>
+                    setSelectedInterviewerByApp((current) => ({ ...current, [item.id]: value }))
+                  }
+                  onAssign={(mode) => void mutateAssignment(item.id, mode)}
+                  onGenerate={() => void handleGenerate(item.id)}
+                  onToggleHidden={() => void toggleHidden(item.id, !item.is_hidden)}
+                  onDelete={() => void removeReport(item.id)}
+                  onStartEdit={() => startEditingDisplayId(item)}
+                  onCancelEdit={() => cancelEditingDisplayId(item.id)}
+                  onSaveEdit={() => void saveDisplayId(item.id)}
+                  onPendingDisplayIdChange={(value) =>
+                    setPendingDisplayIdByApp((current) => ({ ...current, [item.id]: value }))
+                  }
+                  pendingDisplayId={pendingDisplayIdByApp[item.id] ?? ""}
+                  isBusy={busyAppId === item.id}
+                  isGenerating={generatingAppId === item.id}
+                  generationCapacityFull={
+                    (llmCapacity?.generation.active ?? 0) >= (llmCapacity?.generation.limit ?? Number.MAX_SAFE_INTEGER)
+                  }
+                  isHiddenBusy={hiddenBusyAppId === item.id}
+                  isDeleting={deletingAppId === item.id}
+                  isEditingDisplayId={editingDisplayIdAppId === item.id}
+                  isSavingDisplayId={savingDisplayIdAppId === item.id}
+                />
+              ))}
+            </section>
+          )}
         </div>
+      </main>
+    </div>
+  );
+}
+
+function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STATUSES)[number] }) {
+  const copy = getEmptyStateCopy(statusFilter);
+
+  return (
+    <div className="rounded-[1.9rem] border border-slate-200 bg-[#F7F7F1] px-6 py-10 text-center shadow-sm">
+      <div className="mx-auto flex max-w-md flex-col items-center">
+        <div className="grid size-16 place-items-center overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 shadow-sm">
+          <Image
+            alt="Interview Standardiser logo"
+            className="h-14 w-14 scale-[1.28] object-cover"
+            height={56}
+            src="/Logo-removebg-preview.png"
+            width={56}
+          />
+        </div>
+        <h4 className="mt-5 text-[2.1rem] leading-[0.95] tracking-tight text-slate-800 font-bold">
+          {copy.title}
+        </h4>
+        <p className="mt-3 text-sm leading-7 text-slate-500">{copy.description}</p>
       </div>
-    </motion.article>
-  );
-}
-
-function DashboardMetric({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="flex items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-white px-3 py-3">
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{label}</span>
-      <span className="text-sm font-semibold text-slate-800">{value}</span>
     </div>
   );
 }
 
-function DashboardMeta({ label, value }: { label: string; value: string }) {
+function StatusTotalStrip({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
-      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-800">{value}</p>
+    <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
+      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{label}</span>
+      <span className="text-xs font-semibold text-slate-800">{value}</span>
     </div>
   );
 }
 
-function PrimaryLink({ href, label }: { href: string; label: string }) {
-  return (
-    <Link
-      className="inline-flex items-center gap-1 rounded-full bg-blue-700 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white shadow-sm transition-colors duration-200 hover:bg-blue-800"
-      href={href}
-    >
-      {label}
-      <ArrowUpRight className="size-3.5" />
-    </Link>
-  );
+function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
+  if (status === "ALL") return { title: "No visible reports right now.", description: "Generated reports will appear here once they move into review-ready states." };
+  if (status === "PROCESSED") return { title: "No processed reports yet.", description: "Reports with Pages 1-3 ready and waiting for synthesis will appear here." };
+  if (status === "READY") return { title: "No ready reports yet.", description: "Reports ready for assignment will appear here." };
+  if (status === "ASSIGNED") return { title: "No assigned reports yet.", description: "Reports currently owned by an interviewer will appear here." };
+  if (status === "COMPLETE") return { title: "No complete reports yet.", description: "Finalized post-interview reports will appear here." };
+  return { title: "No hidden reports yet.", description: "Reports you hide from the main view will appear here." };
 }
-
-function StatusMark({ status }: { status: string }) {
-  const styles = {
-    READY: "border-lime-200 bg-lime-100 text-lime-900",
-    COMPLETE: "border-amber-200 bg-amber-100 text-amber-900",
-    ASSIGNED: "border-sky-200 bg-sky-100 text-sky-900",
-    HIDDEN: "border-slate-200 bg-slate-100 text-slate-700",
-  };
-
-  const className = styles[status as keyof typeof styles] ?? "border-slate-200 bg-slate-100 text-slate-700";
-
-  return (
-    <span className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${className}`}>
-      {status}
-    </span>
-  );
-}
-
-function getFilterActiveClasses(status: (typeof reportsDashboardStatuses)[number]) {
-  if (status === "ALL") return "border-blue-100 bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-slate-800 shadow-[0_10px_22px_rgba(148,163,184,0.16)]";
-  if (status === "READY") return "border-lime-200 bg-lime-100 text-lime-900 shadow-[0_8px_20px_rgba(190,242,100,0.28)]";
-  if (status === "COMPLETE") return "border-amber-200 bg-amber-100 text-amber-900 shadow-[0_8px_20px_rgba(253,230,138,0.26)]";
-  if (status === "ASSIGNED") return "border-sky-200 bg-sky-100 text-sky-900 shadow-[0_8px_20px_rgba(186,230,253,0.28)]";
-  return "border-slate-200 bg-slate-100 text-slate-700 shadow-[0_8px_20px_rgba(226,232,240,0.24)]";
-}
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
-function formatShortDate(value: string) {
-  return new Date(value).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-const pageCanvasStyle: React.CSSProperties = {
-  backgroundColor: "#f8fafc",
-  backgroundImage: "radial-gradient(#e2e8f0 0.5px, transparent 0.5px)",
-  backgroundSize: "24px 24px",
-  fontFamily: "var(--font-body)",
-};

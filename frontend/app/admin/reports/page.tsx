@@ -259,75 +259,64 @@ function AdminReportsContent() {
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
       <div className="space-y-5">
-        <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="relative">
-            <div className="space-y-3">
-              <h1
-                className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
-                style={{ fontFamily: "var(--font-reports-display)" }}
-              >
-                Reports Dashboard
-              </h1>
-              <p className="max-w-3xl text-sm text-slate-600 leading-relaxed">
-                Monitor the status of interview reports, manage assignments, and track generation capacity across the pipeline.
-              </p>
-            </div>
-          </div>
-        </section>
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_20rem] gap-6 items-stretch">
+          <div className="space-y-6">
+            <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="relative">
+                <div className="space-y-3">
+                  <h1
+                    className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
+                    style={{ fontFamily: "var(--font-reports-display)" }}
+                  >
+                    Reports Dashboard
+                  </h1>
+                  <p className="max-w-3xl text-sm text-slate-600 leading-relaxed">
+                    Monitor the status of interview reports, manage assignments, and track generation capacity across the pipeline.
+                  </p>
+                </div>
+              </div>
+            </section>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Status totals</p>
-          <div className="mt-2 grid grid-cols-5 gap-2">
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Processed</span>
-              <span className="text-xs font-semibold text-slate-800">{metrics.processed}</span>
-            </div>
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Ready</span>
-              <span className="text-xs font-semibold text-slate-800">{metrics.ready}</span>
-            </div>
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Assigned</span>
-              <span className="text-xs font-semibold text-slate-800">{metrics.assigned}</span>
-            </div>
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Complete</span>
-              <span className="text-xs font-semibold text-slate-800">{metrics.complete}</span>
-            </div>
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Hidden</span>
-              <span className="text-xs font-semibold text-slate-800">{metrics.hidden}</span>
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+              <div className="flex-1 rounded-xl border border-slate-100 bg-slate-50 p-1.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {REPORT_STATUSES.map((status) => (
+                    <button
+                      key={status}
+                      className={`rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-widest transition-all duration-200 ${
+                        statusFilter === status
+                          ? "bg-blue-600 text-white shadow-md"
+                          : "text-slate-500 hover:bg-white hover:text-blue-700 hover:shadow-sm"
+                      }`}
+                      onClick={() => setStatusFilter(status)}
+                      type="button"
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {llmCapacity ? (
+                <div className="shrink-0 flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Generation</span>
+                  <span className={`text-xs font-semibold ${llmCapacity.generation.active >= llmCapacity.generation.limit ? "text-red-600" : "text-slate-800"}`}>
+                    {llmCapacity.generation.active}/{llmCapacity.generation.limit}
+                  </span>
+                </div>
+              ) : null}
             </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-          <div className="flex-1 rounded-xl border border-slate-100 bg-slate-50 p-1.5">
-            <div className="flex flex-wrap items-center gap-1.5">
-              {REPORT_STATUSES.map((status) => (
-                <button
-                  key={status}
-                  className={`rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-widest transition-all duration-200 ${
-                    statusFilter === status
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "text-slate-500 hover:bg-white hover:text-blue-700 hover:shadow-sm"
-                  }`}
-                  onClick={() => setStatusFilter(status)}
-                  type="button"
-                >
-                  {status}
-                </button>
-              ))}
+          <div className="rounded-3xl border border-slate-200 bg-white py-5 px-6 shadow-sm flex flex-col">
+            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Status totals</p>
+            <div className="flex flex-col justify-between flex-1">
+              <StatusTotal label="Processed" value={metrics.processed} />
+              <StatusTotal label="Ready" value={metrics.ready} />
+              <StatusTotal label="Assigned" value={metrics.assigned} />
+              <StatusTotal label="Complete" value={metrics.complete} />
+              <StatusTotal label="Hidden" value={metrics.hidden} />
             </div>
           </div>
-          {llmCapacity ? (
-            <div className="shrink-0 flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Generation</span>
-              <span className={`text-xs font-semibold ${llmCapacity.generation.active >= llmCapacity.generation.limit ? "text-red-600" : "text-slate-800"}`}>
-                {llmCapacity.generation.active}/{llmCapacity.generation.limit}
-              </span>
-            </div>
-          ) : null}
         </div>
 
         {message ? <p className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-700">{message}</p> : null}
@@ -463,9 +452,9 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
 
 function StatusTotal({ label, value, className }: { label: string; value: number; className?: string }) {
   return (
-    <div className={`${className ?? ""} flex items-center justify-between gap-3`}>
-      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
-      <span className="text-sm font-semibold text-slate-800">{value}</span>
+    <div className={`${className ?? ""} flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm`}>
+      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
+      <span className="text-xs font-semibold text-slate-800">{value}</span>
     </div>
   );
 }

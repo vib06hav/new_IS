@@ -328,10 +328,9 @@ function AdminUploadContent() {
       className={`${libreFranklin.variable} ${plexSans.variable} space-y-6`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
-      <div className="space-y-6">
-            <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_20rem] gap-6 items-stretch">
+            <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
               <div className="relative">
-                
                 <div className="space-y-3">
                   <h1
                     className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
@@ -347,14 +346,15 @@ function AdminUploadContent() {
               </div>
             </section>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Status totals</p>
-              <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-2">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Status totals</p>
+              <div className="flex flex-col justify-between flex-1">
                 <MetricStrip label="Queued" value={metrics.queued} />
                 <MetricStrip label="Processing" value={metrics.processing} />
                 <MetricStrip label="Failed" value={metrics.failed} />
               </div>
             </div>
+          </div>
 
             <section className="grid gap-6 xl:grid-cols-[24rem_minmax(0,1fr)] xl:items-start">
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -498,14 +498,13 @@ function AdminUploadContent() {
               </div>
             </section>
       </div>
-    </div>
   );
 }
 
 function MetricStrip({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
-      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{label}</span>
+      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
       <span className="text-xs font-semibold text-slate-800">{value}</span>
     </div>
   );
@@ -513,13 +512,13 @@ function MetricStrip({ label, value }: { label: string; value: number }) {
 
 function UploadStatusMark({ status }: { status: QueueRow["status"] }) {
   const styles = {
-    QUEUED: "bg-[#198FF0] text-[#F7F7F1]",
-    PROCESSING: "bg-[#7CF0FF] text-[#111111]",
-    FAILED: "bg-[#FF6B9D] text-[#111111]",
+    QUEUED: "bg-sky-100 text-sky-900 border-sky-200",
+    PROCESSING: "bg-violet-100 text-violet-900 border-violet-200",
+    FAILED: "bg-rose-100 text-rose-700 border-rose-200",
   } satisfies Record<QueueRow["status"], string>;
 
   return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${styles[status]}`}>
+    <span className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${styles[status]}`}>
       {status}
     </span>
   );

@@ -441,8 +441,9 @@ function AdminInterviewersContent() {
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
       <div className="space-y-6">
-          <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <div className="relative flex flex-col h-full justify-between gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_20rem] gap-6 items-stretch">
+            <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="relative flex flex-col h-full justify-between gap-6">
                 <div className="space-y-3">
                   <h1
                     className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
@@ -467,14 +468,15 @@ function AdminInterviewersContent() {
                   </button>
                 </div>
               </div>
-          </section>
+            </section>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Status totals</p>
-            <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-2">
-              <MetricStrip label="Interviewers" value={metrics.interviewers} />
-              <MetricStrip label="Active assignments" value={metrics.activeAssignments} />
-              <MetricStrip label="Ready pool" value={metrics.readyPool} />
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Status totals</p>
+              <div className="flex flex-col justify-between flex-1">
+                <MetricStrip label="Interviewers" value={metrics.interviewers} />
+                <MetricStrip label="Active assignments" value={metrics.activeAssignments} />
+                <MetricStrip label="Ready pool" value={metrics.readyPool} />
+              </div>
             </div>
           </div>
 
@@ -489,7 +491,7 @@ function AdminInterviewersContent() {
               <p className="mt-2 text-sm text-[#5F6C86]">Add an interviewer to start assigning applications.</p>
             </div>
           ) : (
-            <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {items.map((item) => (
                 <InterviewerCard
                   key={item.id}
@@ -670,29 +672,32 @@ function InterviewerCard({
   onEdit: () => void;
 }) {
   return (
-    <article className="rounded-3xl border border-slate-200 bg-white text-slate-900 shadow-[0_10px_30px_rgba(2,12,32,0.05)] transition-all hover:shadow-md">
-      <div className="space-y-4 px-5 py-5">
-        <div className="flex min-w-0 items-center gap-3">
-          <InterviewerAvatar item={item} sizeClassName="size-12" />
-          <div className="min-w-0 flex-1 space-y-2">
-            <h4 className="text-xl font-black tracking-tight text-slate-800" style={{ fontFamily: "var(--font-reports-display)" }}>
-              {item.name}
-            </h4>
-            <p className="truncate text-sm text-slate-500">{item.email}</p>
-          </div>
+    <article className="relative rounded-3xl border border-slate-200 bg-white text-slate-900 shadow-[0_10px_30px_rgba(2,12,32,0.05)] transition-all hover:shadow-md">
+      <div className="absolute top-4 right-4">
+        <div className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-600 border border-blue-100">
+          {item.active_assignment_count} active
+        </div>
+      </div>
+      <div className="flex flex-col items-center p-6 text-center">
+        <InterviewerAvatar item={item} sizeClassName="size-20" />
+        
+        <div className="mt-5 w-full space-y-1">
+          <h4 
+            className="truncate text-xl font-black tracking-tight text-slate-800" 
+            style={{ fontFamily: "var(--font-reports-display)" }}
+            title={item.name}
+          >
+            {item.name}
+          </h4>
+          <p className="truncate text-xs text-slate-500" title={item.email}>{item.email}</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Active assignments</p>
-          <p className="mt-3 text-3xl font-black text-slate-800 tracking-tight">{item.active_assignment_count}</p>
-        </div>
-
-        <div className="grid gap-2">
-          <button className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700" onClick={onManageAssignments} type="button">
+        <div className="mt-6 w-full grid gap-2">
+          <button className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700" onClick={onManageAssignments} type="button">
             <ArrowLeftRight className="size-4" />
             Manage assignments
           </button>
-          <button className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-blue-300 hover:text-blue-700" onClick={onEdit} type="button">
+          <button className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-blue-300 hover:text-blue-700" onClick={onEdit} type="button">
             <PencilLine className="size-4" />
             Edit interviewer
           </button>
@@ -833,7 +838,7 @@ function AssignmentBucket({
 function MetricStrip({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
-      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{label}</span>
+      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
       <span className="text-xs font-semibold text-slate-800">{value}</span>
     </div>
   );
