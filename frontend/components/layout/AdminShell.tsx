@@ -83,7 +83,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         style={bodyStyle}
       >
         <AdminNavbar onSignOut={handleSignOut} />
-        <main className="mx-auto max-w-[106rem] px-5 py-7 md:px-8 md:py-8">
+        <main className="mx-auto max-w-[106rem] px-5 pt-4 pb-12 md:px-8 md:pt-5 md:pb-16">
           {children}
         </main>
       </div>

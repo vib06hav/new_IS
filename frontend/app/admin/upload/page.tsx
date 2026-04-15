@@ -347,9 +347,9 @@ function AdminUploadContent() {
               </div>
             </section>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Status totals</p>
-              <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Status totals</p>
+              <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-2">
                 <MetricStrip label="Queued" value={metrics.queued} />
                 <MetricStrip label="Processing" value={metrics.processing} />
                 <MetricStrip label="Failed" value={metrics.failed} />
@@ -504,9 +504,9 @@ function AdminUploadContent() {
 
 function MetricStrip({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 transition-all hover:bg-white hover:shadow-sm">
-      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{label}</span>
-      <span className="text-sm font-semibold text-slate-800">{value}</span>
+    <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
+      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{label}</span>
+      <span className="text-xs font-semibold text-slate-800">{value}</span>
     </div>
   );
 }

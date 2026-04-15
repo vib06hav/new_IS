@@ -469,9 +469,9 @@ function AdminInterviewersContent() {
               </div>
           </section>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Status totals</p>
-            <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Status totals</p>
+            <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-2">
               <MetricStrip label="Interviewers" value={metrics.interviewers} />
               <MetricStrip label="Active assignments" value={metrics.activeAssignments} />
               <MetricStrip label="Ready pool" value={metrics.readyPool} />
@@ -832,9 +832,9 @@ function AssignmentBucket({
 
 function MetricStrip({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[1rem] border border-[#727D97] bg-[#CBD2DE] px-3 py-3">
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#5F6C86]">{label}</span>
-      <span className="text-sm font-semibold text-[#111111]">{value}</span>
+    <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
+      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{label}</span>
+      <span className="text-xs font-semibold text-slate-800">{value}</span>
     </div>
   );
 }
