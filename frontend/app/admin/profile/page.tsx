@@ -19,6 +19,7 @@ import { AdminShell } from "@/components/layout/AdminShell";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 import { Button } from "@/components/ui/Button";
 import { Loader } from "@/components/ui/Loader";
+import { AvatarCropModal } from "@/components/ui/AvatarCropModal";
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -55,6 +56,7 @@ function AdminProfileContent() {
     newPassword: "",
     confirmPassword: "",
   });
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
   const profileImageInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -159,17 +161,38 @@ function AdminProfileContent() {
       return;
     }
 
+    // Instead of uploading immediately, open the cropper
+    const imageUrl = URL.createObjectURL(nextFile);
+    setPendingImage(imageUrl);
+  }
+
+  async function handleCropComplete(croppedBlob: Blob) {
+    if (!pendingImage) return;
+
+    // Clean up the object URL
+    URL.revokeObjectURL(pendingImage);
+    setPendingImage(null);
+
     setUploadingImage(true);
     setError(null);
     setMessage(null);
     try {
-      const updated = await uploadMyProfileImage(nextFile);
+      // Wrap blob in a File object
+      const file = new File([croppedBlob], "avatar.jpg", { type: "image/jpeg" });
+      const updated = await uploadMyProfileImage(file);
       setSession(updated);
       setMessage("Profile image updated.");
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Failed to update profile image.");
     } finally {
       setUploadingImage(false);
+    }
+  }
+
+  function handleCropCancel() {
+    if (pendingImage) {
+      URL.revokeObjectURL(pendingImage);
+      setPendingImage(null);
     }
   }
 
@@ -368,6 +391,14 @@ function AdminProfileContent() {
                   Last session activity: {new Date().toLocaleDateString()} • Secure Admin Environment
                 </p>
               </div>
+
+              {pendingImage && (
+                <AvatarCropModal
+                  image={pendingImage}
+                  onCancel={handleCropCancel}
+                  onCropComplete={(blob) => void handleCropComplete(blob)}
+                />
+              )}
             </div>
           )}
         </div>
