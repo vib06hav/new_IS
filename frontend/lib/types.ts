@@ -111,6 +111,7 @@ export type ReportChatResponse = {
   answer_summary: string;
   results: ReportChatResult[];
   not_found: boolean;
+  response_state: "clean" | "repaired" | "retried" | "degraded";
 };
 
 export type ApplicationListItem = {

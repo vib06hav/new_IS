@@ -6,7 +6,7 @@ import re
 import threading
 import time
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal, Optional
 
 from app.config import settings
 from app.llm.token_counter import estimate_messages_tokens, estimate_text_tokens
@@ -121,12 +121,27 @@ class LLMPolicy:
     max_tokens: int
 
 
+LLMResponseFormatType = Literal["json_object", "json_schema"]
+
+
+@dataclass(frozen=True)
+class LLMRequestOptions:
+    response_format_type: Optional[LLMResponseFormatType] = None
+    response_schema: Optional[dict[str, Any]] = None
+    temperature_override: Optional[float] = None
+    prefer_fallback_model: bool = False
+
+
 class LLMCapacityError(LLMClientError):
     """Raised when app-side LLM request concurrency is exhausted."""
 
 
 class LLMBudgetExceededError(LLMClientError):
     """Raised when upstream budget limits are exhausted."""
+
+
+class LLMStructuredOutputUnsupportedError(LLMClientError):
+    """Raised when the upstream provider rejects schema-constrained output."""
 
 
 class _RequestCapacity:
@@ -186,7 +201,12 @@ def _policy_for_call(call_label: str | None) -> LLMPolicy:
     )
 
 
-def generate(messages: list[dict], call_label: str | None = None) -> str:
+def generate(
+    messages: list[dict],
+    call_label: str | None = None,
+    *,
+    request_options: LLMRequestOptions | None = None,
+) -> str:
     """
     Provider-agnostic public interface for exactly one logical LLM call.
     The active transport is selected by settings.LLM_PROVIDER.
@@ -198,19 +218,24 @@ def generate(messages: list[dict], call_label: str | None = None) -> str:
         return _run_with_braintrust_trace(
             messages,
             call_label,
-            lambda: _generate_openai_compatible(messages, call_label),
+            lambda: _generate_openai_compatible(messages, call_label, request_options=request_options),
         )
 
     if settings.LLM_PROVIDER == "aicredits":
         return _run_with_braintrust_trace(
             messages,
             call_label,
-            lambda: _generate_aicredits(messages, call_label),
+            lambda: _generate_aicredits(messages, call_label, request_options=request_options),
         )
 
     raise LLMClientError(f"Unsupported LLM_PROVIDER: {settings.LLM_PROVIDER}")
 
-def _generate_openai_compatible(messages: list[dict], call_label: str | None = None) -> str:
+def _generate_openai_compatible(
+    messages: list[dict],
+    call_label: str | None = None,
+    *,
+    request_options: LLMRequestOptions | None = None,
+) -> str:
     """
     Sends a chat-completions style request to an OpenAI-compatible endpoint,
     which covers providers such as OpenAI and OpenRouter.
@@ -221,15 +246,18 @@ def _generate_openai_compatible(messages: list[dict], call_label: str | None = N
     payload: dict[str, Any] = {
         "model": settings.LLM_MODEL_NAME,
         "messages": messages,
-        "temperature": settings.LLM_TEMPERATURE,
+        "temperature": (
+            request_options.temperature_override
+            if request_options and request_options.temperature_override is not None
+            else settings.LLM_TEMPERATURE
+        ),
     }
     logger.info(
         "LLM request prepared%s. Estimated prompt tokens=%s",
         f" [{call_label}]" if call_label else "",
         estimate_messages_tokens(messages),
     )
-    if settings.LLM_JSON_MODE:
-        payload["response_format"] = {"type": "json_object"}
+    _apply_response_format(payload, request_options=request_options)
 
     headers = {"Content-Type": "application/json"}
     if settings.LLM_API_KEY:
@@ -261,7 +289,12 @@ def _generate_openai_compatible(messages: list[dict], call_label: str | None = N
         raise LLMClientError(f"LLM Transport Failure: {str(e)}")
 
 
-def _generate_aicredits(messages: list[dict], call_label: str | None = None) -> str:
+def _generate_aicredits(
+    messages: list[dict],
+    call_label: str | None = None,
+    *,
+    request_options: LLMRequestOptions | None = None,
+) -> str:
     if not messages:
         raise LLMClientError("generate() called with an empty messages list.")
 
@@ -269,12 +302,18 @@ def _generate_aicredits(messages: list[dict], call_label: str | None = None) -> 
     capacity = _policy_capacities[policy.name]
     capacity.acquire(policy.name)
     try:
-        return _run_aicredits_policy(messages, call_label, policy)
+        return _run_aicredits_policy(messages, call_label, policy, request_options=request_options)
     finally:
         capacity.release()
 
 
-def _run_aicredits_policy(messages: list[dict], call_label: str | None, policy: LLMPolicy) -> str:
+def _run_aicredits_policy(
+    messages: list[dict],
+    call_label: str | None,
+    policy: LLMPolicy,
+    *,
+    request_options: LLMRequestOptions | None = None,
+) -> str:
     if not policy.api_key:
         raise LLMClientError(f"{policy.name} API key is not configured.")
     if not policy.primary_model:
@@ -283,6 +322,8 @@ def _run_aicredits_policy(messages: list[dict], call_label: str | None, policy: 
     models = [policy.primary_model]
     if policy.fallback_model and policy.fallback_model != policy.primary_model:
         models.append(policy.fallback_model)
+    if request_options and request_options.prefer_fallback_model and len(models) > 1:
+        models = [*models[1:], models[0]]
 
     last_error: Exception | None = None
     for model_index, model_name in enumerate(models):
@@ -295,6 +336,7 @@ def _run_aicredits_policy(messages: list[dict], call_label: str | None, policy: 
                     model_name=model_name,
                     api_key=policy.api_key,
                     max_tokens=policy.max_tokens,
+                    request_options=request_options,
                 )
             except LLMBudgetExceededError:
                 raise
@@ -322,15 +364,19 @@ def _send_aicredits_request(
     model_name: str,
     api_key: str,
     max_tokens: int,
+    request_options: LLMRequestOptions | None = None,
 ) -> str:
     payload: dict[str, Any] = {
         "model": model_name,
         "messages": messages,
-        "temperature": settings.LLM_TEMPERATURE,
+        "temperature": (
+            request_options.temperature_override
+            if request_options and request_options.temperature_override is not None
+            else settings.LLM_TEMPERATURE
+        ),
         "max_tokens": max_tokens,
     }
-    if settings.LLM_JSON_MODE:
-        payload["response_format"] = {"type": "json_object"}
+    _apply_response_format(payload, request_options=request_options)
 
     logger.info(
         "AICredits request prepared%s using model=%s. Estimated prompt tokens=%s",
@@ -360,7 +406,15 @@ def _send_aicredits_request(
 
     if response.status_code == 402:
         raise LLMBudgetExceededError("AICredits budget has been exhausted for this key.")
-    if response.status_code in {400, 401, 403}:
+    if response.status_code == 400:
+        if (
+            request_options
+            and request_options.response_format_type == "json_schema"
+            and _looks_like_unsupported_json_schema_response(response)
+        ):
+            raise LLMStructuredOutputUnsupportedError("AICredits does not support json_schema for this request.")
+        raise LLMClientError(f"AICredits rejected the request with status {response.status_code}.")
+    if response.status_code in {401, 403}:
         raise LLMClientError(f"AICredits rejected the request with status {response.status_code}.")
     if response.status_code == 429:
         raise LLMClientError("AICredits rate limit reached.")
@@ -411,6 +465,30 @@ def _sleep_with_backoff(base_seconds: float, attempt: int) -> None:
 def _is_retryable_llm_error(exc: Exception) -> bool:
     text = str(exc).lower()
     return any(token in text for token in ("rate limit", "timeout", "transport", "upstream error", "status 5", "invalid json"))
+
+
+def _apply_response_format(payload: dict[str, Any], *, request_options: LLMRequestOptions | None) -> None:
+    if request_options and request_options.response_format_type == "json_schema" and request_options.response_schema:
+        payload["response_format"] = {
+            "type": "json_schema",
+            "json_schema": request_options.response_schema,
+        }
+        return
+
+    if request_options and request_options.response_format_type == "json_object":
+        payload["response_format"] = {"type": "json_object"}
+        return
+
+    if settings.LLM_JSON_MODE:
+        payload["response_format"] = {"type": "json_object"}
+
+
+def _looks_like_unsupported_json_schema_response(response: httpx.Response) -> bool:
+    try:
+        body = response.text.lower()
+    except Exception:
+        return False
+    return "json_schema" in body or "response_format" in body or "schema" in body
 
 
 def _extract_openai_compatible_text(data: Any) -> str:

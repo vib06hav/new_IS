@@ -217,6 +217,7 @@ ReportChatSectionKey = Literal[
     "page4_focus_areas",
     "page5_question_groups",
 ]
+ReportChatResponseState = Literal["clean", "repaired", "retried", "degraded"]
 
 
 class ReportChatRequest(BaseModel):
@@ -235,6 +236,7 @@ class ReportChatResponse(BaseModel):
     answer_summary: str
     results: list[ReportChatResult]
     not_found: bool
+    response_state: ReportChatResponseState = "clean"
 
 
 class InterviewWorkspaceUpsertRequest(BaseModel):

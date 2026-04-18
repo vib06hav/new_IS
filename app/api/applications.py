@@ -309,6 +309,23 @@ def ask_report_chat(
     context = build_report_chat_context(question, review_package.pages_1_3.model_dump(), final_report_content)
 
     try:
-        return answer_report_question(question, context)
+        response = answer_report_question(question, context)
+        logger.info(
+            "Report chat API completed status_code=200 shape=%s operation=%s target=%s response_state=%s result_count=%s not_found=%s",
+            context.get("question_shape_bucket"),
+            context.get("detected_operation"),
+            context.get("detected_target"),
+            response.response_state,
+            len(response.results),
+            response.not_found,
+        )
+        return response
     except ReportChatError as exc:
+        logger.warning(
+            "Report chat API failed status_code=502 shape=%s operation=%s target=%s detail=%s",
+            context.get("question_shape_bucket"),
+            context.get("detected_operation"),
+            context.get("detected_target"),
+            str(exc),
+        )
         raise HTTPException(status_code=502, detail=str(exc)) from exc

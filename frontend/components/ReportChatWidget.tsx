@@ -40,6 +40,23 @@ export function ReportChatWidget({
     }
   }
 
+  async function handleRetry() {
+    if (!question.trim() || submitting) {
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+    try {
+      const response = await askReportChat(applicationId, { question: question.trim() });
+      setAnswer(response);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Unable to search this report right now.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   function handleClear() {
     setQuestion("");
     setAnswer(null);
@@ -104,16 +121,38 @@ export function ReportChatWidget({
                 <div className="rounded-[1rem] border border-slate-200 bg-[linear-gradient(135deg,rgba(239,246,255,0.92),rgba(255,255,255,0.92))] px-4 py-3">
                   <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Answer</p>
                   <p className="mt-2 text-sm leading-6 text-slate-900">{answer.answer_summary}</p>
+                  {answer.response_state === "degraded" ? (
+                    <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-amber-700">
+                      Summary recovered, section links unavailable
+                    </p>
+                  ) : answer.response_state !== "clean" ? (
+                    <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-amber-700">
+                      Recovered response
+                    </p>
+                  ) : null}
                 </div>
 
                 {answer.not_found ? (
-                  <p className="rounded-[1rem] border border-slate-200 bg-white/80 px-4 py-3 text-sm leading-6 text-slate-600">
-                    I could not find that in the current report.
-                  </p>
+                  <div className="space-y-3 rounded-[1rem] border border-slate-200 bg-white/80 px-4 py-3 text-sm leading-6 text-slate-600">
+                    <p>I could not find that in the current report.</p>
+                    <Button disabled={submitting} onClick={() => void handleRetry()} size="sm" type="button" variant="secondary">
+                      Try again
+                    </Button>
+                  </div>
                 ) : null}
 
                 {!answer.not_found ? (
                   <div className="space-y-3">
+                    {answer.results.length === 0 ? (
+                      <div className="space-y-3 rounded-[1rem] border border-slate-200 bg-white/80 px-4 py-3 text-sm leading-6 text-slate-600">
+                        <p>Section links are unavailable for this answer, but the summary above is still usable.</p>
+                        {(answer.response_state === "degraded" || answer.response_state === "retried") ? (
+                          <Button disabled={submitting} onClick={() => void handleRetry()} size="sm" type="button" variant="secondary">
+                            Try again
+                          </Button>
+                        ) : null}
+                      </div>
+                    ) : null}
                     {answer.results.map((result, index) => (
                       <button
                         key={`${result.section_key}-${result.anchor_id}-${index}`}
