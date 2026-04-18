@@ -1,5 +1,7 @@
 from typing import Dict, Any
 import re
+import json
+from pathlib import Path
 
 from app.agents.layout_extractor import extract_layout_blocks
 from app.agents.section_detector import detect_sections
@@ -335,15 +337,36 @@ def run_synthesis_pipeline(
                 "context": str(e)
             }]
         }
-        _handle_abort(application_id, abort_res, db)
+        _handle_abort(
+            application_id,
+            abort_res,
+            db,
+            artifacts={
+                "stage": "call_1_transport",
+                "validation_result": abort_res,
+                "call_1_projection": call_1_projection,
+                "essay_fragments": essay_fragments,
+            },
+        )
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": abort_res, "confidence": agg_conf}
 
     logger.debug("Policy Guard: Signal Sanitiser (pre-validation auto-repair)")
+    sanitised_call_1_json = None
     try:
         raw_call_1_json = __import__("json").loads(raw_call_1_output)
         valid_fragment_ids = {f.get("fragment_id") for f in essay_fragments if f.get("fragment_id")}
         valid_entity_ids = {e.get("entity_id") for e in entity_id_map if e.get("entity_id")}
-        sanitised_call_1_json = sanitise_llm_output(raw_call_1_json, valid_fragment_ids, valid_entity_ids)
+        fragment_entity_lookup = {
+            fragment.get("fragment_id"): fragment.get("entity_id")
+            for fragment in essay_fragments
+            if fragment.get("fragment_id") and fragment.get("entity_id")
+        }
+        sanitised_call_1_json = sanitise_llm_output(
+            raw_call_1_json,
+            valid_fragment_ids,
+            valid_entity_ids,
+            fragment_entity_lookup=fragment_entity_lookup,
+        )
         raw_call_1_output = __import__("json").dumps(sanitised_call_1_json)
     except Exception as san_err:
         logger.warning(f"[SANITISER] Skipped — could not parse LLM output for repair: {san_err}")
@@ -358,7 +381,19 @@ def run_synthesis_pipeline(
 
     if not val_res_1["passed"]:
         logger.error(f"Architecture Lock 3.4: Call 1 Validation Failed for {application_id}. HALTING PIPELINE.")
-        _handle_abort(application_id, val_res_1, db)
+        _handle_abort(
+            application_id,
+            val_res_1,
+            db,
+            artifacts={
+                "stage": "call_1_validation",
+                "raw_call_1_output": raw_call_1_output,
+                "sanitised_call_1_output": sanitised_call_1_json,
+                "validation_result": val_res_1,
+                "call_1_projection": call_1_projection,
+                "essay_fragments": essay_fragments,
+            },
+        )
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": val_res_1, "confidence": agg_conf}
 
     logger.debug(f"Agent 15: Bundle Constructor (keys in val_res_1: {list(val_res_1.keys())})")
@@ -379,7 +414,16 @@ def run_synthesis_pipeline(
                 "context": str(e)
             }]
         }
-        _handle_abort(application_id, abort_res, db)
+        _handle_abort(
+            application_id,
+            abort_res,
+            db,
+            artifacts={
+                "stage": "call_2_transport",
+                "validation_result": abort_res,
+                "signal_evidence_bundle": signal_evidence_bundle,
+            },
+        )
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": abort_res, "confidence": agg_conf}
 
     logger.debug("Policy Guard: Question Group Validation")
@@ -387,7 +431,17 @@ def run_synthesis_pipeline(
 
     if not val_res_2["passed"]:
         logger.error(f"Call 2 Validation Failed for {application_id}")
-        _handle_abort(application_id, val_res_2, db)
+        _handle_abort(
+            application_id,
+            val_res_2,
+            db,
+            artifacts={
+                "stage": "call_2_validation",
+                "raw_call_2_output": raw_call_2_output,
+                "validation_result": val_res_2,
+                "signal_evidence_bundle": signal_evidence_bundle,
+            },
+        )
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": val_res_2, "confidence": agg_conf}
 
     logger.debug("ROS Assembler")
@@ -447,8 +501,30 @@ def run_synthesis_pipeline(
         "confidence": agg_conf
     }
 
-def _handle_abort(application_id: str, val_result: dict, db: Session | None):
+def _persist_failure_artifacts(application_id: str, payload: dict[str, Any]) -> None:
+    try:
+        artifact_dir = Path(settings.UPLOAD_DIRECTORY) / "failure_artifacts" / str(application_id)
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        artifact_path = artifact_dir / f"{timestamp}.json"
+        artifact_payload = sanitize_for_json(payload)
+        artifact_payload["application_id"] = application_id
+        artifact_payload["captured_at"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        with artifact_path.open("w", encoding="utf-8") as handle:
+            json.dump(artifact_payload, handle, ensure_ascii=False, indent=2)
+    except Exception as exc:
+        logger.error(f"Failure artifact persistence failed for {application_id}: {str(exc)}")
+
+
+def _handle_abort(
+    application_id: str,
+    val_result: dict,
+    db: Session | None,
+    artifacts: dict[str, Any] | None = None,
+):
     """Internal helper to handle policy validation aborts."""
+    if artifacts:
+        _persist_failure_artifacts(application_id, artifacts)
     if db is None:
         return
     try:

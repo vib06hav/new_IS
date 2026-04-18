@@ -235,6 +235,7 @@ def sanitise_llm_output(
     raw_output: dict,
     valid_fragment_ids: set,
     valid_entity_ids: set,
+    fragment_entity_lookup: dict[str, str] | None = None,
 ) -> dict:
     """
     Pre-validation auto-repair layer.
@@ -283,6 +284,27 @@ def sanitise_llm_output(
                 repairs.append({"field": f"{field_prefix}.supporting_fragment_ids", "action": "strip_invented_fragment_ids", "removed": list(removed)})
                 raw_fragment_ids = clean_fragment_ids
                 sig["supporting_fragment_ids"] = raw_fragment_ids
+
+            if isinstance(sig.get("referenced_entity_ids", []), list) and fragment_entity_lookup:
+                clean_fragment_ids = [
+                    fid
+                    for fid in raw_fragment_ids
+                    if fragment_entity_lookup.get(fid) in sig.get("referenced_entity_ids", [])
+                ]
+                removed = [fid for fid in raw_fragment_ids if fid not in clean_fragment_ids]
+                if removed:
+                    logger.info(
+                        f"[SANITISER] {field_prefix}.supporting_fragment_ids: stripped fragment/entity mismatches {removed}"
+                    )
+                    repairs.append(
+                        {
+                            "field": f"{field_prefix}.supporting_fragment_ids",
+                            "action": "strip_fragment_entity_mismatches",
+                            "removed": removed,
+                        }
+                    )
+                    raw_fragment_ids = clean_fragment_ids
+                    sig["supporting_fragment_ids"] = raw_fragment_ids
 
             # HC-1: Truncate fragment overflow after stripping
             if len(raw_fragment_ids) > MAX_FRAGMENT_IDS_PER_SIGNAL:
