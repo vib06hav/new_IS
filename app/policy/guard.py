@@ -392,21 +392,23 @@ def validate_signals(
 
     signals = normalized_output.get("signals")
     themes = normalized_output.get("themes")
-    if not isinstance(signals, list) or len(signals) == 0:
+    signals_missing = not isinstance(signals, list) or len(signals) == 0
+    themes_missing = not isinstance(themes, list) or len(themes) == 0
+    if signals_missing:
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
             "field": "signals",
             "type": "structure_error",
             "context": "'signals' array is missing or empty. At least one signal must be generated.",
         })
-    if not isinstance(themes, list) or len(themes) == 0:
+    if themes_missing:
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
             "field": "themes",
             "type": "structure_error",
             "context": "'themes' array is missing or empty. At least one theme must be generated.",
         })
-    if violations_log:
+    if signals_missing:
         return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
 
     valid_entity_ids = {e.get("entity_id") for e in entity_id_map if e.get("entity_id")}

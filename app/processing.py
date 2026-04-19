@@ -8,6 +8,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.agents.orchestrator import run_deterministic_pipeline
+from app.coordination import LockNotAcquiredError, get_coordination_manager
 from app.config import settings
 from app.database import SessionLocal
 from app.models.application import Application
@@ -23,6 +24,8 @@ JOB_STATUS_QUEUED = "queued"
 JOB_STATUS_RUNNING = "running"
 JOB_STATUS_COMPLETED = "completed"
 JOB_STATUS_FAILED = "failed"
+
+CLAIM_LOCK_TIMEOUT_SECONDS = 15.0
 
 
 def enqueue_processing_job(db: Session, application_id: UUID, *, job_type: str = JOB_TYPE_DETERMINISTIC_PIPELINE) -> ProcessingJob:
@@ -106,14 +109,29 @@ def _claim_next_processing_job(db: Session) -> ProcessingJob | None:
     if job is None:
         return None
 
-    job.status = JOB_STATUS_RUNNING
-    job.attempts = (job.attempts or 0) + 1
-    job.started_at = datetime.utcnow()
-    job.last_error = None
-    job.available_at = None
-    db.commit()
-    db.refresh(job)
-    return job
+    coordination = get_coordination_manager()
+    try:
+        with coordination.acquire(
+            f"processing:claim:{job.id}",
+            timeout_seconds=CLAIM_LOCK_TIMEOUT_SECONDS,
+            blocking_timeout=0.0,
+        ):
+            db.refresh(job)
+            if job.status != JOB_STATUS_QUEUED:
+                return None
+            if job.available_at is not None and job.available_at > now:
+                return None
+
+            job.status = JOB_STATUS_RUNNING
+            job.attempts = (job.attempts or 0) + 1
+            job.started_at = datetime.utcnow()
+            job.last_error = None
+            job.available_at = None
+            db.commit()
+            db.refresh(job)
+            return job
+    except LockNotAcquiredError:
+        return None
 
 
 def process_next_processing_job() -> bool:
@@ -134,13 +152,33 @@ def process_next_processing_job() -> bool:
             db.commit()
             return True
 
+        coordination = get_coordination_manager()
         try:
-            with get_storage_service().materialize_to_tempfile(application.storage_key, suffix=".pdf") as local_pdf_path:
-                run_deterministic_pipeline(str(application.id), local_pdf_path, db)
+            with coordination.acquire(
+                f"processing:run:{application.id}",
+                timeout_seconds=max(settings.PROCESSING_JOB_STALE_AFTER_SECONDS + 60, 60),
+                blocking_timeout=0.0,
+            ):
+                with get_storage_service().materialize_to_tempfile(application.storage_key, suffix=".pdf") as local_pdf_path:
+                    run_deterministic_pipeline(str(application.id), local_pdf_path, db)
             job.status = JOB_STATUS_COMPLETED
             job.finished_at = datetime.utcnow()
             job.last_error = None
             db.commit()
+        except LockNotAcquiredError:
+            db.rollback()
+            application = db.query(Application).filter(Application.id == job.application_id).first()
+            job = db.query(ProcessingJob).filter(ProcessingJob.id == job.id).first()
+            if job is not None:
+                job.status = JOB_STATUS_QUEUED
+                job.available_at = datetime.utcnow() + timedelta(seconds=1)
+                job.last_error = "Skipped because another worker holds the processing lock"
+                job.started_at = None
+                job.finished_at = None
+                if application is not None:
+                    application.status = "PROCESSING"
+                    application.last_activity_at = datetime.utcnow()
+                db.commit()
         except Exception as exc:
             db.rollback()
             application = db.query(Application).filter(Application.id == job.application_id).first()
@@ -196,6 +234,19 @@ class ProcessingWorker:
             if processed:
                 continue
             self._stop_event.wait(self.poll_seconds)
+
+
+def run_worker_forever(*, poll_seconds: float) -> None:
+    while True:
+        processed = False
+        try:
+            processed = process_next_processing_job()
+        except Exception:
+            logger.exception("Dedicated processing worker loop failed")
+
+        if processed:
+            continue
+        threading.Event().wait(poll_seconds)
 
 
 def should_start_background_workers() -> bool:

@@ -1,4 +1,5 @@
 .env
+.env.production
 .env.local
 __pycache__/
 *.pyc
@@ -18,5 +19,6 @@ frontend/.next/
 frontend/.git/
 frontend/test-results/
 frontend/.env.local
+frontend/.env.production
 base_frontend/node_modules/
 base_frontend/.next/
