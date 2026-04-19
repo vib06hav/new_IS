@@ -11,13 +11,9 @@ import type {
   InterviewWorkspaceSummary,
   FinalReportMutationResponse,
   InterviewerListItem,
-  InterviewerUpdatePayload,
   LLMCapacityStatusResponse,
-  PasswordChangePayload,
   ReportChatRequestPayload,
   ReportChatResponse,
-  SelfProfileUpdatePayload,
-  SelfPasswordChangePayload,
   SessionResponse,
 } from "@/lib/types";
 import { getCsrfToken } from "@/lib/csrf";
@@ -71,20 +67,7 @@ async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   return (await response.json()) as T;
 }
 
-export async function login(email: string, password: string) {
-  const body = new URLSearchParams();
-  body.set("username", email);
-  body.set("password", password);
-  return apiRequest<SessionResponse>("/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: body.toString(),
-  });
-}
-
-export async function createInterviewer(payload: { name: string; email: string; password: string }) {
+export async function createInterviewer(payload: { name: string; email: string }) {
   return apiRequest("/users/interviewers", {
     method: "POST",
     headers: {
@@ -208,23 +191,15 @@ export async function deleteInterviewer(userId: string) {
   });
 }
 
-export async function updateInterviewer(userId: string, payload: InterviewerUpdatePayload) {
-  return apiRequest(`/users/interviewers/${userId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
+export async function deactivateInterviewer(userId: string) {
+  return apiRequest(`/users/interviewers/${userId}/deactivate`, {
+    method: "POST",
   });
 }
 
-export async function updateInterviewerPassword(userId: string, payload: PasswordChangePayload) {
-  return apiRequest(`/users/interviewers/${userId}/password`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
+export async function reactivateInterviewer(userId: string) {
+  return apiRequest(`/users/interviewers/${userId}/reactivate`, {
+    method: "POST",
   });
 }
 
@@ -318,31 +293,3 @@ export async function completeInterviewWorkspace(applicationId: string, content:
   });
 }
 
-export async function changeMyPassword(payload: SelfPasswordChangePayload) {
-  return apiRequest<SessionResponse>("/auth/change-password", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-}
-
-export async function updateMyProfile(payload: SelfProfileUpdatePayload) {
-  return apiRequest<SessionResponse>("/auth/profile", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-}
-
-export async function uploadMyProfileImage(file: File) {
-  const formData = new FormData();
-  formData.append("file", file);
-  return apiRequest<SessionResponse>("/auth/profile/image", {
-    method: "POST",
-    body: formData,
-  });
-}

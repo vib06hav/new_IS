@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LoginForm } from "@/components/LoginForm";
 
 export default function InterviewerLoginPage() {
@@ -28,16 +29,18 @@ export default function InterviewerLoginPage() {
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/70 px-4 py-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-blue-700" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-blue-900">Interviewer Portal</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-blue-900">Interview Standardiser</span>
               </div>
               <div>
-                <h1 className="mb-6 text-5xl font-black leading-[1.1] tracking-tight text-slate-800">Prepare With Structure.</h1>
+                <h1 className="mb-6 text-5xl font-black leading-[1.1] tracking-tight text-slate-800">Interviewer Portal</h1>
                 <p className="max-w-xl text-lg leading-[1.6] text-slate-600">
                   Review completed reports, inspect the source package, and prepare interviews with traceable evidence.
                 </p>
               </div>
             </div>
-            <LoginForm role="interviewer" title="Interviewer Login" successHref="/interviewer/dashboard" />
+            <Suspense fallback={<div className="clay-card w-full max-w-md p-8 shadow-[var(--card-shadow)]">Loading sign-in…</div>}>
+              <LoginForm role="interviewer" title="Interviewer Login" />
+            </Suspense>
           </div>
         </div>
       </div>

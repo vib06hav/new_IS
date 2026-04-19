@@ -7,18 +7,21 @@ export const reportsDashboardInterviewers: InterviewerListItem[] = [
     id: "intr-001",
     name: "Rhea Kapoor",
     email: "rhea.kapoor@example.com",
+    access_status: "active",
     active_assignment_count: 6,
   },
   {
     id: "intr-002",
     name: "Aanya Sen",
     email: "aanya.sen@example.com",
+    access_status: "active",
     active_assignment_count: 4,
   },
   {
     id: "intr-003",
     name: "Kabir Mehta",
     email: "kabir.mehta@example.com",
+    access_status: "deactivated",
     active_assignment_count: 3,
   },
 ];

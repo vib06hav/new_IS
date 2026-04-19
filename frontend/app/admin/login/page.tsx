@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LoginForm } from "@/components/LoginForm";
 
 export default function AdminLoginPage() {
@@ -28,17 +29,19 @@ export default function AdminLoginPage() {
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/70 px-4 py-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-blue-700" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-blue-900">Admin Portal</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-blue-900">Interview Standardiser</span>
               </div>
               <div>
-                <h1 className="mb-6 text-5xl font-black leading-[1.1] tracking-tight text-slate-800">Operate Every Interview Flow.</h1>
+                <h1 className="mb-6 text-5xl font-black leading-[1.1] tracking-tight text-slate-800">Admin Portal</h1>
                 <p className="max-w-xl text-lg leading-[1.6] text-slate-600">
                   Upload PDFs, inspect review packages, assign interviewers, and control publication visibility from a
                   single administrative workspace.
                 </p>
               </div>
             </div>
-            <LoginForm role="admin" title="Admin Login" successHref="/admin/reports" />
+            <Suspense fallback={<div className="clay-card w-full max-w-md p-8 shadow-[var(--card-shadow)]">Loading sign-in…</div>}>
+              <LoginForm role="admin" title="Admin Login" />
+            </Suspense>
           </div>
         </div>
       </div>

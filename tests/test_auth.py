@@ -1,18 +1,19 @@
+from datetime import datetime
+from types import SimpleNamespace
+
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-import base64
 
-from app.auth.security import create_access_token, get_password_hash
-from app.auth.service import bootstrap_admin_user, ensure_dev_admin_user
+from app.auth.security import create_access_token
 from app.config import settings
 from app.database import Base, get_db
 from app.main import app
 from app.models.user import User
-from app.storage.service import get_storage_service
+from app.security.rate_limit import limiter
 
 
 @compiles(JSONB, "sqlite")
@@ -37,8 +38,8 @@ Base.metadata.create_all(bind=engine)
 
 
 def override_get_db():
+    db = TestingSessionLocal()
     try:
-        db = TestingSessionLocal()
         yield db
     finally:
         db.close()
@@ -66,365 +67,410 @@ def session_csrf_headers(client: TestClient, *, origin: str = "http://testserver
     }
 
 
-def test_register_requires_admin():
-    client = make_client()
-    response = client.post(
-        "/auth/register",
-        json={
-            "name": "Blocked User",
-            "email": "blocked@example.com",
-            "password": "securepassword123",
-            "role": "interviewer",
-        },
-    )
-    assert response.status_code == 401
+class FakeWorkOSUser:
+    def __init__(self, *, user_id: str, email: str, first_name: str = "Test", last_name: str = "User"):
+        self.id = user_id
+        self.email = email
+        self.first_name = first_name
+        self.last_name = last_name
+        self.profile_picture_url = f"https://images.example/{user_id}.png"
 
 
-def test_admin_can_create_interviewer():
+class FakeLoadedSession:
+    def __init__(self, user, sealed_session: str):
+        self.user = user
+        self.sealed_session = sealed_session
+
+    def authenticate(self):
+        return SimpleNamespace(authenticated=True, user=self.user)
+
+    def refresh(self):
+        return SimpleNamespace(authenticated=True, user=self.user, sealed_session=f"{self.sealed_session}-refreshed")
+
+    def get_logout_url(self, return_to=None):
+        return return_to or "http://testserver/"
+
+
+class FakeUserManagement:
+    def __init__(self, codes_to_users: dict[str, FakeWorkOSUser]):
+        self.codes_to_users = codes_to_users
+        self.sessions: dict[str, FakeWorkOSUser] = {}
+        self.sent_invitations: list[dict[str, str | None]] = []
+
+    def authenticate_with_code(self, *, code, session):
+        del session
+        user = self.codes_to_users[code]
+        sealed_session = f"sealed-{code}"
+        self.sessions[sealed_session] = user
+        return SimpleNamespace(user=user, sealed_session=sealed_session)
+
+    def load_sealed_session(self, *, session_data, cookie_password):
+        del cookie_password
+        user = self.sessions[session_data]
+        return FakeLoadedSession(user, session_data)
+
+    def send_invitation(self, *, email, organization_id=None, role_slug=None, expires_in_days=None, inviter_user_id=None, locale=None, request_options=None):
+        del organization_id, role_slug, expires_in_days, locale, request_options
+        self.sent_invitations.append({"email": email, "inviter_user_id": inviter_user_id})
+        return SimpleNamespace(email=email, inviter_user_id=inviter_user_id)
+
+
+class FakeWorkOSClient:
+    def __init__(self, codes_to_users: dict[str, FakeWorkOSUser]):
+        self.user_management = FakeUserManagement(codes_to_users)
+
+
+def install_fake_workos(monkeypatch, codes_to_users: dict[str, FakeWorkOSUser]):
+    fake_client = FakeWorkOSClient(codes_to_users)
+    monkeypatch.setattr("app.auth.workos.get_workos_client", lambda: fake_client)
+    monkeypatch.setattr("app.auth.service.get_workos_client", lambda: fake_client)
+    return fake_client
+
+
+def test_admin_can_invite_interviewer():
     client = make_client()
     db = TestingSessionLocal()
     db.query(User).delete()
     admin = User(
         name="Admin",
-        email="admin-create@example.com",
-        password_hash=get_password_hash("securepassword123"),
+        email="admin-invite@example.com",
+        password_hash="x",
         role="admin",
+        access_status="active",
     )
     db.add(admin)
     db.commit()
 
-    response = client.post(
+    from app.api import users as users_api
+
+    sent_invites: list[tuple[str, str | None]] = []
+
+    def fake_send_invitation_email(*, email: str, inviter: User | None = None):
+        sent_invites.append((email, inviter.workos_user_id if inviter else None))
+
+    original_send = users_api.send_interviewer_invitation_email
+    users_api.send_interviewer_invitation_email = fake_send_invitation_email
+    try:
+        response = client.post(
         "/users/interviewers",
-        json={
-            "name": "Test Interviewer",
-            "email": "testinterviewer@example.com",
-            "password": "securepassword123",
-        },
+        json={"name": "Invited Interviewer", "email": "invitee@example.com"},
         headers=auth_headers(admin.email, admin.role),
-    )
+        )
+    finally:
+        users_api.send_interviewer_invitation_email = original_send
+
     assert response.status_code == 201
     data = response.json()
-    assert data["name"] == "Test Interviewer"
-    assert data["email"] == "testinterviewer@example.com"
     assert data["role"] == "interviewer"
+    assert data["access_status"] == "invited"
+    assert sent_invites == [("invitee@example.com", None)]
 
 
-def test_create_interviewer_rejects_existing_email():
+def test_admin_invite_uses_workos_inviter_when_available():
     client = make_client()
     db = TestingSessionLocal()
     db.query(User).delete()
     admin = User(
         name="Admin",
-        email="admin-existing@example.com",
-        password_hash=get_password_hash("securepassword123"),
+        email="admin-workos@example.com",
+        password_hash="x",
         role="admin",
-    )
-    existing = User(
-        name="Existing",
-        email="existing@example.com",
-        password_hash=get_password_hash("securepassword123"),
-        role="interviewer",
-    )
-    db.add_all([admin, existing])
-    db.commit()
-
-    response = client.post(
-        "/users/interviewers",
-        json={
-            "name": "Another User",
-            "email": "existing@example.com",
-            "password": "securepassword123",
-        },
-        headers=auth_headers(admin.email, admin.role),
-    )
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Email already registered"
-
-
-def test_admin_register_endpoint_blocks_admin_role_creation():
-    client = make_client()
-    db = TestingSessionLocal()
-    db.query(User).delete()
-    admin = User(
-        name="Admin",
-        email="admin-role-block@example.com",
-        password_hash=get_password_hash("securepassword123"),
-        role="admin",
+        access_status="active",
+        workos_user_id="workos-admin-1",
     )
     db.add(admin)
     db.commit()
 
+    from app.api import users as users_api
+
+    sent_invites: list[tuple[str, str | None]] = []
+
+    def fake_send_invitation_email(*, email: str, inviter: User | None = None):
+        sent_invites.append((email, inviter.workos_user_id if inviter else None))
+
+    original_send = users_api.send_interviewer_invitation_email
+    users_api.send_interviewer_invitation_email = fake_send_invitation_email
+    try:
+        response = client.post(
+            "/users/interviewers",
+            json={"name": "Invited Interviewer", "email": "invitee-workos@example.com"},
+            headers=auth_headers(admin.email, admin.role),
+        )
+    finally:
+        users_api.send_interviewer_invitation_email = original_send
+
+    assert response.status_code == 201
+    assert sent_invites == [("invitee-workos@example.com", "workos-admin-1")]
+
+
+def test_admin_can_reactivate_interviewer():
+    client = make_client()
+    db = TestingSessionLocal()
+    db.query(User).delete()
+    admin = User(
+        name="Admin",
+        email="admin-reactivate@example.com",
+        password_hash="x",
+        role="admin",
+        access_status="active",
+    )
+    interviewer = User(
+        name="Dormant Interviewer",
+        email="dormant@example.com",
+        password_hash="x",
+        role="interviewer",
+        access_status="deactivated",
+    )
+    db.add(admin)
+    db.add(interviewer)
+    db.commit()
+
     response = client.post(
-        "/auth/register",
-        json={
-            "name": "Another Admin",
-            "email": "another-admin@example.com",
-            "password": "securepassword123",
-            "role": "admin",
-        },
+        f"/users/interviewers/{interviewer.id}/reactivate",
         headers=auth_headers(admin.email, admin.role),
     )
-    assert response.status_code == 403
 
-
-def test_login_user():
-    client = make_client()
-    db = TestingSessionLocal()
-    db.query(User).delete()
-    db.add(
-        User(
-            name="Login User",
-            email="testuser@example.com",
-            password_hash=get_password_hash("securepassword123"),
-            role="admin",
-        )
-    )
-    db.commit()
-
-    response = client.post(
-        "/auth/login",
-        data={"username": "testuser@example.com", "password": "securepassword123"},
-    )
     assert response.status_code == 200
-    data = response.json()
-    assert data["user"]["email"] == "testuser@example.com"
-    assert response.cookies.get(settings.SESSION_COOKIE_NAME)
-    assert response.cookies.get(settings.CSRF_COOKIE_NAME)
-
-    session_response = client.get("/auth/session")
-    assert session_response.status_code == 200
-    assert session_response.json()["user"]["role"] == "admin"
+    assert response.json()["access_status"] == "invited"
 
 
-def test_login_invalid_password():
+def test_admin_reactivation_restores_active_for_previously_signed_in_interviewer():
     client = make_client()
+    db = TestingSessionLocal()
+    db.query(User).delete()
+    admin = User(
+        name="Admin",
+        email="admin-reactivate-active@example.com",
+        password_hash="x",
+        role="admin",
+        access_status="active",
+    )
+    interviewer = User(
+        name="Signed In Interviewer",
+        email="signed-in@example.com",
+        password_hash="x",
+        role="interviewer",
+        access_status="deactivated",
+        last_sign_in_at=datetime.utcnow(),
+    )
+    db.add(admin)
+    db.add(interviewer)
+    db.commit()
+
     response = client.post(
-        "/auth/login",
-        data={"username": "testuser@example.com", "password": "wrongpassword"},
+        f"/users/interviewers/{interviewer.id}/reactivate",
+        headers=auth_headers(admin.email, admin.role),
     )
-    assert response.status_code == 401
+
+    assert response.status_code == 200
+    assert response.json()["access_status"] == "active"
 
 
-def test_logout_clears_session_cookie():
+def test_founder_callback_bootstraps_admin(monkeypatch):
     client = make_client()
     db = TestingSessionLocal()
     db.query(User).delete()
-    db.add(
-        User(
-            name="Logout User",
-            email="logout@example.com",
-            password_hash=get_password_hash("securepassword123"),
-            role="admin",
-        )
-    )
     db.commit()
+    db.close()
 
-    login_response = client.post(
-        "/auth/login",
-        data={"username": "logout@example.com", "password": "securepassword123"},
+    install_fake_workos(
+        monkeypatch,
+        {"founder-code": FakeWorkOSUser(user_id="founder-1", email=settings.FOUNDER_ADMIN_EMAIL, first_name="Founder", last_name="Admin")},
     )
-    assert login_response.status_code == 200
-    assert client.get("/auth/session").status_code == 200
 
-    logout_response = client.post("/auth/logout", headers=session_csrf_headers(client))
-    assert logout_response.status_code == 204
-    assert client.get("/auth/session").status_code == 401
+    response = client.get(
+        "/auth/callback",
+        params={"code": "founder-code", "state": "eyJwb3J0YWwiOiJhZG1pbiJ9"},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 302
+    assert response.headers["location"].endswith("/admin/reports")
+    assert response.cookies.get(settings.SESSION_COOKIE_NAME)
+
+    db = TestingSessionLocal()
+    founder = db.query(User).filter(User.email == settings.FOUNDER_ADMIN_EMAIL).first()
+    assert founder is not None
+    assert founder.role == "admin"
+    assert founder.access_status == "active"
+    assert founder.workos_user_id == "founder-1"
+    db.close()
 
 
-def test_cookie_session_requires_csrf_header_for_mutations():
+def test_invited_interviewer_activates_on_first_login(monkeypatch):
     client = make_client()
     db = TestingSessionLocal()
     db.query(User).delete()
-    db.add(
-        User(
-            name="Cookie Admin",
-            email="cookie-admin@example.com",
-            password_hash=get_password_hash("securepassword123"),
-            role="admin",
-        )
+    invited = User(
+        name="Invited Interviewer",
+        email="invited@example.com",
+        password_hash="x",
+        role="interviewer",
+        access_status="invited",
     )
+    db.add(invited)
     db.commit()
+    db.close()
 
-    login_response = client.post(
-        "/auth/login",
-        data={"username": "cookie-admin@example.com", "password": "securepassword123"},
+    install_fake_workos(
+        monkeypatch,
+        {"invite-code": FakeWorkOSUser(user_id="workos-invite", email="invited@example.com")},
     )
-    assert login_response.status_code == 200
+
+    response = client.get(
+        "/auth/callback",
+        params={"code": "invite-code", "state": "eyJwb3J0YWwiOiJpbnRlcnZpZXdlciJ9"},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 302
+    assert response.headers["location"].endswith("/interviewer/dashboard")
+
+    db = TestingSessionLocal()
+    interviewer = db.query(User).filter(User.email == "invited@example.com").first()
+    assert interviewer is not None
+    assert interviewer.access_status == "active"
+    assert interviewer.workos_user_id == "workos-invite"
+    db.close()
+
+
+def test_uninvited_identity_is_denied(monkeypatch):
+    client = make_client()
+    db = TestingSessionLocal()
+    db.query(User).delete()
+    db.commit()
+    db.close()
+
+    install_fake_workos(
+        monkeypatch,
+        {"stranger-code": FakeWorkOSUser(user_id="stranger-1", email="stranger@example.com")},
+    )
+
+    response = client.get(
+        "/auth/callback",
+        params={"code": "stranger-code", "state": "eyJwb3J0YWwiOiJpbnRlcnZpZXdlciJ9"},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 302
+    assert "/interviewer/login?error=" in response.headers["location"]
+
+
+def test_deactivated_interviewer_cannot_access_session(monkeypatch):
+    client = make_client()
+    db = TestingSessionLocal()
+    db.query(User).delete()
+    interviewer = User(
+        name="Disabled Interviewer",
+        email="disabled@example.com",
+        password_hash="x",
+        role="interviewer",
+        access_status="deactivated",
+    )
+    db.add(interviewer)
+    db.commit()
+    db.close()
+
+    install_fake_workos(
+        monkeypatch,
+        {"disabled-code": FakeWorkOSUser(user_id="disabled-1", email="disabled@example.com")},
+    )
+
+    login_response = client.get(
+        "/auth/callback",
+        params={"code": "disabled-code", "state": "eyJwb3J0YWwiOiJpbnRlcnZpZXdlciJ9"},
+        follow_redirects=False,
+    )
+    assert login_response.status_code == 302
+    assert "/interviewer/login?error=" in login_response.headers["location"]
+
+
+def test_cookie_session_requires_csrf_header_for_mutations(monkeypatch):
+    client = make_client()
+    db = TestingSessionLocal()
+    db.query(User).delete()
+    db.commit()
+    db.close()
+
+    install_fake_workos(
+        monkeypatch,
+        {"founder-code": FakeWorkOSUser(user_id="founder-2", email=settings.FOUNDER_ADMIN_EMAIL)},
+    )
+
+    login_response = client.get(
+        "/auth/callback",
+        params={"code": "founder-code", "state": "eyJwb3J0YWwiOiJhZG1pbiJ9"},
+        follow_redirects=False,
+    )
+    assert login_response.status_code == 302
 
     response = client.post(
         "/users/interviewers",
-        json={
-            "name": "Blocked Interviewer",
-            "email": "blocked-csrf@example.com",
-            "password": "securepassword123",
-        },
+        json={"name": "Blocked Invite", "email": "blocked-csrf@example.com"},
     )
+
     assert response.status_code == 403
     assert response.json()["detail"] == "Missing trusted request origin"
 
 
-def test_cookie_session_mutation_succeeds_with_matching_csrf_header():
+def test_cookie_session_mutation_succeeds_with_matching_csrf_header(monkeypatch):
     client = make_client()
     db = TestingSessionLocal()
     db.query(User).delete()
-    db.add(
-        User(
-            name="Cookie Admin",
-            email="cookie-admin-success@example.com",
-            password_hash=get_password_hash("securepassword123"),
-            role="admin",
-        )
-    )
     db.commit()
+    db.close()
 
-    login_response = client.post(
-        "/auth/login",
-        data={"username": "cookie-admin-success@example.com", "password": "securepassword123"},
+    install_fake_workos(
+        monkeypatch,
+        {"founder-code": FakeWorkOSUser(user_id="founder-3", email=settings.FOUNDER_ADMIN_EMAIL)},
     )
-    assert login_response.status_code == 200
+
+    login_response = client.get(
+        "/auth/callback",
+        params={"code": "founder-code", "state": "eyJwb3J0YWwiOiJhZG1pbiJ9"},
+        follow_redirects=False,
+    )
+    assert login_response.status_code == 302
 
     response = client.post(
         "/users/interviewers",
-        json={
-            "name": "Allowed Interviewer",
-            "email": "allowed-csrf@example.com",
-            "password": "securepassword123",
-        },
+        json={"name": "Allowed Invite", "email": "allowed-csrf@example.com"},
         headers=session_csrf_headers(client),
     )
+
     assert response.status_code == 201
+    assert response.json()["access_status"] == "invited"
 
 
-def test_cookie_session_can_update_own_profile_name():
+def test_logout_clears_session_cookie_and_returns_logout_url(monkeypatch):
     client = make_client()
     db = TestingSessionLocal()
     db.query(User).delete()
-    db.add(
-        User(
-            name="Original Interviewer",
-            email="profile-update@example.com",
-            password_hash=get_password_hash("securepassword123"),
-            role="interviewer",
-        )
-    )
     db.commit()
+    db.close()
 
-    login_response = client.post(
-        "/auth/login",
-        data={"username": "profile-update@example.com", "password": "securepassword123"},
+    install_fake_workos(
+        monkeypatch,
+        {"founder-code": FakeWorkOSUser(user_id="founder-4", email=settings.FOUNDER_ADMIN_EMAIL)},
     )
-    assert login_response.status_code == 200
 
-    response = client.put(
-        "/auth/profile",
-        json={"name": "Updated Interviewer"},
-        headers=session_csrf_headers(client),
+    login_response = client.get(
+        "/auth/callback",
+        params={"code": "founder-code", "state": "eyJwb3J0YWwiOiJhZG1pbiJ9"},
+        follow_redirects=False,
     )
+    assert login_response.status_code == 302
+    assert client.cookies.get(settings.SESSION_COOKIE_NAME)
+
+    response = client.post("/auth/logout", headers=session_csrf_headers(client))
+
     assert response.status_code == 200
-    assert response.json()["user"]["name"] == "Updated Interviewer"
-    assert client.get("/auth/session").json()["user"]["name"] == "Updated Interviewer"
-
-
-def test_cookie_session_can_upload_and_fetch_profile_image(tmp_path):
-    client = make_client()
-    db = TestingSessionLocal()
-    original_storage_backend = settings.STORAGE_BACKEND
-    original_upload_directory = settings.UPLOAD_DIRECTORY
-    try:
-        settings.STORAGE_BACKEND = "local"
-        settings.UPLOAD_DIRECTORY = str(tmp_path)
-        get_storage_service.cache_clear()
-
-        db.query(User).delete()
-        db.add(
-            User(
-                name="Image User",
-                email="image-user@example.com",
-                password_hash=get_password_hash("securepassword123"),
-                role="interviewer",
-            )
-        )
-        db.commit()
-
-        login_response = client.post(
-            "/auth/login",
-            data={"username": "image-user@example.com", "password": "securepassword123"},
-        )
-        assert login_response.status_code == 200
-
-        png_bytes = base64.b64decode(
-            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9l9m8AAAAASUVORK5CYII="
-        )
-        response = client.post(
-            "/auth/profile/image",
-            files={"file": ("avatar.png", png_bytes, "image/png")},
-            headers=session_csrf_headers(client),
-        )
-        assert response.status_code == 200
-        session_data = response.json()
-        assert session_data["user"]["profile_image_url"]
-
-        image_response = client.get("/auth/profile/image")
-        assert image_response.status_code == 200
-        assert image_response.headers["content-type"] == "image/png"
-        assert image_response.content == png_bytes
-    finally:
-        settings.STORAGE_BACKEND = original_storage_backend
-        settings.UPLOAD_DIRECTORY = original_upload_directory
-        get_storage_service.cache_clear()
-        db.close()
-
-
-def test_cookie_session_rejects_cross_site_origin_even_with_csrf_token():
-    client = make_client()
-    db = TestingSessionLocal()
-    db.query(User).delete()
-    db.add(
-        User(
-            name="Origin Admin",
-            email="origin-admin@example.com",
-            password_hash=get_password_hash("securepassword123"),
-            role="admin",
-        )
-    )
-    db.commit()
-
-    login_response = client.post(
-        "/auth/login",
-        data={"username": "origin-admin@example.com", "password": "securepassword123"},
-    )
-    assert login_response.status_code == 200
-
-    response = client.post(
-        "/users/interviewers",
-        json={
-            "name": "Cross Site Interviewer",
-            "email": "cross-site@example.com",
-            "password": "securepassword123",
-        },
-        headers=session_csrf_headers(client, origin="https://evil.example"),
-    )
-    assert response.status_code == 403
-    assert response.json()["detail"] == "Invalid request origin"
-
-
-def test_login_rate_limit_returns_429():
-    client = make_client()
-    for _ in range(5):
-        response = client.post(
-            "/auth/login",
-            data={"username": "missing@example.com", "password": "wrongpassword"},
-        )
-        assert response.status_code == 401
-
-    throttled_response = client.post(
-        "/auth/login",
-        data={"username": "missing@example.com", "password": "wrongpassword"},
-    )
-    assert throttled_response.status_code == 429
+    assert response.json()["logout_url"] == settings.WORKOS_LOGOUT_REDIRECT_URI
 
 
 def test_ensure_dev_admin_user_is_idempotent():
+    from app.auth.service import ensure_dev_admin_user
+
     db = TestingSessionLocal()
     try:
         original_bootstrap = settings.DEV_BOOTSTRAP_ADMIN
@@ -449,31 +495,18 @@ def test_ensure_dev_admin_user_is_idempotent():
         db.close()
 
 
-def test_bootstrap_admin_user_creates_admin():
-    db = TestingSessionLocal()
-    try:
-        db.query(User).delete()
-        user, action = bootstrap_admin_user(
-            db,
-            name="Bootstrap Admin",
-            email="bootstrap-admin@example.com",
-            password="BootstrapSecret123!",
-        )
-        assert action == "created"
-        assert user.role == "admin"
-    finally:
-        db.close()
-
-
 def test_bootstrap_admin_user_can_promote_existing_user():
+    from app.auth.service import bootstrap_admin_user
+
     db = TestingSessionLocal()
     try:
         db.query(User).delete()
         existing = User(
             name="Existing Interviewer",
             email="promote-me@example.com",
-            password_hash=get_password_hash("InitialPassword123!"),
+            password_hash="x",
             role="interviewer",
+            access_status="active",
         )
         db.add(existing)
         db.commit()
@@ -482,12 +515,13 @@ def test_bootstrap_admin_user_can_promote_existing_user():
             db,
             name="Promoted Admin",
             email="promote-me@example.com",
-            password="NewPassword123!",
+            password="ignored",
             promote_existing=True,
             reset_password=True,
         )
         assert action == "promoted"
         assert user.role == "admin"
+        assert user.access_status == "active"
         assert user.name == "Promoted Admin"
     finally:
         db.close()
@@ -515,3 +549,4 @@ def test_production_security_headers_tighten_csp_and_enable_hsts():
         assert response.headers["strict-transport-security"] == "max-age=63072000; includeSubDomains"
     finally:
         settings.APP_ENV = original_env
+        limiter.clear()

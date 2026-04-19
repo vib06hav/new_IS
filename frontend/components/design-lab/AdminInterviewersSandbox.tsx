@@ -1,29 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowLeftRight,
-  ChevronLeft,
-  ChevronRight,
-  KeyRound,
-  Mail,
-  PencilLine,
-  Plus,
-  ShieldAlert,
-  Stars,
-  UserRound,
-  X,
-} from "lucide-react";
+import { ArrowLeftRight, Mail, PencilLine, Plus, ShieldAlert, UserRound, X } from "lucide-react";
 import { Libre_Franklin, IBM_Plex_Sans } from "next/font/google";
 import {
   createInterviewer,
+  deactivateInterviewer,
   deleteInterviewer,
   fetchApplications,
   fetchInterviewerAssignmentSummary,
   fetchInterviewers,
   saveInterviewerAssignments,
-  updateInterviewer,
-  updateInterviewerPassword,
 } from "@/lib/api";
 import type {
   InterviewerAssignmentSummary,
@@ -68,15 +55,9 @@ export function AdminInterviewersSandbox() {
   const [stagedAssignedIds, setStagedAssignedIds] = useState<string[]>([]);
   const [createOpen, setCreateOpen] = useState(false);
   const [createSubmitting, setCreateSubmitting] = useState(false);
-  const [profileSubmitting, setProfileSubmitting] = useState(false);
-  const [accountSubmitting, setAccountSubmitting] = useState(false);
-  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
-  const [removeSubmitting, setRemoveSubmitting] = useState(false);
+  const [actionSubmitting, setActionSubmitting] = useState(false);
   const [readyPoolCount, setReadyPoolCount] = useState(0);
-  const [createForm, setCreateForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
-  const [profileForm, setProfileForm] = useState({ name: "" });
-  const [accountForm, setAccountForm] = useState({ email: "" });
-  const [passwordForm, setPasswordForm] = useState({ password: "", confirmPassword: "" });
+  const [createForm, setCreateForm] = useState({ name: "", email: "" });
 
 
   async function loadInterviewers() {
@@ -111,9 +92,6 @@ export function AdminInterviewersSandbox() {
 
   function openEditSheet(interviewer: InterviewerListItem) {
     setSelectedInterviewer(interviewer);
-    setProfileForm({ name: interviewer.name });
-    setAccountForm({ email: interviewer.email });
-    setPasswordForm({ password: "", confirmPassword: "" });
     setError(null);
     setMessage(null);
   }
@@ -140,7 +118,7 @@ export function AdminInterviewersSandbox() {
   }
 
   function closeEditSheet() {
-    if (profileSubmitting || accountSubmitting || passwordSubmitting || removeSubmitting) return;
+    if (actionSubmitting) return;
     setSelectedInterviewer(null);
   }
 
@@ -154,11 +132,6 @@ export function AdminInterviewersSandbox() {
   }
 
   async function handleCreate() {
-    if (createForm.password !== createForm.confirmPassword) {
-      setError("Create password confirmation does not match.");
-      return;
-    }
-
     const interviewerName = createForm.name.trim();
     setCreateSubmitting(true);
     setMessage(null);
@@ -167,86 +140,34 @@ export function AdminInterviewersSandbox() {
       await createInterviewer({
         name: interviewerName,
         email: createForm.email.trim(),
-        password: createForm.password,
       });
       setCreateOpen(false);
-      setCreateForm({ name: "", email: "", password: "", confirmPassword: "" });
-      setMessage("Interviewer created.");
+      setCreateForm({ name: "", email: "" });
+      setMessage("Interviewer invited.");
       await loadInterviewers();
     } catch (createError) {
-      setError(createError instanceof Error ? createError.message : "Failed to create interviewer.");
+      setError(createError instanceof Error ? createError.message : "Failed to invite interviewer.");
     } finally {
       setCreateSubmitting(false);
     }
   }
 
-  async function handleProfileUpdate() {
+  async function handleDeactivate() {
     if (!selectedInterviewer) return;
-    const nextName = profileForm.name.trim();
-    if (!window.confirm(`Change interviewer name to "${nextName}"?`)) return;
+    if (!window.confirm(`Deactivate ${selectedInterviewer.name}? They will lose app access immediately.`)) return;
 
-    setProfileSubmitting(true);
+    setActionSubmitting(true);
     setMessage(null);
     setError(null);
     try {
-      await updateInterviewer(selectedInterviewer.id, {
-        name: nextName,
-        email: selectedInterviewer.email,
-      });
-      setMessage("Interviewer name updated.");
+      await deactivateInterviewer(selectedInterviewer.id);
+      setSelectedInterviewer(null);
+      setMessage("Interviewer deactivated.");
       await loadInterviewers();
-      setSelectedInterviewer((current) => (current ? { ...current, name: nextName } : current));
-    } catch (updateError) {
-      setError(updateError instanceof Error ? updateError.message : "Failed to update interviewer name.");
+    } catch (actionError) {
+      setError(actionError instanceof Error ? actionError.message : "Failed to deactivate interviewer.");
     } finally {
-      setProfileSubmitting(false);
-    }
-  }
-
-  async function handleEmailUpdate() {
-    if (!selectedInterviewer) return;
-    const nextEmail = accountForm.email.trim();
-    if (!window.confirm(`Change interviewer email to "${nextEmail}"?`)) return;
-
-    setAccountSubmitting(true);
-    setMessage(null);
-    setError(null);
-    try {
-      await updateInterviewer(selectedInterviewer.id, {
-        name: selectedInterviewer.name,
-        email: nextEmail,
-      });
-      setMessage("Interviewer email updated.");
-      await loadInterviewers();
-      setSelectedInterviewer((current) => (current ? { ...current, email: nextEmail } : current));
-    } catch (updateError) {
-      setError(updateError instanceof Error ? updateError.message : "Failed to update interviewer email.");
-    } finally {
-      setAccountSubmitting(false);
-    }
-  }
-
-  async function handlePasswordUpdate() {
-    if (!selectedInterviewer) return;
-    if (passwordForm.password !== passwordForm.confirmPassword) {
-      setError("Password confirmation does not match.");
-      return;
-    }
-    if (!window.confirm(`Reset the password for ${selectedInterviewer.name}?`)) return;
-
-    setPasswordSubmitting(true);
-    setMessage(null);
-    setError(null);
-    try {
-      await updateInterviewerPassword(selectedInterviewer.id, {
-        new_password: passwordForm.password,
-      });
-      setPasswordForm({ password: "", confirmPassword: "" });
-      setMessage("Interviewer password updated.");
-    } catch (updateError) {
-      setError(updateError instanceof Error ? updateError.message : "Failed to update interviewer password.");
-    } finally {
-      setPasswordSubmitting(false);
+      setActionSubmitting(false);
     }
   }
 
@@ -260,7 +181,7 @@ export function AdminInterviewersSandbox() {
       return;
     }
 
-    setRemoveSubmitting(true);
+    setActionSubmitting(true);
     setMessage(null);
     setError(null);
     try {
@@ -272,7 +193,7 @@ export function AdminInterviewersSandbox() {
       const detail = removeError instanceof Error ? removeError.message : "Failed to remove interviewer.";
       setError(detail);
     } finally {
-      setRemoveSubmitting(false);
+      setActionSubmitting(false);
     }
   }
 
@@ -284,15 +205,6 @@ export function AdminInterviewersSandbox() {
     }),
     [items, readyPoolCount],
   );
-
-  const createPasswordMismatch =
-    Boolean(createForm.password || createForm.confirmPassword) &&
-    createForm.password !== createForm.confirmPassword;
-  const updatePasswordMismatch =
-    Boolean(passwordForm.password || passwordForm.confirmPassword) &&
-    passwordForm.password !== passwordForm.confirmPassword;
-  const profileChanged = selectedInterviewer ? profileForm.name.trim() !== selectedInterviewer.name : false;
-  const emailChanged = selectedInterviewer ? accountForm.email.trim() !== selectedInterviewer.email : false;
 
   const assignmentItems = useMemo(() => {
     if (!assignmentSummary) {
@@ -505,27 +417,21 @@ export function AdminInterviewersSandbox() {
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
             <SurfaceHeader eyebrow="Create interviewer" title="Add interviewer" onClose={() => setCreateOpen(false)} />
             <p className="mt-4 max-w-2xl text-base text-slate-600 leading-relaxed">
-              Create a new interviewer account with the same core fields used in the live frontend.
+              Add an invited interviewer to the local access roster. Identity verification, passwords, MFA, and profile
+              image are all managed by the provider.
             </p>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <FieldEditor icon={UserRound} label="Display name" value={createForm.name} onChange={(value) => setCreateForm((current) => ({ ...current, name: value }))} />
               <FieldEditor icon={Mail} label="Email" type="email" value={createForm.email} onChange={(value) => setCreateForm((current) => ({ ...current, email: value }))} />
-              <FieldEditor icon={KeyRound} label="Password" type="password" value={createForm.password} onChange={(value) => setCreateForm((current) => ({ ...current, password: value }))} />
-              <FieldEditor icon={KeyRound} label="Confirm password" type="password" value={createForm.confirmPassword} onChange={(value) => setCreateForm((current) => ({ ...current, confirmPassword: value }))} />
             </div>
-            {createPasswordMismatch ? (
-              <p className="mt-4 rounded-[1rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">
-                Passwords must match before the interviewer can be created.
-              </p>
-            ) : null}
             <div className="mt-6 flex justify-end">
               <button
                 className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 disabled:opacity-60"
-                disabled={createSubmitting || !createForm.name.trim() || !createForm.email.trim() || !createForm.password || createPasswordMismatch}
+                disabled={createSubmitting || !createForm.name.trim() || !createForm.email.trim()}
                 onClick={() => void handleCreate()}
                 type="button"
               >
-                {createSubmitting ? "Creating..." : "Create interviewer"}
+                {createSubmitting ? "Inviting..." : "Invite interviewer"}
               </button>
             </div>
           </div>
@@ -582,35 +488,28 @@ export function AdminInterviewersSandbox() {
                 <div className="min-w-0">
                   <p className="truncate text-lg font-semibold text-[#111111]">{selectedInterviewer.name}</p>
                   <p className="truncate text-sm text-[#49536B]">{selectedInterviewer.email}</p>
+                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#5F6C86]">
+                    {selectedInterviewer.access_status}
+                  </p>
                 </div>
               </div>
 
               <div className="mt-6 space-y-4">
-                <EditSection icon={UserRound} title="Display name">
-                  <Input label="Display name" value={profileForm.name} onChange={(event) => setProfileForm({ name: event.target.value })} />
-                  <div className="mt-4 flex justify-end">
-                    <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={profileSubmitting || !profileForm.name.trim() || !profileChanged} onClick={() => void handleProfileUpdate()} type="button">
-                      {profileSubmitting ? "Saving..." : "Save name"}
-                    </button>
-                  </div>
+                <EditSection icon={UserRound} title="Provider-owned identity">
+                  <ReadOnlyField label="Display name" value={selectedInterviewer.name} />
+                  <ReadOnlyField label="Email" value={selectedInterviewer.email} />
+                  <p className="rounded-[1rem] border border-[#727D97]/35 bg-white px-4 py-3 text-sm leading-6 text-[#49536B]">
+                    This sandbox now mirrors the live access model: identity, password reset, MFA, and profile image all
+                    live with AuthKit, while the app keeps role and access status locally.
+                  </p>
                 </EditSection>
 
-                <EditSection icon={Mail} title="Email">
-                  <Input label="Email" type="email" value={accountForm.email} onChange={(event) => setAccountForm({ email: event.target.value })} />
+                <EditSection icon={Mail} title="Access controls">
+                  <ReadOnlyField label="Access status" value={selectedInterviewer.access_status} />
+                  <ReadOnlyField label="Active assignments" value={String(selectedInterviewer.active_assignment_count)} />
                   <div className="mt-4 flex justify-end">
-                    <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={accountSubmitting || !accountForm.email.trim() || !emailChanged} onClick={() => void handleEmailUpdate()} type="button">
-                      {accountSubmitting ? "Saving..." : "Update email"}
-                    </button>
-                  </div>
-                </EditSection>
-
-                <EditSection icon={KeyRound} title="Password">
-                  <Input label="New password" type="password" minLength={8} value={passwordForm.password} onChange={(event) => setPasswordForm((current) => ({ ...current, password: event.target.value }))} />
-                  <Input label="Confirm new password" type="password" minLength={8} value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, confirmPassword: event.target.value }))} />
-                  {updatePasswordMismatch ? <p className="mt-3 rounded-[1rem] border border-[#FF6B9D]/35 bg-[#FFE7F0] px-4 py-3 text-sm text-[#9A315A]">Passwords must match before the update can be confirmed.</p> : null}
-                  <div className="mt-4 flex justify-end">
-                    <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={passwordSubmitting || !passwordForm.password || updatePasswordMismatch} onClick={() => void handlePasswordUpdate()} type="button">
-                      {passwordSubmitting ? "Saving..." : "Change password"}
+                    <button className="inline-flex items-center justify-center rounded-full bg-[#111111] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#2B3444] disabled:cursor-not-allowed disabled:opacity-60" disabled={actionSubmitting || selectedInterviewer.access_status === "deactivated"} onClick={() => void handleDeactivate()} type="button">
+                      {actionSubmitting ? "Processing..." : "Deactivate access"}
                     </button>
                   </div>
                 </EditSection>
@@ -623,10 +522,13 @@ export function AdminInterviewersSandbox() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-base font-semibold text-[#7F2247]">Danger zone</p>
-                    <p className="mt-2 text-sm leading-6 text-[#9A315A]">Removal fails if this interviewer still has active assignments.</p>
+                    <p className="mt-2 text-sm leading-6 text-[#9A315A]">
+                      Hard delete remains intentionally narrow. It only succeeds when the interviewer has no active
+                      assignments or protected history.
+                    </p>
                     <div className="mt-4">
-                      <button className="inline-flex items-center justify-center rounded-full bg-[#AF3030] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#932626] disabled:cursor-not-allowed disabled:opacity-60" disabled={removeSubmitting} onClick={() => void handleRemove()} type="button">
-                        {removeSubmitting ? "Removing..." : "Remove interviewer"}
+                      <button className="inline-flex items-center justify-center rounded-full bg-[#AF3030] px-4 py-3 text-sm font-semibold text-[#F7F7F1] transition hover:bg-[#932626] disabled:cursor-not-allowed disabled:opacity-60" disabled={actionSubmitting} onClick={() => void handleRemove()} type="button">
+                        {actionSubmitting ? "Processing..." : "Hard delete interviewer"}
                       </button>
                     </div>
                   </div>
@@ -786,6 +688,15 @@ function EditSection({ icon: Icon, title, children }: { icon: typeof UserRound; 
         <p className="text-base font-semibold text-[#111111]">{title}</p>
       </div>
       <div className="space-y-3">{children}</div>
+    </div>
+  );
+}
+
+function ReadOnlyField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="space-y-2">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-[#5F6C86]">{label}</p>
+      <div className="rounded-[1rem] border border-[#727D97]/35 bg-white px-4 py-3 text-sm text-[#111111]">{value}</div>
     </div>
   );
 }

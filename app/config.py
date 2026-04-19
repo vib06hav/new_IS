@@ -110,6 +110,12 @@ class Settings:
         self.CSRF_HEADER_NAME = os.environ.get("CSRF_HEADER_NAME", "X-CSRF-Token")
         self.CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
         self.LLM_DISABLE_LIVE_CALLS = os.environ.get("LLM_DISABLE_LIVE_CALLS", "false")
+        self.WORKOS_API_KEY = os.environ.get("WORKOS_API_KEY")
+        self.WORKOS_CLIENT_ID = os.environ.get("WORKOS_CLIENT_ID")
+        self.WORKOS_COOKIE_PASSWORD = os.environ.get("WORKOS_COOKIE_PASSWORD")
+        self.WORKOS_REDIRECT_URI = os.environ.get("WORKOS_REDIRECT_URI")
+        self.WORKOS_LOGOUT_REDIRECT_URI = os.environ.get("WORKOS_LOGOUT_REDIRECT_URI")
+        self.FOUNDER_ADMIN_EMAIL = os.environ.get("FOUNDER_ADMIN_EMAIL")
 
         # VALIDATE PRESENCE
         required_vars = [
@@ -132,6 +138,18 @@ class Settings:
 
         if self.LLM_PROVIDER == "openrouter" and (self.LLM_API_KEY is None or self.LLM_API_KEY.strip() == ""):
             errors.append("Missing required environment variable: LLM_API_KEY")
+
+        authkit_required_vars = [
+            ("WORKOS_API_KEY", self.WORKOS_API_KEY),
+            ("WORKOS_CLIENT_ID", self.WORKOS_CLIENT_ID),
+            ("WORKOS_COOKIE_PASSWORD", self.WORKOS_COOKIE_PASSWORD),
+            ("WORKOS_REDIRECT_URI", self.WORKOS_REDIRECT_URI),
+            ("WORKOS_LOGOUT_REDIRECT_URI", self.WORKOS_LOGOUT_REDIRECT_URI),
+            ("FOUNDER_ADMIN_EMAIL", self.FOUNDER_ADMIN_EMAIL),
+        ]
+        for name, val in authkit_required_vars:
+            if val is None or val.strip() == "":
+                errors.append(f"Missing required environment variable: {name}")
 
         # OPTIONAL VARIABLES
         raw_db_pool = os.environ.get("DB_POOL_SIZE")
@@ -374,6 +392,12 @@ class Settings:
 
         if self.SESSION_COOKIE_SAMESITE not in {"lax", "strict", "none"}:
             errors.append("SESSION_COOKIE_SAMESITE must be one of {lax, strict, none}")
+        if self.WORKOS_COOKIE_PASSWORD and len(self.WORKOS_COOKIE_PASSWORD) < 32:
+            errors.append("WORKOS_COOKIE_PASSWORD must be at least 32 characters long")
+        if self.WORKOS_REDIRECT_URI and not self.WORKOS_REDIRECT_URI.startswith("http"):
+            errors.append("WORKOS_REDIRECT_URI must be an absolute URL")
+        if self.WORKOS_LOGOUT_REDIRECT_URI and not self.WORKOS_LOGOUT_REDIRECT_URI.startswith("http"):
+            errors.append("WORKOS_LOGOUT_REDIRECT_URI must be an absolute URL")
         if not self.CSRF_COOKIE_NAME or not self.CSRF_COOKIE_NAME.strip():
             errors.append("CSRF_COOKIE_NAME must not be empty")
         if not self.CSRF_HEADER_NAME or not self.CSRF_HEADER_NAME.strip():
