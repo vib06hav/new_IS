@@ -17,8 +17,6 @@ type AdminInterviewerSandboxState = {
   createDraft: {
     name: string;
     email: string;
-    password: string;
-    confirmPassword: string;
   };
 };
 
@@ -46,30 +44,35 @@ export const adminInterviewersSandboxState: AdminInterviewerSandboxState = {
       id: interviewerA.id,
       name: interviewerA.name,
       email: interviewerA.email,
+      access_status: "active",
       active_assignment_count: 6,
     },
     {
       id: interviewerB.id,
       name: interviewerB.name,
       email: interviewerB.email,
+      access_status: "invited",
       active_assignment_count: 4,
     },
     {
       id: interviewerC.id,
       name: interviewerC.name,
       email: interviewerC.email,
+      access_status: "deactivated",
       active_assignment_count: 3,
     },
     {
       id: "intr-004",
       name: "Nisha Rao",
       email: "nisha.rao@example.com",
+      access_status: "active",
       active_assignment_count: 2,
     },
     {
       id: "intr-005",
       name: "Arjun Malhotra",
       email: "arjun.malhotra@example.com",
+      access_status: "invited",
       active_assignment_count: 1,
     },
   ],
@@ -82,12 +85,14 @@ export const adminInterviewersSandboxState: AdminInterviewerSandboxState = {
     id: interviewerA.id,
     name: interviewerA.name,
     email: interviewerA.email,
+    access_status: "active",
     active_assignment_count: 6,
   },
   assignmentInterviewer: {
     id: interviewerA.id,
     name: interviewerA.name,
     email: interviewerA.email,
+    access_status: "active",
     active_assignment_count: 6,
   },
   assignmentSummary: {
@@ -160,7 +165,5 @@ export const adminInterviewersSandboxState: AdminInterviewerSandboxState = {
   createDraft: {
     name: "Aarav Desai",
     email: "aarav.desai@example.com",
-    password: "••••••••",
-    confirmPassword: "••••••••",
   },
 };

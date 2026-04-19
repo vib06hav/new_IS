@@ -2,63 +2,38 @@ from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.api.helpers import build_interviewer_list_item, build_user_summary
-from app.auth.service import build_profile_image_url
 from app.api.schemas import (
     InterviewerAssignmentSaveRequest,
     InterviewerAssignmentSummary,
     InterviewerAssignmentSummaryItem,
     InterviewerListItem,
 )
-from app.auth.schemas import AdminPasswordChange, InterviewerCreate, InterviewerUpdate, UserResponse
-from app.auth.dependencies import get_current_user, require_admin
-from app.auth.service import admin_set_user_password, create_interviewer, update_interviewer
+from app.auth.dependencies import require_admin
+from app.auth.schemas import InterviewerCreate, UserResponse
+from app.auth.service import build_profile_image_url, create_interviewer, deactivate_interviewer
+from app.auth.service import reactivate_interviewer, send_interviewer_invitation_email
 from app.database import get_db
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.user import User
-from app.storage import get_storage_service
-
 
 router = APIRouter(prefix="/users", tags=["Users"])
-
 
 ACTIVE_ASSIGNMENT_STATUSES = {"ASSIGNED"}
 
 
-@router.get("/{user_id}/profile-image")
-def get_user_profile_image(
-    user_id: UUID,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    if not user.profile_image_key or not user.profile_image_content_type:
-        raise HTTPException(status_code=404, detail="Profile image not found")
-
-    storage = get_storage_service()
-    if not storage.exists(user.profile_image_key):
-        raise HTTPException(status_code=404, detail="Profile image not found")
-
-    handle_context = storage.open_stream(user.profile_image_key)
-    handle = handle_context.__enter__()
-
-    def iterator():
-        try:
-            while True:
-                chunk = handle.read(1024 * 1024)
-                if not chunk:
-                    break
-                yield chunk
-        finally:
-            handle_context.__exit__(None, None, None)
-
-    return StreamingResponse(iterator(), media_type=user.profile_image_content_type)
+def _serialize_user(user: User) -> UserResponse:
+    return UserResponse(
+        id=str(user.id),
+        name=user.name,
+        email=user.email,
+        role=user.role,
+        access_status=user.access_status,
+        profile_image_url=build_profile_image_url(user),
+    )
 
 
 def _get_interviewer_or_404(db: Session, user_id: UUID) -> User:
@@ -80,10 +55,9 @@ def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssi
     assignments = db.query(Assignment).all()
     assignments_by_application = {assignment.application_id: assignment for assignment in assignments}
     interviewer_ids = {assignment.interviewer_id for assignment in assignments}
-    interviewers_by_id = {
-        user.id: user
-        for user in db.query(User).filter(User.id.in_(interviewer_ids)).all()
-    } if interviewer_ids else {}
+    interviewers_by_id = (
+        {user.id: user for user in db.query(User).filter(User.id.in_(interviewer_ids)).all()} if interviewer_ids else {}
+    )
 
     currently_assigned: list[InterviewerAssignmentSummaryItem] = []
     available_to_assign: list[InterviewerAssignmentSummaryItem] = []
@@ -134,19 +108,14 @@ def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssi
 
 
 @router.post("/interviewers", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def create_interviewer_account(
+def invite_interviewer_account(
     payload: InterviewerCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
     interviewer = create_interviewer(db, payload)
-    return {
-        "id": str(interviewer.id),
-        "name": interviewer.name,
-        "email": interviewer.email,
-        "role": interviewer.role,
-        "profile_image_url": build_profile_image_url(interviewer),
-    }
+    send_interviewer_invitation_email(email=interviewer.email, inviter=current_user)
+    return _serialize_user(interviewer)
 
 
 @router.get("/interviewers", response_model=list[InterviewerListItem])
@@ -154,6 +123,7 @@ def list_interviewers(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
+    del current_user
     interviewers = db.query(User).filter(User.role == "interviewer").order_by(User.created_at.desc()).all()
     results = []
     for interviewer in interviewers:
@@ -176,6 +146,7 @@ def get_interviewer_assignment_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
+    del current_user
     interviewer = _get_interviewer_or_404(db, user_id)
     return _build_assignment_summary(db, interviewer)
 
@@ -202,18 +173,10 @@ def save_interviewer_assignments(
     current_assignment_ids = {assignment.application_id for assignment in current_assignments}
 
     application_ids = final_ids | current_assignment_ids
-    applications = (
-        db.query(Application)
-        .filter(Application.id.in_(application_ids))
-        .all()
-    ) if application_ids else []
+    applications = db.query(Application).filter(Application.id.in_(application_ids)).all() if application_ids else []
     applications_by_id = {application.id: application for application in applications}
 
-    all_assignments = (
-        db.query(Assignment)
-        .filter(Assignment.application_id.in_(application_ids))
-        .all()
-    ) if application_ids else []
+    all_assignments = db.query(Assignment).filter(Assignment.application_id.in_(application_ids)).all() if application_ids else []
     assignments_by_application = {assignment.application_id: assignment for assignment in all_assignments}
 
     for application_id in final_ids:
@@ -257,40 +220,28 @@ def save_interviewer_assignments(
     return _build_assignment_summary(db, interviewer)
 
 
-@router.put("/interviewers/{user_id}", response_model=UserResponse)
-def update_interviewer_account(
+@router.post("/interviewers/{user_id}/deactivate", response_model=UserResponse)
+def deactivate_interviewer_account(
     user_id: UUID,
-    payload: InterviewerUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
+    del current_user
     interviewer = _get_interviewer_or_404(db, user_id)
-    interviewer = update_interviewer(db, interviewer, payload)
-    return {
-        "id": str(interviewer.id),
-        "name": interviewer.name,
-        "email": interviewer.email,
-        "role": interviewer.role,
-        "profile_image_url": build_profile_image_url(interviewer),
-    }
+    interviewer = deactivate_interviewer(db, interviewer)
+    return _serialize_user(interviewer)
 
 
-@router.put("/interviewers/{user_id}/password", response_model=UserResponse)
-def update_interviewer_password(
+@router.post("/interviewers/{user_id}/reactivate", response_model=UserResponse)
+def reactivate_interviewer_account(
     user_id: UUID,
-    payload: AdminPasswordChange,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
+    del current_user
     interviewer = _get_interviewer_or_404(db, user_id)
-    interviewer = admin_set_user_password(db, interviewer, payload)
-    return {
-        "id": str(interviewer.id),
-        "name": interviewer.name,
-        "email": interviewer.email,
-        "role": interviewer.role,
-        "profile_image_url": build_profile_image_url(interviewer),
-    }
+    interviewer = reactivate_interviewer(db, interviewer)
+    return _serialize_user(interviewer)
 
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -299,40 +250,26 @@ def delete_interviewer(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
+    del current_user
     interviewer = db.query(User).filter(User.id == user_id).first()
     if not interviewer:
         raise HTTPException(status_code=404, detail="User not found")
     if interviewer.role != "interviewer":
         raise HTTPException(status_code=409, detail="Only interviewer accounts can be removed here")
 
-    uploaded_application_count = (
-        db.query(Application)
-        .filter(Application.uploaded_by == user_id)
-        .count()
-    )
+    uploaded_application_count = db.query(Application).filter(Application.uploaded_by == user_id).count()
     if uploaded_application_count > 0:
         raise HTTPException(
             status_code=409,
             detail="Cannot remove interviewer because they are referenced as the uploader for existing applications",
         )
 
-    active_assignment_count = (
-        db.query(Assignment)
-        .filter(Assignment.interviewer_id == user_id)
-        .count()
-    )
+    active_assignment_count = db.query(Assignment).filter(Assignment.interviewer_id == user_id).count()
     if active_assignment_count > 0:
         raise HTTPException(
             status_code=409,
             detail="Cannot remove interviewer while they still have active assignments",
         )
-
-    assignments = db.query(Assignment).filter(Assignment.interviewer_id == user_id).all()
-    for assignment in assignments:
-        db.delete(assignment)
-
-    if interviewer.profile_image_key:
-        get_storage_service().delete(interviewer.profile_image_key)
 
     db.delete(interviewer)
     db.commit()

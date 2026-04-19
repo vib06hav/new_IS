@@ -13,11 +13,15 @@ from app.database import SessionLocal
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Create or promote an admin account intentionally for onboarding or local recovery.",
+        description="Create or promote a local admin access record for founder/bootstrap onboarding.",
     )
     parser.add_argument("--name", required=True, help="Admin display name")
     parser.add_argument("--email", required=True, help="Admin email address")
-    parser.add_argument("--password", required=True, help="Admin password")
+    parser.add_argument(
+        "--password",
+        default="ignored",
+        help="Deprecated compatibility flag. Local passwords are no longer used.",
+    )
     parser.add_argument(
         "--promote-existing",
         action="store_true",
@@ -26,7 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--reset-password",
         action="store_true",
-        help="Reset the password when the admin already exists or is promoted",
+        help="Deprecated compatibility flag retained for older bootstrap workflows.",
     )
     parser.add_argument(
         "--allow-non-dev",

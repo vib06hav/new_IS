@@ -218,6 +218,7 @@ def build_interviewer_list_item(user: User, active_assignment_count: int) -> Int
         id=user.id,
         name=user.name,
         email=user.email,
+        access_status=user.access_status,
         active_assignment_count=active_assignment_count,
         profile_image_url=build_public_profile_image_url(user),
     )

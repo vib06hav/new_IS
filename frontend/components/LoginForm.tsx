@@ -1,58 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { login } from "@/lib/api";
-import { signOut } from "@/lib/auth";
+import { useSearchParams } from "next/navigation";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import type { UserRole } from "@/lib/types";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 
 type LoginFormProps = {
   role: UserRole;
   title: string;
-  successHref: string;
 };
 
 const roleCopy: Record<UserRole, { eyebrow: string; detail: string }> = {
   admin: {
     eyebrow: "Admin Gateway",
-    detail: "Upload, assign, and monitor admissions briefs.",
+    detail: "Continue to the secure WorkOS sign-in screen. You'll be redirected once your admin access is confirmed.",
   },
   interviewer: {
     eyebrow: "Interviewer Gateway",
-    detail: "Review assigned applications and prepare interview briefs.",
+    detail: "Use the email address you were invited with. You'll continue to the secure WorkOS sign-in screen and will be redirected once access is confirmed.",
   },
 };
 
-export function LoginForm({ role, title, successHref }: LoginFormProps) {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export function LoginForm({ role, title }: LoginFormProps) {
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
   const copy = roleCopy[role];
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitting(true);
-    setError(null);
-
-    try {
-      const response = await login(email, password);
-      if (response.user.role !== role) {
-        await signOut();
-        throw new Error(`This account does not belong in the ${role} portal.`);
-      }
-
-      router.replace(successHref);
-    } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Login failed.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
   return (
     <div className="clay-card w-full max-w-md p-8 shadow-[var(--card-shadow)]">
@@ -62,21 +34,23 @@ export function LoginForm({ role, title, successHref }: LoginFormProps) {
         <p className="text-sm leading-6 text-slate-600">{copy.detail}</p>
       </div>
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <Input label="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
-        <Input label="Password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
+      <div className="space-y-4">
         {error ? (
           <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p>
         ) : null}
-        <div className="flex flex-col gap-3 pt-2">
-          <Button className="w-full" disabled={submitting || !email || !password} type="submit">
-            {submitting ? "Signing in..." : "Sign in"}
-          </Button>
-          <Link className="text-center text-sm font-medium text-slate-500 hover:text-brand-accent transition-colors" href="/">
-            Back to landing
-          </Link>
-        </div>
-      </form>
+
+        <a
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          href={`/api/auth/login?portal=${role}`}
+        >
+          Continue to sign in
+          <ArrowRight className="size-4" />
+        </a>
+
+        <Link className="block text-center text-sm font-medium text-slate-500 transition-colors hover:text-brand-accent" href="/">
+          Back to landing
+        </Link>
+      </div>
     </div>
   );
 }

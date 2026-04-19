@@ -186,6 +186,7 @@ class InterviewerListItem(BaseModel):
     id: UUID
     name: str
     email: str
+    access_status: str
     active_assignment_count: int
     profile_image_url: Optional[str] = None
 

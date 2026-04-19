@@ -5,6 +5,7 @@ export type SessionUser = {
   name: string;
   email: string;
   role: UserRole;
+  access_status: string;
   profile_image_url?: string | null;
 };
 
@@ -161,6 +162,7 @@ export type InterviewerListItem = {
   id: string;
   name: string;
   email: string;
+  access_status: string;
   active_assignment_count: number;
   profile_image_url?: string | null;
 };
@@ -180,26 +182,12 @@ export type InterviewerAssignmentSummary = {
   available_to_reassign: InterviewerAssignmentSummaryItem[];
 };
 
-export type InterviewerUpdatePayload = {
-  name: string;
-  email: string;
-};
-
-export type PasswordChangePayload = {
-  new_password: string;
-};
-
 export type InterviewerAssignmentSavePayload = {
   assigned_application_ids: string[];
 };
 
-export type SelfPasswordChangePayload = {
-  current_password: string;
-  new_password: string;
-};
-
-export type SelfProfileUpdatePayload = {
-  name: string;
+export type LogoutResponse = {
+  logout_url?: string | null;
 };
 
 export type AssignmentListItem = {
