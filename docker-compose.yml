@@ -11,6 +11,26 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
+      minio:
+        condition: service_started
+      minio-init:
+        condition: service_completed_successfully
+
+  worker:
+    build: .
+    command: ["python", "-m", "app.worker"]
+    volumes:
+      - .:/app
+      - uploads_volume:/app/uploads
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
       minio:
         condition: service_started
       minio-init:
@@ -31,6 +51,14 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_volume:/data
 
   minio:
     image: minio/minio:latest
@@ -58,4 +86,5 @@ services:
 volumes:
   database_volume:
   uploads_volume:
+  redis_volume:
   minio_volume:

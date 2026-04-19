@@ -14,12 +14,19 @@ def get_current_user(
     session_token: str | None = Cookie(default=None, alias=settings.SESSION_COOKIE_NAME),
     db: Session = Depends(get_db),
 ) -> User:
+    if session_token:
+        return get_current_user_from_workos_session(db, response, session_token)
+
     token: str | None = None
     auth_header = request.headers.get("authorization", "")
     if auth_header.lower().startswith("bearer "):
+        if not settings.ENABLE_BEARER_TOKEN_AUTH:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Bearer token authentication is disabled",
+            )
         token = auth_header.split(" ", 1)[1].strip()
-    elif session_token:
-        return get_current_user_from_workos_session(db, response, session_token)
+
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return get_current_user_from_token(token, db)

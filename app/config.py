@@ -32,6 +32,16 @@ def _looks_like_placeholder_secret(value: str) -> bool:
     unique_chars = len(set(lowered))
     return unique_chars < 10
 
+
+def _parse_csv_list(value: str) -> list[str]:
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def _parse_bool(value: str | None, default: bool = False) -> bool:
+    if value is None:
+        return default
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
 def check_writable_dir(path: str) -> bool:
     try:
         if not os.path.exists(path):
@@ -91,6 +101,9 @@ class Settings:
         self.MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY", "")
         self.MINIO_BUCKET = os.environ.get("MINIO_BUCKET", "")
         self.MINIO_SECURE = os.environ.get("MINIO_SECURE", "false")
+        self.REDIS_URL = os.environ.get("REDIS_URL", "").strip()
+        self.REDIS_KEY_PREFIX = os.environ.get("REDIS_KEY_PREFIX", "agis").strip() or "agis"
+        self.REDIS_CONNECT_TIMEOUT_SECONDS = os.environ.get("REDIS_CONNECT_TIMEOUT_SECONDS", "2")
         self.MAX_UPLOAD_SIZE_MB = os.environ.get("MAX_UPLOAD_SIZE_MB")
         self.MAX_PROFILE_IMAGE_SIZE_MB = os.environ.get("MAX_PROFILE_IMAGE_SIZE_MB", "5")
         self.ENABLE_BACKGROUND_WORKERS = os.environ.get("ENABLE_BACKGROUND_WORKERS", "true")
@@ -109,6 +122,13 @@ class Settings:
         self.CSRF_COOKIE_NAME = os.environ.get("CSRF_COOKIE_NAME", "agis_csrf")
         self.CSRF_HEADER_NAME = os.environ.get("CSRF_HEADER_NAME", "X-CSRF-Token")
         self.CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
+        self.CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "")
+        self.FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "")
+        self.API_DOMAIN = os.environ.get("API_DOMAIN", "")
+        self.TRUSTED_HOSTS = os.environ.get("TRUSTED_HOSTS", "")
+        self.ENABLE_BEARER_TOKEN_AUTH = os.environ.get("ENABLE_BEARER_TOKEN_AUTH")
+        self.TRUST_X_FORWARDED_FOR = os.environ.get("TRUST_X_FORWARDED_FOR", "false")
+        self.TRUSTED_PROXY_IPS = os.environ.get("TRUSTED_PROXY_IPS", "")
         self.LLM_DISABLE_LIVE_CALLS = os.environ.get("LLM_DISABLE_LIVE_CALLS", "false")
         self.WORKOS_API_KEY = os.environ.get("WORKOS_API_KEY")
         self.WORKOS_CLIENT_ID = os.environ.get("WORKOS_CLIENT_ID")
@@ -202,6 +222,18 @@ class Settings:
                 errors.append("MINIO_SECRET_KEY is required when STORAGE_BACKEND=minio")
             if not self.MINIO_BUCKET:
                 errors.append("MINIO_BUCKET is required when STORAGE_BACKEND=minio")
+        if self.REDIS_URL and not (
+            self.REDIS_URL.startswith("redis://")
+            or self.REDIS_URL.startswith("rediss://")
+            or self.REDIS_URL.startswith("unix://")
+        ):
+            errors.append("REDIS_URL must use redis://, rediss://, or unix://")
+        try:
+            self.REDIS_CONNECT_TIMEOUT_SECONDS = float(self.REDIS_CONNECT_TIMEOUT_SECONDS)
+            if self.REDIS_CONNECT_TIMEOUT_SECONDS <= 0:
+                errors.append("REDIS_CONNECT_TIMEOUT_SECONDS must be > 0")
+        except ValueError:
+            errors.append("REDIS_CONNECT_TIMEOUT_SECONDS must be a number")
 
         if self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES:
             try:
@@ -384,8 +416,15 @@ class Settings:
         if self.APP_ENV and self.APP_ENV not in {"development", "production"}:
             errors.append("APP_ENV must be 'development' or 'production'")
 
-        self.DEV_BOOTSTRAP_ADMIN = str(self.DEV_BOOTSTRAP_ADMIN).strip().lower() in {"1", "true", "yes", "on"}
-        self.LLM_DISABLE_LIVE_CALLS = str(self.LLM_DISABLE_LIVE_CALLS).strip().lower() in {"1", "true", "yes", "on"}
+        self.DEV_BOOTSTRAP_ADMIN = _parse_bool(self.DEV_BOOTSTRAP_ADMIN)
+        self.LLM_DISABLE_LIVE_CALLS = _parse_bool(self.LLM_DISABLE_LIVE_CALLS)
+
+        if self.ENABLE_BEARER_TOKEN_AUTH is None:
+            self.ENABLE_BEARER_TOKEN_AUTH = self.APP_ENV == "development"
+        else:
+            self.ENABLE_BEARER_TOKEN_AUTH = _parse_bool(self.ENABLE_BEARER_TOKEN_AUTH)
+
+        self.TRUST_X_FORWARDED_FOR = _parse_bool(self.TRUST_X_FORWARDED_FOR)
 
         if self.LOG_LEVEL and self.LOG_LEVEL not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
             errors.append("LOG_LEVEL must be one of {DEBUG, INFO, WARNING, ERROR, CRITICAL}")
@@ -402,11 +441,31 @@ class Settings:
             errors.append("CSRF_COOKIE_NAME must not be empty")
         if not self.CSRF_HEADER_NAME or not self.CSRF_HEADER_NAME.strip():
             errors.append("CSRF_HEADER_NAME must not be empty")
-        self.CSRF_TRUSTED_ORIGINS = [
-            origin.strip()
-            for origin in self.CSRF_TRUSTED_ORIGINS.split(",")
-            if origin.strip()
-        ]
+        self.CSRF_TRUSTED_ORIGINS = _parse_csv_list(self.CSRF_TRUSTED_ORIGINS)
+        self.CORS_ALLOWED_ORIGINS = _parse_csv_list(self.CORS_ALLOWED_ORIGINS)
+        if self.FRONTEND_ORIGIN and self.FRONTEND_ORIGIN not in self.CORS_ALLOWED_ORIGINS:
+            self.CORS_ALLOWED_ORIGINS.append(self.FRONTEND_ORIGIN)
+        if self.FRONTEND_ORIGIN and self.FRONTEND_ORIGIN not in self.CSRF_TRUSTED_ORIGINS:
+            self.CSRF_TRUSTED_ORIGINS.append(self.FRONTEND_ORIGIN)
+
+        self.TRUSTED_HOSTS = _parse_csv_list(self.TRUSTED_HOSTS)
+        if self.API_DOMAIN and self.API_DOMAIN not in self.TRUSTED_HOSTS:
+            self.TRUSTED_HOSTS.append(self.API_DOMAIN)
+        if self.APP_ENV == "development":
+            for host in ("localhost", "127.0.0.1", "testserver"):
+                if host not in self.TRUSTED_HOSTS:
+                    self.TRUSTED_HOSTS.append(host)
+        self.TRUSTED_PROXY_IPS = set(_parse_csv_list(self.TRUSTED_PROXY_IPS))
+
+        if self.FRONTEND_ORIGIN and not self.FRONTEND_ORIGIN.startswith("http"):
+            errors.append("FRONTEND_ORIGIN must be an absolute URL")
+        for origin in self.CORS_ALLOWED_ORIGINS:
+            if not origin.startswith("http"):
+                errors.append("CORS_ALLOWED_ORIGINS entries must be absolute URLs")
+        if self.TRUST_X_FORWARDED_FOR and not self.TRUSTED_PROXY_IPS:
+            errors.append("TRUSTED_PROXY_IPS must be configured when TRUST_X_FORWARDED_FOR=true")
+        if self.APP_ENV == "production" and self.ENABLE_BEARER_TOKEN_AUTH:
+            errors.append("ENABLE_BEARER_TOKEN_AUTH must be disabled in production")
 
         if self.DEV_BOOTSTRAP_ADMIN:
             if self.APP_ENV != "development":
@@ -446,6 +505,12 @@ class Settings:
         logger.info(f"LLM_PAYLOAD_MODE: {self.LLM_PAYLOAD_MODE}")
         logger.info(f"PARSER_ENGINE_VERSION: {self.PARSER_ENGINE_VERSION}")
         logger.info(f"STORAGE_BACKEND: {self.STORAGE_BACKEND}")
+        logger.info(f"REDIS_URL configured: {'yes' if self.REDIS_URL else 'no'}")
+        logger.info(f"REDIS_KEY_PREFIX: {self.REDIS_KEY_PREFIX}")
+        logger.info(f"CORS_ALLOWED_ORIGINS: {self.CORS_ALLOWED_ORIGINS}")
+        logger.info(f"TRUSTED_HOSTS: {self.TRUSTED_HOSTS}")
+        logger.info(f"ENABLE_BEARER_TOKEN_AUTH: {self.ENABLE_BEARER_TOKEN_AUTH}")
+        logger.info(f"TRUST_X_FORWARDED_FOR: {self.TRUST_X_FORWARDED_FOR}")
         logger.info(f"LLM_ENDPOINT: {self.LLM_ENDPOINT}")
         logger.info(f"LLM_MODEL_NAME: {self.LLM_MODEL_NAME}")
         logger.info(f"AICREDITS_BASE_URL: {self.AICREDITS_BASE_URL}")
