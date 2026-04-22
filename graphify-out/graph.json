@@ -81,7 +81,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\parse_pdfs.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_parse_pdfs_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "parse_pdfs.py"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\parse_pdfs.py",
       "source_location": "L11",
       "id": "parse_pdfs_parse_all_pdfs",
-      "community": 7,
+      "community": 6,
       "norm_label": "parse_all_pdfs()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\config.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_config_py",
-      "community": 4,
+      "community": 8,
       "norm_label": "config.py"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\config.py",
       "source_location": "L16",
       "id": "config_looks_like_placeholder_secret",
-      "community": 4,
+      "community": 8,
       "norm_label": "_looks_like_placeholder_secret()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\config.py",
       "source_location": "L36",
       "id": "config_parse_csv_list",
-      "community": 4,
+      "community": 8,
       "norm_label": "_parse_csv_list()"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\config.py",
       "source_location": "L40",
       "id": "config_parse_bool",
-      "community": 4,
+      "community": 8,
       "norm_label": "_parse_bool()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\config.py",
       "source_location": "L45",
       "id": "config_check_writable_dir",
-      "community": 4,
+      "community": 8,
       "norm_label": "check_writable_dir()"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\config.py",
       "source_location": "L58",
       "id": "config_settings",
-      "community": 4,
+      "community": 8,
       "norm_label": "settings"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\config.py",
       "source_location": "L59",
       "id": "config_settings_init",
-      "community": 4,
+      "community": 8,
       "norm_label": ".__init__()"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_coordination_py",
-      "community": 6,
+      "community": 5,
       "norm_label": "coordination.py"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L15",
       "id": "coordination_rediserror",
-      "community": 6,
+      "community": 5,
       "norm_label": "rediserror"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "",
       "source_location": "",
       "id": "exception",
-      "community": 6,
+      "community": 5,
       "norm_label": "exception"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L23",
       "id": "coordination_locknotacquirederror",
-      "community": 6,
+      "community": 5,
       "norm_label": "locknotacquirederror"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L27",
       "id": "coordination_baselockbackend",
-      "community": 6,
+      "community": 5,
       "norm_label": "baselockbackend"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L28",
       "id": "coordination_baselockbackend_clear",
-      "community": 6,
+      "community": 5,
       "norm_label": ".clear()"
     },
     {
@@ -270,7 +270,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L32",
       "id": "coordination_acquire",
-      "community": 6,
+      "community": 5,
       "norm_label": "acquire()"
     },
     {
@@ -279,7 +279,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L36",
       "id": "coordination_inmemorylockbackend",
-      "community": 6,
+      "community": 5,
       "norm_label": "inmemorylockbackend"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L37",
       "id": "coordination_inmemorylockbackend_init",
-      "community": 6,
+      "community": 5,
       "norm_label": ".__init__()"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L41",
       "id": "coordination_inmemorylockbackend_clear",
-      "community": 6,
+      "community": 5,
       "norm_label": ".clear()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L45",
       "id": "coordination_inmemorylockbackend_get_lock",
-      "community": 6,
+      "community": 5,
       "norm_label": "._get_lock()"
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L65",
       "id": "coordination_redislockbackend",
-      "community": 6,
+      "community": 5,
       "norm_label": "redislockbackend"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L66",
       "id": "coordination_redislockbackend_init",
-      "community": 6,
+      "community": 5,
       "norm_label": ".__init__()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L70",
       "id": "coordination_redislockbackend_clear",
-      "community": 6,
+      "community": 5,
       "norm_label": ".clear()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L98",
       "id": "coordination_coordinationmanager",
-      "community": 6,
+      "community": 5,
       "norm_label": "coordinationmanager"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L99",
       "id": "coordination_coordinationmanager_init",
-      "community": 6,
+      "community": 5,
       "norm_label": ".__init__()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L119",
       "id": "coordination_coordinationmanager_clear",
-      "community": 6,
+      "community": 5,
       "norm_label": ".clear()"
     },
     {
@@ -369,7 +369,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L123",
       "id": "coordination_uses_redis",
-      "community": 6,
+      "community": 5,
       "norm_label": "uses_redis()"
     },
     {
@@ -378,7 +378,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L151",
       "id": "coordination_get_coordination_manager",
-      "community": 6,
+      "community": 5,
       "norm_label": "get_coordination_manager()"
     },
     {
@@ -386,7 +386,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L16",
-      "community": 6,
+      "community": 5,
       "norm_label": "fallback redis error when the redis package is unavailable.",
       "id": "coordination_rationale_16"
     },
@@ -395,7 +395,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\coordination.py",
       "source_location": "L24",
-      "community": 6,
+      "community": 5,
       "norm_label": "raised when a non-blocking coordination lock cannot be acquired.",
       "id": "coordination_rationale_24"
     },
@@ -423,7 +423,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\final_report_exports.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_final_report_exports_py",
-      "community": 4,
+      "community": 8,
       "norm_label": "final_report_exports.py"
     },
     {
@@ -432,7 +432,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\final_report_exports.py",
       "source_location": "L19",
       "id": "final_report_exports_persist_final_report_export",
-      "community": 4,
+      "community": 8,
       "norm_label": "persist_final_report_export()"
     },
     {
@@ -441,7 +441,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\final_report_exports.py",
       "source_location": "L40",
       "id": "final_report_exports_sync_final_report_export",
-      "community": 4,
+      "community": 8,
       "norm_label": "sync_final_report_export()"
     },
     {
@@ -450,7 +450,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\final_report_exports.py",
       "source_location": "L55",
       "id": "final_report_exports_final_report_export_stream",
-      "community": 4,
+      "community": 8,
       "norm_label": "final_report_export_stream()"
     },
     {
@@ -459,7 +459,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\interview_workspace.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_interview_workspace_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "interview_workspace.py"
     },
     {
@@ -468,7 +468,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\interview_workspace.py",
       "source_location": "L13",
       "id": "interview_workspace_normalize_question",
-      "community": 5,
+      "community": 4,
       "norm_label": "_normalize_question()"
     },
     {
@@ -477,7 +477,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\interview_workspace.py",
       "source_location": "L56",
       "id": "interview_workspace_build_workspace_seed",
-      "community": 5,
+      "community": 4,
       "norm_label": "build_workspace_seed()"
     },
     {
@@ -486,7 +486,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\interview_workspace.py",
       "source_location": "L105",
       "id": "interview_workspace_normalize_workspace_content",
-      "community": 5,
+      "community": 4,
       "norm_label": "normalize_workspace_content()"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\interview_workspace.py",
       "source_location": "L147",
       "id": "interview_workspace_clone_workspace_content",
-      "community": 5,
+      "community": 4,
       "norm_label": "clone_workspace_content()"
     },
     {
@@ -504,7 +504,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\main.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_main_py",
-      "community": 6,
+      "community": 5,
       "norm_label": "main.py"
     },
     {
@@ -513,7 +513,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\main.py",
       "source_location": "L42",
       "id": "main_enforce_csrf",
-      "community": 6,
+      "community": 5,
       "norm_label": "enforce_csrf()"
     },
     {
@@ -522,7 +522,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\main.py",
       "source_location": "L51",
       "id": "main_add_security_headers",
-      "community": 6,
+      "community": 5,
       "norm_label": "add_security_headers()"
     },
     {
@@ -531,7 +531,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\main.py",
       "source_location": "L89",
       "id": "main_bootstrap_dev_admin",
-      "community": 6,
+      "community": 5,
       "norm_label": "bootstrap_dev_admin()"
     },
     {
@@ -540,7 +540,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\main.py",
       "source_location": "L99",
       "id": "main_health_check",
-      "community": 6,
+      "community": 5,
       "norm_label": "health_check()"
     },
     {
@@ -549,7 +549,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_processing_py",
-      "community": 6,
+      "community": 5,
       "norm_label": "processing.py"
     },
     {
@@ -558,7 +558,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L31",
       "id": "processing_enqueue_processing_job",
-      "community": 6,
+      "community": 5,
       "norm_label": "enqueue_processing_job()"
     },
     {
@@ -567,7 +567,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L57",
       "id": "processing_retry_backoff_seconds",
-      "community": 6,
+      "community": 5,
       "norm_label": "_retry_backoff_seconds()"
     },
     {
@@ -576,7 +576,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L63",
       "id": "processing_recover_stale_processing_jobs",
-      "community": 6,
+      "community": 5,
       "norm_label": "recover_stale_processing_jobs()"
     },
     {
@@ -585,7 +585,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L99",
       "id": "processing_claim_next_processing_job",
-      "community": 6,
+      "community": 5,
       "norm_label": "_claim_next_processing_job()"
     },
     {
@@ -594,7 +594,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L137",
       "id": "processing_process_next_processing_job",
-      "community": 6,
+      "community": 5,
       "norm_label": "process_next_processing_job()"
     },
     {
@@ -603,7 +603,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L206",
       "id": "processing_processingworker",
-      "community": 6,
+      "community": 5,
       "norm_label": "processingworker"
     },
     {
@@ -612,7 +612,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L207",
       "id": "processing_processingworker_init",
-      "community": 6,
+      "community": 5,
       "norm_label": ".__init__()"
     },
     {
@@ -630,7 +630,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L220",
       "id": "processing_processingworker_stop",
-      "community": 6,
+      "community": 5,
       "norm_label": ".stop()"
     },
     {
@@ -639,7 +639,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L226",
       "id": "processing_processingworker_run_loop",
-      "community": 6,
+      "community": 5,
       "norm_label": "._run_loop()"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L239",
       "id": "processing_run_worker_forever",
-      "community": 6,
+      "community": 5,
       "norm_label": "run_worker_forever()"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L252",
       "id": "processing_should_start_background_workers",
-      "community": 6,
+      "community": 5,
       "norm_label": "should_start_background_workers()"
     },
     {
@@ -666,7 +666,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\processing.py",
       "source_location": "L258",
       "id": "processing_mark_job_failed_permanently",
-      "community": 6,
+      "community": 5,
       "norm_label": "_mark_job_failed_permanently()"
     },
     {
@@ -927,7 +927,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\worker.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_worker_py",
-      "community": 6,
+      "community": 5,
       "norm_label": "worker.py"
     },
     {
@@ -936,7 +936,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\worker.py",
       "source_location": "L12",
       "id": "worker_main",
-      "community": 6,
+      "community": 5,
       "norm_label": "main()"
     },
     {
@@ -1044,7 +1044,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\additional_info_extractor.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_agents_additional_info_extractor_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "additional_info_extractor.py"
     },
     {
@@ -1053,7 +1053,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\additional_info_extractor.py",
       "source_location": "L6",
       "id": "additional_info_extractor_extract_additional_info",
-      "community": 7,
+      "community": 6,
       "norm_label": "extract_additional_info()"
     },
     {
@@ -1215,7 +1215,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\family_extractor.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_agents_family_extractor_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "family_extractor.py"
     },
     {
@@ -1224,7 +1224,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\family_extractor.py",
       "source_location": "L7",
       "id": "family_extractor_empty_family_background",
-      "community": 7,
+      "community": 6,
       "norm_label": "_empty_family_background()"
     },
     {
@@ -1233,7 +1233,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\family_extractor.py",
       "source_location": "L26",
       "id": "family_extractor_find_value_for_label",
-      "community": 7,
+      "community": 6,
       "norm_label": "_find_value_for_label()"
     },
     {
@@ -1242,7 +1242,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\family_extractor.py",
       "source_location": "L52",
       "id": "family_extractor_extract_family_background",
-      "community": 7,
+      "community": 6,
       "norm_label": "extract_family_background()"
     },
     {
@@ -1251,7 +1251,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\geographic_extractor.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_agents_geographic_extractor_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "geographic_extractor.py"
     },
     {
@@ -1260,7 +1260,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\geographic_extractor.py",
       "source_location": "L21",
       "id": "geographic_extractor_all_field_labels",
-      "community": 7,
+      "community": 6,
       "norm_label": "_all_field_labels()"
     },
     {
@@ -1269,7 +1269,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\geographic_extractor.py",
       "source_location": "L29",
       "id": "geographic_extractor_extract_value_from_row",
-      "community": 7,
+      "community": 6,
       "norm_label": "_extract_value_from_row()"
     },
     {
@@ -1278,7 +1278,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\geographic_extractor.py",
       "source_location": "L50",
       "id": "geographic_extractor_extract_candidate",
-      "community": 7,
+      "community": 6,
       "norm_label": "_extract_candidate()"
     },
     {
@@ -1287,7 +1287,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\geographic_extractor.py",
       "source_location": "L92",
       "id": "geographic_extractor_extract_geographic_context",
-      "community": 7,
+      "community": 6,
       "norm_label": "extract_geographic_context()"
     },
     {
@@ -1295,7 +1295,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\geographic_extractor.py",
       "source_location": "L93",
-      "community": 7,
+      "community": 6,
       "norm_label": "deterministically extract city/state/country from address sections only.     pre",
       "id": "geographic_extractor_rationale_93"
     },
@@ -1377,7 +1377,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\layout_extractor.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_agents_layout_extractor_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "layout_extractor.py"
     },
     {
@@ -1386,7 +1386,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\layout_extractor.py",
       "source_location": "L15",
       "id": "layout_extractor_build_page_stats",
-      "community": 7,
+      "community": 6,
       "norm_label": "_build_page_stats()"
     },
     {
@@ -1395,7 +1395,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\layout_extractor.py",
       "source_location": "L36",
       "id": "layout_extractor_build_layout_issues",
-      "community": 7,
+      "community": 6,
       "norm_label": "_build_layout_issues()"
     },
     {
@@ -1404,7 +1404,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\layout_extractor.py",
       "source_location": "L49",
       "id": "layout_extractor_enrich_block",
-      "community": 7,
+      "community": 6,
       "norm_label": "_enrich_block()"
     },
     {
@@ -1413,7 +1413,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\layout_extractor.py",
       "source_location": "L68",
       "id": "layout_extractor_build_header_candidates",
-      "community": 7,
+      "community": 6,
       "norm_label": "_build_header_candidates()"
     },
     {
@@ -1422,7 +1422,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\layout_extractor.py",
       "source_location": "L83",
       "id": "layout_extractor_build_block_ir",
-      "community": 7,
+      "community": 6,
       "norm_label": "_build_block_ir()"
     },
     {
@@ -1431,7 +1431,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\layout_extractor.py",
       "source_location": "L105",
       "id": "layout_extractor_build_issue_ir",
-      "community": 7,
+      "community": 6,
       "norm_label": "_build_issue_ir()"
     },
     {
@@ -1440,7 +1440,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\layout_extractor.py",
       "source_location": "L118",
       "id": "layout_extractor_extract_layout_blocks",
-      "community": 7,
+      "community": 6,
       "norm_label": "extract_layout_blocks()"
     },
     {
@@ -1448,7 +1448,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\layout_extractor.py",
       "source_location": "L119",
-      "community": 7,
+      "community": 6,
       "norm_label": "extracts ordered text blocks from a pdf using pdfminer.six.     returns page me",
       "id": "layout_extractor_rationale_119"
     },
@@ -1548,7 +1548,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\personal_extractor.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_agents_personal_extractor_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "personal_extractor.py"
     },
     {
@@ -1557,7 +1557,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\personal_extractor.py",
       "source_location": "L7",
       "id": "personal_extractor_extract_personal_info",
-      "community": 7,
+      "community": 6,
       "norm_label": "extract_personal_info()"
     },
     {
@@ -1565,7 +1565,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\personal_extractor.py",
       "source_location": "L10",
-      "community": 7,
+      "community": 6,
       "norm_label": "extracts labeled personal fields strictly based on layout bounding boxes.     pa",
       "id": "personal_extractor_rationale_10"
     },
@@ -1620,7 +1620,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\section_detector.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_agents_section_detector_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "section_detector.py"
     },
     {
@@ -1629,7 +1629,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\section_detector.py",
       "source_location": "L24",
       "id": "section_detector_detect_sections",
-      "community": 7,
+      "community": 6,
       "norm_label": "detect_sections()"
     },
     {
@@ -1637,7 +1637,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\section_detector.py",
       "source_location": "L25",
-      "community": 7,
+      "community": 6,
       "norm_label": "groups ordered blocks into labeled sections.",
       "id": "section_detector_rationale_25"
     },
@@ -1647,7 +1647,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\section_scope_resolver.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_agents_section_scope_resolver_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "section_scope_resolver.py"
     },
     {
@@ -1656,7 +1656,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\section_scope_resolver.py",
       "source_location": "L6",
       "id": "section_scope_resolver_rows_for_section",
-      "community": 7,
+      "community": 6,
       "norm_label": "_rows_for_section()"
     },
     {
@@ -1665,7 +1665,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\section_scope_resolver.py",
       "source_location": "L22",
       "id": "section_scope_resolver_resolve_section_type",
-      "community": 7,
+      "community": 6,
       "norm_label": "_resolve_section_type()"
     },
     {
@@ -1674,7 +1674,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\section_scope_resolver.py",
       "source_location": "L53",
       "id": "section_scope_resolver_build_section_slice",
-      "community": 7,
+      "community": 6,
       "norm_label": "_build_section_slice()"
     },
     {
@@ -1683,7 +1683,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\agents\\section_scope_resolver.py",
       "source_location": "L74",
       "id": "section_scope_resolver_resolve_section_scopes",
-      "community": 7,
+      "community": 6,
       "norm_label": "resolve_section_scopes()"
     },
     {
@@ -1881,7 +1881,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_api_admin_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "admin.py"
     },
     {
@@ -1890,7 +1890,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L45",
       "id": "admin_get_llm_capacity",
-      "community": 6,
+      "community": 0,
       "norm_label": "get_llm_capacity()"
     },
     {
@@ -1899,7 +1899,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L56",
       "id": "admin_get_interviewer_or_400",
-      "community": 5,
+      "community": 4,
       "norm_label": "_get_interviewer_or_400()"
     },
     {
@@ -1908,7 +1908,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L63",
       "id": "admin_delete_application_with_related_data",
-      "community": 5,
+      "community": 4,
       "norm_label": "_delete_application_with_related_data()"
     },
     {
@@ -1917,7 +1917,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L76",
       "id": "admin_list_applications",
-      "community": 5,
+      "community": 4,
       "norm_label": "list_applications()"
     },
     {
@@ -1926,7 +1926,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L101",
       "id": "admin_retry_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "retry_application()"
     },
     {
@@ -1935,7 +1935,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L165",
       "id": "admin_generate_final_report",
-      "community": 5,
+      "community": 4,
       "norm_label": "generate_final_report()"
     },
     {
@@ -1944,7 +1944,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L231",
       "id": "admin_assign_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "assign_application()"
     },
     {
@@ -1953,7 +1953,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L260",
       "id": "admin_hide_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "hide_application()"
     },
     {
@@ -1962,7 +1962,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L280",
       "id": "admin_unhide_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "unhide_application()"
     },
     {
@@ -1971,7 +1971,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L300",
       "id": "admin_remove_application_from_queue",
-      "community": 5,
+      "community": 4,
       "norm_label": "remove_application_from_queue()"
     },
     {
@@ -1980,7 +1980,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L319",
       "id": "admin_delete_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "delete_application()"
     },
     {
@@ -1989,7 +1989,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L336",
       "id": "admin_reassign_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "reassign_application()"
     },
     {
@@ -1998,7 +1998,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L363",
       "id": "admin_update_application_display_id",
-      "community": 5,
+      "community": 4,
       "norm_label": "update_application_display_id()"
     },
     {
@@ -2007,7 +2007,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\admin.py",
       "source_location": "L400",
       "id": "admin_list_assignments",
-      "community": 5,
+      "community": 4,
       "norm_label": "list_assignments()"
     },
     {
@@ -2016,7 +2016,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_api_applications_py",
-      "community": 4,
+      "community": 8,
       "norm_label": "applications.py"
     },
     {
@@ -2025,7 +2025,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L53",
       "id": "applications_handle_application_insert_integrity_error",
-      "community": 4,
+      "community": 8,
       "norm_label": "_handle_application_insert_integrity_error()"
     },
     {
@@ -2034,7 +2034,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L61",
       "id": "applications_derive_display_id",
-      "community": 4,
+      "community": 8,
       "norm_label": "derive_display_id()"
     },
     {
@@ -2043,7 +2043,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L67",
       "id": "applications_validate_uploaded_pdf",
-      "community": 4,
+      "community": 8,
       "norm_label": "validate_uploaded_pdf()"
     },
     {
@@ -2052,7 +2052,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L78",
       "id": "applications_write_upload_with_limit",
-      "community": 4,
+      "community": 8,
       "norm_label": "write_upload_with_limit()"
     },
     {
@@ -2061,7 +2061,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L103",
       "id": "applications_staged_upload_file",
-      "community": 4,
+      "community": 8,
       "norm_label": "staged_upload_file()"
     },
     {
@@ -2070,7 +2070,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L118",
       "id": "applications_upload_application",
-      "community": 4,
+      "community": 8,
       "norm_label": "upload_application()"
     },
     {
@@ -2079,7 +2079,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L176",
       "id": "applications_get_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_application()"
     },
     {
@@ -2088,7 +2088,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L203",
       "id": "applications_get_application_source_pdf",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_application_source_pdf()"
     },
     {
@@ -2097,7 +2097,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L238",
       "id": "applications_get_application_final_report_export",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_application_final_report_export()"
     },
     {
@@ -2106,7 +2106,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\applications.py",
       "source_location": "L274",
       "id": "applications_ask_report_chat",
-      "community": 5,
+      "community": 4,
       "norm_label": "ask_report_chat()"
     },
     {
@@ -2115,7 +2115,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_api_helpers_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "helpers.py"
     },
     {
@@ -2124,7 +2124,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L32",
       "id": "helpers_get_application_or_404",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_application_or_404()"
     },
     {
@@ -2133,7 +2133,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L39",
       "id": "helpers_get_assignment_for_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_assignment_for_application()"
     },
     {
@@ -2142,7 +2142,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L43",
       "id": "helpers_get_final_report",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_final_report()"
     },
     {
@@ -2151,7 +2151,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L54",
       "id": "helpers_get_interview_workspace",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_interview_workspace()"
     },
     {
@@ -2160,7 +2160,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L61",
       "id": "helpers_get_canonical_summary",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_canonical_summary()"
     },
     {
@@ -2169,7 +2169,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L71",
       "id": "helpers_get_canonical_record",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_canonical_record()"
     },
     {
@@ -2178,7 +2178,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L79",
       "id": "helpers_derive_pages_1_3",
-      "community": 5,
+      "community": 4,
       "norm_label": "_derive_pages_1_3()"
     },
     {
@@ -2187,7 +2187,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L88",
       "id": "helpers_build_review_package_summary",
-      "community": 5,
+      "community": 4,
       "norm_label": "build_review_package_summary()"
     },
     {
@@ -2196,7 +2196,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L103",
       "id": "helpers_build_user_summary",
-      "community": 5,
+      "community": 4,
       "norm_label": "build_user_summary()"
     },
     {
@@ -2205,7 +2205,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L114",
       "id": "helpers_build_final_report_summary",
-      "community": 5,
+      "community": 4,
       "norm_label": "build_final_report_summary()"
     },
     {
@@ -2214,7 +2214,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L126",
       "id": "helpers_build_interview_workspace_summary",
-      "community": 5,
+      "community": 4,
       "norm_label": "build_interview_workspace_summary()"
     },
     {
@@ -2223,7 +2223,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L143",
       "id": "helpers_build_application_list_item",
-      "community": 5,
+      "community": 4,
       "norm_label": "build_application_list_item()"
     },
     {
@@ -2232,7 +2232,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L160",
       "id": "helpers_build_admin_detail",
-      "community": 5,
+      "community": 4,
       "norm_label": "build_admin_detail()"
     },
     {
@@ -2241,7 +2241,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L180",
       "id": "helpers_build_interviewer_detail",
-      "community": 5,
+      "community": 4,
       "norm_label": "build_interviewer_detail()"
     },
     {
@@ -2259,7 +2259,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\helpers.py",
       "source_location": "L216",
       "id": "helpers_build_interviewer_list_item",
-      "community": 8,
+      "community": 7,
       "norm_label": "build_interviewer_list_item()"
     },
     {
@@ -2268,7 +2268,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_api_interviewer_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "interviewer.py"
     },
     {
@@ -2277,7 +2277,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L28",
       "id": "interviewer_require_assigned_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "_require_assigned_application()"
     },
     {
@@ -2286,7 +2286,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L36",
       "id": "interviewer_require_workspace",
-      "community": 5,
+      "community": 4,
       "norm_label": "_require_workspace()"
     },
     {
@@ -2295,7 +2295,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L49",
       "id": "interviewer_list_my_applications",
-      "community": 5,
+      "community": 4,
       "norm_label": "list_my_applications()"
     },
     {
@@ -2304,7 +2304,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L69",
       "id": "interviewer_hide_my_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "hide_my_application()"
     },
     {
@@ -2313,7 +2313,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L90",
       "id": "interviewer_unhide_my_application",
-      "community": 5,
+      "community": 4,
       "norm_label": "unhide_my_application()"
     },
     {
@@ -2322,7 +2322,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L111",
       "id": "interviewer_create_interview_workspace",
-      "community": 5,
+      "community": 4,
       "norm_label": "create_interview_workspace()"
     },
     {
@@ -2331,7 +2331,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L144",
       "id": "interviewer_get_my_interview_workspace",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_my_interview_workspace()"
     },
     {
@@ -2340,7 +2340,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L154",
       "id": "interviewer_update_my_interview_workspace",
-      "community": 5,
+      "community": 4,
       "norm_label": "update_my_interview_workspace()"
     },
     {
@@ -2349,7 +2349,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L172",
       "id": "interviewer_launch_my_interview_workspace",
-      "community": 5,
+      "community": 4,
       "norm_label": "launch_my_interview_workspace()"
     },
     {
@@ -2358,7 +2358,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L194",
       "id": "interviewer_finish_my_interview_workspace",
-      "community": 5,
+      "community": 4,
       "norm_label": "finish_my_interview_workspace()"
     },
     {
@@ -2367,7 +2367,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\interviewer.py",
       "source_location": "L216",
       "id": "interviewer_complete_my_interview_workspace",
-      "community": 5,
+      "community": 4,
       "norm_label": "complete_my_interview_workspace()"
     },
     {
@@ -2691,7 +2691,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_api_users_py",
-      "community": 8,
+      "community": 7,
       "norm_label": "users.py"
     },
     {
@@ -2700,7 +2700,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L28",
       "id": "users_serialize_user",
-      "community": 8,
+      "community": 7,
       "norm_label": "_serialize_user()"
     },
     {
@@ -2709,7 +2709,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L39",
       "id": "users_get_interviewer_or_404",
-      "community": 8,
+      "community": 7,
       "norm_label": "_get_interviewer_or_404()"
     },
     {
@@ -2718,7 +2718,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L48",
       "id": "users_build_assignment_summary",
-      "community": 8,
+      "community": 7,
       "norm_label": "_build_assignment_summary()"
     },
     {
@@ -2727,7 +2727,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L111",
       "id": "users_invite_interviewer_account",
-      "community": 8,
+      "community": 7,
       "norm_label": "invite_interviewer_account()"
     },
     {
@@ -2736,7 +2736,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L122",
       "id": "users_list_interviewers",
-      "community": 8,
+      "community": 7,
       "norm_label": "list_interviewers()"
     },
     {
@@ -2745,7 +2745,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L144",
       "id": "users_get_interviewer_assignment_summary",
-      "community": 8,
+      "community": 7,
       "norm_label": "get_interviewer_assignment_summary()"
     },
     {
@@ -2754,7 +2754,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L155",
       "id": "users_save_interviewer_assignments",
-      "community": 8,
+      "community": 7,
       "norm_label": "save_interviewer_assignments()"
     },
     {
@@ -2763,7 +2763,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L224",
       "id": "users_deactivate_interviewer_account",
-      "community": 8,
+      "community": 7,
       "norm_label": "deactivate_interviewer_account()"
     },
     {
@@ -2772,7 +2772,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L236",
       "id": "users_reactivate_interviewer_account",
-      "community": 8,
+      "community": 7,
       "norm_label": "reactivate_interviewer_account()"
     },
     {
@@ -2781,7 +2781,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\api\\users.py",
       "source_location": "L248",
       "id": "users_delete_interviewer",
-      "community": 5,
+      "community": 4,
       "norm_label": "delete_interviewer()"
     },
     {
@@ -2799,7 +2799,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\dependencies.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_auth_dependencies_py",
-      "community": 8,
+      "community": 7,
       "norm_label": "dependencies.py"
     },
     {
@@ -2808,7 +2808,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\dependencies.py",
       "source_location": "L11",
       "id": "dependencies_get_current_user",
-      "community": 8,
+      "community": 7,
       "norm_label": "get_current_user()"
     },
     {
@@ -2817,7 +2817,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\dependencies.py",
       "source_location": "L35",
       "id": "dependencies_require_admin",
-      "community": 8,
+      "community": 7,
       "norm_label": "require_admin()"
     },
     {
@@ -2826,7 +2826,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\dependencies.py",
       "source_location": "L41",
       "id": "dependencies_require_interviewer",
-      "community": 8,
+      "community": 7,
       "norm_label": "require_interviewer()"
     },
     {
@@ -2835,7 +2835,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\dependencies.py",
       "source_location": "L47",
       "id": "dependencies_require_assigned_interviewer",
-      "community": 8,
+      "community": 7,
       "norm_label": "require_assigned_interviewer()"
     },
     {
@@ -2970,7 +2970,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\security.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_auth_security_py",
-      "community": 8,
+      "community": 7,
       "norm_label": "security.py"
     },
     {
@@ -2979,7 +2979,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\security.py",
       "source_location": "L8",
       "id": "security_get_password_hash",
-      "community": 8,
+      "community": 7,
       "norm_label": "get_password_hash()"
     },
     {
@@ -2988,7 +2988,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\security.py",
       "source_location": "L11",
       "id": "security_verify_password",
-      "community": 8,
+      "community": 7,
       "norm_label": "verify_password()"
     },
     {
@@ -2997,7 +2997,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\security.py",
       "source_location": "L14",
       "id": "security_create_access_token",
-      "community": 8,
+      "community": 7,
       "norm_label": "create_access_token()"
     },
     {
@@ -3006,7 +3006,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\security.py",
       "source_location": "L24",
       "id": "security_decode_access_token",
-      "community": 8,
+      "community": 7,
       "norm_label": "decode_access_token()"
     },
     {
@@ -3015,7 +3015,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_auth_service_py",
-      "community": 8,
+      "community": 7,
       "norm_label": "service.py"
     },
     {
@@ -3033,7 +3033,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L25",
       "id": "service_build_public_profile_image_url",
-      "community": 8,
+      "community": 7,
       "norm_label": "build_public_profile_image_url()"
     },
     {
@@ -3042,7 +3042,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L29",
       "id": "service_normalize_email",
-      "community": 8,
+      "community": 7,
       "norm_label": "_normalize_email()"
     },
     {
@@ -3051,7 +3051,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L33",
       "id": "service_derive_display_name",
-      "community": 8,
+      "community": 7,
       "norm_label": "_derive_display_name()"
     },
     {
@@ -3060,7 +3060,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L43",
       "id": "service_coerce_workos_user",
-      "community": 8,
+      "community": 7,
       "norm_label": "_coerce_workos_user()"
     },
     {
@@ -3069,7 +3069,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L49",
       "id": "service_placeholder_password_hash",
-      "community": 8,
+      "community": 7,
       "norm_label": "_placeholder_password_hash()"
     },
     {
@@ -3078,7 +3078,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L53",
       "id": "service_create_user",
-      "community": 8,
+      "community": 7,
       "norm_label": "create_user()"
     },
     {
@@ -3087,7 +3087,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L82",
       "id": "service_create_interviewer",
-      "community": 8,
+      "community": 7,
       "norm_label": "create_interviewer()"
     },
     {
@@ -3096,7 +3096,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L92",
       "id": "service_reactivate_interviewer",
-      "community": 8,
+      "community": 7,
       "norm_label": "reactivate_interviewer()"
     },
     {
@@ -3105,7 +3105,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L99",
       "id": "service_deactivate_interviewer",
-      "community": 8,
+      "community": 7,
       "norm_label": "deactivate_interviewer()"
     },
     {
@@ -3114,7 +3114,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L106",
       "id": "service_send_interviewer_invitation_email",
-      "community": 8,
+      "community": 7,
       "norm_label": "send_interviewer_invitation_email()"
     },
     {
@@ -3123,7 +3123,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L120",
       "id": "service_create_admin_access",
-      "community": 8,
+      "community": 7,
       "norm_label": "create_admin_access()"
     },
     {
@@ -3132,7 +3132,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L124",
       "id": "service_bootstrap_admin_user",
-      "community": 8,
+      "community": 7,
       "norm_label": "bootstrap_admin_user()"
     },
     {
@@ -3141,7 +3141,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L168",
       "id": "service_build_session_token",
-      "community": 8,
+      "community": 7,
       "norm_label": "build_session_token()"
     },
     {
@@ -3150,7 +3150,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L173",
       "id": "service_upsert_founder_admin",
-      "community": 8,
+      "community": 7,
       "norm_label": "_upsert_founder_admin()"
     },
     {
@@ -3159,7 +3159,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L208",
       "id": "service_sync_user_from_workos_identity",
-      "community": 8,
+      "community": 7,
       "norm_label": "sync_user_from_workos_identity()"
     },
     {
@@ -3168,7 +3168,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L241",
       "id": "service_get_current_user_from_token",
-      "community": 8,
+      "community": 7,
       "norm_label": "get_current_user_from_token()"
     },
     {
@@ -3177,7 +3177,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L261",
       "id": "service_get_current_user_from_workos_session",
-      "community": 8,
+      "community": 7,
       "norm_label": "get_current_user_from_workos_session()"
     },
     {
@@ -3195,7 +3195,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\auth\\service.py",
       "source_location": "L306",
       "id": "service_ensure_dev_admin_user",
-      "community": 8,
+      "community": 7,
       "norm_label": "ensure_dev_admin_user()"
     },
     {
@@ -3564,7 +3564,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\client.py",
       "source_location": "L165",
       "id": "client_requestcapacity_release",
-      "community": 6,
+      "community": 5,
       "norm_label": ".release()"
     },
     {
@@ -3771,7 +3771,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\control.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_llm_control_py",
-      "community": 6,
+      "community": 5,
       "norm_label": "control.py"
     },
     {
@@ -3780,7 +3780,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\control.py",
       "source_location": "L9",
       "id": "control_capacityfullerror",
-      "community": 6,
+      "community": 5,
       "norm_label": "capacityfullerror"
     },
     {
@@ -3789,7 +3789,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\control.py",
       "source_location": "L10",
       "id": "control_capacityfullerror_init",
-      "community": 6,
+      "community": 5,
       "norm_label": ".__init__()"
     },
     {
@@ -3798,7 +3798,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\control.py",
       "source_location": "L19",
       "id": "control_generationjoblimiter",
-      "community": 6,
+      "community": 5,
       "norm_label": "generationjoblimiter"
     },
     {
@@ -3807,7 +3807,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\control.py",
       "source_location": "L20",
       "id": "control_generationjoblimiter_init",
-      "community": 6,
+      "community": 5,
       "norm_label": ".__init__()"
     },
     {
@@ -3816,7 +3816,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\control.py",
       "source_location": "L25",
       "id": "control_generationjoblimiter_snapshot",
-      "community": 6,
+      "community": 5,
       "norm_label": ".snapshot()"
     },
     {
@@ -3825,7 +3825,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\control.py",
       "source_location": "L30",
       "id": "control_acquire",
-      "community": 6,
+      "community": 5,
       "norm_label": "acquire()"
     },
     {
@@ -3834,7 +3834,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\projection.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_llm_projection_py",
-      "community": 17,
+      "community": 18,
       "norm_label": "projection.py"
     },
     {
@@ -3843,7 +3843,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\projection.py",
       "source_location": "L8",
       "id": "projection_compress_text",
-      "community": 17,
+      "community": 18,
       "norm_label": "compress_text()"
     },
     {
@@ -3852,7 +3852,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\projection.py",
       "source_location": "L14",
       "id": "projection_build_synthesis_projection",
-      "community": 17,
+      "community": 18,
       "norm_label": "build_synthesis_projection()"
     },
     {
@@ -3861,7 +3861,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\projection.py",
       "source_location": "L43",
       "id": "projection_render_projection",
-      "community": 17,
+      "community": 18,
       "norm_label": "_render_projection()"
     },
     {
@@ -3869,7 +3869,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\projection.py",
       "source_location": "L9",
-      "community": 17,
+      "community": 18,
       "norm_label": "deterministically compress text by normalizing whitespace.",
       "id": "projection_rationale_9"
     },
@@ -3878,7 +3878,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\llm\\projection.py",
       "source_location": "L15",
-      "community": 17,
+      "community": 18,
       "norm_label": "apply strictly deterministic projection, flattening, and compression     to can",
       "id": "projection_rationale_15"
     },
@@ -3924,7 +3924,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\models\\assignment.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_models_assignment_py",
-      "community": 8,
+      "community": 2,
       "norm_label": "assignment.py"
     },
     {
@@ -3933,7 +3933,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\models\\assignment.py",
       "source_location": "L9",
       "id": "assignment_assignment",
-      "community": 8,
+      "community": 2,
       "norm_label": "assignment"
     },
     {
@@ -3960,7 +3960,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\models\\final_report.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_models_final_report_py",
-      "community": 2,
+      "community": 4,
       "norm_label": "final_report.py"
     },
     {
@@ -3969,7 +3969,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\models\\final_report.py",
       "source_location": "L10",
       "id": "final_report_finalreport",
-      "community": 2,
+      "community": 4,
       "norm_label": "finalreport"
     },
     {
@@ -3996,7 +3996,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\models\\processing_job.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_models_processing_job_py",
-      "community": 6,
+      "community": 5,
       "norm_label": "processing_job.py"
     },
     {
@@ -4005,7 +4005,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\models\\processing_job.py",
       "source_location": "L10",
       "id": "processing_job_processingjob",
-      "community": 6,
+      "community": 5,
       "norm_label": "processingjob"
     },
     {
@@ -4014,7 +4014,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\models\\user.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_models_user_py",
-      "community": 8,
+      "community": 7,
       "norm_label": "user.py"
     },
     {
@@ -4023,7 +4023,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\models\\user.py",
       "source_location": "L7",
       "id": "user_user",
-      "community": 8,
+      "community": 7,
       "norm_label": "user"
     },
     {
@@ -4644,7 +4644,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_storage_service_py",
-      "community": 4,
+      "community": 8,
       "norm_label": "service.py"
     },
     {
@@ -4653,7 +4653,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L19",
       "id": "service_s3error",
-      "community": 4,
+      "community": 8,
       "norm_label": "s3error"
     },
     {
@@ -4662,7 +4662,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L25",
       "id": "service_storage_key_for_source_pdf",
-      "community": 4,
+      "community": 8,
       "norm_label": "storage_key_for_source_pdf()"
     },
     {
@@ -4671,7 +4671,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L29",
       "id": "service_storage_key_for_profile_image",
-      "community": 4,
+      "community": 8,
       "norm_label": "storage_key_for_profile_image()"
     },
     {
@@ -4680,7 +4680,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L34",
       "id": "service_storage_key_for_final_report_export",
-      "community": 4,
+      "community": 8,
       "norm_label": "storage_key_for_final_report_export()"
     },
     {
@@ -4689,7 +4689,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L38",
       "id": "service_storageservice",
-      "community": 4,
+      "community": 8,
       "norm_label": "storageservice"
     },
     {
@@ -4698,7 +4698,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L39",
       "id": "service_storageservice_put_file",
-      "community": 4,
+      "community": 8,
       "norm_label": ".put_file()"
     },
     {
@@ -4707,7 +4707,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L42",
       "id": "service_storageservice_delete",
-      "community": 4,
+      "community": 8,
       "norm_label": ".delete()"
     },
     {
@@ -4716,7 +4716,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L45",
       "id": "service_storageservice_exists",
-      "community": 4,
+      "community": 8,
       "norm_label": ".exists()"
     },
     {
@@ -4725,7 +4725,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L49",
       "id": "service_open_stream",
-      "community": 4,
+      "community": 8,
       "norm_label": "open_stream()"
     },
     {
@@ -4734,7 +4734,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L53",
       "id": "service_materialize_to_tempfile",
-      "community": 4,
+      "community": 8,
       "norm_label": "materialize_to_tempfile()"
     },
     {
@@ -4743,7 +4743,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L57",
       "id": "service_localstorageservice",
-      "community": 4,
+      "community": 8,
       "norm_label": "localstorageservice"
     },
     {
@@ -4752,7 +4752,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L58",
       "id": "service_localstorageservice_init",
-      "community": 4,
+      "community": 8,
       "norm_label": ".__init__()"
     },
     {
@@ -4761,7 +4761,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L62",
       "id": "service_localstorageservice_resolve_path",
-      "community": 4,
+      "community": 8,
       "norm_label": "._resolve_path()"
     },
     {
@@ -4770,7 +4770,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L66",
       "id": "service_localstorageservice_put_file",
-      "community": 4,
+      "community": 8,
       "norm_label": ".put_file()"
     },
     {
@@ -4779,7 +4779,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L72",
       "id": "service_localstorageservice_delete",
-      "community": 4,
+      "community": 8,
       "norm_label": ".delete()"
     },
     {
@@ -4788,7 +4788,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L77",
       "id": "service_localstorageservice_exists",
-      "community": 4,
+      "community": 8,
       "norm_label": ".exists()"
     },
     {
@@ -4797,7 +4797,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L110",
       "id": "service_miniostorageservice",
-      "community": 4,
+      "community": 8,
       "norm_label": "miniostorageservice"
     },
     {
@@ -4806,7 +4806,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L111",
       "id": "service_miniostorageservice_init",
-      "community": 4,
+      "community": 8,
       "norm_label": ".__init__()"
     },
     {
@@ -4815,7 +4815,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L131",
       "id": "service_miniostorageservice_ensure_bucket",
-      "community": 4,
+      "community": 8,
       "norm_label": "._ensure_bucket()"
     },
     {
@@ -4824,7 +4824,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L135",
       "id": "service_miniostorageservice_put_file",
-      "community": 4,
+      "community": 8,
       "norm_label": ".put_file()"
     },
     {
@@ -4833,7 +4833,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L144",
       "id": "service_miniostorageservice_delete",
-      "community": 5,
+      "community": 4,
       "norm_label": ".delete()"
     },
     {
@@ -4842,7 +4842,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L151",
       "id": "service_miniostorageservice_exists",
-      "community": 4,
+      "community": 8,
       "norm_label": ".exists()"
     },
     {
@@ -4851,7 +4851,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L184",
       "id": "service_get_storage_service",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_storage_service()"
     },
     {
@@ -4860,7 +4860,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\storage\\service.py",
       "source_location": "L196",
       "id": "service_infer_extension_from_content_type",
-      "community": 4,
+      "community": 8,
       "norm_label": "infer_extension_from_content_type()"
     },
     {
@@ -4905,7 +4905,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\block_deduper.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_utils_block_deduper_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "block_deduper.py"
     },
     {
@@ -4914,7 +4914,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\block_deduper.py",
       "source_location": "L6",
       "id": "block_deduper_dedupe_near_overlapping_blocks",
-      "community": 7,
+      "community": 6,
       "norm_label": "dedupe_near_overlapping_blocks()"
     },
     {
@@ -4922,7 +4922,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\block_deduper.py",
       "source_location": "L11",
-      "community": 7,
+      "community": 6,
       "norm_label": "collapse near-identical overlapping text blocks created by edited pdfs.",
       "id": "block_deduper_rationale_11"
     },
@@ -5040,7 +5040,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\parser_ir.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_utils_parser_ir_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "parser_ir.py"
     },
     {
@@ -5049,7 +5049,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\parser_ir.py",
       "source_location": "L6",
       "id": "parser_ir_layoutblockir",
-      "community": 7,
+      "community": 6,
       "norm_label": "layoutblockir"
     },
     {
@@ -5058,7 +5058,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\parser_ir.py",
       "source_location": "L23",
       "id": "parser_ir_layoutrowir",
-      "community": 7,
+      "community": 6,
       "norm_label": "layoutrowir"
     },
     {
@@ -5067,7 +5067,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\parser_ir.py",
       "source_location": "L36",
       "id": "parser_ir_parserissueir",
-      "community": 7,
+      "community": 6,
       "norm_label": "parserissueir"
     },
     {
@@ -5076,7 +5076,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\parser_ir.py",
       "source_location": "L45",
       "id": "parser_ir_sectionspanir",
-      "community": 7,
+      "community": 6,
       "norm_label": "sectionspanir"
     },
     {
@@ -5085,7 +5085,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\parser_ir.py",
       "source_location": "L56",
       "id": "parser_ir_serialize_ir_list",
-      "community": 7,
+      "community": 6,
       "norm_label": "serialize_ir_list()"
     },
     {
@@ -5166,7 +5166,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\section_types.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_utils_section_types_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "section_types.py"
     },
     {
@@ -5175,7 +5175,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\section_types.py",
       "source_location": "L50",
       "id": "section_types_classify_section_label",
-      "community": 7,
+      "community": 6,
       "norm_label": "classify_section_label()"
     },
     {
@@ -5184,7 +5184,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\text_normalization.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_app_utils_text_normalization_py",
-      "community": 7,
+      "community": 6,
       "norm_label": "text_normalization.py"
     },
     {
@@ -5193,7 +5193,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\text_normalization.py",
       "source_location": "L33",
       "id": "text_normalization_normalize_pdf_text",
-      "community": 7,
+      "community": 6,
       "norm_label": "normalize_pdf_text()"
     },
     {
@@ -5202,7 +5202,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\text_normalization.py",
       "source_location": "L56",
       "id": "text_normalization_normalize_label",
-      "community": 7,
+      "community": 6,
       "norm_label": "normalize_label()"
     },
     {
@@ -5211,7 +5211,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\text_normalization.py",
       "source_location": "L67",
       "id": "text_normalization_has_mojibake",
-      "community": 7,
+      "community": 6,
       "norm_label": "has_mojibake()"
     },
     {
@@ -5219,7 +5219,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\utils\\text_normalization.py",
       "source_location": "L34",
-      "community": 7,
+      "community": 6,
       "norm_label": "normalize extracted pdf text into a stable ascii-friendly form.",
       "id": "text_normalization_rationale_34"
     },
@@ -5238,7 +5238,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_evals_eval_pipeline_py",
-      "community": 4,
+      "community": 15,
       "norm_label": "eval_pipeline.py"
     },
     {
@@ -5247,7 +5247,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L68",
       "id": "eval_pipeline_load_json",
-      "community": 4,
+      "community": 15,
       "norm_label": "load_json()"
     },
     {
@@ -5256,7 +5256,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L73",
       "id": "eval_pipeline_check_prohibited_terms",
-      "community": 4,
+      "community": 15,
       "norm_label": "check_prohibited_terms()"
     },
     {
@@ -5265,7 +5265,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L82",
       "id": "eval_pipeline_score_call_1_structural",
-      "community": 4,
+      "community": 15,
       "norm_label": "score_call_1_structural()"
     },
     {
@@ -5274,7 +5274,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L124",
       "id": "eval_pipeline_score_call_2_structural",
-      "community": 4,
+      "community": 15,
       "norm_label": "score_call_2_structural()"
     },
     {
@@ -5283,7 +5283,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L154",
       "id": "eval_pipeline_build_judge_prompt_call_1",
-      "community": 4,
+      "community": 15,
       "norm_label": "build_judge_prompt_call_1()"
     },
     {
@@ -5292,7 +5292,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L187",
       "id": "eval_pipeline_build_judge_prompt_call_2",
-      "community": 4,
+      "community": 15,
       "norm_label": "build_judge_prompt_call_2()"
     },
     {
@@ -5301,7 +5301,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L224",
       "id": "eval_pipeline_run_judge",
-      "community": 4,
+      "community": 15,
       "norm_label": "run_judge()"
     },
     {
@@ -5310,7 +5310,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L242",
       "id": "eval_pipeline_eval_sample",
-      "community": 4,
+      "community": 15,
       "norm_label": "eval_sample()"
     },
     {
@@ -5319,7 +5319,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L335",
       "id": "eval_pipeline_write_report",
-      "community": 4,
+      "community": 15,
       "norm_label": "write_report()"
     },
     {
@@ -5328,7 +5328,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L361",
       "id": "eval_pipeline_main",
-      "community": 4,
+      "community": 15,
       "norm_label": "main()"
     },
     {
@@ -5336,7 +5336,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L1",
-      "community": 4,
+      "community": 15,
       "norm_label": "eval_pipeline.py ---------------- evaluation harness for the interview standardi",
       "id": "eval_pipeline_rationale_1"
     },
@@ -5345,7 +5345,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L74",
-      "community": 4,
+      "community": 15,
       "norm_label": "return list of prohibited terms found in text.",
       "id": "eval_pipeline_rationale_74"
     },
@@ -5354,7 +5354,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L83",
-      "community": 4,
+      "community": 15,
       "norm_label": "performs deterministic (rule-based) checks on call 1 output.     these do not re",
       "id": "eval_pipeline_rationale_83"
     },
@@ -5363,7 +5363,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L125",
-      "community": 4,
+      "community": 15,
       "norm_label": "performs deterministic checks on call 2 output.",
       "id": "eval_pipeline_rationale_125"
     },
@@ -5372,7 +5372,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L155",
-      "community": 4,
+      "community": 15,
       "norm_label": "builds the llm judge prompt for call 1 signal quality.",
       "id": "eval_pipeline_rationale_155"
     },
@@ -5381,7 +5381,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L188",
-      "community": 4,
+      "community": 15,
       "norm_label": "builds the llm judge prompt for call 2 question quality.",
       "id": "eval_pipeline_rationale_188"
     },
@@ -5390,7 +5390,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\evals\\eval_pipeline.py",
       "source_location": "L225",
-      "community": 4,
+      "community": 15,
       "norm_label": "stub for the llm judge call.     replace with: generate([{\"role\": \"user\", \"conte",
       "id": "eval_pipeline_rationale_225"
     },
@@ -5463,26 +5463,8 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\app\\page.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_app_page_tsx",
-      "community": 23,
+      "community": 75,
       "norm_label": "page.tsx"
-    },
-    {
-      "label": "useScrollReveal()",
-      "file_type": "code",
-      "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\app\\page.tsx",
-      "source_location": "L38",
-      "id": "page_usescrollreveal",
-      "community": 23,
-      "norm_label": "usescrollreveal()"
-    },
-    {
-      "label": "Reveal()",
-      "file_type": "code",
-      "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\app\\page.tsx",
-      "source_location": "L65",
-      "id": "page_reveal",
-      "community": 23,
-      "norm_label": "reveal()"
     },
     {
       "label": "layout.tsx",
@@ -5661,7 +5643,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\app\\admin\\profile\\page.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_app_admin_profile_page_tsx",
-      "community": 15,
+      "community": 16,
       "norm_label": "page.tsx"
     },
     {
@@ -5670,7 +5652,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\app\\interviewer\\settings\\page.tsx",
       "source_location": "L40",
       "id": "page_loadsession",
-      "community": 15,
+      "community": 16,
       "norm_label": "loadsession()"
     },
     {
@@ -6084,7 +6066,16 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\app\\interviewer\\settings\\page.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_app_interviewer_settings_page_tsx",
-      "community": 15,
+      "community": 16,
+      "norm_label": "page.tsx"
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\app\\portal\\page.tsx",
+      "source_location": "L1",
+      "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_app_portal_page_tsx",
+      "community": 76,
       "norm_label": "page.tsx"
     },
     {
@@ -6111,7 +6102,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\LoginForm.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_loginform_tsx",
-      "community": 75,
+      "community": 77,
       "norm_label": "loginform.tsx"
     },
     {
@@ -6345,7 +6336,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\ReviewPackageSection.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_reviewpackagesection_tsx",
-      "community": 76,
+      "community": 78,
       "norm_label": "reviewpackagesection.tsx"
     },
     {
@@ -6471,7 +6462,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\design-lab\\PublishedReportPreviewSandbox.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_design_lab_publishedreportpreviewsandbox_tsx",
-      "community": 77,
+      "community": 79,
       "norm_label": "publishedreportpreviewsandbox.tsx"
     },
     {
@@ -6480,7 +6471,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\design-lab\\ReportsDashboardSandboxPlayground.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_design_lab_reportsdashboardsandboxplayground_tsx",
-      "community": 19,
+      "community": 20,
       "norm_label": "reportsdashboardsandboxplayground.tsx"
     },
     {
@@ -6489,7 +6480,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\design-lab\\ReportsDashboardSandboxPlayground.tsx",
       "source_location": "L42",
       "id": "reportsdashboardsandboxplayground_reportsdashboardsandboxplayground",
-      "community": 19,
+      "community": 20,
       "norm_label": "reportsdashboardsandboxplayground()"
     },
     {
@@ -6498,7 +6489,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\interviewer\\FinalInterviewReportSection.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_interviewer_finalinterviewreportsection_tsx",
-      "community": 78,
+      "community": 80,
       "norm_label": "finalinterviewreportsection.tsx"
     },
     {
@@ -6525,7 +6516,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\interviewer\\InterviewOverlayRunner.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_interviewer_interviewoverlayrunner_tsx",
-      "community": 18,
+      "community": 19,
       "norm_label": "interviewoverlayrunner.tsx"
     },
     {
@@ -6534,7 +6525,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\interviewer\\InterviewOverlayRunner.tsx",
       "source_location": "L75",
       "id": "interviewoverlayrunner_updatetheme",
-      "community": 18,
+      "community": 19,
       "norm_label": "updatetheme()"
     },
     {
@@ -6543,7 +6534,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\interviewer\\InterviewOverlayRunner.tsx",
       "source_location": "L85",
       "id": "interviewoverlayrunner_updatequestion",
-      "community": 18,
+      "community": 19,
       "norm_label": "updatequestion()"
     },
     {
@@ -6552,7 +6543,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\interviewer\\InterviewOverlayRunner.tsx",
       "source_location": "L92",
       "id": "interviewoverlayrunner_cyclequestionstatus",
-      "community": 18,
+      "community": 19,
       "norm_label": "cyclequestionstatus()"
     },
     {
@@ -6561,7 +6552,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\interviewer\\InterviewOverlayRunner.tsx",
       "source_location": "L100",
       "id": "interviewoverlayrunner_addcustomquestion",
-      "community": 18,
+      "community": 19,
       "norm_label": "addcustomquestion()"
     },
     {
@@ -6570,7 +6561,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\interviewer\\InterviewOverlayRunner.tsx",
       "source_location": "L117",
       "id": "interviewoverlayrunner_handlefinish",
-      "community": 18,
+      "community": 19,
       "norm_label": "handlefinish()"
     },
     {
@@ -6669,7 +6660,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\layout\\AdminNavbar.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_layout_adminnavbar_tsx",
-      "community": 15,
+      "community": 16,
       "norm_label": "adminnavbar.tsx"
     },
     {
@@ -6678,7 +6669,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\layout\\AdminNavbar.tsx",
       "source_location": "L44",
       "id": "adminnavbar_loadsession",
-      "community": 15,
+      "community": 16,
       "norm_label": "loadsession()"
     },
     {
@@ -6687,7 +6678,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\layout\\AdminNavbar.tsx",
       "source_location": "L64",
       "id": "adminnavbar_handlepointerdown",
-      "community": 15,
+      "community": 16,
       "norm_label": "handlepointerdown()"
     },
     {
@@ -6696,7 +6687,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\layout\\AdminNavbar.tsx",
       "source_location": "L75",
       "id": "adminnavbar_handlesignout",
-      "community": 15,
+      "community": 16,
       "norm_label": "handlesignout()"
     },
     {
@@ -6759,7 +6750,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\layout\\PortalLayout.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_layout_portallayout_tsx",
-      "community": 15,
+      "community": 16,
       "norm_label": "portallayout.tsx"
     },
     {
@@ -6768,7 +6759,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\layout\\PortalLayout.tsx",
       "source_location": "L25",
       "id": "portallayout_checksession",
-      "community": 15,
+      "community": 16,
       "norm_label": "checksession()"
     },
     {
@@ -6777,7 +6768,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\layout\\PortalLayout.tsx",
       "source_location": "L42",
       "id": "portallayout_handlesignout",
-      "community": 15,
+      "community": 16,
       "norm_label": "handlesignout()"
     },
     {
@@ -6813,7 +6804,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\badge.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_shadcn_badge_tsx",
-      "community": 20,
+      "community": 23,
       "norm_label": "badge.tsx"
     },
     {
@@ -6822,7 +6813,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\badge.tsx",
       "source_location": "L30",
       "id": "badge_badge",
-      "community": 20,
+      "community": 23,
       "norm_label": "badge()"
     },
     {
@@ -6885,7 +6876,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\select.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_shadcn_select_tsx",
-      "community": 16,
+      "community": 17,
       "norm_label": "select.tsx"
     },
     {
@@ -6894,7 +6885,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\select.tsx",
       "source_location": "L11",
       "id": "select_selectgroup",
-      "community": 16,
+      "community": 17,
       "norm_label": "selectgroup()"
     },
     {
@@ -6903,7 +6894,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\select.tsx",
       "source_location": "L21",
       "id": "select_selectvalue",
-      "community": 16,
+      "community": 17,
       "norm_label": "selectvalue()"
     },
     {
@@ -6912,7 +6903,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\select.tsx",
       "source_location": "L31",
       "id": "select_selecttrigger",
-      "community": 16,
+      "community": 17,
       "norm_label": "selecttrigger()"
     },
     {
@@ -6921,7 +6912,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\select.tsx",
       "source_location": "L59",
       "id": "select_selectcontent",
-      "community": 16,
+      "community": 17,
       "norm_label": "selectcontent()"
     },
     {
@@ -6930,7 +6921,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\select.tsx",
       "source_location": "L98",
       "id": "select_selectlabel",
-      "community": 16,
+      "community": 17,
       "norm_label": "selectlabel()"
     },
     {
@@ -6939,7 +6930,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\select.tsx",
       "source_location": "L111",
       "id": "select_selectitem",
-      "community": 16,
+      "community": 17,
       "norm_label": "selectitem()"
     },
     {
@@ -6948,7 +6939,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\select.tsx",
       "source_location": "L139",
       "id": "select_selectseparator",
-      "community": 16,
+      "community": 17,
       "norm_label": "selectseparator()"
     },
     {
@@ -6957,7 +6948,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\select.tsx",
       "source_location": "L152",
       "id": "select_selectscrollupbutton",
-      "community": 16,
+      "community": 17,
       "norm_label": "selectscrollupbutton()"
     },
     {
@@ -6966,7 +6957,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\shadcn\\select.tsx",
       "source_location": "L171",
       "id": "select_selectscrolldownbutton",
-      "community": 16,
+      "community": 17,
       "norm_label": "selectscrolldownbutton()"
     },
     {
@@ -7047,7 +7038,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\ui\\Card.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_ui_card_tsx",
-      "community": 79,
+      "community": 81,
       "norm_label": "card.tsx"
     },
     {
@@ -7137,7 +7128,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\components\\ui\\SegmentedControl.tsx",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_components_ui_segmentedcontrol_tsx",
-      "community": 80,
+      "community": 82,
       "norm_label": "segmentedcontrol.tsx"
     },
     {
@@ -7551,7 +7542,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\auth.ts",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_lib_auth_ts",
-      "community": 15,
+      "community": 16,
       "norm_label": "auth.ts"
     },
     {
@@ -7560,7 +7551,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\auth.ts",
       "source_location": "L4",
       "id": "auth_getsession",
-      "community": 15,
+      "community": 16,
       "norm_label": "getsession()"
     },
     {
@@ -7569,7 +7560,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\auth.ts",
       "source_location": "L15",
       "id": "auth_signout",
-      "community": 15,
+      "community": 16,
       "norm_label": "signout()"
     },
     {
@@ -7578,7 +7569,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\csrf.ts",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_lib_csrf_ts",
-      "community": 15,
+      "community": 16,
       "norm_label": "csrf.ts"
     },
     {
@@ -7587,7 +7578,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\csrf.ts",
       "source_location": "L1",
       "id": "csrf_readcookie",
-      "community": 15,
+      "community": 16,
       "norm_label": "readcookie()"
     },
     {
@@ -7596,7 +7587,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\csrf.ts",
       "source_location": "L16",
       "id": "csrf_getcsrftoken",
-      "community": 15,
+      "community": 16,
       "norm_label": "getcsrftoken()"
     },
     {
@@ -7668,7 +7659,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\types.ts",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_lib_types_ts",
-      "community": 81,
+      "community": 83,
       "norm_label": "types.ts"
     },
     {
@@ -7677,7 +7668,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\usePolling.ts",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_lib_usepolling_ts",
-      "community": 19,
+      "community": 20,
       "norm_label": "usepolling.ts"
     },
     {
@@ -7686,7 +7677,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\usePolling.ts",
       "source_location": "L5",
       "id": "usepolling_usepolling",
-      "community": 19,
+      "community": 20,
       "norm_label": "usepolling()"
     },
     {
@@ -7695,7 +7686,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\utils.ts",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_lib_utils_ts",
-      "community": 20,
+      "community": 23,
       "norm_label": "utils.ts"
     },
     {
@@ -7704,7 +7695,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\utils.ts",
       "source_location": "L4",
       "id": "utils_cn",
-      "community": 20,
+      "community": 23,
       "norm_label": "cn()"
     },
     {
@@ -7713,7 +7704,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\design-lab\\adminInterviewersMock.ts",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_lib_design_lab_admininterviewersmock_ts",
-      "community": 82,
+      "community": 84,
       "norm_label": "admininterviewersmock.ts"
     },
     {
@@ -7722,7 +7713,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\design-lab\\interviewerMock.ts",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_lib_design_lab_interviewermock_ts",
-      "community": 83,
+      "community": 85,
       "norm_label": "interviewermock.ts"
     },
     {
@@ -7731,7 +7722,7 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\lib\\design-lab\\reportsDashboardMock.ts",
       "source_location": "L1",
       "id": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_lib_design_lab_reportsdashboardmock_ts",
-      "community": 84,
+      "community": 86,
       "norm_label": "reportsdashboardmock.ts"
     },
     {
@@ -7757,7 +7748,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\env.py",
       "source_location": "L34",
-      "community": 85,
+      "community": 87,
       "norm_label": "run migrations in 'offline' mode.      this configures the context with just a u",
       "id": "env_rationale_34"
     },
@@ -7766,7 +7757,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\env.py",
       "source_location": "L58",
-      "community": 86,
+      "community": 88,
       "norm_label": "run migrations in 'online' mode.      in this scenario we need to create an engi",
       "id": "env_rationale_58"
     },
@@ -7775,7 +7766,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\6ea7523611f4_create_canonical_records_table.py",
       "source_location": "L1",
-      "community": 87,
+      "community": 89,
       "norm_label": "create_canonical_records_table  revision id: 6ea7523611f4 revises: a3ba4d865b1f",
       "id": "6ea7523611f4_create_canonical_records_table_rationale_1"
     },
@@ -7784,7 +7775,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\a1b2c3d4e5f7_add_final_report_export_fields.py",
       "source_location": "L1",
-      "community": 88,
+      "community": 90,
       "norm_label": "add final report export fields  revision id: a1b2c3d4e5f7 revises: f1a2b3c4d5",
       "id": "a1b2c3d4e5f7_add_final_report_export_fields_rationale_1"
     },
@@ -7793,7 +7784,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\a3ba4d865b1f_create_applications_table.py",
       "source_location": "L1",
-      "community": 89,
+      "community": 91,
       "norm_label": "create_applications_table  revision id: a3ba4d865b1f revises: ad9fb8d26e40 creat",
       "id": "a3ba4d865b1f_create_applications_table_rationale_1"
     },
@@ -7802,7 +7793,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\a8b7c6d5e4f3_add_display_id_to_applications.py",
       "source_location": "L1",
-      "community": 90,
+      "community": 92,
       "norm_label": "add_display_id_to_applications  revision id: a8b7c6d5e4f3 revises: f7a9c1d2e3b4",
       "id": "a8b7c6d5e4f3_add_display_id_to_applications_rationale_1"
     },
@@ -7811,7 +7802,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\ad9fb8d26e40_create_users_table.py",
       "source_location": "L1",
-      "community": 91,
+      "community": 93,
       "norm_label": "create_users_table  revision id: ad9fb8d26e40 revises: fe57dd6ef27e create date:",
       "id": "ad9fb8d26e40_create_users_table_rationale_1"
     },
@@ -7820,7 +7811,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\ae34404b0e2f_create_synthesis_records_table.py",
       "source_location": "L1",
-      "community": 92,
+      "community": 94,
       "norm_label": "create_synthesis_records_table  revision id: ae34404b0e2f revises: 6ea7523611f4",
       "id": "ae34404b0e2f_create_synthesis_records_table_rationale_1"
     },
@@ -7829,7 +7820,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\b2c3d4e5f6a8_create_processing_jobs_table.py",
       "source_location": "L1",
-      "community": 93,
+      "community": 95,
       "norm_label": "create processing jobs table  revision id: b2c3d4e5f6a8 revises: a1b2c3d4e5f7",
       "id": "b2c3d4e5f6a8_create_processing_jobs_table_rationale_1"
     },
@@ -7838,7 +7829,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\b3c1f2d4e5f6_target_state_foundation.py",
       "source_location": "L1",
-      "community": 94,
+      "community": 96,
       "norm_label": "target_state_foundation  revision id: b3c1f2d4e5f6 revises: ae34404b0e2f create",
       "id": "b3c1f2d4e5f6_target_state_foundation_rationale_1"
     },
@@ -7847,7 +7838,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\c3d4e5f6a7b9_rename_file_path_to_storage_key.py",
       "source_location": "L1",
-      "community": 95,
+      "community": 97,
       "norm_label": "rename file_path to storage_key  revision id: c3d4e5f6a7b9 revises: b2c3d4e5f",
       "id": "c3d4e5f6a7b9_rename_file_path_to_storage_key_rationale_1"
     },
@@ -7856,7 +7847,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\c4d5e6f7a8b9_drop_synthesis_records.py",
       "source_location": "L1",
-      "community": 96,
+      "community": 98,
       "norm_label": "drop_synthesis_records  revision id: c4d5e6f7a8b9 revises: b3c1f2d4e5f6 create d",
       "id": "c4d5e6f7a8b9_drop_synthesis_records_rationale_1"
     },
@@ -7865,7 +7856,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\c7d8e9f0a1b2_replace_drafts_with_final_reports.py",
       "source_location": "L1",
-      "community": 97,
+      "community": 99,
       "norm_label": "replace_drafts_with_final_reports  revision id: c7d8e9f0a1b2 revises: f9b8c7d",
       "id": "c7d8e9f0a1b2_replace_drafts_with_final_reports_rationale_1"
     },
@@ -7874,7 +7865,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\d1e2f3a4b5c6_restore_last_activity_default.py",
       "source_location": "L1",
-      "community": 98,
+      "community": 100,
       "norm_label": "restore_last_activity_default  revision id: d1e2f3a4b5c6 revises: c7d8e9f0a1b",
       "id": "d1e2f3a4b5c6_restore_last_activity_default_rationale_1"
     },
@@ -7883,7 +7874,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\d2f4e6a8b9c1_add_review_package_to_canonical_records.py",
       "source_location": "L1",
-      "community": 99,
+      "community": 101,
       "norm_label": "add_review_package_to_canonical_records  revision id: d2f4e6a8b9c1 revises: c4d5",
       "id": "d2f4e6a8b9c1_add_review_package_to_canonical_records_rationale_1"
     },
@@ -7892,7 +7883,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\d4e5f6a7b8c0_add_processing_job_retry_fields.py",
       "source_location": "L1",
-      "community": 100,
+      "community": 102,
       "norm_label": "add processing job retry fields  revision id: d4e5f6a7b8c0 revises: c3d4e5f6a",
       "id": "d4e5f6a7b8c0_add_processing_job_retry_fields_rationale_1"
     },
@@ -7901,7 +7892,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\e3f4a5b6c7d8_create_interview_workspaces_table.py",
       "source_location": "L1",
-      "community": 101,
+      "community": 103,
       "norm_label": "create_interview_workspaces_table  revision id: e3f4a5b6c7d8 revises: d1e2f3a",
       "id": "e3f4a5b6c7d8_create_interview_workspaces_table_rationale_1"
     },
@@ -7910,7 +7901,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\f1a2b3c4d5e6_add_profile_image_fields_to_users.py",
       "source_location": "L1",
-      "community": 102,
+      "community": 104,
       "norm_label": "add profile image fields to users  revision id: f1a2b3c4d5e6 revises: e3f4a5b",
       "id": "f1a2b3c4d5e6_add_profile_image_fields_to_users_rationale_1"
     },
@@ -7919,7 +7910,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\f7a9c1d2e3b4_add_hidden_state_to_applications.py",
       "source_location": "L1",
-      "community": 103,
+      "community": 105,
       "norm_label": "add_hidden_state_to_applications  revision id: f7a9c1d2e3b4 revises: d2f4e6a8b9c",
       "id": "f7a9c1d2e3b4_add_hidden_state_to_applications_rationale_1"
     },
@@ -7928,7 +7919,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\f9b8c7d6e5a4_add_last_activity_and_interviewer_hide_state.py",
       "source_location": "L1",
-      "community": 104,
+      "community": 106,
       "norm_label": "add_last_activity_and_interviewer_hide_state  revision id: f9b8c7d6e5a4 revises:",
       "id": "f9b8c7d6e5a4_add_last_activity_and_interviewer_hide_state_rationale_1"
     },
@@ -7937,7 +7928,7 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\alembic\\versions\\fe57dd6ef27e_enable_uuid_extension.py",
       "source_location": "L1",
-      "community": 105,
+      "community": 107,
       "norm_label": "enable_uuid_extension  revision id: fe57dd6ef27e revises:  create date: 2026-03-",
       "id": "fe57dd6ef27e_enable_uuid_extension_rationale_1"
     },
@@ -22131,42 +22122,6 @@
       "_tgt": "layout_rootlayout",
       "source": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_app_layout_tsx",
       "target": "layout_rootlayout",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\app\\page.tsx",
-      "source_location": "L38",
-      "weight": 1.0,
-      "_src": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_app_page_tsx",
-      "_tgt": "page_usescrollreveal",
-      "source": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_app_page_tsx",
-      "target": "page_usescrollreveal",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\app\\page.tsx",
-      "source_location": "L65",
-      "weight": 1.0,
-      "_src": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_app_page_tsx",
-      "_tgt": "page_reveal",
-      "source": "c_users_vibha_onedrive_desktop_ag_interviewstandardiser_frontend_app_page_tsx",
-      "target": "page_reveal",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\frontend\\app\\page.tsx",
-      "source_location": "L74",
-      "weight": 1.0,
-      "_src": "page_reveal",
-      "_tgt": "page_usescrollreveal",
-      "source": "page_usescrollreveal",
-      "target": "page_reveal",
       "confidence_score": 1.0
     },
     {
