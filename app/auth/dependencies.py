@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import Cookie, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
@@ -6,6 +8,8 @@ from app.config import settings
 from app.database import get_db
 from app.models.assignment import Assignment
 from app.models.user import User
+
+logger = logging.getLogger(__name__)
 
 
 def get_current_user(
@@ -28,6 +32,7 @@ def get_current_user(
         token = auth_header.split(" ", 1)[1].strip()
 
     if not token:
+        logger.info("auth.no_session_cookie_or_bearer")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return get_current_user_from_token(token, db)
 

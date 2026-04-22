@@ -1,46 +1,15 @@
  "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSession, signOut } from "@/lib/auth";
-import { Loader } from "@/components/ui/Loader";
+import { signOut } from "@/lib/auth";
 import { InterviewerNavbar } from "@/components/layout/InterviewerNavbar";
 
 export function InterviewerShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function checkSession() {
-      const session = await getSession();
-      if (cancelled) {
-        return;
-      }
-
-      if (!session || session.user.role !== "interviewer") {
-        router.replace("/interviewer/login");
-        return;
-      }
-
-      setReady(true);
-    }
-
-    void checkSession();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [router]);
 
   async function handleSignOut() {
     await signOut();
     router.replace("/interviewer/login");
-  }
-
-  if (!ready) {
-    return <Loader label="Checking session..." fullscreen />;
   }
 
   return (

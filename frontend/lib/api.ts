@@ -18,6 +18,20 @@ import type {
 } from "@/lib/types";
 import { getCsrfToken } from "@/lib/csrf";
 
+export class ApiError extends Error {
+  status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
+export function isApiErrorStatus(error: unknown, statuses: number[]) {
+  return error instanceof ApiError && statuses.includes(error.status);
+}
+
 async function parseError(response: Response) {
   try {
     const data = await response.json();
@@ -57,7 +71,7 @@ async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
     headers,
   });
   if (!response.ok) {
-    throw new Error(await parseError(response));
+    throw new ApiError(response.status, await parseError(response));
   }
 
   if (response.status === 204) {

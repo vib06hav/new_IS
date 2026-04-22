@@ -6,7 +6,6 @@ import { ArrowUpRight } from "lucide-react";
 import { IBM_Plex_Sans, Libre_Franklin } from "next/font/google";
 import { fetchApplicationDetail, fetchSourcePdf } from "@/lib/api";
 import type { ApplicationDetailAdmin } from "@/lib/types";
-import { Card } from "@/components/ui/Card";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ReviewPackageSection, type ReviewPageTab } from "@/components/ReviewPackageSection";
@@ -123,7 +122,7 @@ export default function AdminApplicationDetailPage() {
   return (
     <AdminShell>
       <div
-        className={`${plexSans.variable} ${libreFranklin.variable} space-y-6`}
+        className={`${plexSans.variable} ${libreFranklin.variable} space-y-5 pb-28 md:pb-32`}
         style={{ fontFamily: "var(--font-reports-plex)" }}
       >
         {error ? (
@@ -132,7 +131,7 @@ export default function AdminApplicationDetailPage() {
           </p>
         ) : null}
 
-        <section className="rounded-[1.8rem] border border-slate-200 bg-white/80 p-4 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+        <section className="rounded-[1.6rem] border border-slate-200 bg-white/85 p-4 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2.5">
               <StatusBadge status={item.status} />
@@ -141,38 +140,17 @@ export default function AdminApplicationDetailPage() {
               <MetaPill label="Interviewer" value={assignee} />
             </div>
 
-            <button
-              className="inline-flex items-center gap-1 rounded-full bg-blue-700 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-55"
-              disabled={openingPdf}
-              onClick={() => void handleOpenPdf()}
-              type="button"
-            >
-              {openingPdf ? "Opening PDF..." : "Open source PDF"}
-              <ArrowUpRight className="size-3.5" />
-            </button>
-          </div>
-        </section>
-
-        {item.status === "PROCESSED" ? (
-          <Card title="Report Generation" description="Admin-controlled completion step" eyebrow={null}>
-            <p className="text-sm leading-7 text-[color:var(--muted)]">
-              Pages 1-3 are processed. Generate the full report from the reports dashboard to unlock assignment and
-              Pages 4-5 review visibility.
-            </p>
-          </Card>
-        ) : null}
-
-        <section className="rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-          <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Report pages</p>
-            <h2 className="text-[1.05rem] font-semibold tracking-[0] text-slate-800">Page controls</h2>
-            <p className="text-sm leading-5 text-slate-600">
-              Use the page controls to move across the review package and synthesized final-report sections.
-            </p>
-          </div>
-
-          <div className="mt-2.5 rounded-[1.1rem] border border-slate-200 bg-white/70 p-1.5">
-            <SegmentedControl value={activePageTab} onChange={setActivePageTab} options={pageOptions} />
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                className="inline-flex items-center gap-1 rounded-full bg-blue-700 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-55"
+                disabled={openingPdf}
+                onClick={() => void handleOpenPdf()}
+                type="button"
+              >
+                {openingPdf ? "Opening PDF..." : "Open source PDF"}
+                <ArrowUpRight className="size-3.5" />
+              </button>
+            </div>
           </div>
         </section>
 
@@ -193,6 +171,23 @@ export default function AdminApplicationDetailPage() {
 
         {item.interview_workspace?.status === "completed" ? (
           <FinalInterviewReportSection workspace={item.interview_workspace} />
+        ) : null}
+
+        {item.review_package ? (
+          <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30 flex justify-center px-4 [padding-bottom:calc(env(safe-area-inset-bottom,0px))]">
+            <div className="pointer-events-auto max-w-full rounded-full border border-slate-200/90 bg-white/92 p-1.5 shadow-[0_20px_48px_rgba(15,23,42,0.2)] backdrop-blur-xl">
+              <SegmentedControl
+                value={activePageTab}
+                onChange={setActivePageTab}
+                options={pageOptions}
+                compact
+                hideMeta
+                className="space-y-0"
+                listClassName="border-0 bg-transparent p-0 shadow-none"
+                buttonClassName="min-h-10"
+              />
+            </div>
+          </div>
         ) : null}
       </div>
     </AdminShell>

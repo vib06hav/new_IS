@@ -22,3 +22,4 @@ frontend/.env.local
 frontend/.env.production
 base_frontend/node_modules/
 base_frontend/.next/
+graphify-out/cache

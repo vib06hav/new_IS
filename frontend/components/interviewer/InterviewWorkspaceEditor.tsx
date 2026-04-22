@@ -1,15 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, MinusCircle, Plus, Rocket, Save, Trash2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { usePortalSession } from "@/components/auth/PortalSessionProvider";
 import {
   completeInterviewWorkspace,
+  isApiErrorStatus,
   launchInterviewWorkspace,
   saveInterviewWorkspace,
 } from "@/lib/api";
+import { clearInterviewDraft, readInterviewDraft, writeInterviewDraft } from "@/lib/interviewDrafts";
 import { openInterviewPopupPlaceholder } from "@/lib/interviewPopup";
 import type {
   InterviewQuestionStatus,
@@ -21,6 +24,8 @@ import type {
 type Mode = "configure" | "postgame";
 
 const QUESTION_STATUSES: InterviewQuestionStatus[] = ["unasked", "satisfactory", "mixed", "unsatisfactory"];
+const CUSTOM_THEME_ID = "__custom_group__";
+const CUSTOM_THEME_TITLE = "Custom";
 
 export function InterviewWorkspaceEditor({
   applicationId,
@@ -32,14 +37,26 @@ export function InterviewWorkspaceEditor({
   mode: Mode;
 }) {
   const router = useRouter();
-  const [workspace, setWorkspace] = useState<InterviewWorkspaceSummary>(initialWorkspace);
+  const { authState, clearWorkflowActive, markWorkflowActive, revalidate } = usePortalSession();
+  const [workspace, setWorkspace] = useState<InterviewWorkspaceSummary>(() => {
+    const draft = readInterviewDraft(applicationId, mode);
+    if (!draft) {
+      return initialWorkspace;
+    }
+
+    return {
+      ...initialWorkspace,
+      content: draft,
+    };
+  });
   const [saving, setSaving] = useState(false);
   const [launching, setLaunching] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [draftRestored, setDraftRestored] = useState(() => Boolean(readInterviewDraft(applicationId, mode)));
 
-  const pageTitle = mode === "configure" ? "Configure Interview" : "Postgame Review";
+  const pageTitle = mode === "configure" ? "Configure Interview" : "Interview Feedback";
   const subtitle =
     mode === "configure"
       ? "Refine generated themes, rewrite questions, and add custom prompts before launching the interview popup."
@@ -54,6 +71,17 @@ export function InterviewWorkspaceEditor({
       unsatisfactory: allQuestions.filter((question) => question.status === "unsatisfactory").length,
     };
   }, [workspace.content.themes]);
+
+  useEffect(() => {
+    markWorkflowActive();
+    return () => {
+      clearWorkflowActive();
+    };
+  }, [clearWorkflowActive, markWorkflowActive]);
+
+  useEffect(() => {
+    writeInterviewDraft(applicationId, mode, workspace.content);
+  }, [applicationId, mode, workspace.content]);
 
   function updateTheme(themeId: string, updater: (theme: InterviewWorkspaceTheme) => InterviewWorkspaceTheme) {
     setWorkspace((current) => ({
@@ -120,22 +148,126 @@ export function InterviewWorkspaceEditor({
     }));
   }
 
+  function ensureCustomTheme(currentWorkspace: InterviewWorkspaceSummary) {
+    const existingCustomTheme = currentWorkspace.content.themes.find((theme) => theme.id === CUSTOM_THEME_ID);
+    if (existingCustomTheme) {
+      return existingCustomTheme;
+    }
+
+    return {
+      id: CUSTOM_THEME_ID,
+      source: "custom" as const,
+      title: CUSTOM_THEME_TITLE,
+      unifying_axis: "",
+      interview_direction: "",
+      question_group_title: CUSTOM_THEME_TITLE,
+      questions: [],
+    };
+  }
+
+  function handleAddPostgameCustomQuestion() {
+    setWorkspace((current) => {
+      const existingCustomTheme = current.content.themes.find((theme) => theme.id === CUSTOM_THEME_ID);
+      const customTheme = existingCustomTheme ?? ensureCustomTheme(current);
+      const nextQuestion = createQuestion(CUSTOM_THEME_ID, customTheme.questions.length, "custom");
+      const nextThemes = existingCustomTheme
+        ? current.content.themes.map((theme) =>
+            theme.id === CUSTOM_THEME_ID ? { ...theme, questions: [...theme.questions, nextQuestion] } : theme,
+          )
+        : [...current.content.themes, { ...customTheme, questions: [nextQuestion] }];
+
+      return {
+        ...current,
+        content: {
+          ...current.content,
+          themes: nextThemes,
+        },
+      };
+    });
+  }
+
+  function handleAddPostgameQuestion(themeId: string) {
+    if (themeId === CUSTOM_THEME_ID) {
+      handleAddPostgameCustomQuestion();
+      return;
+    }
+
+    addQuestion(themeId, "custom");
+  }
+
+  const orderedThemes = useMemo(() => {
+    const nonCustomThemes = workspace.content.themes.filter((theme) => theme.id !== CUSTOM_THEME_ID);
+    const customTheme =
+      workspace.content.themes.find((theme) => theme.id === CUSTOM_THEME_ID) ??
+      (mode === "postgame"
+        ? {
+            id: CUSTOM_THEME_ID,
+            source: "custom" as const,
+            title: CUSTOM_THEME_TITLE,
+            unifying_axis: "",
+            interview_direction: "",
+            question_group_title: CUSTOM_THEME_TITLE,
+            questions: [],
+          }
+        : undefined);
+    return customTheme ? [...nonCustomThemes, customTheme] : nonCustomThemes;
+  }, [mode, workspace.content.themes]);
+
+  async function ensureWorkflowSession() {
+    if (authState === "authenticated") {
+      return true;
+    }
+
+    const snapshot = await revalidate({ force: true, reason: `workflow-${mode}-retry` });
+    return snapshot.authState === "authenticated";
+  }
+
+  function handleAuthFailure(action: string, caughtError: unknown) {
+    writeInterviewDraft(applicationId, mode, workspace.content);
+    console.warn(`[workflow] auth-related ${action} failure`, {
+      applicationId,
+      mode,
+      state: authState,
+      error: caughtError instanceof Error ? caughtError.message : "Unknown auth error",
+    });
+    setError("Your session expired while this draft was open. The current draft has been preserved locally. Sign back in and retry this action.");
+    setMessage(null);
+  }
+
   async function handleSave(successMessage: string) {
+    if (!(await ensureWorkflowSession())) {
+      setError("We could not re-establish your session yet. Your draft is preserved locally, so you can retry once sign-in is restored.");
+      setMessage(null);
+      return;
+    }
+
     setSaving(true);
     setError(null);
     setMessage(null);
     try {
       const nextWorkspace = await saveInterviewWorkspace(applicationId, workspace.content);
       setWorkspace(nextWorkspace);
+      clearInterviewDraft(applicationId, mode);
+      setDraftRestored(false);
       setMessage(successMessage);
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : "Unable to save interview workspace.");
+      if (isApiErrorStatus(saveError, [401, 403])) {
+        handleAuthFailure("workspace save", saveError);
+      } else {
+        setError(saveError instanceof Error ? saveError.message : "Unable to save interview workspace.");
+      }
     } finally {
       setSaving(false);
     }
   }
 
   async function handleLaunch() {
+    if (!(await ensureWorkflowSession())) {
+      setError("We could not re-establish your session yet. Your draft is preserved locally, so you can retry launch after signing in again.");
+      setMessage(null);
+      return;
+    }
+
     const popup = openInterviewPopupPlaceholder(applicationId);
     setLaunching(true);
     setError(null);
@@ -143,6 +275,8 @@ export function InterviewWorkspaceEditor({
     try {
       const nextWorkspace = await launchInterviewWorkspace(applicationId, workspace.content);
       setWorkspace(nextWorkspace);
+      clearInterviewDraft(applicationId, mode);
+      setDraftRestored(false);
       if (popup) {
         popup.location.href = `/interviewer/applications/${applicationId}/overlay`;
       } else {
@@ -153,23 +287,40 @@ export function InterviewWorkspaceEditor({
       router.push(`/interviewer/applications/${applicationId}`);
     } catch (launchError) {
       popup?.close();
-      setError(launchError instanceof Error ? launchError.message : "Unable to launch interview popup.");
+      if (isApiErrorStatus(launchError, [401, 403])) {
+        handleAuthFailure("workspace launch", launchError);
+      } else {
+        setError(launchError instanceof Error ? launchError.message : "Unable to launch interview popup.");
+      }
     } finally {
       setLaunching(false);
     }
   }
 
   async function handlePublish() {
+    if (!(await ensureWorkflowSession())) {
+      setError("We could not re-establish your session yet. Your draft is preserved locally, so you can retry publishing after signing in again.");
+      setMessage(null);
+      return;
+    }
+
     setPublishing(true);
     setError(null);
     setMessage(null);
     try {
-      const nextWorkspace = await completeInterviewWorkspace(applicationId, workspace.content);
+      const normalizedContent = normalizeAuthoredContent(workspace.content);
+      const nextWorkspace = await completeInterviewWorkspace(applicationId, normalizedContent);
       setWorkspace(nextWorkspace);
+      clearInterviewDraft(applicationId, mode);
+      setDraftRestored(false);
       setMessage("Final interview report published.");
       router.push(`/interviewer/applications/${applicationId}`);
     } catch (publishError) {
-      setError(publishError instanceof Error ? publishError.message : "Unable to publish final interview report.");
+      if (isApiErrorStatus(publishError, [401, 403])) {
+        handleAuthFailure("workspace publish", publishError);
+      } else {
+        setError(publishError instanceof Error ? publishError.message : "Unable to publish final interview report.");
+      }
     } finally {
       setPublishing(false);
     }
@@ -177,57 +328,55 @@ export function InterviewWorkspaceEditor({
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_18rem]">
+      <section>
         <Card title={pageTitle} description={subtitle} eyebrow={null}>
-          <div className="flex flex-wrap gap-3">
-            <StatusPill label="Stage" value={workspace.status.toUpperCase()} />
-            <StatusPill label="Themes" value={String(workspace.content.themes.length)} />
-            <StatusPill label="Questions" value={String(completionCounts.total)} />
-            {mode === "postgame" ? <StatusPill label="Satisfied" value={String(completionCounts.satisfactory)} /> : null}
-          </div>
-        </Card>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-wrap gap-3">
+              <StatusPill label="Stage" value={workspace.status.toUpperCase()} />
+              <StatusPill label="Themes" value={String(workspace.content.themes.length)} />
+              <StatusPill label="Questions" value={String(completionCounts.total)} />
+            </div>
 
-        <Card
-          title={mode === "configure" ? "Launch" : "Publish"}
-          description={
-            mode === "configure"
-              ? "Save your prep and open the compact interview runner in a popup window."
-              : "Ratings and notes are draftable until you publish the final interview report."
-          }
-          eyebrow={null}
-        >
-          <div className="space-y-3">
-            <Button disabled={saving} onClick={() => void handleSave(mode === "configure" ? "Interview prep saved." : "Postgame draft saved.")} size="sm" variant="secondary">
-              <Save className="size-4" />
-              {saving ? "Saving..." : mode === "configure" ? "Save draft" : "Save review"}
-            </Button>
+            <div className="flex flex-wrap gap-3">
+              <Button disabled={saving} onClick={() => void handleSave(mode === "configure" ? "Interview prep saved." : "Feedback draft saved.")} size="sm" variant="secondary">
+                <Save className="size-4" />
+                {saving ? "Saving..." : mode === "configure" ? "Save draft" : "Save review"}
+              </Button>
 
-            {mode === "configure" ? (
-              <Button disabled={!canLaunch || launching} onClick={() => void handleLaunch()} size="sm">
-                <Rocket className="size-4" />
-                {launching ? "Launching..." : "Launch overlay"}
-              </Button>
-            ) : (
-              <Button disabled={publishing} onClick={() => void handlePublish()} size="sm">
-                <CheckCircle2 className="size-4" />
-                {publishing ? "Publishing..." : "Publish final interview report"}
-              </Button>
-            )}
+              {mode === "configure" ? (
+                <Button disabled={!canLaunch || launching} onClick={() => void handleLaunch()} size="sm">
+                  <Rocket className="size-4" />
+                  {launching ? "Launching..." : "Launch overlay"}
+                </Button>
+              ) : (
+                <Button disabled={publishing} onClick={() => void handlePublish()} size="sm">
+                  <CheckCircle2 className="size-4" />
+                  {publishing ? "Publishing..." : "Publish final interview report"}
+                </Button>
+              )}
+            </div>
           </div>
         </Card>
       </section>
 
+      {draftRestored ? (
+        <p className="rounded-[1.2rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          A locally preserved feedback draft was restored for this application.
+        </p>
+      ) : null}
       {message ? <p className="rounded-[1.2rem] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{message}</p> : null}
       {error ? <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p> : null}
 
       <section className="space-y-4">
-        {workspace.content.themes.map((theme, themeIndex) => (
+        {orderedThemes.map((theme, themeIndex) => {
+          const isCustomTheme = theme.id === CUSTOM_THEME_ID;
+          return (
           <article
             key={theme.id}
             className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm"
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="space-y-2">
+              <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex flex-wrap gap-2">
                   <span className="inline-flex rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-700">
                     {theme.source}
@@ -239,16 +388,20 @@ export function InterviewWorkspaceEditor({
                 {mode === "configure" ? (
                   <input
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-lg font-semibold text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
-                    onChange={(event) => updateTheme(theme.id, (current) => ({ ...current, title: event.target.value }))}
-                    placeholder="Theme title"
-                    value={theme.title}
+                    onChange={(event) =>
+                      updateTheme(theme.id, (current) => ({ ...current, question_group_title: event.target.value }))
+                    }
+                    placeholder="Question group title"
+                    value={theme.question_group_title}
                   />
                 ) : (
-                  <h2 className="text-xl font-semibold tracking-tight text-slate-900">{theme.title || "Untitled theme"}</h2>
+                  <h2 className="text-xl font-semibold tracking-tight text-slate-900">
+                    {isCustomTheme ? theme.question_group_title || CUSTOM_THEME_TITLE : theme.title || "Untitled theme"}
+                  </h2>
                 )}
               </div>
 
-              {mode === "configure" ? (
+              {mode === "configure" || (mode === "postgame" && isCustomTheme) ? (
                 <button
                   className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-700 transition hover:bg-rose-100"
                   onClick={() => removeTheme(theme.id)}
@@ -260,67 +413,36 @@ export function InterviewWorkspaceEditor({
               ) : null}
             </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {mode === "configure" ? (
-                <>
-                  <TextAreaField
-                    label="Unifying axis"
-                    onChange={(value) => updateTheme(theme.id, (current) => ({ ...current, unifying_axis: value }))}
-                    rows={4}
-                    value={theme.unifying_axis}
-                  />
-                  <TextAreaField
-                    label="Interview direction"
-                    onChange={(value) => updateTheme(theme.id, (current) => ({ ...current, interview_direction: value }))}
-                    rows={4}
-                    value={theme.interview_direction}
-                  />
-                </>
-              ) : (
-                <>
-                  <ReadOnlyField label="Unifying axis" value={theme.unifying_axis || "No unifying axis recorded."} />
-                  <ReadOnlyField label="Interview direction" value={theme.interview_direction || "No interview direction recorded."} />
-                </>
-              )}
-            </div>
+            {mode !== "configure" ? (
+              <>
+                {!isCustomTheme ? (
+                  <div className="mt-4 grid gap-4 md:grid-cols-2">
+                    <ReadOnlyField label="Unifying axis" value={theme.unifying_axis || "No unifying axis recorded."} />
+                    <ReadOnlyField label="Interview direction" value={theme.interview_direction || "No interview direction recorded."} />
+                  </div>
+                ) : null}
 
-            <div className="mt-4">
-              {mode === "configure" ? (
-                <label className="block text-sm text-slate-600">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Question group title</span>
-                  <input
-                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
-                    onChange={(event) =>
-                      updateTheme(theme.id, (current) => ({ ...current, question_group_title: event.target.value }))
-                    }
-                    value={theme.question_group_title}
-                  />
-                </label>
-              ) : (
-                <ReadOnlyField label="Question group" value={theme.question_group_title || "Question group"} />
-              )}
-            </div>
+                <div className="mt-4">
+                  <ReadOnlyField label="Question group" value={theme.question_group_title || "Question group"} />
+                </div>
+              </>
+            ) : null}
 
             <div className="mt-5 space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Questions</p>
-                {mode === "configure" ? (
-                  <button
-                    className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-700 transition hover:bg-slate-50"
-                    onClick={() => addQuestion(theme.id)}
-                    type="button"
-                  >
-                    <Plus className="size-3.5" />
-                    Add question
-                  </button>
-                ) : null}
-              </div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Questions</p>
 
               <div className="space-y-3">
+                {theme.questions.length === 0 ? (
+                  <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50/70 px-4 py-3 text-sm text-slate-500">
+                    No questions yet. Add one here to capture miscellaneous or follow-up prompts.
+                  </p>
+                ) : null}
                 {theme.questions
                   .slice()
                   .sort((left, right) => left.order - right.order)
-                  .map((question, questionIndex) => (
+                  .map((question, questionIndex) => {
+                    const isEditablePostgameQuestion = mode === "postgame" && question.source === "custom";
+                    return (
                     <div key={question.id} className="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="space-y-1">
@@ -329,7 +451,7 @@ export function InterviewWorkspaceEditor({
                             {question.source}
                           </span>
                         </div>
-                        {mode === "configure" && theme.questions.length > 1 ? (
+                        {((mode === "configure" && theme.questions.length > 1) || isEditablePostgameQuestion) ? (
                           <button
                             className="text-xs font-semibold text-rose-700"
                             onClick={() => removeQuestion(theme.id, question.id)}
@@ -348,6 +470,31 @@ export function InterviewWorkspaceEditor({
                           }
                           value={question.text}
                         />
+                      ) : isEditablePostgameQuestion ? (
+                        <div className="mt-3 space-y-4">
+                          <textarea
+                            className="min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                            onChange={(event) =>
+                              updateQuestion(theme.id, question.id, (current) => ({ ...current, text: event.target.value }))
+                            }
+                            placeholder="Type question"
+                            value={question.text}
+                          />
+                          <QuestionStatusSelector
+                            status={question.status}
+                            onChange={(status) =>
+                              updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))
+                            }
+                          />
+                          <TextAreaField
+                            label="Question note"
+                            onChange={(value) =>
+                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
+                            }
+                            rows={4}
+                            value={question.note}
+                          />
+                        </div>
                       ) : (
                         <div className="mt-3 space-y-4">
                           <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900">
@@ -370,11 +517,20 @@ export function InterviewWorkspaceEditor({
                         </div>
                       )}
                     </div>
-                  ))}
+                  )})}
+
+                <button
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white px-3 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  onClick={() => (mode === "configure" ? addQuestion(theme.id) : handleAddPostgameQuestion(theme.id))}
+                  type="button"
+                >
+                  <Plus className="size-4" />
+                  Add question
+                </button>
               </div>
             </div>
           </article>
-        ))}
+        )})}
 
         {mode === "configure" ? (
           <button
@@ -410,7 +566,7 @@ export function InterviewWorkspaceEditor({
 function createQuestion(themeId: string, order: number, source: "generated" | "custom"): InterviewWorkspaceQuestion {
   return {
     id: `${themeId}-q-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    text: source === "custom" ? "New custom question" : "",
+    text: "",
     source,
     status: "unasked",
     note: "",
@@ -508,4 +664,18 @@ function getQuestionStatusIcon(status: InterviewQuestionStatus) {
   if (status === "mixed") return <MinusCircle className="size-3.5" />;
   if (status === "unsatisfactory") return <XCircle className="size-3.5" />;
   return <span className="inline-block size-3 rounded-full border border-current" />;
+}
+
+function normalizeAuthoredContent(content: InterviewWorkspaceSummary["content"]) {
+  return {
+    ...content,
+    themes: content.themes
+      .map((theme) => ({
+        ...theme,
+        questions: theme.questions
+          .filter((question) => question.source !== "custom" || question.text.trim().length > 0)
+          .map((question, index) => ({ ...question, order: index })),
+      }))
+      .filter((theme) => theme.id !== CUSTOM_THEME_ID || theme.questions.length > 0),
+  };
 }

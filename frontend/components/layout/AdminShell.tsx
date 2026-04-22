@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSession, signOut } from "@/lib/auth";
-import { Loader } from "@/components/ui/Loader";
+import { signOut } from "@/lib/auth";
 import { Libre_Franklin, IBM_Plex_Sans } from "next/font/google";
 import { AdminNavbar } from "@/components/layout/AdminNavbar";
 
@@ -29,39 +27,10 @@ const adminNav = [
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function checkSession() {
-      const session = await getSession();
-      if (cancelled) {
-        return;
-      }
-
-      if (!session || session.user.role !== "admin") {
-        router.replace("/admin/login");
-        return;
-      }
-
-      setReady(true);
-    }
-
-    void checkSession();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [router]);
 
   async function handleSignOut() {
     await signOut();
     router.replace("/admin/login");
-  }
-
-  if (!ready) {
-    return <Loader label="Checking session..." fullscreen />;
   }
 
   return (
