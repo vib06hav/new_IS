@@ -221,19 +221,18 @@ export default function LandingPage() {
 
                 <div>
                   <h1
-                    className="text-5xl md:text-[56px] font-black tracking-tight text-slate-800 leading-[1.05] mb-6"
+                    className="text-5xl md:text-[56px] font-black tracking-tight text-slate-800 leading-[1.1] mb-6"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
-                    Give admissions teams a more intelligent interview process.
+                    Standardise Every{" "}
+                    <span className="text-blue-700">Interview.</span>
                   </h1>
                   <p
                     className="text-lg md:text-xl text-slate-600 leading-[1.6] max-w-2xl"
                     style={{ fontFamily: "var(--font-body)" }}
                   >
-                    Interview Standardiser helps teams run better prepared admissions
-                    interviews by turning application material into structured
-                    preparation, clearer coordination, and stronger interview
-                    support.
+                    A structured preparation platform for university interviewers.
+                    Grounded in applicant-submitted material, never evaluative.
                   </p>
                 </div>
 
@@ -251,69 +250,32 @@ export default function LandingPage() {
                 style={visualCardStyle}
               >
                 <div className="flex items-center justify-between text-xs uppercase tracking-widest text-slate-400">
-                  <span>System view</span>
-                  <span>Preparation + support</span>
+                  <span>Interview Brief</span>
+                  <span>Preview</span>
                 </div>
-
-                <div className="mt-6 space-y-4">
-                  <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50/80 p-4">
-                    <div className="flex items-center justify-between gap-3">
+                <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  {/* Stylized Mock UI for Interview Brief */}
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between border-b border-slate-100 pb-3">
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
-                          Essay highlights
-                        </p>
-                        <p className="mt-1 text-sm font-semibold text-slate-900">
-                          Direct evidence from applicant writing
-                        </p>
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Applicant</div>
+                        <div className="text-lg font-bold text-slate-800">APP-4902</div>
                       </div>
-                      <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">
-                        flagged
-                      </span>
+                      <div className="rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                        Ready
+                      </div>
                     </div>
-                    <div className="mt-4 rounded-[1rem] border border-slate-200 bg-white px-4 py-4 text-sm leading-7 text-slate-700">
-                      I built a peer mentoring network for students who felt they did
-                      not belong and kept it running across two school years.
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-[1.2rem] border border-indigo-100 bg-indigo-50/70 px-4 py-4">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-700">
-                        Theme
-                      </p>
-                      <p className="mt-2 text-sm font-semibold text-slate-900">
-                        Initiative with sustained follow-through
-                      </p>
-                    </div>
-                    <div className="rounded-[1.2rem] border border-slate-200 bg-white/75 px-4 py-4">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                        Question
-                      </p>
-                      <p className="mt-2 text-sm font-semibold text-slate-900">
-                        Ask what resistance they had to manage.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-[1.4rem] border border-slate-200 bg-white/90 p-4 shadow-[0_18px_36px_rgba(15,23,42,0.1)]">
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-3">
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-700">
-                          Interview overlay
-                        </p>
-                        <h3 className="mt-1 text-base font-semibold tracking-tight text-slate-900">
-                          Live runner
-                        </h3>
+                        <div className="mb-1 text-xs font-semibold text-slate-600">Generated Theme</div>
+                        <div className="h-2 w-full rounded bg-slate-100"></div>
+                        <div className="mt-1.5 h-2 w-5/6 rounded bg-slate-100"></div>
                       </div>
-                      <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">
-                        2/5 asked
-                      </span>
-                    </div>
-
-                    <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                      <MiniStat label="Questions" value="2/5" />
-                      <MiniStat label="Themes" value="3" />
-                      <MiniStat label="Autosave" value="Saved" />
+                      <div>
+                        <div className="mb-1 text-xs font-semibold text-slate-600">Proposed Question</div>
+                        <div className="h-2 w-full rounded bg-slate-100"></div>
+                        <div className="mt-1.5 h-2 w-2/3 rounded bg-slate-100"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -343,22 +305,20 @@ export default function LandingPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedRole("interviewer")}
-                  className={`rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-widest transition-colors duration-200 ${
-                    selectedRole === "interviewer"
+                  className={`rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-widest transition-colors duration-200 ${selectedRole === "interviewer"
                       ? "bg-blue-50 text-blue-700 border border-blue-100"
                       : "text-slate-600 hover:text-blue-700"
-                  }`}
+                    }`}
                 >
                   Interviewer
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedRole("admin")}
-                  className={`rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-widest transition-colors duration-200 ${
-                    selectedRole === "admin"
+                  className={`rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-widest transition-colors duration-200 ${selectedRole === "admin"
                       ? "bg-blue-50 text-blue-700 border border-blue-100"
                       : "text-slate-600 hover:text-blue-700"
-                  }`}
+                    }`}
                 >
                   Admin
                 </button>
@@ -366,7 +326,7 @@ export default function LandingPage() {
 
               <div className="grid lg:grid-cols-[0.92fr_1.08fr] gap-6">
                 <div
-                  className="rounded-3xl border border-slate-200 bg-white/80 p-7"
+                  className="rounded-3xl border border-slate-200 bg-white/80 p-5"
                   style={gatewayCardStyle}
                 >
                   <div className="space-y-3">
@@ -382,21 +342,25 @@ export default function LandingPage() {
                     {currentRole.features.map((feature) => (
                       <div
                         key={feature.title}
-                        className="rounded-2xl border border-slate-200 bg-slate-50/80 px-5 py-4"
+                        className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3"
                       >
                         <p className="text-sm font-semibold text-slate-800">
                           {feature.title}
                         </p>
-                        <p className="mt-2 text-sm leading-7 text-slate-600">
-                          {feature.text}
+                        <p className="text-sm font-semibold text-slate-800">
+                          {feature.title}
                         </p>
+                        <div className="mt-2 space-y-1.5">
+                          <div className="h-1.5 w-full rounded bg-slate-200/60"></div>
+                          <div className="h-1.5 w-4/5 rounded bg-slate-200/60"></div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div
-                  className="rounded-3xl border border-slate-200 bg-white/80 p-7"
+                  className="rounded-3xl border border-slate-200 bg-white/80 p-5"
                   style={visualCardStyle}
                 >
                   <div>
@@ -421,22 +385,13 @@ export default function LandingPage() {
                           <h4 className="mt-1 text-base font-semibold tracking-tight text-slate-900">
                             Live runner
                           </h4>
-                          <p className="mt-1 text-sm text-slate-600">
-                            Mark questions as you go and stay inside the conversation.
-                          </p>
                         </div>
                         <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">
                           2/5
                         </span>
                       </div>
 
-                      <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                        <MiniStat label="Questions" value="2/5" />
-                        <MiniStat label="Themes" value="3" />
-                        <MiniStat label="Autosave" value="Saved" />
-                      </div>
-
-                      <div className="mt-4 space-y-3">
+                      <div className="mt-4 space-y-2">
                         <div className="rounded-[1.1rem] border border-slate-200 bg-slate-50/80 p-3">
                           <div className="flex items-center gap-2">
                             <span className="rounded-full border border-slate-300 bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
@@ -446,17 +401,16 @@ export default function LandingPage() {
                               generated
                             </span>
                           </div>
-                          <p className="mt-3 text-sm leading-6 text-slate-900">
-                            What resistance did you face while building that mentoring network?
-                          </p>
+                          <div className="mt-4 space-y-2">
+                            <div className="h-2 w-full rounded bg-slate-100"></div>
+                            <div className="h-2 w-2/3 rounded bg-slate-100"></div>
+                          </div>
                         </div>
                         <div className="rounded-[1.1rem] border border-blue-100 bg-blue-50/75 p-3">
                           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">
                             Current theme
                           </p>
-                          <p className="mt-2 text-sm font-semibold text-slate-900">
-                            Initiative with sustained follow-through
-                          </p>
+                          <div className="mt-3 h-2 w-3/4 rounded bg-blue-200"></div>
                         </div>
                       </div>
                     </div>
@@ -467,12 +421,7 @@ export default function LandingPage() {
                           <div className="flex flex-wrap items-center gap-2">
                             <StatusMark status="ASSIGNED" />
                           </div>
-                          <h4
-                            className="text-[1.8rem] font-black leading-none tracking-tight text-slate-800"
-                            style={{ fontFamily: "var(--font-display)" }}
-                          >
-                            APP-204
-                          </h4>
+                          <div className="h-6 w-32 rounded bg-slate-100"></div>
                         </div>
                         <button
                           className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-500"
@@ -483,21 +432,15 @@ export default function LandingPage() {
                       </div>
 
                       <div className="space-y-4 px-5 py-5">
-                        <BlacklineMeta label="Last updated" value="Apr 20, 2026, 10:14 AM" />
+                        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Status</p>
+                          <div className="mt-2 h-2 w-1/2 rounded bg-slate-100"></div>
+                        </div>
 
-                        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                            Assignment
-                          </p>
-                          <div className="mt-3 rounded-xl border border-slate-200 bg-white px-4 py-3">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-600/80">
-                              Current
-                            </p>
-                            <p className="mt-1 text-sm font-semibold text-slate-800">
-                              Dr. Maya Patel
-                            </p>
-                            <p className="text-xs text-slate-500">Admissions evaluator</p>
-                          </div>
+                        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Assignment</p>
+                          <div className="mt-2 h-2 w-3/4 rounded bg-indigo-200"></div>
+                          <div className="mt-2 h-1.5 w-1/2 rounded bg-slate-100"></div>
                         </div>
 
                         <div className="flex justify-end">
@@ -514,62 +457,48 @@ export default function LandingPage() {
           <Reveal delay={80}>
             <section className="grid md:grid-cols-2 gap-6">
               <div
-                className="rounded-3xl border border-slate-200 bg-white/80 p-7"
+                className="rounded-3xl border border-slate-200 bg-white/80 p-5"
                 style={visualCardStyle}
               >
-                <p className="text-xs font-bold uppercase tracking-[0.28em] text-slate-400">
-                  From source material
-                </p>
-                <h3 className="mt-3 text-2xl font-bold tracking-tight text-slate-800">
-                  Highlights turn raw application text into useful interview evidence.
+                <h3 className="mt-2 text-xl font-bold tracking-tight text-slate-800">
+                  Application Highlights
                 </h3>
-                <div className="mt-5 space-y-3">
-                  <div className="rounded-2xl border border-slate-200 bg-white/90 p-4">
+                <div className="mt-4 space-y-3">
+                  <div className="rounded-2xl border border-slate-200 bg-white/90 p-3">
                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
                       Essay excerpt
                     </p>
-                    <div className="mt-3 space-y-2 text-sm leading-7 text-slate-700">
-                      <p>
-                        I spent two years building a{" "}
-                        <span className="rounded bg-blue-100 px-1.5 py-0.5 text-blue-900">
-                          peer mentoring network
-                        </span>{" "}
-                        for students who felt like they did not belong.
-                      </p>
+                    <div className="mt-3 space-y-2">
+                      <div className="h-2 w-full rounded bg-slate-100"></div>
+                      <div className="h-2 w-full rounded bg-slate-100"></div>
+                      <div className="h-2 w-5/6 rounded bg-slate-100"></div>
                     </div>
                   </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-blue-100 bg-blue-50/75 px-4 py-4">
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-blue-100 bg-blue-50/75 p-3">
                       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">
                         Signal
                       </p>
-                      <p className="mt-2 text-sm font-semibold text-slate-800">
-                        Leadership with sustained execution
-                      </p>
+                      <div className="mt-3 h-2 w-3/4 rounded bg-blue-200"></div>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50/75 px-4 py-4">
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50/75 p-3">
                       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
                         Follow-up
                       </p>
-                      <p className="mt-2 text-sm font-semibold text-slate-800">
-                        Ask what kept the work going.
-                      </p>
+                      <div className="mt-3 h-2 w-4/5 rounded bg-slate-200"></div>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div
-                className="rounded-3xl border border-slate-200 bg-white/80 p-7"
+                className="rounded-3xl border border-slate-200 bg-white/80 p-5"
                 style={visualCardStyle}
               >
-                <p className="text-xs font-bold uppercase tracking-[0.28em] text-slate-400">
-                  In the interview
-                </p>
-                <h3 className="mt-3 text-2xl font-bold tracking-tight text-slate-800">
-                  The overlay carries preparation into the live conversation.
+                <h3 className="mt-2 text-xl font-bold tracking-tight text-slate-800">
+                  Interview Overlay
                 </h3>
-                <div className="mt-5 rounded-[1.6rem] border border-slate-200 bg-white/90 p-4 shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
+                <div className="mt-4 rounded-[1.6rem] border border-slate-200 bg-white/90 p-4 shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-700">
@@ -583,27 +512,21 @@ export default function LandingPage() {
                       3/6 asked
                     </span>
                   </div>
-                  <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                    <MiniStat label="Questions" value="3/6" />
-                    <MiniStat label="Themes" value="4" />
-                    <MiniStat label="Autosave" value="Saved" />
-                  </div>
-                  <div className="mt-4 grid gap-3">
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-4">
+                  <div className="mt-4 grid gap-2">
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3">
                       <p className="text-xs uppercase tracking-widest text-slate-400">
                         Current theme
                       </p>
-                      <p className="mt-2 text-sm font-semibold text-slate-800">
-                        Initiative under pressure
-                      </p>
+                      <div className="mt-2 h-2 w-3/4 rounded bg-slate-200"></div>
                     </div>
-                    <div className="rounded-2xl border border-blue-100 bg-blue-50/75 px-4 py-4">
+                    <div className="rounded-2xl border border-blue-100 bg-blue-50/75 p-3">
                       <p className="text-xs uppercase tracking-widest text-blue-700">
                         Next prompt
                       </p>
-                      <p className="mt-2 text-sm font-semibold text-slate-800">
-                        Ask how the applicant handled resistance or uncertainty.
-                      </p>
+                      <div className="mt-2 space-y-1.5">
+                        <div className="h-2 w-full rounded bg-blue-200"></div>
+                        <div className="h-2 w-2/3 rounded bg-blue-200"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -613,22 +536,19 @@ export default function LandingPage() {
 
           <Reveal delay={120}>
             <section
-              className="rounded-3xl border border-slate-200 bg-white/80 p-8 text-center"
+              className="rounded-3xl border border-slate-200 bg-white/80 p-6 text-center"
               style={visualCardStyle}
             >
-              <p className="text-xs font-bold uppercase tracking-[0.28em] text-slate-400">
-                Access
-              </p>
               <h2
-                className="mt-3 text-3xl md:text-4xl font-black tracking-tight text-slate-800"
+                className="mt-2 text-2xl font-black tracking-tight text-slate-800"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                Step into the system when you are ready to work.
+                Access the System
               </h2>
-              <p className="mt-4 max-w-2xl mx-auto text-base md:text-lg text-slate-600 leading-7">
+              <p className="mt-3 max-w-2xl mx-auto text-sm text-slate-600 leading-relaxed">
                 Use the portal to continue into the workspace that matches your role.
               </p>
-              <div className="mt-6">
+              <div className="mt-5">
                 <Link
                   href="/portal"
                   className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-700 transition-colors duration-200 hover:text-blue-800"
@@ -680,7 +600,7 @@ const visualCardStyle: React.CSSProperties = {
 
 function SmallKeyStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white/70 px-4 py-3">
+    <div className="rounded-lg border border-slate-200 bg-white/70 px-3 py-2">
       <p className="text-xs uppercase tracking-widest text-slate-400">{label}</p>
       <p className="mt-1 font-semibold text-slate-800">{value}</p>
     </div>
@@ -703,9 +623,8 @@ function StatusMark({ status }: { status: string }) {
 
   return (
     <span
-      className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${
-        styles[status as keyof typeof styles] ?? "border-slate-200 bg-slate-100 text-slate-700"
-      }`}
+      className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${styles[status as keyof typeof styles] ?? "border-slate-200 bg-slate-100 text-slate-700"
+        }`}
     >
       {status}
     </span>
