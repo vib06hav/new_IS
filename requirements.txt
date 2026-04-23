@@ -15,4 +15,5 @@ python-dotenv
 pytest
 pymupdf
 minio
+redis
 workos==6.0.4

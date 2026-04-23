@@ -366,7 +366,11 @@ function AdminInterviewersContent() {
 
       {createOpen ? (
         <CenteredOverlay onClose={() => !createSubmitting && setCreateOpen(false)}>
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
+          <div
+            className="flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl"
+            style={{ maxHeight: "calc(100dvh - var(--admin-navbar-height, 0px) - 2rem)" }}
+          >
+            <div className="overflow-y-auto p-6">
             <SurfaceHeader eyebrow="Invite interviewer" title="New interviewer invite" onClose={() => setCreateOpen(false)} />
             <p className="mt-4 text-sm leading-7 text-slate-600">
               This creates a local access record only. The interviewer activates on first successful AuthKit sign in.
@@ -385,13 +389,18 @@ function AdminInterviewersContent() {
                 {createSubmitting ? "Inviting..." : "Save invite"}
               </button>
             </div>
+            </div>
           </div>
         </CenteredOverlay>
       ) : null}
 
       {selectedInterviewer ? (
         <CenteredOverlay onClose={() => !actionSubmitting && setSelectedInterviewer(null)}>
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
+          <div
+            className="flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl"
+            style={{ maxHeight: "calc(100dvh - var(--admin-navbar-height, 0px) - 2rem)" }}
+          >
+            <div className="overflow-y-auto p-6">
             <SurfaceHeader eyebrow="Access actions" title={selectedInterviewer.name} onClose={() => setSelectedInterviewer(null)} />
             <div className="mt-5 flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <InterviewerAvatar item={selectedInterviewer} sizeClassName="size-14" />
@@ -454,49 +463,59 @@ function AdminInterviewersContent() {
                 </div>
               </div>
             </div>
+            </div>
           </div>
         </CenteredOverlay>
       ) : null}
 
       {assignmentInterviewer ? (
         <CenteredOverlay onClose={() => !assignmentSubmitting && setAssignmentInterviewer(null)}>
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-            <SurfaceHeader eyebrow="Assignment buckets" title={`Manage assignments · ${assignmentInterviewer.name}`} onClose={() => setAssignmentInterviewer(null)} />
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
-              Assignment behavior stays exactly the same. This modal is unchanged in spirit; only identity management
-              around it has been simplified.
-            </p>
-            {assignmentLoading ? (
-              <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10">
-                <Loader label="Loading assignment manager..." />
-              </div>
-            ) : assignmentSummary ? (
-              <>
-                {assignmentError ? <p className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{assignmentError}</p> : null}
-                <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
-                  <Badge variant="secondary">{assignmentBuckets.currentlyAssigned.length} staged active</Badge>
-                  <Badge variant="outline">{stagedChangeCount} pending change{stagedChangeCount === 1 ? "" : "s"}</Badge>
+          <div
+            className="flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl"
+            style={{ height: "min(42rem, calc(100dvh - var(--admin-navbar-height, 0px) - 2rem))" }}
+          >
+            <div className="flex min-h-0 flex-1 flex-col p-6">
+              <SurfaceHeader eyebrow="Assignment buckets" title={`Manage assignments · ${assignmentInterviewer.name}`} onClose={() => setAssignmentInterviewer(null)} />
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
+                Assignment behavior stays exactly the same. This modal is unchanged in spirit; only identity management
+                around it has been simplified.
+              </p>
+              {assignmentLoading ? (
+                <div className="mt-4 flex min-h-0 flex-1 items-center rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10">
+                  <Loader label="Loading assignment manager..." />
                 </div>
-                <div className="mt-6 grid gap-4 xl:grid-cols-3">
-                  <AssignmentBucket title="Currently assigned" items={assignmentBuckets.currentlyAssigned} actionLabel="Remove" onAction={removeAssignment} showCurrentOwner={false} />
-                  <AssignmentBucket title="Available to assign" items={assignmentBuckets.availableToAssign} actionLabel="Add" onAction={addAssignment} showCurrentOwner={false} />
-                  <AssignmentBucket title="Available to reassign" items={assignmentBuckets.availableToReassign} actionLabel="Add" onAction={addAssignment} showCurrentOwner />
+              ) : assignmentSummary ? (
+                <>
+                  {assignmentError ? <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{assignmentError}</p> : null}
+                  <div className="mt-4 flex min-h-0 flex-1 flex-col">
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                      <Badge variant="secondary">{assignmentBuckets.currentlyAssigned.length} staged active</Badge>
+                      <Badge variant="outline">{stagedChangeCount} pending change{stagedChangeCount === 1 ? "" : "s"}</Badge>
+                    </div>
+                    <div className="mt-4 grid min-h-0 flex-1 gap-4 xl:grid-cols-3">
+                      <AssignmentBucket title="Currently assigned" items={assignmentBuckets.currentlyAssigned} actionLabel="Remove" onAction={removeAssignment} showCurrentOwner={false} />
+                      <AssignmentBucket title="Available to assign" items={assignmentBuckets.availableToAssign} actionLabel="Add" onAction={addAssignment} showCurrentOwner={false} />
+                      <AssignmentBucket title="Available to reassign" items={assignmentBuckets.availableToReassign} actionLabel="Add" onAction={addAssignment} showCurrentOwner />
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center justify-end gap-3 border-t border-slate-200 pt-4">
+                    <button className="rounded-full border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-100" disabled={assignmentSubmitting} onClick={() => setAssignmentInterviewer(null)} type="button">
+                      Close
+                    </button>
+                    <button className="rounded-full bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-60" disabled={assignmentSubmitting || stagedChangeCount === 0} onClick={() => void handleAssignmentSave()} type="button">
+                      {assignmentSubmitting ? "Saving..." : `Save changes${stagedChangeCount > 0 ? ` (${stagedChangeCount})` : ""}`}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="mt-4 flex min-h-0 flex-1 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10 text-center">
+                  <div>
+                    <p className="text-base font-semibold text-slate-900">Assignment manager unavailable.</p>
+                    <p className="mt-2 text-sm text-slate-600">We couldn’t load the interviewer assignment summary just yet.</p>
+                  </div>
                 </div>
-                <div className="mt-6 flex items-center justify-end gap-3 border-t border-slate-200 pt-5">
-                  <button className="rounded-full border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-100" disabled={assignmentSubmitting} onClick={() => setAssignmentInterviewer(null)} type="button">
-                    Close
-                  </button>
-                  <button className="rounded-full bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-60" disabled={assignmentSubmitting || stagedChangeCount === 0} onClick={() => void handleAssignmentSave()} type="button">
-                    {assignmentSubmitting ? "Saving..." : `Save changes${stagedChangeCount > 0 ? ` (${stagedChangeCount})` : ""}`}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10 text-center">
-                <p className="text-base font-semibold text-slate-900">Assignment manager unavailable.</p>
-                <p className="mt-2 text-sm text-slate-600">We couldn’t load the interviewer assignment summary just yet.</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </CenteredOverlay>
       ) : null}
@@ -560,9 +579,14 @@ function InterviewerAvatar({ item, sizeClassName }: { item: InterviewerListItem;
 
 function CenteredOverlay({ children, onClose }: { children: ReactNode; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-40 grid place-items-center bg-slate-900/35 px-5 py-8 backdrop-blur-[8px]" onClick={onClose} role="presentation">
-      <div className="w-full max-w-[72rem]" onClick={(event) => event.stopPropagation()} role="presentation">
-        {children}
+    <div className="fixed inset-0 z-40 overflow-y-auto bg-slate-900/35 px-5 backdrop-blur-[8px]" onClick={onClose} role="presentation">
+      <div
+        className="flex min-h-full items-start justify-center pb-6"
+        style={{ paddingTop: "calc(var(--admin-navbar-height, 0px) + 1rem)" }}
+      >
+        <div className="w-full max-w-[72rem]" onClick={(event) => event.stopPropagation()} role="presentation">
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -624,12 +648,12 @@ function AssignmentBucket({
   showCurrentOwner: boolean;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <section className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4">
       <div className="mb-4 flex items-center justify-between gap-3">
         <p className="text-lg font-semibold tracking-[-0.03em] text-slate-900">{title}</p>
         <Badge variant="outline">{items.length}</Badge>
       </div>
-      <div className="space-y-3">
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
         {items.map((item) => (
           <div key={item.application_id} className={getAssignmentClassName(item)}>
             <div className="flex flex-wrap items-start justify-between gap-3">

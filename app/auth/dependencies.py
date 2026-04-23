@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import Cookie, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
@@ -7,6 +9,8 @@ from app.database import get_db
 from app.models.assignment import Assignment
 from app.models.user import User
 
+logger = logging.getLogger(__name__)
+
 
 def get_current_user(
     request: Request,
@@ -14,13 +18,21 @@ def get_current_user(
     session_token: str | None = Cookie(default=None, alias=settings.SESSION_COOKIE_NAME),
     db: Session = Depends(get_db),
 ) -> User:
+    if session_token:
+        return get_current_user_from_workos_session(db, response, session_token)
+
     token: str | None = None
     auth_header = request.headers.get("authorization", "")
     if auth_header.lower().startswith("bearer "):
+        if not settings.ENABLE_BEARER_TOKEN_AUTH:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Bearer token authentication is disabled",
+            )
         token = auth_header.split(" ", 1)[1].strip()
-    elif session_token:
-        return get_current_user_from_workos_session(db, response, session_token)
+
     if not token:
+        logger.info("auth.no_session_cookie_or_bearer")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return get_current_user_from_token(token, db)
 

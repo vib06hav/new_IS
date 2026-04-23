@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
@@ -89,10 +89,23 @@ def callback(
 def get_session(
     request: Request,
     response: Response,
+    portal: str | None = Query(default=None, pattern="^(admin|interviewer)$"),
     current_user: User = Depends(get_current_user),
 ):
+    if current_user.access_status == "deactivated":
+        logger.warning("auth.session.deactivated user_id=%s", current_user.id)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This account has been deactivated.")
+
+    if portal and current_user.role != portal:
+        logger.warning("auth.session.role_mismatch user_id=%s portal=%s role=%s", current_user.id, portal, current_user.role)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"This account does not belong in the {portal} portal.",
+        )
+
     if not request.cookies.get(settings.CSRF_COOKIE_NAME):
         set_csrf_cookie(response, generate_csrf_token())
+    logger.info("auth.session.success user_id=%s portal=%s", current_user.id, portal)
     return _build_session_response(current_user)
 
 

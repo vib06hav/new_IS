@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from typing import Any
 
@@ -16,6 +17,7 @@ from app.models.user import User
 
 AUTHKIT_PLACEHOLDER_PASSWORD = "authkit-disabled-local-password"
 INTERVIEWER_ACCESS_STATES = {"invited", "active", "deactivated"}
+logger = logging.getLogger(__name__)
 
 
 def build_profile_image_url(user: User) -> str | None:
@@ -217,9 +219,11 @@ def sync_user_from_workos_identity(db: Session, workos_user: Any, expected_role:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Your account is not authorized for this app.")
 
     if user.access_status == "deactivated":
+        logger.warning("auth.deactivated_account email=%s", email)
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This account has been deactivated.")
 
     if expected_role and user.role != expected_role:
+        logger.warning("auth.role_mismatch email=%s expected_role=%s actual_role=%s", email, expected_role, user.role)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"This account does not belong in the {expected_role} portal.",
@@ -277,13 +281,25 @@ def get_current_user_from_workos_session(
             session_data=sealed_session,
             cookie_password=settings.WORKOS_COOKIE_PASSWORD,
         )
+    except Exception as exc:
+        logger.warning("auth.sealed_session_load_failure error=%s", exc.__class__.__name__)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated") from exc
+
+    try:
         auth_response = session.authenticate()
         if auth_response.authenticated:
             return sync_user_from_workos_identity(db, auth_response.user)
 
-        refresh_response = session.refresh()
+        try:
+            refresh_response = session.refresh()
+        except Exception as exc:
+            logger.exception("auth.provider_refresh_exception error=%s", exc.__class__.__name__)
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Authentication service unavailable") from exc
+
         if not refresh_response.authenticated:
+            logger.info("auth.refresh_failed")
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+        logger.info("auth.refresh_succeeded")
         response.set_cookie(
             key=settings.SESSION_COOKIE_NAME,
             value=refresh_response.sealed_session,
@@ -296,7 +312,8 @@ def get_current_user_from_workos_session(
     except HTTPException:
         raise
     except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated") from exc
+        logger.exception("auth.authenticate_unexpected_failure error=%s", exc.__class__.__name__)
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Authentication service unavailable") from exc
 
 
 def get_logout_url(sealed_session: str | None) -> str | None:

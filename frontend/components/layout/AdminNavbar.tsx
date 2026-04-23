@@ -1,19 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut, UserRound } from "lucide-react";
-import { IBM_Plex_Sans } from "next/font/google";
-import { getSession } from "@/lib/auth";
+import { usePortalSession } from "@/components/auth/PortalSessionProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
-
-const plexSans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-reports-plex",
-});
 
 type AdminNavbarProps = {
   onSignOut: () => Promise<void> | void;
@@ -27,10 +19,10 @@ const navItems = [
 
 export function AdminNavbar({ onSignOut }: AdminNavbarProps) {
   const pathname = usePathname();
+  const { session } = usePortalSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
-  const [adminInitials, setAdminInitials] = useState("IS");
-  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+  const navRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const activeItem = useMemo(() => {
@@ -38,25 +30,8 @@ export function AdminNavbar({ onSignOut }: AdminNavbarProps) {
     return matchedItem?.label ?? null;
   }, [pathname]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadSession() {
-      const session = await getSession();
-      if (cancelled) {
-        return;
-      }
-
-      setAdminInitials(getInitials(session?.user.name));
-      setProfileImageUrl(session?.user.profile_image_url ?? null);
-    }
-
-    void loadSession();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const adminInitials = getInitials(session?.user.name);
+  const profileImageUrl = session?.user.profile_image_url ?? null;
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -72,6 +47,27 @@ export function AdminNavbar({ onSignOut }: AdminNavbarProps) {
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [menuOpen]);
 
+  useEffect(() => {
+    const navElement = navRef.current;
+    if (!navElement) return;
+
+    const updateNavHeight = () => {
+      document.documentElement.style.setProperty("--admin-navbar-height", `${navElement.offsetHeight}px`);
+    };
+
+    updateNavHeight();
+
+    const resizeObserver = new ResizeObserver(() => updateNavHeight());
+    resizeObserver.observe(navElement);
+    window.addEventListener("resize", updateNavHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateNavHeight);
+      document.documentElement.style.removeProperty("--admin-navbar-height");
+    };
+  }, []);
+
   async function handleSignOut() {
     setSigningOut(true);
     try {
@@ -85,6 +81,7 @@ export function AdminNavbar({ onSignOut }: AdminNavbarProps) {
   return (
     <div
       className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md"
+      ref={navRef}
       style={{ fontFamily: "var(--font-body)" }}
     >
       <div className="mx-auto max-w-[106rem] px-5 py-4 md:px-8">

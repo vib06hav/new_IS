@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut, UserRound } from "lucide-react";
 import { IBM_Plex_Sans } from "next/font/google";
-import { getSession } from "@/lib/auth";
+import { usePortalSession } from "@/components/auth/PortalSessionProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/avatar";
 
 const plexSans = IBM_Plex_Sans({
@@ -26,10 +25,9 @@ const navItems = [
 
 export function InterviewerNavbar({ onSignOut, variant = "light" }: InterviewerNavbarProps) {
   const pathname = usePathname();
+  const { session } = usePortalSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
-  const [initials, setInitials] = useState("IS");
-  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const activeItem = useMemo(() => {
@@ -37,25 +35,8 @@ export function InterviewerNavbar({ onSignOut, variant = "light" }: InterviewerN
     return matchedItem?.label ?? null;
   }, [pathname]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadSession() {
-      const session = await getSession();
-      if (cancelled) {
-        return;
-      }
-
-      setInitials(getInitials(session?.user.name));
-      setProfileImageUrl(session?.user.profile_image_url ?? null);
-    }
-
-    void loadSession();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const initials = getInitials(session?.user.name);
+  const profileImageUrl = session?.user.profile_image_url ?? null;
 
   useEffect(() => {
     if (!menuOpen) return;
