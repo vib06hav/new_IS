@@ -308,7 +308,7 @@ function AdminReportsContent() {
           </div>
 
           <div className="rounded-3xl border border-slate-200 bg-white py-5 px-6 shadow-sm flex flex-col">
-            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Status totals</p>
+            <p className="mb-3 px-1 text-xs font-bold uppercase tracking-widest text-slate-500">Status totals</p>
             <div className="flex flex-col justify-between flex-1">
               <StatusTotal label="Processed" value={metrics.processed} />
               <StatusTotal label="Ready" value={metrics.ready} />
@@ -453,8 +453,8 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
 function StatusTotal({ label, value, className }: { label: string; value: number; className?: string }) {
   return (
     <div className={`${className ?? ""} flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm`}>
-      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
-      <span className="text-xs font-semibold text-slate-800">{value}</span>
+      <span className="text-xs font-bold uppercase tracking-widest text-slate-500">{label}</span>
+      <span className="text-sm font-semibold text-slate-800">{value}</span>
     </div>
   );
 }

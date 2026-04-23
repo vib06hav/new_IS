@@ -17,13 +17,14 @@ const plexSans = IBM_Plex_Sans({
 
 type InterviewerNavbarProps = {
   onSignOut: () => Promise<void> | void;
+  variant?: "light" | "dark";
 };
 
 const navItems = [
   { label: "Dashboard", href: "/interviewer/dashboard" },
 ] as const;
 
-export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
+export function InterviewerNavbar({ onSignOut, variant = "light" }: InterviewerNavbarProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -80,19 +81,25 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
     }
   }
 
+  const isDark = variant === "dark";
+
   return (
     <div
-      className={`${plexSans.variable} sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md`}
+      className={`${plexSans.variable} sticky top-0 z-40 border-b backdrop-blur-md transition-colors duration-300 ${
+        isDark ? "border-slate-800 bg-slate-900/95" : "border-slate-200 bg-white/80"
+      }`}
       style={{ fontFamily: "var(--font-reports-plex)" }}
     >
       <div className="mx-auto max-w-[106rem] px-5 py-4 md:px-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex items-center gap-5">
             <div className="flex items-center space-x-2">
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 shadow-sm border border-blue-200/50">
+              <div className={`relative flex h-10 w-10 items-center justify-center rounded-lg shadow-sm border ${
+                isDark ? "bg-slate-800 border-slate-700" : "bg-blue-100 border-blue-200/50"
+              }`}>
                 <svg
                   aria-hidden="true"
-                  className="size-6 text-blue-900"
+                  className={`size-6 ${isDark ? "text-blue-400" : "text-blue-900"}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -104,12 +111,14 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
                     strokeWidth={2}
                   />
                 </svg>
-                <span className="absolute -bottom-1 -right-1 rounded border border-blue-200 bg-white px-1 text-[10px] font-bold text-blue-900">
+                <span className={`absolute -bottom-1 -right-1 rounded border px-1 text-[10px] font-bold ${
+                  isDark ? "border-slate-700 bg-slate-800 text-blue-400" : "border-blue-200 bg-white text-blue-900"
+                }`}>
                   IS
                 </span>
               </div>
               <div className="hidden min-w-0 sm:block">
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-800">
+                <p className={`text-sm font-semibold uppercase tracking-[0.2em] ${isDark ? "text-white" : "text-slate-800"}`}>
                   Interview Standardiser
                 </p>
               </div>
@@ -121,10 +130,14 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
               {navItems.map((item) => (
                 <Link
                   key={item.label}
-                  className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${
+                  className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 ${
                     item.label === activeItem
-                      ? "border-blue-100 bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-slate-800 shadow-[0_10px_22px_rgba(148,163,184,0.16)]"
-                      : "border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-blue-700"
+                      ? isDark
+                        ? "border-white/20 bg-white/10 text-white"
+                        : "border-blue-100 bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-slate-800 shadow-[0_10px_22px_rgba(148,163,184,0.16)]"
+                      : isDark
+                        ? "border-transparent text-slate-400 hover:border-white/10 hover:bg-white/5 hover:text-white"
+                        : "border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-blue-700"
                   }`}
                   href={item.href}
                 >
@@ -138,7 +151,7 @@ export function InterviewerNavbar({ onSignOut }: InterviewerNavbarProps) {
               onClick={() => setMenuOpen((current) => !current)}
               type="button"
             >
-              <Avatar className="size-11 border border-slate-200 bg-slate-100">
+              <Avatar className={`size-11 border ${isDark ? "border-slate-700 bg-slate-800" : "border-slate-200 bg-slate-100"}`}>
                 {profileImageUrl ? <AvatarImage src={profileImageUrl} alt="Interviewer profile image" /> : null}
                 <AvatarFallback className="bg-slate-200 text-slate-700">{initials}</AvatarFallback>
               </Avatar>

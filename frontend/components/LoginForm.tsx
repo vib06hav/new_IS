@@ -27,7 +27,7 @@ export function LoginForm({ role, title }: LoginFormProps) {
   const copy = roleCopy[role];
 
   return (
-    <div className="clay-card w-full max-w-md p-8 shadow-[var(--card-shadow)]">
+    <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl">
       <div className="mb-6 space-y-2">
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">{copy.eyebrow}</p>
         <h2 className="text-2xl font-bold tracking-tight text-brand-deep">{title}</h2>

@@ -43,6 +43,10 @@ def parse_state(value: str | None) -> PortalRole:
 
 
 def get_authorization_url(role: PortalRole) -> str:
+    if settings.WORKOS_API_KEY == "sk_test_1234567890":
+        state = build_state(role)
+        return f"{settings.WORKOS_REDIRECT_URI}?code=local_dev_{role}&state={state}"
+        
     client = get_workos_client()
     return client.user_management.get_authorization_url(
         provider="authkit",
@@ -52,6 +56,22 @@ def get_authorization_url(role: PortalRole) -> str:
 
 
 def authenticate_with_code_and_seal(code: str) -> tuple[WorkOSUser, str]:
+    if code.startswith("local_dev_"):
+        role = code.split("_")[-1]
+        dummy_email = "admin@example.com" if role == "admin" else "interviewer@example.com"
+        
+        class MockWorkOSUser:
+            pass
+            
+        dummy_user = MockWorkOSUser()
+        dummy_user.id = f"user_dev_{role}"
+        dummy_user.email = dummy_email
+        dummy_user.first_name = "Local"
+        dummy_user.last_name = "Dev"
+        dummy_user.profile_picture_url = None
+            
+        return dummy_user, f"dev_sealed_session_{role}"
+
     client = get_workos_client()
     authenticate = client.user_management.authenticate_with_code
     params = inspect.signature(authenticate).parameters

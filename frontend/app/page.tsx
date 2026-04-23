@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * IMPROVEMENTS MADE:
@@ -204,14 +204,14 @@ export default function LandingPage() {
                     style={{ fontFamily: "var(--font-body)" }}
                   >
                     A structured preparation platform for university interviewers.
-                    Grounded in applicant-submitted material — never evaluative.
+                    Grounded in applicant-submitted material, never evaluative.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-600">
                   <div className="rounded-lg border border-slate-200 bg-white/70 px-4 py-3">
-                    <p className="text-xs uppercase tracking-widest text-slate-400">Mode</p>
-                    <p className="font-semibold text-slate-800 mt-1">Structured prep</p>
+                    <p className="text-xs uppercase tracking-widest text-slate-400">Input</p>
+                    <p className="font-semibold text-slate-800 mt-1">Applicant PDF</p>
                   </div>
                   <div className="rounded-lg border border-slate-200 bg-white/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-widest text-slate-400">Output</p>
@@ -230,82 +230,37 @@ export default function LandingPage() {
                   <span>Interview Brief</span>
                   <span>Preview</span>
                 </div>
-                <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
-                  <svg
-                    viewBox="0 0 320 200"
-                    className="w-full h-auto"
-                    aria-label="Interview brief preview illustration"
-                    role="img"
-                  >
-                    <rect x="14" y="18" width="292" height="52" rx="10" fill="#e0e7ff" />
-                    <rect x="14" y="82" width="180" height="20" rx="6" fill="#dbeafe" />
-                    <rect x="14" y="112" width="260" height="14" rx="6" fill="#e2e8f0" />
-                    <rect x="14" y="136" width="220" height="14" rx="6" fill="#e2e8f0" />
-                    <rect x="14" y="160" width="160" height="14" rx="6" fill="#e2e8f0" />
-                    <rect x="210" y="82" width="96" height="60" rx="10" fill="#bfdbfe" />
-                  </svg>
+                <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  {/* Stylized Mock UI for Interview Brief */}
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Applicant</div>
+                        <div className="text-lg font-bold text-slate-800">APP-4902</div>
+                      </div>
+                      <div className="rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                        Ready
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <div className="mb-1 text-xs font-semibold text-slate-600">Generated Theme</div>
+                        <div className="h-2 w-full rounded bg-slate-100"></div>
+                        <div className="mt-1.5 h-2 w-5/6 rounded bg-slate-100"></div>
+                      </div>
+                      <div>
+                        <div className="mb-1 text-xs font-semibold text-slate-600">Proposed Question</div>
+                        <div className="h-2 w-full rounded bg-slate-100"></div>
+                        <div className="mt-1.5 h-2 w-2/3 rounded bg-slate-100"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Reveal>
           </section>
 
-          {/* Section 2: Signal Map */}
-          <Reveal delay={0}>
-            <section className="grid lg:grid-cols-[0.95fr_1.05fr] gap-12 items-center">
-              <div
-                className="rounded-3xl border border-slate-200 bg-white/80 p-8"
-                style={visualCardStyle}
-              >
-                <div className="flex items-center justify-between text-xs uppercase tracking-widest text-slate-400">
-                  <span>Signal Map</span>
-                  <span>Focus Themes</span>
-                </div>
-                <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50/80 p-6">
-                  <svg
-                    viewBox="0 0 320 200"
-                    className="w-full h-auto"
-                    aria-label="Signal map showing focus theme categories"
-                    role="img"
-                  >
-                    <rect x="18" y="20" width="130" height="40" rx="10" fill="#dbeafe" />
-                    <rect x="170" y="20" width="130" height="40" rx="10" fill="#bfdbfe" />
-                    <rect x="18" y="78" width="130" height="40" rx="10" fill="#e0e7ff" />
-                    <rect x="170" y="78" width="130" height="40" rx="10" fill="#dbeafe" />
-                    <rect x="18" y="136" width="282" height="40" rx="12" fill="#eef2ff" />
-                  </svg>
-                </div>
-              </div>
-
-              <div className="space-y-5">
-                {[
-                  {
-                    label: "Key Value",
-                    text: "Reduces manual review time while improving interviewer readiness.",
-                  },
-                  {
-                    label: "What Makes It Different",
-                    text: "Structured insights layered on top of the original applicant PDFs.",
-                  },
-                  {
-                    label: "Ideal For",
-                    text: "Admissions teams, scholarship committees, and fellowship programs.",
-                  },
-                ].map(({ label, text }) => (
-                  <div
-                    key={label}
-                    className="rounded-2xl border border-slate-200 bg-white/80 px-5 py-4"
-                  >
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                      {label}
-                    </p>
-                    <p className="mt-2 text-sm text-slate-700">{text}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </Reveal>
-
-          {/* Section 3: Gateway Cards */}
+          {/* Section 2: Gateway Cards (MOVED HERE) */}
           <Reveal delay={0}>
             <section
               className="grid md:grid-cols-2 gap-6"
@@ -423,6 +378,69 @@ export default function LandingPage() {
                   </div>
                 </div>
               </Link>
+            </section>
+          </Reveal>
+
+          {/* Section 3: Signal Map */}
+          <Reveal delay={0}>
+            <section className="grid lg:grid-cols-[0.95fr_1.05fr] gap-12 items-center">
+              <div
+                className="rounded-3xl border border-slate-200 bg-white/80 p-8"
+                style={visualCardStyle}
+              >
+                <div className="flex items-center justify-between text-xs uppercase tracking-widest text-slate-400">
+                  <span>Signal Map</span>
+                  <span>Focus Themes</span>
+                </div>
+                <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  {/* Stylized Mock UI for Signal Map */}
+                  <div className="space-y-3">
+                    {/* Signal Item 1 */}
+                    <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                        <div className="text-sm font-bold text-slate-800">Intellectual Curiosity</div>
+                      </div>
+                      <div className="pl-4 text-xs text-slate-500">Demonstrated deep engagement with independent physics research.</div>
+                    </div>
+                    {/* Signal Item 2 */}
+                    <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
+                        <div className="text-sm font-bold text-slate-800">Community Leadership</div>
+                      </div>
+                      <div className="pl-4 text-xs text-slate-500">Founded the regional debate program for underrepresented students.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                {[
+                  {
+                    label: "Key Value",
+                    text: "Reduces manual review time while improving interviewer readiness.",
+                  },
+                  {
+                    label: "What Makes It Different",
+                    text: "Structured insights layered on top of the original applicant PDFs.",
+                  },
+                  {
+                    label: "Ideal For",
+                    text: "Admissions teams, scholarship committees, and fellowship programs.",
+                  },
+                ].map(({ label, text }) => (
+                  <div
+                    key={label}
+                    className="rounded-2xl border border-slate-200 bg-white/80 px-5 py-4"
+                  >
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                      {label}
+                    </p>
+                    <p className="mt-2 text-sm text-slate-700">{text}</p>
+                  </div>
+                ))}
+              </div>
             </section>
           </Reveal>
         </main>

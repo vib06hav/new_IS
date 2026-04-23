@@ -64,13 +64,13 @@ export function ReportChatWidget({
   }
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3">
+    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-4">
       {open ? (
-        <section className="w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-[1.5rem] border border-slate-200 bg-[linear-gradient(145deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96),rgba(255,255,255,0.92))] shadow-[0_24px_60px_rgba(15,23,42,0.22)] backdrop-blur">
-          <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-4">
-            <div className="space-y-1">
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Ask This Report</p>
-              <p className="text-sm leading-6 text-slate-600">Single-turn factual lookup from the current report pages.</p>
+        <section className="w-[min(30rem,calc(100vw-2rem))] overflow-hidden rounded-[2rem] border border-white/60 bg-[linear-gradient(165deg,rgba(255,255,255,0.98),rgba(240,249,255,0.96))] shadow-[0_32px_64px_-12px_rgba(15,23,42,0.25)] ring-1 ring-slate-900/5 backdrop-blur-lg transition-all">
+          <div className="flex items-start justify-between gap-4 border-b border-white/40 bg-white/40 px-6 py-6">
+            <div className="space-y-1.5">
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-600">Ask This Report</p>
+              <p className="text-sm leading-6 text-slate-600 font-medium">Single-turn factual lookup from the current report pages.</p>
             </div>
             <button
               aria-label="Close report assistant"
@@ -82,30 +82,30 @@ export function ReportChatWidget({
             </button>
           </div>
 
-          <form className="space-y-3 px-4 py-4" onSubmit={(event) => void handleSubmit(event)}>
+          <form className="space-y-4 px-6 py-5 bg-white/20" onSubmit={(event) => void handleSubmit(event)}>
             <label className="block">
               <span className="sr-only">Ask a question about this report</span>
               <input
                 aria-label="Ask a question about this report"
-                className="w-full rounded-[1rem] border border-slate-200 bg-white/92 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200/80"
+                className="w-full rounded-2xl border-2 border-slate-200/80 bg-white px-5 py-4 text-base font-medium text-slate-900 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 shadow-sm placeholder:text-slate-400"
                 onChange={(event) => setQuestion(event.target.value)}
-                placeholder="Ask about scores, schools, tests, activities, or themes"
+                placeholder="Ask about scores, schools, tests or themes..."
                 value={question}
               />
             </label>
 
-            <div className="flex items-center justify-between gap-2">
-              <Button disabled={submitting} size="sm" type="submit">
-                <Search className="size-4" />
+            <div className="flex items-center justify-between gap-3">
+              <Button disabled={submitting} size="lg" type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-base rounded-xl font-bold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
+                <Search className="size-5 mr-2" />
                 {submitting ? "Searching..." : "Search report"}
               </Button>
-              <Button onClick={handleClear} size="sm" type="button" variant="secondary">
+              <Button onClick={handleClear} size="lg" type="button" variant="outline" className="rounded-xl font-semibold border-slate-300 hover:bg-slate-100">
                 Clear
               </Button>
             </div>
           </form>
 
-          <div className="max-h-[22rem] overflow-y-auto border-t border-slate-200 bg-white/72 px-4 py-4">
+          <div className="max-h-[26rem] overflow-y-auto border-t border-slate-200/60 bg-white/40 px-6 py-5">
             {error ? (
               <p className="rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
             ) : null}
@@ -178,11 +178,11 @@ export function ReportChatWidget({
 
       <button
         aria-label="Open report assistant"
-        className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(37,99,235,0.28)] transition hover:bg-blue-800"
+        className="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 text-base font-bold text-white shadow-[0_16px_36px_rgba(37,99,235,0.35)] transition-all duration-300 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 hover:shadow-[0_20px_45px_rgba(37,99,235,0.45)]"
         onClick={() => setOpen(true)}
         type="button"
       >
-        <MessageSquareText className="size-4" />
+        <MessageSquareText className="size-5" />
         Ask this report
       </button>
     </div>

@@ -332,7 +332,7 @@ function AdminInterviewersContent() {
         </section>
 
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="mb-3 px-1 text-[9px] font-bold uppercase tracking-widest text-slate-400">Status totals</p>
+          <p className="mb-3 px-1 text-xs font-bold uppercase tracking-widest text-slate-400">Status totals</p>
           <div className="space-y-2">
             <MetricStrip label="Interviewers" value={metrics.interviewers} />
             <MetricStrip label="Active assignments" value={metrics.activeAssignments} />
@@ -670,8 +670,8 @@ function AccessBadge({ status }: { status: string }) {
 function MetricStrip({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
-      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
-      <span className="text-xs font-semibold text-slate-800">{value}</span>
+      <span className="text-xs font-bold uppercase tracking-widest text-slate-500">{label}</span>
+      <span className="text-sm font-semibold text-slate-800">{value}</span>
     </div>
   );
 }

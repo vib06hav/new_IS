@@ -97,62 +97,66 @@ export function ReviewPageOneSection({ data }: { data: unknown }) {
         </div>
       </section>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <Card title="Family Context" description="Key household background for reviewer orientation" eyebrow={null}>
-          <div className={`grid gap-4 ${pageData.familyMembers.length > 1 ? "md:grid-cols-2" : ""}`}>
-            {pageData.familyMembers.length ? (
-              pageData.familyMembers.map((member) => (
-                <article
-                  key={member.label}
-                  className="rounded-[1.35rem] border border-slate-200 bg-white/82 p-4 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
-                >
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">
-                    {member.label}
-                  </p>
-                  <p className="mt-3 text-lg font-semibold text-[color:var(--ink)]">
-                    {member.name || "Information unavailable"}
-                  </p>
-                  <dl className="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
-                    <InfoRow label="Education" value={member.education} />
-                    <InfoRow label="Occupation" value={member.occupation} />
-                    <InfoRow label="Organisation" value={member.organization} />
-                    <InfoRow label="Role" value={member.role} />
-                  </dl>
-                </article>
-              ))
-            ) : (
-              <EmptyStateCopy text="Family background information is not available for this application." />
-            )}
-          </div>
-        </Card>
+      <Card title="Background Context" description="" eyebrow={null}>
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+          <section className="space-y-4">
+            <h3 className="text-sm font-bold uppercase tracking-[0.15em] text-slate-500">Family Context</h3>
+            <div className={`grid gap-4 ${pageData.familyMembers.length > 1 ? "md:grid-cols-2" : ""}`}>
+              {pageData.familyMembers.length ? (
+                pageData.familyMembers.map((member) => (
+                  <article
+                    key={member.label}
+                    className="rounded-[1.35rem] border border-slate-200 bg-white/82 p-4 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
+                  >
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">
+                      {member.label}
+                    </p>
+                    <p className="mt-3 text-lg font-semibold text-[color:var(--ink)]">
+                      {member.name || "Information unavailable"}
+                    </p>
+                    <dl className="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+                      <InfoRow label="Education" value={member.education} />
+                      <InfoRow label="Occupation" value={member.occupation} />
+                      <InfoRow label="Organisation" value={member.organization} />
+                      <InfoRow label="Role" value={member.role} />
+                    </dl>
+                  </article>
+                ))
+              ) : (
+                <EmptyStateCopy text="Family background information is not available for this application." />
+              )}
+            </div>
+          </section>
 
-        <Card title="Schooling Background" description="Educational progression at a glance" eyebrow={null}>
-          <div className="space-y-2.5">
-            {pageData.schoolHistory.length ? (
-              pageData.schoolHistory.map((school, index) => (
-                <article
-                  key={school.entityId || `${school.level || "level"}-${index}`}
-                  className="grid gap-3 rounded-[1.3rem] border border-slate-200 bg-white/82 p-4 shadow-[0_16px_30px_rgba(15,23,42,0.06)] sm:grid-cols-[4.5rem_minmax(0,1fr)]"
-                >
-                  <div className="inline-flex h-fit w-fit min-w-[4.5rem] items-center justify-center rounded-full bg-[color:var(--accent-soft)] px-3 py-2 text-sm font-semibold text-[color:var(--accent-strong)]">
-                    {school.level || `Stage ${index + 1}`}
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-base font-semibold text-[color:var(--ink)]">
-                      {school.schoolName || "School unavailable"}
-                    </p>
-                    <p className="text-sm leading-6 text-[color:var(--muted)]">
-                      {school.boardName || "Board information unavailable"}
-                    </p>
-                  </div>
-                </article>
-              ))
-            ) : (
-              <EmptyStateCopy text="Schooling history is not available for this application." />
-            )}
-          </div>
-        </Card>
-      </div>
+          <section className="space-y-4">
+            <h3 className="text-sm font-bold uppercase tracking-[0.15em] text-slate-500">Schooling Background</h3>
+            <div className="space-y-2.5">
+              {pageData.schoolHistory.length ? (
+                pageData.schoolHistory.map((school, index) => (
+                  <article
+                    key={school.entityId || `${school.level || "level"}-${index}`}
+                    className="grid gap-3 rounded-[1.3rem] border border-slate-200 bg-white/82 p-4 shadow-[0_16px_30px_rgba(15,23,42,0.06)] sm:grid-cols-[4.5rem_minmax(0,1fr)]"
+                  >
+                    <div className="inline-flex h-fit w-fit min-w-[4.5rem] items-center justify-center rounded-full bg-[color:var(--accent-soft)] px-3 py-2 text-sm font-semibold text-[color:var(--accent-strong)]">
+                      {school.level || `Stage ${index + 1}`}
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-base font-semibold text-[color:var(--ink)]">
+                        {school.schoolName || "School unavailable"}
+                      </p>
+                      <p className="text-sm leading-6 text-[color:var(--muted)]">
+                        {school.boardName || "Board information unavailable"}
+                      </p>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <EmptyStateCopy text="Schooling history is not available for this application." />
+              )}
+            </div>
+          </section>
+        </div>
+      </Card>
     </div>
   );
 }

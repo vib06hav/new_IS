@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Stars } from "lucide-react";
+import { ChevronLeft, ChevronRight, Stars } from "lucide-react";
 import {
   IBM_Plex_Sans,
   Libre_Franklin,
@@ -20,19 +20,6 @@ import { InterviewerReportCard } from "@/components/interviewer/InterviewerRepor
 
 const REPORT_STATUSES = ["ALL", "ASSIGNED", "COMPLETE", "HIDDEN"] as const;
 
-const plexSans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-reports-plex",
-});
-
-const libreFranklin = Libre_Franklin({
-  subsets: ["latin"],
-  weight: ["900"],
-  variable: "--font-display",
-  display: "swap",
-});
-
 export default function InterviewerDashboardPage() {
   const [items, setItems] = useState<ApplicationListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +27,18 @@ export default function InterviewerDashboardPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<(typeof REPORT_STATUSES)[number]>("ALL");
   const [hiddenBusyAppId, setHiddenBusyAppId] = useState<string | null>(null);
+  const [showSidebar, setShowSidebar] = useState(true);
+
+  // Default sidebar to open on every visit
+  useEffect(() => {
+    setShowSidebar(true);
+  }, []);
+
+  const toggleSidebar = () => {
+    const next = !showSidebar;
+    setShowSidebar(next);
+    localStorage.setItem("agis_interviewer_sidebar_visible", String(next));
+  };
 
   async function loadApplications() {
     try {
@@ -103,82 +102,106 @@ export default function InterviewerDashboardPage() {
   }
 
   return (
-    <InterviewerShell>
-      <div className={`${plexSans.variable} ${libreFranklin.variable} space-y-6`} style={{ fontFamily: "var(--font-reports-plex)" }}>
-        <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-stretch">
-          <div className="space-y-4 xl:flex xl:h-full xl:flex-col xl:gap-4 xl:space-y-0">
-            <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm xl:flex-1">
-              <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-slate-500">
-                <span className="inline-flex items-center gap-2 text-slate-800">
-                  <Stars className="size-3.5" />
-                  Interviewer workspace
+    <InterviewerShell navbarVariant="dark">
+      <div 
+        className="space-y-6" 
+        style={{ fontFamily: "var(--font-body)" }}
+      >
+        <div className={`grid gap-6 transition-all duration-500 ease-in-out ${showSidebar ? "xl:grid-cols-[1fr_22rem]" : "grid-cols-1"}`}>
+          <div className="space-y-6">
+            <section className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white/80 p-8 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+              {/* Header Toggle */}
+              <div className="absolute right-6 top-6 flex items-center gap-2 group">
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  {showSidebar ? "hide sidebar" : "show sidebar"}
                 </span>
-              </div>
-              <div className="mt-5 space-y-4">
-                <h3
-                  className="max-w-4xl text-5xl font-black leading-[1.04] tracking-tight text-slate-800 md:text-[3.5rem]"
-                  style={{ fontFamily: "var(--font-display)" }}
+                <button 
+                  onClick={toggleSidebar}
+                  className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white shadow-sm text-slate-400 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md active:scale-95"
+                  aria-label={showSidebar ? "Hide sidebar" : "Show sidebar"}
                 >
-                  Your Reports
-                </h3>
-                <p className="max-w-3xl text-base leading-[1.6] text-slate-600">
-                  Open your assigned reports and hide reports from your personal workspace when you need a cleaner queue.
-                </p>
+                  {showSidebar ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
+                </button>
               </div>
-            </div>
 
-            <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm">
-              <div className="rounded-[1.4rem] border border-slate-200 bg-white/70 p-1.5">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {REPORT_STATUSES.map((status) => (
-                    <button
-                      key={status}
-                      className={`rounded-[1rem] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200 ${
-                        statusFilter === status
-                          ? getFilterActiveClasses(status)
-                          : "border border-transparent bg-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-blue-700"
-                      }`}
-                      onClick={() => setStatusFilter(status)}
-                      type="button"
-                    >
-                      {status}
-                    </button>
-                  ))}
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="space-y-4">
+                  <h3
+                    className="text-5xl font-black leading-[1.04] tracking-tight text-slate-800 md:text-[3.5rem]"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    Your Reports
+                  </h3>
+                  <ul className="flex flex-col gap-2">
+                    <li className="flex items-center gap-3 text-xs text-slate-500">
+                      <div className="size-1 bg-blue-400 rounded-full" />
+                      <span>Open your assigned reports to view the interview brief.</span>
+                    </li>
+                    <li className="flex items-center gap-3 text-xs text-slate-500">
+                      <div className="size-1 bg-slate-400 rounded-full" />
+                      <span>Use 'Hide' to remove items from your active queue for a cleaner workspace.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="rounded-[1.6rem] border border-slate-200 bg-white/90 p-1.5 shadow-sm shrink-0">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {REPORT_STATUSES.map((status) => (
+                      <button
+                        key={status}
+                        className={`rounded-[1.2rem] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.18em] transition-all duration-200 ${
+                          statusFilter === status
+                            ? getFilterActiveClasses(status)
+                            : "border border-transparent bg-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-blue-700"
+                        }`}
+                        onClick={() => setStatusFilter(status)}
+                        type="button"
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {message ? <p className="rounded-[1.2rem] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{message}</p> : null}
+            {error ? <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p> : null}
+
+            {loading ? (
+              <div className="py-20">
+                <Loader label="Loading dashboard..." />
+              </div>
+            ) : filteredItems.length === 0 ? (
+              <ReportsEmptyState statusFilter={statusFilter} />
+            ) : (
+              <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+                {filteredItems.map((item) => (
+                  <InterviewerReportCard
+                    key={item.id}
+                    item={item}
+                    onToggleHidden={() => void toggleHidden(item.id, !item.is_hidden_for_interviewer)}
+                    isHiddenBusy={hiddenBusyAppId === item.id}
+                  />
+                ))}
+              </section>
+            )}
+          </div>
+
+          <aside className={`transition-all duration-500 ease-in-out ${showSidebar ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8 pointer-events-none hidden"}`}>
+            <div className="sticky top-28 rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm space-y-6">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Workspace summary</p>
+                <div className="mt-6 flex flex-col gap-3">
+                  <StatusTotal label="All reports" value={metrics.all} />
+                  <StatusTotal label="Assigned" value={metrics.assigned} />
+                  <StatusTotal label="Complete" value={metrics.complete} />
+                  <StatusTotal label="Hidden" value={metrics.hidden} />
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm xl:flex xl:h-full xl:flex-col">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Status totals</p>
-            <div className="mt-4 flex flex-1 flex-col gap-3">
-              <StatusTotal className="flex-1" label="All" value={metrics.all} />
-              <StatusTotal className="flex-1" label="Assigned" value={metrics.assigned} />
-              <StatusTotal className="flex-1" label="Complete" value={metrics.complete} />
-              <StatusTotal className="flex-1" label="Hidden" value={metrics.hidden} />
-            </div>
-          </div>
-        </section>
-
-        {message ? <p className="rounded-[1.2rem] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{message}</p> : null}
-        {error ? <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p> : null}
-
-        {loading ? (
-          <Loader label="Loading dashboard..." />
-        ) : filteredItems.length === 0 ? (
-          <ReportsEmptyState statusFilter={statusFilter} />
-        ) : (
-          <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {filteredItems.map((item) => (
-              <InterviewerReportCard
-                key={item.id}
-                item={item}
-                onToggleHidden={() => void toggleHidden(item.id, !item.is_hidden_for_interviewer)}
-                isHiddenBusy={hiddenBusyAppId === item.id}
-              />
-            ))}
-          </section>
-        )}
+          </aside>
+        </div>
       </div>
     </InterviewerShell>
   );
