@@ -3,7 +3,7 @@
 type SegmentedControlProps<T extends string> = {
   label?: string;
   value: T;
-  options: Array<{ value: T; label: string; meta?: string }>;
+  options: Array<{ value: T; label: string; meta?: string; featured?: boolean }>;
   onChange: (value: T) => void;
   compact?: boolean;
   hideMeta?: boolean;
@@ -35,6 +35,7 @@ export function SegmentedControl<T extends string>({
       >
         {options.map((option) => {
           const active = option.value === value;
+          const featured = option.featured === true;
 
           return (
             <button
@@ -43,8 +44,12 @@ export function SegmentedControl<T extends string>({
                 compact ? "px-3.5 py-2 text-sm" : "px-4 py-2.5"
               } ${
                 active
-                  ? "bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-[color:var(--brand-deep)] shadow-[0_10px_24px_rgba(148,163,184,0.18)] ring-1 ring-blue-100"
-                  : "bg-transparent text-[color:var(--muted)] hover:bg-white/80 hover:text-[color:var(--ink)]"
+                  ? featured
+                    ? "bg-[linear-gradient(135deg,rgba(253,246,178,0.98),rgba(252,231,150,0.98))] text-amber-950 shadow-[0_12px_28px_rgba(180,138,34,0.24)] ring-1 ring-amber-200"
+                    : "bg-[linear-gradient(135deg,rgba(219,234,254,0.98),rgba(239,246,255,0.98))] text-[color:var(--brand-deep)] shadow-[0_10px_24px_rgba(148,163,184,0.18)] ring-1 ring-blue-100"
+                  : featured
+                    ? "bg-[linear-gradient(135deg,rgba(255,251,235,0.9),rgba(254,243,199,0.9))] text-amber-900 ring-1 ring-amber-100 hover:bg-[linear-gradient(135deg,rgba(255,247,214,0.96),rgba(253,230,138,0.96))]"
+                    : "bg-transparent text-[color:var(--muted)] hover:bg-white/80 hover:text-[color:var(--ink)]"
               } ${buttonClassName ?? ""}`.trim()}
               onClick={() => onChange(option.value)}
               type="button"

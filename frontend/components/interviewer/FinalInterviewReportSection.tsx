@@ -1,6 +1,5 @@
 "use client";
 
-import { Card } from "@/components/ui/Card";
 import type { InterviewWorkspaceSummary } from "@/lib/types";
 
 export function FinalInterviewReportSection({
@@ -8,28 +7,60 @@ export function FinalInterviewReportSection({
 }: {
   workspace: InterviewWorkspaceSummary;
 }) {
+  const questions = workspace.content.themes.flatMap((theme) => theme.questions);
+  const totals = {
+    questions: questions.length,
+    satisfactory: questions.filter((question) => question.status === "satisfactory").length,
+    mixed: questions.filter((question) => question.status === "mixed").length,
+    unsatisfactory: questions.filter((question) => question.status === "unsatisfactory").length,
+    unasked: questions.filter((question) => question.status === "unasked").length,
+  };
+
   return (
     <div className="space-y-5">
-      <Card
-        title="Final Interview Report"
-        description="Read-only post-interview summary captured from the interviewer workspace."
-        eyebrow={null}
-      >
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Metric label="Status" value={workspace.status.toUpperCase()} />
-          <Metric label="Updated" value={formatDateTime(workspace.updated_at)} />
-          <Metric label="Completed" value={workspace.completed_at ? formatDateTime(workspace.completed_at) : "Unavailable"} />
-        </div>
-      </Card>
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-stretch">
+        <section className="rounded-[1.8rem] border border-amber-200/70 bg-[linear-gradient(135deg,rgba(255,251,235,0.98),rgba(255,255,255,0.94))] px-6 py-6 shadow-[0_20px_48px_rgba(180,138,34,0.12)]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-amber-700">Post-Interview</p>
+          <h1 className="mt-3 text-[2rem] font-semibold tracking-[-0.05em] text-slate-950 sm:text-[2.4rem]">
+            Final Interview Report
+          </h1>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">
+            Final interviewer feedback and question outcomes captured after interview completion.
+          </p>
+        </section>
 
-      <Card title="Postgame Summary" description="Top-line summary after interview completion." eyebrow={null}>
-        <p className="text-sm leading-7 text-slate-800">
+        <aside className="rounded-[1.8rem] border border-slate-200 bg-white/92 px-5 py-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
+          <p className="px-1 text-[9px] font-bold uppercase tracking-widest text-slate-400">Status totals</p>
+          <div className="mt-3 space-y-2">
+            <StatusTotal label="Questions" value={totals.questions} />
+            <div className="grid grid-cols-2 gap-2">
+              <StatusTotal label="Satisfied" value={totals.satisfactory} tone="emerald" />
+              <StatusTotal label="Mixed" value={totals.mixed} tone="amber" />
+              <StatusTotal label="Unsatisfied" value={totals.unsatisfactory} tone="rose" />
+              <StatusTotal label="Unasked" value={totals.unasked} />
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <section className="rounded-[1.5rem] border border-slate-200 bg-white/88 p-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
+        <div className="space-y-2">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Summary</p>
+          <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Interview Summary</h2>
+        </div>
+        <p className="mt-4 text-sm leading-7 text-slate-800">
           {workspace.content.final_summary || "No final summary was recorded."}
         </p>
-      </Card>
+      </section>
 
-      <Card title="Question Outcomes" description="Final interviewer ratings and notes grouped by theme." eyebrow={null}>
-        <div className="space-y-4">
+      <section className="rounded-[1.5rem] border border-slate-200 bg-white/88 p-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
+        <div className="space-y-2">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Outcomes</p>
+          <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Question Outcomes</h2>
+          <p className="text-sm leading-6 text-slate-600">Final interviewer ratings and notes grouped by theme.</p>
+        </div>
+
+        <div className="mt-5 space-y-4">
           {workspace.content.themes.length ? (
             workspace.content.themes.map((theme, index) => (
               <article
@@ -76,28 +107,26 @@ export function FinalInterviewReportSection({
             <p className="text-sm leading-7 text-slate-600">No question outcomes were recorded.</p>
           )}
         </div>
-      </Card>
+      </section>
     </div>
   );
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+function StatusTotal({
+  label,
+  value,
+  tone = "slate",
+}: {
+  label: string;
+  value: number;
+  tone?: "slate" | "emerald" | "amber" | "rose";
+}) {
   return (
-    <div className="rounded-[1.1rem] border border-slate-200 bg-white/80 px-4 py-3">
-      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
+    <div className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 transition-all ${getTotalToneClasses(tone)}`}>
+      <span className="text-[9px] font-bold uppercase tracking-widest">{label}</span>
+      <span className="text-xs font-semibold">{value}</span>
     </div>
   );
-}
-
-function formatDateTime(value: string) {
-  return new Date(value).toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
 }
 
 function formatStatus(status: string) {
@@ -112,4 +141,11 @@ function getStatusClasses(status: string) {
   if (status === "mixed") return "border-amber-200 bg-amber-100 text-amber-900";
   if (status === "unsatisfactory") return "border-rose-200 bg-rose-100 text-rose-900";
   return "border-slate-200 bg-slate-100 text-slate-700";
+}
+
+function getTotalToneClasses(tone: "slate" | "emerald" | "amber" | "rose") {
+  if (tone === "emerald") return "border-emerald-100 bg-emerald-50 text-emerald-900";
+  if (tone === "amber") return "border-amber-100 bg-amber-50 text-amber-900";
+  if (tone === "rose") return "border-rose-100 bg-rose-50 text-rose-900";
+  return "border-slate-100 bg-slate-50 text-slate-800";
 }

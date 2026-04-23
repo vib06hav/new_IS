@@ -104,6 +104,9 @@ export default function InterviewerApplicationPage() {
     if (!hasFinalReportPages && (activePageTab === "page4" || activePageTab === "page5")) {
       setActivePageTab("page1");
     }
+    if (item?.status !== "COMPLETE" && activePageTab === "page6") {
+      setActivePageTab("page1");
+    }
   }, [activePageTab, item]);
 
 
@@ -135,6 +138,7 @@ export default function InterviewerApplicationPage() {
   const hasFinalReportPages = Boolean(item.final_report?.content);
   const workspace = item.interview_workspace;
   const isAssignedView = item.status === "ASSIGNED";
+  const isCompletedView = item.status === "COMPLETE" && workspace?.status === "completed";
   const workspaceActionLabel =
     workspace?.status === "completed"
       ? "View final interview report"
@@ -145,7 +149,7 @@ export default function InterviewerApplicationPage() {
         : workspace
           ? "Continue setup"
           : "Configure interview";
-  const pageOptions: Array<{ value: ReviewPageTab; label: string; meta: string }> = [
+  const pageOptions: Array<{ value: ReviewPageTab; label: string; meta: string; featured?: boolean }> = [
     { value: "page1", label: "Overview", meta: "Applicant profile" },
     { value: "page2", label: "Academics & Activities", meta: "Study and engagement" },
     { value: "page3", label: "Writing", meta: "Essays and excerpts" },
@@ -155,12 +159,13 @@ export default function InterviewerApplicationPage() {
           { value: "page5" as const, label: "Questions", meta: "Interview prompts" },
         ]
       : []),
+    ...(isCompletedView ? [{ value: "page6" as const, label: "Final Report", meta: "Interview feedback", featured: true }] : []),
   ];
 
   return (
     <InterviewerShell>
       <div
-        className={`${plexSans.variable} space-y-6 ${isAssignedView ? "pb-28 md:pb-32" : ""}`}
+        className={`${plexSans.variable} space-y-6 ${isAssignedView || isCompletedView ? "pb-28 md:pb-32" : ""}`}
         style={{ fontFamily: "var(--font-reports-plex)" }}
       >
         <section className="rounded-[1.6rem] border border-slate-200 bg-white/80 px-4 py-4 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
@@ -197,7 +202,7 @@ export default function InterviewerApplicationPage() {
           <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p>
         ) : null}
 
-        {!isAssignedView ? (
+        {!isAssignedView && !isCompletedView ? (
           <section className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(21rem,0.92fr)]">
             <article className="flex min-h-[8.9rem] flex-col rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
               <div className="space-y-1">
@@ -249,24 +254,26 @@ export default function InterviewerApplicationPage() {
 
         {item.review_package ? (
           <>
-            <ReviewPackageSection
-              reviewPackage={item.review_package}
-              annotationSource={item.final_report?.content}
-              activeTab={activePageTab}
-              onActiveTabChange={setActivePageTab}
-            />
-            <ReportChatWidget
-              applicationId={item.id}
-              onNavigateResult={(result) => navigateToReportResult(result, setActivePageTab)}
-            />
+            {isCompletedView && activePageTab === "page6" ? (
+              <FinalInterviewReportSection workspace={workspace} />
+            ) : (
+              <>
+                <ReviewPackageSection
+                  reviewPackage={item.review_package}
+                  annotationSource={item.final_report?.content}
+                  activeTab={activePageTab}
+                  onActiveTabChange={setActivePageTab}
+                />
+                <ReportChatWidget
+                  applicationId={item.id}
+                  onNavigateResult={(result) => navigateToReportResult(result, setActivePageTab)}
+                />
+              </>
+            )}
           </>
         ) : null}
 
-        {item.interview_workspace?.status === "completed" ? (
-          <FinalInterviewReportSection workspace={item.interview_workspace} />
-        ) : null}
-
-        {isAssignedView && item.review_package ? (
+        {(isAssignedView || isCompletedView) && item.review_package ? (
           <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30 flex justify-center px-4 [padding-bottom:calc(env(safe-area-inset-bottom,0px))]">
             <div className="pointer-events-auto max-w-full rounded-full border border-slate-200/90 bg-white/92 p-1.5 shadow-[0_20px_48px_rgba(15,23,42,0.2)] backdrop-blur-xl">
               <SegmentedControl

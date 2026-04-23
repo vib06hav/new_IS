@@ -6,7 +6,7 @@ import { SynthesisReportSection } from "@/components/SynthesisReportSection";
 import type { ReviewPackageSummary } from "@/lib/types";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 
-export type ReviewPageTab = "page1" | "page2" | "page3" | "page4" | "page5";
+export type ReviewPageTab = "page1" | "page2" | "page3" | "page4" | "page5" | "page6";
 
 export function ReviewPackageSection({
   reviewPackage,
