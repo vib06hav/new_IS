@@ -1,25 +1,9 @@
 "use client";
 
-/**
- * IMPROVEMENTS MADE:
- * 1. CSS variables now defined inline via a <style> tag (no missing vars)
- * 2. ScrollAnimationWrapper replaced with a robust custom hook + div pattern
- *    using IntersectionObserver — SSR-safe, no forwardRef issues
- * 3. All browser APIs guarded against SSR (typeof window checks)
- * 4. Accessibility: aria-labels on nav icon, links, and gateway cards
- * 5. Dead href="#" replaced with a real support anchor or placeholder
- * 6. Inline style vs Tailwind conflicts resolved — CSS vars used via style,
- *    layout/spacing via Tailwind only
- * 7. Scroll animations now correctly fade IN (0→1 opacity, offset→0 translateY)
- * 8. Fonts loaded via next/font/google (Libre Franklin + IBM Plex Sans)
- * 9. Initial animation state set so content isn't invisible before JS runs
- */
-
 import Link from "next/link";
-import { useEffect, useRef, ReactNode } from "react";
+import { useEffect, useRef, useState, ReactNode } from "react";
 import { Libre_Franklin, IBM_Plex_Sans } from "next/font/google";
 
-// ─── Font Setup ──────────────────────────────────────────────────────────────
 const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
   weight: ["900"],
@@ -34,7 +18,70 @@ const ibmPlexSans = IBM_Plex_Sans({
   display: "swap",
 });
 
-// ─── Scroll Reveal Hook (SSR-safe) ───────────────────────────────────────────
+type RoleKey = "interviewer" | "admin";
+
+const roleContent: Record<
+  RoleKey,
+  {
+    label: string;
+    intro: string;
+    features: Array<{ title: string; text: string }>;
+    visual: {
+      eyebrow: string;
+      title: string;
+      accent: string;
+    };
+  }
+> = {
+  interviewer: {
+    label: "Interviewer",
+    intro:
+      "Give interviewers clearer context, better direction, and stronger support in the room.",
+    features: [
+      {
+        title: "Application highlights",
+        text: "Surface meaningful passages and signals directly from applicant materials.",
+      },
+      {
+        title: "Themes and questions",
+        text: "Generate interview themes and more focused questions from the application.",
+      },
+      {
+        title: "Live interview overlay",
+        text: "Support interviewers during the conversation with structured, real-time guidance.",
+      },
+    ],
+    visual: {
+      eyebrow: "Interviewer view",
+      title: "Move from source material to live guidance",
+      accent: "Highlights, themes, questions, and overlay support stay connected.",
+    },
+  },
+  admin: {
+    label: "Admin",
+    intro: "Coordinate interview operations with more structure and visibility.",
+    features: [
+      {
+        title: "Application oversight",
+        text: "Keep applicant materials, interview readiness, and workflow status in one system.",
+      },
+      {
+        title: "Evaluator assignment",
+        text: "Assign applications across evaluators and keep ownership clear across the team.",
+      },
+      {
+        title: "Interview workflow management",
+        text: "Support the interview process with stronger coordination before, during, and after the interview.",
+      },
+    ],
+    visual: {
+      eyebrow: "Admin view",
+      title: "Assignments, ownership, and workflow status",
+      accent: "Admissions teams can keep interview work moving with clearer control.",
+    },
+  },
+};
+
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -61,7 +108,6 @@ function useScrollReveal() {
   return ref;
 }
 
-// ─── Reveal Wrapper Component ─────────────────────────────────────────────────
 function Reveal({
   children,
   delay = 0,
@@ -88,11 +134,12 @@ function Reveal({
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 export default function LandingPage() {
+  const [selectedRole, setSelectedRole] = useState<RoleKey>("interviewer");
+  const currentRole = roleContent[selectedRole];
+
   return (
     <>
-      {/* CSS Variables defined once, globally for this page */}
       <style>{`
         :root {
           --canvas: #f8fafc;
@@ -110,7 +157,6 @@ export default function LandingPage() {
         className={`min-h-screen flex flex-col text-slate-900 ${libreFranklin.variable} ${ibmPlexSans.variable}`}
         style={bodyStyle}
       >
-        {/* ── Header ─────────────────────────────────────────────────────── */}
         <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 px-6 md:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <div
@@ -140,54 +186,36 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <nav className="flex items-center gap-6" aria-label="Main navigation">
-            {/* FIX: href="#" replaced with a real route; use /support or mailto as appropriate */}
+          <nav className="flex items-center gap-2" aria-label="Main navigation">
+            <Link
+              href="/"
+              className="rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-blue-700 transition-colors duration-200 hover:text-blue-800"
+            >
+              Home
+            </Link>
+            <Link
+              href="/portal"
+              className="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-widest text-slate-600 transition-colors duration-200 hover:text-blue-700"
+            >
+              Portal
+            </Link>
             <a
               href="/support"
-              className="text-sm font-semibold text-slate-600 hover:text-blue-700 transition-colors duration-200"
+              className="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-widest text-slate-600 transition-colors duration-200 hover:text-blue-700"
             >
               Support
             </a>
-
-            {/* FIX: Added aria-label so screen readers understand the button */}
-            <button
-              aria-label="User profile"
-              className="h-10 w-10 rounded-full border border-slate-200 overflow-hidden bg-slate-100 flex items-center justify-center hover:border-blue-300 transition-colors"
-            >
-              <svg
-                className="w-6 h-6 text-slate-400"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-              </svg>
-            </button>
           </nav>
         </header>
 
-        {/* ── Deploy Bar ──────────────────────────────────────────────────── */}
-        <div
-          className="w-full px-6 py-2 flex items-center justify-center gap-6 border-b border-slate-200"
-          style={deployBarStyle}
-        >
-          <span className="text-xs text-slate-500 tracking-wide">
-            Internal admissions tool · v1.7 · Academic Year 2026
-          </span>
-        </div>
-
-        {/* ── Main ────────────────────────────────────────────────────────── */}
-        <main className="flex-1 w-full max-w-6xl mx-auto px-6 md:px-10 py-12 space-y-20">
-
-          {/* Section 1: Hero */}
+        <main className="flex-1 w-full max-w-6xl mx-auto px-6 md:px-10 py-14 space-y-20">
           <section className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 items-center">
-            {/* FIX: fade IN (0→1), slide UP (24px→0), correct direction */}
             <Reveal delay={0}>
               <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-200 bg-blue-50/70">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-700" aria-hidden="true" />
                   <span className="text-[10px] font-bold uppercase tracking-widest text-blue-900">
-                    University Interview Tool
+                    Admissions interview intelligence
                   </span>
                 </div>
 
@@ -200,7 +228,7 @@ export default function LandingPage() {
                     <span className="text-blue-700">Interview.</span>
                   </h1>
                   <p
-                    className="text-lg md:text-xl text-slate-600 leading-[1.6] max-w-xl"
+                    className="text-lg md:text-xl text-slate-600 leading-[1.6] max-w-2xl"
                     style={{ fontFamily: "var(--font-body)" }}
                   >
                     A structured preparation platform for university interviewers.
@@ -208,15 +236,10 @@ export default function LandingPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-600">
-                  <div className="rounded-lg border border-slate-200 bg-white/70 px-4 py-3">
-                    <p className="text-xs uppercase tracking-widest text-slate-400">Input</p>
-                    <p className="font-semibold text-slate-800 mt-1">Applicant PDF</p>
-                  </div>
-                  <div className="rounded-lg border border-slate-200 bg-white/70 px-4 py-3">
-                    <p className="text-xs uppercase tracking-widest text-slate-400">Output</p>
-                    <p className="font-semibold text-slate-800 mt-1">Interview brief</p>
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <SmallKeyStat label="Highlights" value="Source evidence" />
+                  <SmallKeyStat label="Questions" value="Interview direction" />
+                  <SmallKeyStat label="Overlay" value="Live support" />
                 </div>
               </div>
             </Reveal>
@@ -260,217 +283,302 @@ export default function LandingPage() {
             </Reveal>
           </section>
 
-          {/* Section 2: Gateway Cards (MOVED HERE) */}
           <Reveal delay={0}>
-            <section
-              className="grid md:grid-cols-2 gap-6"
-              aria-label="Login options"
-            >
-              {/* FIX: aria-label on Link so the full card is described for screen readers */}
-              <Link
-                href="/admin/login"
-                className="block group"
-                aria-label="Sign in as Admin — Upload, assign, and monitor admissions briefs"
-              >
-                <div
-                  className="p-7 rounded-2xl flex flex-col gap-4 transition-shadow duration-200 hover:shadow-lg"
-                  style={gatewayCardStyle}
+            <section className="space-y-8">
+              <div className="max-w-3xl space-y-3">
+                <p className="text-xs font-bold uppercase tracking-[0.28em] text-slate-400">
+                  By Role
+                </p>
+                <h2
+                  className="text-3xl md:text-4xl font-black tracking-tight text-slate-800"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
-                      style={iconCircleStyle}
-                    >
-                      <svg
-                        className="w-6 h-6 text-blue-700"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-slate-800">Admin Gateway</h2>
-                      <p className="text-sm text-slate-600">
-                        Upload, assign, and monitor admissions briefs.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-1 flex items-center gap-2 text-sm font-semibold text-blue-900">
-                    Sign in as Admin
-                    <svg
-                      className="w-4 h-4 text-blue-900 transition-transform duration-200 group-hover:translate-x-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </Link>
+                  Explore the system by role
+                </h2>
+                <p className="text-base md:text-lg text-slate-600 leading-7">
+                  Interview Standardiser supports both admissions coordination and
+                  interviewer preparation across the full interview process.
+                </p>
+              </div>
 
-              <Link
-                href="/interviewer/login"
-                className="block group"
-                aria-label="Sign in as Interviewer — Review profiles and focus themes"
-              >
+              <div className="inline-flex rounded-full border border-slate-200 bg-white/80 p-1 shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => setSelectedRole("interviewer")}
+                  className={`rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-widest transition-colors duration-200 ${
+                    selectedRole === "interviewer"
+                      ? "bg-blue-50 text-blue-700 border border-blue-100"
+                      : "text-slate-600 hover:text-blue-700"
+                  }`}
+                >
+                  Interviewer
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedRole("admin")}
+                  className={`rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-widest transition-colors duration-200 ${
+                    selectedRole === "admin"
+                      ? "bg-blue-50 text-blue-700 border border-blue-100"
+                      : "text-slate-600 hover:text-blue-700"
+                  }`}
+                >
+                  Admin
+                </button>
+              </div>
+
+              <div className="grid lg:grid-cols-[0.92fr_1.08fr] gap-6">
                 <div
-                  className="p-7 rounded-2xl flex flex-col gap-4 transition-shadow duration-200 hover:shadow-lg"
+                  className="rounded-3xl border border-slate-200 bg-white/80 p-5"
                   style={gatewayCardStyle}
                 >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
-                      style={iconCircleStyle}
-                    >
-                      <svg
-                        className="w-6 h-6 text-blue-700"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-slate-800">Interviewer Login</h2>
-                      <p className="text-sm text-slate-600">
-                        Review profiles and focus themes with confidence.
-                      </p>
-                    </div>
+                  <div className="space-y-3">
+                    <p className="text-xs font-bold uppercase tracking-[0.28em] text-slate-400">
+                      {currentRole.label}
+                    </p>
+                    <h3 className="text-2xl font-bold tracking-tight text-slate-800">
+                      {currentRole.intro}
+                    </h3>
                   </div>
-                  <div className="mt-1 flex items-center gap-2 text-sm font-semibold text-blue-900">
-                    Sign in as Interviewer
-                    <svg
-                      className="w-4 h-4 text-blue-900 transition-transform duration-200 group-hover:translate-x-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
+
+                  <div className="mt-6 space-y-4">
+                    {currentRole.features.map((feature) => (
+                      <div
+                        key={feature.title}
+                        className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3"
+                      >
+                        <p className="text-sm font-semibold text-slate-800">
+                          {feature.title}
+                        </p>
+                        <p className="text-sm font-semibold text-slate-800">
+                          {feature.title}
+                        </p>
+                        <div className="mt-2 space-y-1.5">
+                          <div className="h-1.5 w-full rounded bg-slate-200/60"></div>
+                          <div className="h-1.5 w-4/5 rounded bg-slate-200/60"></div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </Link>
+
+                <div
+                  className="rounded-3xl border border-slate-200 bg-white/80 p-5"
+                  style={visualCardStyle}
+                >
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.28em] text-slate-400">
+                      {currentRole.visual.eyebrow}
+                    </p>
+                    <h3 className="mt-3 text-2xl font-bold tracking-tight text-slate-800">
+                      {currentRole.visual.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-7 text-slate-600">
+                      {currentRole.visual.accent}
+                    </p>
+                  </div>
+
+                  {selectedRole === "interviewer" ? (
+                    <div className="mt-6 rounded-[1.6rem] border border-slate-200 bg-white/90 p-4 shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-700">
+                            Interview overlay
+                          </p>
+                          <h4 className="mt-1 text-base font-semibold tracking-tight text-slate-900">
+                            Live runner
+                          </h4>
+                        </div>
+                        <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">
+                          2/5
+                        </span>
+                      </div>
+
+                      <div className="mt-4 space-y-2">
+                        <div className="rounded-[1.1rem] border border-slate-200 bg-slate-50/80 p-3">
+                          <div className="flex items-center gap-2">
+                            <span className="rounded-full border border-slate-300 bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                              Q1
+                            </span>
+                            <span className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
+                              generated
+                            </span>
+                          </div>
+                          <div className="mt-4 space-y-2">
+                            <div className="h-2 w-full rounded bg-slate-100"></div>
+                            <div className="h-2 w-2/3 rounded bg-slate-100"></div>
+                          </div>
+                        </div>
+                        <div className="rounded-[1.1rem] border border-blue-100 bg-blue-50/75 p-3">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">
+                            Current theme
+                          </p>
+                          <div className="mt-3 h-2 w-3/4 rounded bg-blue-200"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-6 rounded-[1.8rem] border border-slate-200 bg-white/90 text-slate-900 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+                      <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
+                        <div className="space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <StatusMark status="ASSIGNED" />
+                          </div>
+                          <div className="h-6 w-32 rounded bg-slate-100"></div>
+                        </div>
+                        <button
+                          className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-500"
+                          type="button"
+                        >
+                          <span className="text-lg leading-none">...</span>
+                        </button>
+                      </div>
+
+                      <div className="space-y-4 px-5 py-5">
+                        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Status</p>
+                          <div className="mt-2 h-2 w-1/2 rounded bg-slate-100"></div>
+                        </div>
+
+                        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Assignment</p>
+                          <div className="mt-2 h-2 w-3/4 rounded bg-indigo-200"></div>
+                          <div className="mt-2 h-1.5 w-1/2 rounded bg-slate-100"></div>
+                        </div>
+
+                        <div className="flex justify-end">
+                          <PrimaryLink label="Open" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </section>
           </Reveal>
 
-          {/* Section 3: Signal Map */}
-          <Reveal delay={0}>
-            <section className="grid lg:grid-cols-[0.95fr_1.05fr] gap-12 items-center">
+          <Reveal delay={80}>
+            <section className="grid md:grid-cols-2 gap-6">
               <div
-                className="rounded-3xl border border-slate-200 bg-white/80 p-8"
+                className="rounded-3xl border border-slate-200 bg-white/80 p-5"
                 style={visualCardStyle}
               >
-                <div className="flex items-center justify-between text-xs uppercase tracking-widest text-slate-400">
-                  <span>Signal Map</span>
-                  <span>Focus Themes</span>
-                </div>
-                <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                  {/* Stylized Mock UI for Signal Map */}
-                  <div className="space-y-3">
-                    {/* Signal Item 1 */}
-                    <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                        <div className="text-sm font-bold text-slate-800">Intellectual Curiosity</div>
-                      </div>
-                      <div className="pl-4 text-xs text-slate-500">Demonstrated deep engagement with independent physics research.</div>
+                <h3 className="mt-2 text-xl font-bold tracking-tight text-slate-800">
+                  Application Highlights
+                </h3>
+                <div className="mt-4 space-y-3">
+                  <div className="rounded-2xl border border-slate-200 bg-white/90 p-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                      Essay excerpt
+                    </p>
+                    <div className="mt-3 space-y-2">
+                      <div className="h-2 w-full rounded bg-slate-100"></div>
+                      <div className="h-2 w-full rounded bg-slate-100"></div>
+                      <div className="h-2 w-5/6 rounded bg-slate-100"></div>
                     </div>
-                    {/* Signal Item 2 */}
-                    <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
-                        <div className="text-sm font-bold text-slate-800">Community Leadership</div>
-                      </div>
-                      <div className="pl-4 text-xs text-slate-500">Founded the regional debate program for underrepresented students.</div>
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-blue-100 bg-blue-50/75 p-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">
+                        Signal
+                      </p>
+                      <div className="mt-3 h-2 w-3/4 rounded bg-blue-200"></div>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50/75 p-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                        Follow-up
+                      </p>
+                      <div className="mt-3 h-2 w-4/5 rounded bg-slate-200"></div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-5">
-                {[
-                  {
-                    label: "Key Value",
-                    text: "Reduces manual review time while improving interviewer readiness.",
-                  },
-                  {
-                    label: "What Makes It Different",
-                    text: "Structured insights layered on top of the original applicant PDFs.",
-                  },
-                  {
-                    label: "Ideal For",
-                    text: "Admissions teams, scholarship committees, and fellowship programs.",
-                  },
-                ].map(({ label, text }) => (
-                  <div
-                    key={label}
-                    className="rounded-2xl border border-slate-200 bg-white/80 px-5 py-4"
-                  >
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                      {label}
-                    </p>
-                    <p className="mt-2 text-sm text-slate-700">{text}</p>
+              <div
+                className="rounded-3xl border border-slate-200 bg-white/80 p-5"
+                style={visualCardStyle}
+              >
+                <h3 className="mt-2 text-xl font-bold tracking-tight text-slate-800">
+                  Interview Overlay
+                </h3>
+                <div className="mt-4 rounded-[1.6rem] border border-slate-200 bg-white/90 p-4 shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-700">
+                        Interview overlay
+                      </p>
+                      <h4 className="mt-1 text-base font-semibold tracking-tight text-slate-900">
+                        Live runner
+                      </h4>
+                    </div>
+                    <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">
+                      3/6 asked
+                    </span>
                   </div>
-                ))}
+                  <div className="mt-4 grid gap-2">
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3">
+                      <p className="text-xs uppercase tracking-widest text-slate-400">
+                        Current theme
+                      </p>
+                      <div className="mt-2 h-2 w-3/4 rounded bg-slate-200"></div>
+                    </div>
+                    <div className="rounded-2xl border border-blue-100 bg-blue-50/75 p-3">
+                      <p className="text-xs uppercase tracking-widest text-blue-700">
+                        Next prompt
+                      </p>
+                      <div className="mt-2 space-y-1.5">
+                        <div className="h-2 w-full rounded bg-blue-200"></div>
+                        <div className="h-2 w-2/3 rounded bg-blue-200"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <section
+              className="rounded-3xl border border-slate-200 bg-white/80 p-6 text-center"
+              style={visualCardStyle}
+            >
+              <h2
+                className="mt-2 text-2xl font-black tracking-tight text-slate-800"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                Access the System
+              </h2>
+              <p className="mt-3 max-w-2xl mx-auto text-sm text-slate-600 leading-relaxed">
+                Use the portal to continue into the workspace that matches your role.
+              </p>
+              <div className="mt-5">
+                <Link
+                  href="/portal"
+                  className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-700 transition-colors duration-200 hover:text-blue-800"
+                >
+                  Open Portal
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </Link>
               </div>
             </section>
           </Reveal>
         </main>
-
-        {/* ── Footer ──────────────────────────────────────────────────────── */}
-        <footer className="w-full py-8 text-center mt-auto border-t border-slate-200">
-          <p className="flex items-center justify-center gap-2 text-sm text-slate-500 max-w-md mx-auto px-4">
-            <svg
-              className="w-4 h-4 text-slate-400 shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-              />
-            </svg>
-            <span>Designed for university interviewers. This tool does not evaluate applicants.</span>
-          </p>
-        </footer>
       </div>
     </>
   );
 }
-
-// ─── Style Objects (CSS vars only — no Tailwind conflicts) ────────────────────
 
 const bodyStyle: React.CSSProperties = {
   backgroundColor: "var(--canvas)",
@@ -478,27 +586,70 @@ const bodyStyle: React.CSSProperties = {
   backgroundSize: "24px 24px",
 };
 
-const deployBarStyle: React.CSSProperties = {
-  backgroundColor: "var(--canvas)",
-};
-
 const crestStyle: React.CSSProperties = {
   border: "1px solid var(--accent-soft)",
 };
 
-// FIX: Removed conflicting bg-white/80 Tailwind class from the card divs;
-// backgroundColor now lives only here in the style object.
 const gatewayCardStyle: React.CSSProperties = {
   backgroundColor: "var(--surface)",
   border: "1px solid var(--surface-border)",
   boxShadow: "0 10px 30px rgba(2, 6, 23, 0.08)",
 };
 
-const iconCircleStyle: React.CSSProperties = {
-  backgroundColor: "var(--accent-soft-2)",
-  border: "1px solid var(--accent-soft)",
-};
-
 const visualCardStyle: React.CSSProperties = {
   boxShadow: "0 18px 36px rgba(15, 23, 42, 0.08)",
 };
+
+function SmallKeyStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-slate-200 bg-white/70 px-3 py-2">
+      <p className="text-xs uppercase tracking-widest text-slate-400">{label}</p>
+      <p className="mt-1 font-semibold text-slate-800">{value}</p>
+    </div>
+  );
+}
+
+function MiniStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2">
+      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">{label}</p>
+      <p className="mt-1 text-sm font-semibold text-slate-900">{value}</p>
+    </div>
+  );
+}
+
+function StatusMark({ status }: { status: string }) {
+  const styles = {
+    ASSIGNED: "border-sky-200 bg-sky-100 text-sky-900",
+  };
+
+  return (
+    <span
+      className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${
+        styles[status as keyof typeof styles] ?? "border-slate-200 bg-slate-100 text-slate-700"
+      }`}
+    >
+      {status}
+    </span>
+  );
+}
+
+function BlacklineMeta({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-800">{value}</p>
+    </div>
+  );
+}
+
+function PrimaryLink({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-blue-700 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white shadow-sm">
+      {label}
+      <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H9M17 7v8" />
+      </svg>
+    </span>
+  );
+}
