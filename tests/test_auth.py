@@ -77,14 +77,16 @@ class FakeWorkOSUser:
 
 
 class FakeLoadedSession:
-    def __init__(self, user, sealed_session: str):
+    def __init__(self, user, sealed_session: str, refresh_counter: dict[str, int]):
         self.user = user
         self.sealed_session = sealed_session
+        self._refresh_counter = refresh_counter
 
     def authenticate(self):
         return SimpleNamespace(authenticated=True, user=self.user)
 
     def refresh(self):
+        self._refresh_counter[self.sealed_session] = self._refresh_counter.get(self.sealed_session, 0) + 1
         return SimpleNamespace(authenticated=True, user=self.user, sealed_session=f"{self.sealed_session}-refreshed")
 
     def get_logout_url(self, return_to=None):
@@ -96,6 +98,7 @@ class FakeUserManagement:
         self.codes_to_users = codes_to_users
         self.sessions: dict[str, FakeWorkOSUser] = {}
         self.sent_invitations: list[dict[str, str | None]] = []
+        self.refresh_counts: dict[str, int] = {}
 
     def authenticate_with_code(self, *, code, session):
         del session
@@ -107,7 +110,7 @@ class FakeUserManagement:
     def load_sealed_session(self, *, session_data, cookie_password):
         del cookie_password
         user = self.sessions[session_data]
-        return FakeLoadedSession(user, session_data)
+        return FakeLoadedSession(user, session_data, self.refresh_counts)
 
     def send_invitation(self, *, email, organization_id=None, role_slug=None, expires_in_days=None, inviter_user_id=None, locale=None, request_options=None):
         del organization_id, role_slug, expires_in_days, locale, request_options
@@ -440,6 +443,35 @@ def test_cookie_session_mutation_succeeds_with_matching_csrf_header(monkeypatch)
 
     assert response.status_code == 201
     assert response.json()["access_status"] == "invited"
+
+
+def test_session_endpoint_can_proactively_refresh_cookie(monkeypatch):
+    client = make_client()
+    db = TestingSessionLocal()
+    db.query(User).delete()
+    db.commit()
+    db.close()
+
+    fake_client = install_fake_workos(
+        monkeypatch,
+        {"founder-code": FakeWorkOSUser(user_id="founder-5", email=settings.FOUNDER_ADMIN_EMAIL)},
+    )
+
+    login_response = client.get(
+        "/auth/callback",
+        params={"code": "founder-code", "state": "eyJwb3J0YWwiOiJhZG1pbiJ9"},
+        follow_redirects=False,
+    )
+    assert login_response.status_code == 302
+
+    original_cookie = client.cookies.get(settings.SESSION_COOKIE_NAME)
+    assert original_cookie == "sealed-founder-code"
+
+    response = client.get("/auth/session", params={"refresh": "true"})
+
+    assert response.status_code == 200
+    assert client.cookies.get(settings.SESSION_COOKIE_NAME) == "sealed-founder-code-refreshed"
+    assert fake_client.user_management.refresh_counts[original_cookie] == 1
 
 
 def test_logout_clears_session_cookie_and_returns_logout_url(monkeypatch):

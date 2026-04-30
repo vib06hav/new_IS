@@ -13,7 +13,8 @@ import {
 } from "@/lib/auth";
 import type { UserRole } from "@/lib/types";
 
-const KEEPALIVE_INTERVAL_MS = 5 * 60 * 1000;
+const KEEPALIVE_INTERVAL_MS = 2 * 60 * 1000;
+const ACTIVE_WORKFLOW_KEEPALIVE_INTERVAL_MS = 45 * 1000;
 const EMPTY_SERVER_SNAPSHOT: PortalSessionSnapshot = {
   authState: "loading",
   session: null,
@@ -89,18 +90,31 @@ export function PortalSessionProvider({
       return;
     }
 
+    if (snapshot.workflowCount <= 0) {
+      return;
+    }
+
+    void revalidateSession({ portal, reason: "workflow-activated" });
+  }, [isPublicPortalRoute, portal, snapshot.workflowCount]);
+
+  useEffect(() => {
+    if (isPublicPortalRoute) {
+      return;
+    }
+
+    const intervalMs = snapshot.workflowCount > 0 ? ACTIVE_WORKFLOW_KEEPALIVE_INTERVAL_MS : KEEPALIVE_INTERVAL_MS;
     const intervalId = window.setInterval(() => {
       if (document.visibilityState !== "visible" || navigator.onLine === false) {
         return;
       }
 
       void revalidateSession({ portal, reason: "keepalive" });
-    }, KEEPALIVE_INTERVAL_MS);
+    }, intervalMs);
 
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [isPublicPortalRoute, portal]);
+  }, [isPublicPortalRoute, portal, snapshot.workflowCount]);
 
   useEffect(() => {
     if (isPublicPortalRoute) {
@@ -109,9 +123,14 @@ export function PortalSessionProvider({
     }
 
     const isDeactivated = snapshot.forbiddenReason?.toLowerCase().includes("deactivated") ?? false;
+    const shouldHoldWorkflowContext = snapshot.workflowCount > 0 && snapshot.authState === "expired";
     const redirectKey = `${snapshot.authState}:${snapshot.forbiddenReason ?? ""}`;
 
     if (snapshot.authState === "expired") {
+      if (shouldHoldWorkflowContext) {
+        redirectHandledRef.current = null;
+        return;
+      }
       if (redirectHandledRef.current !== redirectKey) {
         redirectHandledRef.current = redirectKey;
         console.warn("[auth] forced login redirect", { portal, state: snapshot.authState });
@@ -145,9 +164,12 @@ export function PortalSessionProvider({
   };
 
   const isDeactivated = snapshot.forbiddenReason?.toLowerCase().includes("deactivated") ?? false;
+  const shouldHoldWorkflowContext = snapshot.workflowCount > 0 && snapshot.authState === "expired";
   const isBlockingLoading =
     snapshot.authState === "loading" || (snapshot.authState === "refreshing" && !snapshot.session);
-  const isRedirectingAway = snapshot.authState === "expired" || (snapshot.authState === "forbidden" && !isDeactivated);
+  const isRedirectingAway =
+    (!shouldHoldWorkflowContext && snapshot.authState === "expired") ||
+    (snapshot.authState === "forbidden" && !isDeactivated);
 
   if (isPublicPortalRoute) {
     return <PortalSessionContext.Provider value={contextValue}>{children}</PortalSessionContext.Provider>;

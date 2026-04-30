@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import Cookie, Depends, HTTPException, Request, Response, status
+from fastapi import Cookie, Depends, HTTPException, Query, Request, Response, status
 from sqlalchemy.orm import Session
 
 from app.auth.service import get_current_user_from_token, get_current_user_from_workos_session
@@ -16,10 +16,16 @@ def get_current_user(
     request: Request,
     response: Response,
     session_token: str | None = Cookie(default=None, alias=settings.SESSION_COOKIE_NAME),
+    refresh_session: bool = Query(default=False, alias="refresh"),
     db: Session = Depends(get_db),
 ) -> User:
     if session_token:
-        return get_current_user_from_workos_session(db, response, session_token)
+        return get_current_user_from_workos_session(
+            db,
+            response,
+            session_token,
+            refresh_session=refresh_session,
+        )
 
     token: str | None = None
     auth_header = request.headers.get("authorization", "")

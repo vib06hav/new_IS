@@ -1,7 +1,7 @@
 # Graph Report - C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser  (2026-05-01)
 
 ## Corpus Check
-- 169 files · ~218,402 words
+- 169 files · ~218,551 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

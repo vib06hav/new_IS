@@ -60,11 +60,13 @@ function updateSessionStore(next: Partial<SessionStore>) {
 }
 
 function buildSessionUrl(portal?: UserRole) {
-  if (!portal) {
-    return "/api/auth/session";
+  const params = new URLSearchParams();
+  params.set("refresh", "true");
+  if (portal) {
+    params.set("portal", portal);
   }
 
-  return `/api/auth/session?portal=${encodeURIComponent(portal)}`;
+  return `/api/auth/session?${params.toString()}`;
 }
 
 async function parseSessionError(response: Response) {
@@ -142,10 +144,11 @@ export async function revalidateSession(options?: ValidationOptions) {
 
       const detail = await parseSessionError(response);
       if (response.status === 401) {
+        const preserveWorkflowContext = sessionStore.workflowCount > 0 && Boolean(currentSession);
         const snapshot: PortalSessionSnapshot = {
           authState: "expired",
-          session: null,
-          lastKnownGoodSession: null,
+          session: preserveWorkflowContext ? currentSession : null,
+          lastKnownGoodSession: preserveWorkflowContext ? currentSession : null,
           lastValidationTime: Date.now(),
           forbiddenReason: null,
           workflowCount: sessionStore.workflowCount,

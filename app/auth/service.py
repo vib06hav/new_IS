@@ -266,6 +266,8 @@ def get_current_user_from_workos_session(
     db: Session,
     response: Response,
     sealed_session: str,
+    *,
+    refresh_session: bool = False,
 ) -> User:
     try:
         session = get_workos_client().user_management.load_sealed_session(
@@ -279,6 +281,30 @@ def get_current_user_from_workos_session(
     try:
         auth_response = session.authenticate()
         if auth_response.authenticated:
+            if refresh_session:
+                try:
+                    refresh_response = session.refresh()
+                except Exception as exc:
+                    logger.exception(
+                        "auth.proactive_refresh_exception error=%s",
+                        exc.__class__.__name__,
+                    )
+                else:
+                    if refresh_response.authenticated:
+                        logger.info("auth.refresh_succeeded mode=proactive")
+                        response.set_cookie(
+                            key=settings.SESSION_COOKIE_NAME,
+                            value=refresh_response.sealed_session,
+                            httponly=True,
+                            secure=settings.APP_ENV == "production",
+                            samesite=settings.SESSION_COOKIE_SAMESITE,
+                            path="/",
+                        )
+                        return sync_user_from_workos_identity(db, refresh_response.user)
+                    logger.warning(
+                        "auth.proactive_refresh_failed reason=%s",
+                        getattr(refresh_response, "reason", "unknown"),
+                    )
             return sync_user_from_workos_identity(db, auth_response.user)
 
         try:
