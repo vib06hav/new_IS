@@ -19,8 +19,9 @@ from app.models.final_report import FinalReport
 from app.models.interview_workspace import InterviewWorkspace
 from app.models.user import User
 from app.config import settings
-from app.llm.client import LLMStructuredOutputUnsupportedError
+from app.llm.client import LLMClientError
 from app.report_chat import build_report_chat_context
+from app.projection.ros_projector import project_ros
 from app.storage.service import get_storage_service
 
 
@@ -106,6 +107,30 @@ def _pages_1_3_payload():
             ]
         },
     }
+
+
+def test_project_ros_adds_duration_years_for_activity_entries():
+    canonical = {
+        "identifiers": {"full_name": "Applicant Demo"},
+        "academic_entries": [],
+        "test_entries": [],
+        "essay_entries": [],
+        "activity_entries": [
+            {
+                "entry_id": "ACT-RAW-1",
+                "activity_type": "extracurricular",
+                "activity_name": "Music Piano",
+                "level": "International",
+                "duration": "5",
+            }
+        ],
+    }
+
+    _, page_2, _, annotated_canonical, _ = project_ros(canonical)
+
+    assert annotated_canonical["activity_entries"][0]["duration"] == "5"
+    assert page_2["extracurricular_activities"][0]["duration"] == "5"
+    assert page_2["extracurricular_activities"][0]["duration_years"] == "5"
 
 
 def test_admin_generate_report_and_interviewer_visibility():
@@ -521,669 +546,6 @@ def test_admin_global_hide_removes_application_from_interviewer_list():
     assert blocked_unhide.json()["detail"] == "Application is globally hidden"
 
 
-def test_report_chat_admin_uses_pages_1_to_3_without_final_report():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-ADMIN",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    db.add_all([admin, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"Physics is listed as the preferred major.","results":[{"label":"Preferred major","value":"Physics","target_tab":"page1","section_key":"page1_overview","anchor_id":"report-page1-overview"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "What is the preferred major?"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    body = response.json()
-    assert body["not_found"] is False
-    assert body["results"][0]["anchor_id"] == "report-page1-overview"
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"source_scope": "pages_1_3"' in prompt_payload
-    assert '"selected_sections": ["page1_overview"]' in prompt_payload
-    assert "page_4_focus_areas" not in prompt_payload
-
-
-def test_report_chat_handles_apostrophe_name_query_as_identity_retrieve():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-name@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-NAME",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    db.add_all([admin, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"The applicant name is Applicant Demo.","results":[{"label":"Applicant name","value":"Applicant Demo","target_tab":"page1","section_key":"page1_overview","anchor_id":"report-page1-overview"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "What\'s the applicant\'s name?"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"detected_operation": "retrieve"' in prompt_payload
-    assert '"detected_target": "identity"' in prompt_payload
-    assert '"selected_sections": ["page1_overview"]' in prompt_payload
-
-
-def test_report_chat_interviewer_can_use_final_report_pages():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-2@example.com", password_hash="x", role="admin")
-    interviewer = User(
-        id=uuid.uuid4(),
-        name="Interviewer",
-        email="interviewer-chat@example.com",
-        password_hash="x",
-        role="interviewer",
-    )
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-INT",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="ASSIGNED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    final_report = FinalReport(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        content={
-            "page_4_focus_areas": {"themes": [{"theme_id": "T1", "title": "Intellectual vitality"}], "signals": []},
-            "page_5_question_groups": {"question_groups": [{"theme_id": "T1", "group_title": "Curiosity", "questions": ["What sparked your interest in physics?"]}]},
-        },
-        generated_by=admin.id,
-        report_version="ROS_v1",
-    )
-    assignment = Assignment(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        interviewer_id=interviewer.id,
-        assigned_by=admin.id,
-    )
-    db.add_all([admin, interviewer, application, canonical, final_report, assignment])
-    db.commit()
-    interviewer_email = interviewer.email
-    interviewer_role = interviewer.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(interviewer_email, interviewer_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"The main focus area is intellectual vitality.","results":[{"label":"Theme","value":"Intellectual vitality","target_tab":"page4","section_key":"page4_focus_areas","anchor_id":"report-page4-focus-areas"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "What is the main focus area?"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    body = response.json()
-    assert body["results"][0]["target_tab"] == "page4"
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"source_scope": "page4_only"' in prompt_payload
-    assert '"selected_sections": ["page4_focus_areas"]' in prompt_payload
-    assert '"detected_target": "themes"' in prompt_payload
-    assert '"page4": {"themes": [{"theme_id": "T1", "title": "Intellectual vitality"}], "signals": []}' in prompt_payload
-    assert '"page5"' not in prompt_payload
-
-
-def test_report_chat_show_name_stays_retrieve_not_transform():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-show-name@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-SHOW-NAME",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    db.add_all([admin, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"The applicant name is Applicant Demo.","results":[{"label":"Applicant name","value":"Applicant Demo","target_tab":"page1","section_key":"page1_overview","anchor_id":"report-page1-overview"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "Show me the name"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"detected_operation": "retrieve"' in prompt_payload
-    assert '"detected_target": "identity"' in prompt_payload
-
-
-def test_report_chat_redirect_uses_page_5_only():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-redirect@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-REDIRECT",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    final_report = FinalReport(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        content={
-            "page_4_focus_areas": {"themes": [{"theme_id": "T1", "title": "Intellectual vitality"}], "signals": []},
-            "page_5_question_groups": {
-                "question_groups": [{"theme_id": "T1", "group_title": "Curiosity", "questions": ["What sparked your interest in physics?"]}]
-            },
-        },
-        generated_by=admin.id,
-        report_version="ROS_v1",
-    )
-    db.add_all([admin, application, canonical, final_report])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"The report already suggests probing curiosity in the interview.","results":[{"label":"Interview questions","value":"See the Curiosity question group on Page 5.","target_tab":"page5","section_key":"page5_question_groups","anchor_id":"report-page5-question-groups"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "What should interviewer ask?"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    body = response.json()
-    assert body["results"][0]["target_tab"] == "page5"
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"source_scope": "page5_only"' in prompt_payload
-    assert '"selected_sections": ["page5_question_groups"]' in prompt_payload
-    assert '"detected_operation": "redirect"' in prompt_payload
-    assert '"detected_target": "question_groups"' in prompt_payload
-    assert '"page4"' not in prompt_payload
-
-
-def test_report_chat_what_stands_out_routes_to_redirect():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-stands-out@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-STANDS-OUT",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    final_report = FinalReport(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        content={
-            "page_4_focus_areas": {"themes": [{"theme_id": "T1", "title": "Intellectual vitality"}], "signals": []},
-            "page_5_question_groups": {"question_groups": [{"theme_id": "T1", "group_title": "Curiosity", "questions": ["What sparked your interest in physics?"]}]},
-        },
-        generated_by=admin.id,
-        report_version="ROS_v1",
-    )
-    db.add_all([admin, application, canonical, final_report])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"The report highlights intellectual vitality as the main standout.","results":[{"label":"Focus areas","value":"See Page 4 for the main reported concerns and focus areas.","target_tab":"page4","section_key":"page4_focus_areas","anchor_id":"report-page4-focus-areas"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "What stands out?"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"detected_operation": "redirect"' in prompt_payload
-    assert '"detected_target": "signals"' in prompt_payload
-    assert '"source_scope": "page4_only"' in prompt_payload
-
-
-def test_report_chat_list_out_activities_routes_to_transform():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-list-activities@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-LIST-ACTIVITIES",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    db.add_all([admin, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"The report lists Robotics Club as an activity.","results":[{"label":"Activities","value":"Robotics Club","target_tab":"page2","section_key":"page2_activities","anchor_id":"report-page2-activities"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "Can you list out all activities?"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"detected_operation": "transform"' in prompt_payload
-    assert '"detected_target": "activities"' in prompt_payload
-    assert '"selected_sections": ["page2_activities"]' in prompt_payload
-
-
-def test_report_chat_page_4_request_returns_safe_not_found_without_final_report():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-no-final@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-NO-FINAL",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    db.add_all([admin, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch("app.report_chat.generate") as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "Why is this a concern?"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    body = response.json()
-    assert body["not_found"] is True
-    assert "not available" in body["answer_summary"].lower() or "not present" in body["answer_summary"].lower()
-    mocked_generate.assert_not_called()
-
-
-def test_report_chat_entrance_performance_routes_to_tests():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-entrance@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-ENTRANCE",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    db.add_all([admin, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"The SAT total score is 1520.","results":[{"label":"Test score","value":"SAT 1520","target_tab":"page2","section_key":"page2_tests","anchor_id":"report-page2-tests"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "How was the entrance performance?"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"detected_operation": "retrieve"' in prompt_payload
-    assert '"detected_target": "tests"' in prompt_payload
-    assert '"selected_sections": ["page2_tests"]' in prompt_payload
-
-
-def test_report_chat_academic_performance_routes_to_academics():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-academic-performance@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-ACADEMIC-PERFORMANCE",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    db.add_all([admin, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"The applicant performed strongly in academics, including a Class 10 score of 96.","results":[{"label":"Academic performance","value":"Class 10: 96","target_tab":"page2","section_key":"page2_academics","anchor_id":"report-page2-academics"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "How did they do academically?"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"detected_operation": "retrieve"' in prompt_payload
-    assert '"detected_target": "academics"' in prompt_payload
-    assert '"selected_sections": ["page2_academics"]' in prompt_payload
-
-
-def test_report_chat_board_score_stays_academics_not_tests():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-board-score@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-BOARD-SCORE",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    db.add_all([admin, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"The applicant scored 96 in Class 10 board exams.","results":[{"label":"Board score","value":"Class 10: 96","target_tab":"page2","section_key":"page2_academics","anchor_id":"report-page2-academics"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "What was the 12th board score?"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"detected_operation": "retrieve"' in prompt_payload
-    assert '"detected_target": "academics"' in prompt_payload
-    assert '"selected_sections": ["page2_academics"]' in prompt_payload
-
-
-def test_report_chat_tell_me_about_routes_to_full_report_transform():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-about@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-ABOUT",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    db.add_all([admin, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"Applicant Demo is a physics-focused student with strong academics and robotics involvement.","results":[{"label":"Profile summary","value":"See the applicant profile and supporting sections.","target_tab":"page1","section_key":"page1_overview","anchor_id":"report-page1-overview"}],"not_found":false}',
-    ) as mocked_generate:
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "Tell me about this candidate"},
-            headers=headers,
-        )
-
-    assert response.status_code == 200
-    prompt_payload = mocked_generate.call_args.args[0][1]["content"]
-    assert '"detected_operation": "transform"' in prompt_payload
-    assert '"detected_target": "full_report"' in prompt_payload
-
-
 def test_report_chat_blocks_unassigned_interviewer():
     db = TestingSessionLocal()
     db.query(FinalReport).delete()
@@ -1322,7 +684,7 @@ def test_report_chat_rejects_oversized_question():
     assert "under" in response.json()["detail"]
 
 
-def test_report_chat_returns_controlled_502_on_invalid_llm_payload():
+def test_report_chat_lookup_returns_backend_owned_source_for_preferred_major():
     db = TestingSessionLocal()
     db.query(FinalReport).delete()
     db.query(Assignment).delete()
@@ -1330,10 +692,10 @@ def test_report_chat_returns_controlled_502_on_invalid_llm_payload():
     db.query(Application).delete()
     db.query(User).delete()
 
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-5@example.com", password_hash="x", role="admin")
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat@example.com", password_hash="x", role="admin")
     application = Application(
         id=uuid.uuid4(),
-        display_id="APP-CHAT-FAIL",
+        display_id="APP-CHAT-ADMIN",
         uploaded_by=admin.id,
         storage_key="demo.pdf",
         status="PROCESSED",
@@ -1356,68 +718,31 @@ def test_report_chat_returns_controlled_502_on_invalid_llm_payload():
     client = TestClient(app)
     headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
 
-    with patch("app.report_chat.generate", return_value="not-json"):
+    with patch("app.report_chat.generate") as mocked_generate:
         response = client.post(
             f"/applications/{application_id}/report-chat",
             json={"question": "What is the preferred major?"},
             headers=headers,
         )
 
-    assert response.status_code == 502
-    assert response.json()["detail"] == "Report assistant returned an invalid response."
-
-
-def test_report_chat_accepts_markdown_fenced_json_payload():
-    db = TestingSessionLocal()
-    db.query(FinalReport).delete()
-    db.query(Assignment).delete()
-    db.query(CanonicalRecord).delete()
-    db.query(Application).delete()
-    db.query(User).delete()
-
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-fenced@example.com", password_hash="x", role="admin")
-    application = Application(
-        id=uuid.uuid4(),
-        display_id="APP-CHAT-FENCED",
-        uploaded_by=admin.id,
-        storage_key="demo.pdf",
-        status="PROCESSED",
-    )
-    canonical = CanonicalRecord(
-        id=uuid.uuid4(),
-        application_id=application.id,
-        canonical_version="1.0",
-        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
-        pages_1_3=_pages_1_3_payload(),
-    )
-    db.add_all([admin, application, canonical])
-    db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
-    application_id = application.id
-    db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
-
-    with patch(
-        "app.report_chat.generate",
-        return_value='```json\n{"answer_summary":"The applicant name is Applicant Demo.","results":[{"label":"Applicant name","value":"Applicant Demo","target_tab":"page1","section_key":"page1_overview","anchor_id":"report-page1-overview"}],"not_found":false}\n```',
-    ):
-        response = client.post(
-            f"/applications/{application_id}/report-chat",
-            json={"question": "What is the applicant name?"},
-            headers=headers,
-        )
-
     assert response.status_code == 200
-    assert response.json()["not_found"] is False
-    assert response.json()["response_state"] == "repaired"
-    assert response.json()["results"][0]["section_key"] == "page1_overview"
+    body = response.json()
+    assert body["response_kind"] == "lookup"
+    assert body["not_found"] is False
+    assert body["sources"][0]["anchor_id"] == "report-page1-overview"
+    mocked_generate.assert_not_called()
 
 
-def test_report_chat_recovers_truncated_json_into_degraded_summary():
+def test_report_chat_context_routes_name_query_to_identity_lookup():
+    context = build_report_chat_context("What's the applicant's name?", _pages_1_3_payload(), None)
+
+    assert context["response_kind"] == "lookup"
+    assert context["detected_operation"] == "retrieve"
+    assert context["detected_target"] == "identity"
+    assert context["selected_sections"] == ["page1_overview"]
+
+
+def test_report_chat_lookup_can_use_final_report_focus_area():
     db = TestingSessionLocal()
     db.query(FinalReport).delete()
     db.query(Assignment).delete()
@@ -1425,13 +750,20 @@ def test_report_chat_recovers_truncated_json_into_degraded_summary():
     db.query(Application).delete()
     db.query(User).delete()
 
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-truncated@example.com", password_hash="x", role="admin")
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-2@example.com", password_hash="x", role="admin")
+    interviewer = User(
+        id=uuid.uuid4(),
+        name="Interviewer",
+        email="interviewer-chat@example.com",
+        password_hash="x",
+        role="interviewer",
+    )
     application = Application(
         id=uuid.uuid4(),
-        display_id="APP-CHAT-TRUNCATED",
+        display_id="APP-CHAT-INT",
         uploaded_by=admin.id,
         storage_key="demo.pdf",
-        status="PROCESSED",
+        status="ASSIGNED",
     )
     canonical = CanonicalRecord(
         id=uuid.uuid4(),
@@ -1440,36 +772,49 @@ def test_report_chat_recovers_truncated_json_into_degraded_summary():
         canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
         pages_1_3=_pages_1_3_payload(),
     )
-    db.add_all([admin, application, canonical])
+    final_report = FinalReport(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        content={
+            "page_4_focus_areas": {"themes": [{"theme_id": "T1", "title": "Intellectual vitality"}], "signals": []},
+            "page_5_question_groups": {"question_groups": [{"theme_id": "T1", "group_title": "Curiosity", "questions": ["What sparked your interest in physics?"]}]},
+        },
+        generated_by=admin.id,
+        report_version="ROS_v1",
+    )
+    assignment = Assignment(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        interviewer_id=interviewer.id,
+        assigned_by=admin.id,
+    )
+    db.add_all([admin, interviewer, application, canonical, final_report, assignment])
     db.commit()
-    admin_email = admin.email
-    admin_role = admin.role
+    interviewer_email = interviewer.email
+    interviewer_role = interviewer.role
     application_id = application.id
     db.close()
 
     app.dependency_overrides[get_db] = override_get_db
     client = TestClient(app)
-    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+    headers = {"Authorization": f"Bearer {_token_for(interviewer_email, interviewer_role)}"}
 
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary": "The applicant has strong academics and robotics involvement',
-    ):
+    with patch("app.report_chat.generate") as mocked_generate:
         response = client.post(
             f"/applications/{application_id}/report-chat",
-            json={"question": "Tell me everything important here in one answer."},
+            json={"question": "What is the main focus area?"},
             headers=headers,
         )
 
     assert response.status_code == 200
     body = response.json()
-    assert body["not_found"] is False
-    assert body["results"] == []
-    assert body["response_state"] == "degraded"
-    assert "strong academics and robotics involvement" in body["answer_summary"]
+    assert body["response_kind"] == "lookup"
+    assert body["sources"][0]["target_tab"] == "page4"
+    assert "Intellectual vitality" in body["answer_summary"]
+    mocked_generate.assert_not_called()
 
 
-def test_report_chat_downgrades_when_json_schema_is_unsupported():
+def test_report_chat_question_groups_summary_uses_page_5_sources():
     db = TestingSessionLocal()
     db.query(FinalReport).delete()
     db.query(Assignment).delete()
@@ -1477,10 +822,128 @@ def test_report_chat_downgrades_when_json_schema_is_unsupported():
     db.query(Application).delete()
     db.query(User).delete()
 
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-schema@example.com", password_hash="x", role="admin")
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-redirect@example.com", password_hash="x", role="admin")
     application = Application(
         id=uuid.uuid4(),
-        display_id="APP-CHAT-SCHEMA",
+        display_id="APP-CHAT-REDIRECT",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3=_pages_1_3_payload(),
+    )
+    final_report = FinalReport(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        content={
+            "page_4_focus_areas": {"themes": [{"theme_id": "T1", "title": "Intellectual vitality"}], "signals": []},
+            "page_5_question_groups": {
+                "question_groups": [{"theme_id": "T1", "group_title": "Curiosity", "questions": ["What sparked your interest in physics?"]}]
+            },
+        },
+        generated_by=admin.id,
+        report_version="ROS_v1",
+    )
+    db.add_all([admin, application, canonical, final_report])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    with patch("app.report_chat.generate", return_value="The report groups interview prompts around curiosity and follow-up questions."):
+        response = client.post(
+            f"/applications/{application_id}/report-chat",
+            json={"question": "What should interviewer ask?"},
+            headers=headers,
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["response_kind"] == "domain_summary"
+    assert body["sources"][0]["target_tab"] == "page5"
+    assert body["sources"][0]["section_key"] == "page5_question_groups"
+
+
+def test_report_chat_scope_redirects_evaluative_questions():
+    db = TestingSessionLocal()
+    db.query(FinalReport).delete()
+    db.query(Assignment).delete()
+    db.query(CanonicalRecord).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-stands-out@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-CHAT-STANDS-OUT",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3=_pages_1_3_payload(),
+    )
+    final_report = FinalReport(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        content={
+            "page_4_focus_areas": {"themes": [{"theme_id": "T1", "title": "Intellectual vitality"}], "signals": []},
+            "page_5_question_groups": {"question_groups": [{"theme_id": "T1", "group_title": "Curiosity", "questions": ["What sparked your interest in physics?"]}]},
+        },
+        generated_by=admin.id,
+        report_version="ROS_v1",
+    )
+    db.add_all([admin, application, canonical, final_report])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    with patch("app.report_chat.generate") as mocked_generate:
+        response = client.post(
+            f"/applications/{application_id}/report-chat",
+            json={"question": "What stands out?"},
+            headers=headers,
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["response_kind"] == "scope_redirect"
+    assert body["sources"] == []
+    mocked_generate.assert_not_called()
+
+
+def test_report_chat_domain_summary_of_activities_uses_compact_sources():
+    db = TestingSessionLocal()
+    db.query(FinalReport).delete()
+    db.query(Assignment).delete()
+    db.query(CanonicalRecord).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-list-activities@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-CHAT-LIST-ACTIVITIES",
         uploaded_by=admin.id,
         storage_key="demo.pdf",
         status="PROCESSED",
@@ -1503,27 +966,20 @@ def test_report_chat_downgrades_when_json_schema_is_unsupported():
     client = TestClient(app)
     headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
 
-    with patch(
-        "app.report_chat.generate",
-        side_effect=[
-            LLMStructuredOutputUnsupportedError("unsupported"),
-            '{"answer_summary":"The applicant name is Applicant Demo.","results":[{"label":"Applicant name","value":"Applicant Demo","target_tab":"page1","section_key":"page1_overview","anchor_id":"report-page1-overview"}],"not_found":false,"response_state":"clean"}',
-        ],
-    ):
+    with patch("app.report_chat.generate", return_value="The activities section highlights robotics participation and extracurricular engagement."):
         response = client.post(
             f"/applications/{application_id}/report-chat",
-            json={"question": "What is the applicant name?"},
+            json={"question": "Summarize the activities."},
             headers=headers,
         )
 
     assert response.status_code == 200
     body = response.json()
-    assert body["not_found"] is False
-    assert body["response_state"] == "clean"
-    assert body["results"][0]["section_key"] == "page1_overview"
+    assert body["response_kind"] == "domain_summary"
+    assert body["sources"][0]["section_key"] == "page2_activities"
 
 
-def test_report_chat_broad_summary_keeps_usable_answer_not_not_found():
+def test_report_chat_lookup_lists_both_activity_buckets_for_broad_activity_query():
     db = TestingSessionLocal()
     db.query(FinalReport).delete()
     db.query(Assignment).delete()
@@ -1531,10 +987,122 @@ def test_report_chat_broad_summary_keeps_usable_answer_not_not_found():
     db.query(Application).delete()
     db.query(User).delete()
 
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-broad@example.com", password_hash="x", role="admin")
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-activity-buckets@example.com", password_hash="x", role="admin")
     application = Application(
         id=uuid.uuid4(),
-        display_id="APP-CHAT-BROAD",
+        display_id="APP-CHAT-ACTIVITY-BUCKETS",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    pages = _pages_1_3_payload()
+    pages["page_2_academic_and_engagement"]["extracurricular_activities"] = [
+        {"entity_id": "ACT-1", "activity_name": "Music Piano", "activity_type": "extracurricular"},
+    ]
+    pages["page_2_academic_and_engagement"]["co_curricular_activities"] = [
+        {"entity_id": "ACT-2", "activity_name": "Olympiads", "activity_type": "co_curricular"},
+    ]
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3=pages,
+    )
+    db.add_all([admin, application, canonical])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    with patch("app.report_chat.generate") as mocked_generate:
+        response = client.post(
+            f"/applications/{application_id}/report-chat",
+            json={"question": "What activities are listed?"},
+            headers=headers,
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert "Music Piano" in body["answer_summary"]
+    assert "Olympiads" in body["answer_summary"]
+    mocked_generate.assert_not_called()
+
+
+def test_report_chat_lookup_lists_all_extracurricular_items_for_bucket_query():
+    db = TestingSessionLocal()
+    db.query(FinalReport).delete()
+    db.query(Assignment).delete()
+    db.query(CanonicalRecord).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-extracurriculars@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-CHAT-EXTRACURRICULARS",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    pages = _pages_1_3_payload()
+    pages["page_2_academic_and_engagement"]["extracurricular_activities"] = [
+        {"entity_id": "ACT-1", "activity_name": "Music Piano", "activity_type": "extracurricular"},
+        {"entity_id": "ACT-2", "activity_name": "Yoga", "activity_type": "extracurricular"},
+    ]
+    pages["page_2_academic_and_engagement"]["co_curricular_activities"] = [
+        {"entity_id": "ACT-3", "activity_name": "Olympiads", "activity_type": "co_curricular"},
+    ]
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3=pages,
+    )
+    db.add_all([admin, application, canonical])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    with patch("app.report_chat.generate") as mocked_generate:
+        response = client.post(
+            f"/applications/{application_id}/report-chat",
+            json={"question": "Extracurriculars"},
+            headers=headers,
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert "Music Piano" in body["answer_summary"]
+    assert "Yoga" in body["answer_summary"]
+    assert "Olympiads" not in body["answer_summary"]
+    mocked_generate.assert_not_called()
+
+
+def test_report_chat_page_4_request_returns_safe_not_found_without_final_report():
+    db = TestingSessionLocal()
+    db.query(FinalReport).delete()
+    db.query(Assignment).delete()
+    db.query(CanonicalRecord).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-no-final@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-CHAT-NO-FINAL",
         uploaded_by=admin.id,
         storage_key="demo.pdf",
         status="PROCESSED",
@@ -1557,25 +1125,21 @@ def test_report_chat_broad_summary_keeps_usable_answer_not_not_found():
     client = TestClient(app)
     headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
 
-    with patch(
-        "app.report_chat.generate",
-        return_value='{"answer_summary":"The applicant shows strong academics, testing, leadership, and extracurricular depth.","results":[],"not_found":true,"response_state":"clean"}',
-    ):
+    with patch("app.report_chat.generate") as mocked_generate:
         response = client.post(
             f"/applications/{application_id}/report-chat",
-            json={"question": "Tell me everything about this candidate overall."},
+            json={"question": "Why is this a concern?"},
             headers=headers,
         )
 
     assert response.status_code == 200
     body = response.json()
-    assert body["not_found"] is False
-    assert body["results"] == []
-    assert body["response_state"] == "degraded"
-    assert "strong academics" in body["answer_summary"]
+    assert body["not_found"] is True
+    assert "not available" in body["answer_summary"].lower()
+    mocked_generate.assert_not_called()
 
 
-def test_report_chat_uses_repair_model_pass_before_full_retry():
+def test_report_chat_lookup_returns_entity_level_test_source_for_entrance_performance():
     db = TestingSessionLocal()
     db.query(FinalReport).delete()
     db.query(Assignment).delete()
@@ -1583,10 +1147,10 @@ def test_report_chat_uses_repair_model_pass_before_full_retry():
     db.query(Application).delete()
     db.query(User).delete()
 
-    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-repair@example.com", password_hash="x", role="admin")
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-entrance@example.com", password_hash="x", role="admin")
     application = Application(
         id=uuid.uuid4(),
-        display_id="APP-CHAT-REPAIR",
+        display_id="APP-CHAT-ENTRANCE",
         uploaded_by=admin.id,
         storage_key="demo.pdf",
         status="PROCESSED",
@@ -1609,31 +1173,303 @@ def test_report_chat_uses_repair_model_pass_before_full_retry():
     client = TestClient(app)
     headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
 
-    with patch(
-        "app.report_chat.generate",
-        side_effect=[
-            "not-json",
-            '{"answer_summary":"The applicant name is Applicant Demo.","results":[{"label":"Applicant name","value":"Applicant Demo","target_tab":"page1","section_key":"page1_overview","anchor_id":"report-page1-overview"}],"not_found":false,"response_state":"repaired"}',
-        ],
-    ) as mocked_generate:
+    with patch("app.report_chat.generate") as mocked_generate:
         response = client.post(
             f"/applications/{application_id}/report-chat",
-            json={"question": "What is the applicant's name?"},
+            json={"question": "How was the entrance performance?"},
             headers=headers,
         )
 
     assert response.status_code == 200
     body = response.json()
-    assert body["not_found"] is False
-    assert body["response_state"] == "repaired"
-    assert body["results"][0]["value"] == "Applicant Demo"
-    assert mocked_generate.call_count == 2
-    repair_request_options = mocked_generate.call_args_list[1].kwargs["request_options"]
-    assert repair_request_options.prefer_fallback_model is True
-    assert repair_request_options.temperature_override == 0.0
+    assert "1520" in body["answer_summary"]
+    assert body["sources"][0]["label"] == "SAT"
+    assert body["sources"][0]["entity_id"] == "TEST-1"
+    mocked_generate.assert_not_called()
 
 
-def test_report_chat_comparison_question_routes_to_broad_comparison_context():
+def test_report_chat_lookup_returns_entity_level_academic_source_for_board_score():
+    db = TestingSessionLocal()
+    db.query(FinalReport).delete()
+    db.query(Assignment).delete()
+    db.query(CanonicalRecord).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-board-score@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-CHAT-BOARD-SCORE",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3=_pages_1_3_payload(),
+    )
+    db.add_all([admin, application, canonical])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    with patch("app.report_chat.generate") as mocked_generate:
+        response = client.post(
+            f"/applications/{application_id}/report-chat",
+            json={"question": "What was the 10th board score?"},
+            headers=headers,
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert "96" in body["answer_summary"]
+    assert body["sources"][0]["label"] == "Class 10"
+    assert body["sources"][0]["entity_id"] == "ACA-1"
+    mocked_generate.assert_not_called()
+
+
+def test_report_chat_subject_specific_marks_fall_back_to_broader_academic_record():
+    db = TestingSessionLocal()
+    db.query(FinalReport).delete()
+    db.query(Assignment).delete()
+    db.query(CanonicalRecord).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-class11@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-CHAT-CLASS11",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    pages = _pages_1_3_payload()
+    pages["page_2_academic_and_engagement"]["academic_records"].append(
+        {
+            "entity_id": "ACA-2",
+            "academic_level": "Class 11",
+            "board_name": "CBSE",
+            "score_raw": "95",
+            "subject_entries": [
+                {"subject_name": "Physics", "score_raw": "91", "max_score_raw": "100"},
+                {"subject_name": "Mathematics", "score_raw": "97", "max_score_raw": "100"},
+            ],
+        }
+    )
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3=pages,
+    )
+    db.add_all([admin, application, canonical])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    with patch("app.report_chat.generate") as mocked_generate:
+        response = client.post(
+            f"/applications/{application_id}/report-chat",
+            json={"question": "What are the marks in 11th physics?"},
+            headers=headers,
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert "Class 11 academic record" in body["answer_summary"]
+    assert "91" not in body["answer_summary"]
+    assert body["sources"][0]["label"] == "Class 11"
+    assert body["sources"][0]["entity_id"] == "ACA-2"
+    mocked_generate.assert_not_called()
+
+
+def test_report_chat_redirects_whole_candidate_summary_requests():
+    db = TestingSessionLocal()
+    db.query(FinalReport).delete()
+    db.query(Assignment).delete()
+    db.query(CanonicalRecord).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-about@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-CHAT-ABOUT",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3=_pages_1_3_payload(),
+    )
+    db.add_all([admin, application, canonical])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    with patch("app.report_chat.generate") as mocked_generate:
+        response = client.post(
+            f"/applications/{application_id}/report-chat",
+            json={"question": "Tell me about this candidate"},
+            headers=headers,
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["response_kind"] == "scope_redirect"
+    mocked_generate.assert_not_called()
+
+
+def test_report_chat_summary_falls_back_to_degraded_when_llm_is_unavailable():
+    db = TestingSessionLocal()
+    db.query(FinalReport).delete()
+    db.query(Assignment).delete()
+    db.query(CanonicalRecord).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-fallback@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-CHAT-FALLBACK",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3=_pages_1_3_payload(),
+    )
+    db.add_all([admin, application, canonical])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    with patch("app.report_chat.generate", side_effect=LLMClientError("disabled")):
+        response = client.post(
+            f"/applications/{application_id}/report-chat",
+            json={"question": "Summarize the activities."},
+            headers=headers,
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["response_kind"] == "degraded"
+    assert body["sources"] == []
+    assert "activity" in body["answer_summary"].lower()
+
+
+def test_report_chat_essay_summary_can_use_fragment_level_sources():
+    db = TestingSessionLocal()
+    db.query(FinalReport).delete()
+    db.query(Assignment).delete()
+    db.query(CanonicalRecord).delete()
+    db.query(Application).delete()
+    db.query(User).delete()
+
+    admin = User(id=uuid.uuid4(), name="Admin", email="admin-chat-essay@example.com", password_hash="x", role="admin")
+    application = Application(
+        id=uuid.uuid4(),
+        display_id="APP-CHAT-ESSAY",
+        uploaded_by=admin.id,
+        storage_key="demo.pdf",
+        status="PROCESSED",
+    )
+    canonical = CanonicalRecord(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        canonical_version="1.0",
+        canonical_data={"identifiers": {"full_name": "Applicant Demo"}},
+        pages_1_3=_pages_1_3_payload(),
+    )
+    final_report = FinalReport(
+        id=uuid.uuid4(),
+        application_id=application.id,
+        content={
+            "page_4_focus_areas": {"themes": [{"theme_id": "T1", "title": "Intellectual vitality"}], "signals": []},
+            "page_5_question_groups": {"question_groups": []},
+            "signal_data": {
+                "annotations": {
+                    "page_2_entities": {},
+                    "page_3_fragments": {
+                        "ESS-1": [
+                            {
+                                "fragment_id": "FRAG-ESS-1",
+                                "start_char": 0,
+                                "end_char": 22,
+                                "signal_ids": ["SIG-1"],
+                                "theme_ids": ["THEME-1"],
+                            }
+                        ]
+                    },
+                }
+            },
+        },
+        generated_by=admin.id,
+        report_version="ROS_v1",
+    )
+    db.add_all([admin, application, canonical, final_report])
+    db.commit()
+    admin_email = admin.email
+    admin_role = admin.role
+    application_id = application.id
+    db.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app)
+    headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+    with patch("app.report_chat.generate", return_value="The writing emphasizes curiosity, physics, and problem solving."):
+        response = client.post(
+            f"/applications/{application_id}/report-chat",
+            json={"question": "Summarize the essay."},
+            headers=headers,
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["response_kind"] == "domain_summary"
+    assert body["sources"][0]["fragment_id"] == "FRAG-ESS-1"
+    assert body["sources"][0]["anchor_id"] == "report-fragment-frag-ess-1"
+
+
+def test_report_chat_comparison_question_routes_to_page_4_summary_context():
     context = build_report_chat_context(
         "Compare academics and tests for this candidate.",
         _pages_1_3_payload(),
@@ -1646,11 +1482,11 @@ def test_report_chat_comparison_question_routes_to_broad_comparison_context():
     )
 
     assert context["question_shape_bucket"] == "comparison"
+    assert context["response_kind"] == "domain_summary"
     assert context["detected_operation"] == "explain"
     assert context["detected_target"] == "signals"
     assert context["selected_sections"] == ["page4_focus_areas"]
     assert context["source_scope"] == "page4_only"
-    assert context["max_result_count"] == 2
 
 
 def test_interviewer_can_create_finish_and_complete_workspace():

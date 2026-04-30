@@ -1,4 +1,4 @@
-import type { ReportChatResult, ReportChatSectionKey, ReportChatTargetTab } from "@/lib/types";
+import type { ReportChatSectionKey, ReportChatSource, ReportChatTargetTab } from "@/lib/types";
 
 const SECTION_META: Record<ReportChatSectionKey, { pageLabel: string; sectionLabel: string }> = {
   page1_overview: { pageLabel: "Page 1", sectionLabel: "Overview" },
@@ -11,19 +11,33 @@ const SECTION_META: Record<ReportChatSectionKey, { pageLabel: string; sectionLab
   page5_question_groups: { pageLabel: "Page 5", sectionLabel: "Questions" },
 };
 
-export function getReportChatSourceLabel(result: ReportChatResult) {
-  const meta = SECTION_META[result.section_key];
+export function getReportChatSourceLabel(source: ReportChatSource) {
+  if (source.label?.trim()) {
+    return source.label;
+  }
+
+  const meta = SECTION_META[source.section_key];
   return `${meta.pageLabel} · ${meta.sectionLabel}`;
 }
 
 export async function navigateToReportResult(
-  result: Pick<ReportChatResult, "anchor_id" | "target_tab">,
+  result: Pick<ReportChatSource, "anchor_id" | "target_tab" | "entity_id">,
   setActiveTab: (tab: ReportChatTargetTab) => void,
 ) {
   setActiveTab(result.target_tab);
 
   for (let attempt = 0; attempt < 8; attempt += 1) {
     await new Promise((resolve) => window.setTimeout(resolve, attempt === 0 ? 30 : 80));
+
+    if (result.entity_id) {
+      const entityButton = document.getElementById(`report-entity-${result.entity_id.toLowerCase()}`);
+      if (entityButton instanceof HTMLButtonElement) {
+        entityButton.click();
+        entityButton.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+    }
+
     const element = document.getElementById(result.anchor_id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });

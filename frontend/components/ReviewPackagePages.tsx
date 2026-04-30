@@ -271,6 +271,7 @@ export function ReviewPageTwoSection({
           tabs={pageData.academicRecords.map((record, index) => ({
             key: `academic-${record.entity_id || index}`,
             label: normalizeAcademicLabel(record, index),
+            anchorId: readString(record.entity_id) ? buildEntityAnchorId(readString(record.entity_id)!) : undefined,
             highlighted: Boolean(getItemAnnotation(record, entityAnnotations)),
             title: buildItemAnnotationTitle(record, entityAnnotations),
           }))}
@@ -352,6 +353,7 @@ export function ReviewPageTwoSection({
           tabs={pageData.activities.map((activity, index) => ({
             key: `activity-${activity.entity_id || index}`,
             label: `ACT${index + 1}`,
+            anchorId: readString(activity.entity_id) ? buildEntityAnchorId(readString(activity.entity_id)!) : undefined,
             highlighted: Boolean(getItemAnnotation(activity, entityAnnotations)),
             title: buildItemAnnotationTitle(activity, entityAnnotations),
           }))}
@@ -376,7 +378,7 @@ export function ReviewPageTwoSection({
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <InfoRow label="Highest Level" value={readString(activeActivity.level)} />
-                <InfoRow label="Duration" value={formatDuration(activeActivity.duration)} />
+                <InfoRow label="Duration" value={formatDuration(activeActivity.duration_years ?? activeActivity.duration)} />
                 <InfoRow label="Role" value={readString(activeActivity.position_title)} />
                 <InfoRow label="Achievement" value={readString(activeActivity.achievement)} />
               </div>
@@ -422,6 +424,7 @@ export function ReviewPageTwoSection({
           tabs={pageData.leadership.map((entry, index) => ({
             key: `lead-${entry.entity_id || index}`,
             label: `LEAD${index + 1}`,
+            anchorId: readString(entry.entity_id) ? buildEntityAnchorId(readString(entry.entity_id)!) : undefined,
             highlighted: Boolean(getItemAnnotation(entry, entityAnnotations)),
             title: buildItemAnnotationTitle(entry, entityAnnotations),
           }))}
@@ -448,7 +451,7 @@ export function ReviewPageTwoSection({
               </div>
 
               <div className="grid gap-3">
-                <InfoRow label="Duration" value={formatDuration(activeLeadership.duration)} />
+                <InfoRow label="Duration" value={formatDuration(activeLeadership.duration_years ?? activeLeadership.duration)} />
                 <InfoRow label="Achievement" value={readString(activeLeadership.achievement)} />
                 <InfoRow
                   label="Responsibilities"
@@ -486,6 +489,7 @@ export function ReviewPageTwoSection({
           tabs={pageData.tests.map((entry, index) => ({
             key: `test-${entry.entity_id || index}`,
             label: normalizeTestLabel(entry, index),
+            anchorId: readString(entry.entity_id) ? buildEntityAnchorId(readString(entry.entity_id)!) : undefined,
             highlighted: Boolean(getItemAnnotation(entry, entityAnnotations)),
             title: buildItemAnnotationTitle(entry, entityAnnotations),
           }))}
@@ -845,6 +849,7 @@ function renderEssayText(text: string, annotations: FragmentAnnotation[]) {
             elements.push(
               <span
                 key={annotation.fragment_id}
+                id={buildFragmentAnchorId(annotation.fragment_id)}
                 className="rounded-sm bg-blue-100/60 px-0.5 font-medium underline decoration-blue-500/40 decoration-2 underline-offset-4 transition-colors hover:bg-blue-100"
                 title={buildAnnotationTitle(annotation)}
               >
@@ -990,7 +995,7 @@ function PageTwoPanel({
   anchorId?: string;
   title: string;
   description: string;
-  tabs: Array<{ key: string; label: string; highlighted?: boolean; title?: string }>;
+  tabs: Array<{ key: string; label: string; anchorId?: string; highlighted?: boolean; title?: string }>;
   activeIndex: number;
   onSelect: (index: number) => void;
   highlighted?: boolean;
@@ -1016,6 +1021,7 @@ function PageTwoPanel({
               return (
                 <button
                   key={tab.key}
+                  id={tab.anchorId}
                   type="button"
                   onPointerDown={(event) => {
                     event.preventDefault();
@@ -1057,6 +1063,14 @@ function ApplicantProvidedLabel({ label }: { label: string }) {
       {label} · Applicant-provided
     </p>
   );
+}
+
+function buildEntityAnchorId(entityId: string) {
+  return `report-entity-${entityId.toLowerCase()}`;
+}
+
+function buildFragmentAnchorId(fragmentId: string) {
+  return `report-fragment-${fragmentId.toLowerCase()}`;
 }
 
 function UserProvidedText({

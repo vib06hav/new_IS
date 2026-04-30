@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { MessageSquareText, Search, X } from "lucide-react";
 import { askReportChat } from "@/lib/api";
 import { getReportChatSourceLabel } from "@/lib/reportChat";
-import type { ReportChatResponse, ReportChatResult } from "@/lib/types";
+import type { ReportChatResponse, ReportChatSource } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 
 export function ReportChatWidget({
@@ -12,7 +12,7 @@ export function ReportChatWidget({
   onNavigateResult,
 }: {
   applicationId: string;
-  onNavigateResult: (result: ReportChatResult) => void | Promise<void>;
+  onNavigateResult: (result: ReportChatSource) => void | Promise<void>;
 }) {
   const [open, setOpen] = useState(false);
   const [question, setQuestion] = useState("");
@@ -40,23 +40,6 @@ export function ReportChatWidget({
     }
   }
 
-  async function handleRetry() {
-    if (!question.trim() || submitting) {
-      return;
-    }
-
-    setSubmitting(true);
-    setError(null);
-    try {
-      const response = await askReportChat(applicationId, { question: question.trim() });
-      setAnswer(response);
-    } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Unable to search this report right now.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   function handleClear() {
     setQuestion("");
     setAnswer(null);
@@ -70,7 +53,6 @@ export function ReportChatWidget({
           <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-4">
             <div className="space-y-1">
               <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Ask This Report</p>
-              <p className="text-sm leading-6 text-slate-600">Single-turn factual lookup from the current report pages.</p>
             </div>
             <button
               aria-label="Close report assistant"
@@ -89,7 +71,7 @@ export function ReportChatWidget({
                 aria-label="Ask a question about this report"
                 className="w-full rounded-[1rem] border border-slate-200 bg-white/92 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200/80"
                 onChange={(event) => setQuestion(event.target.value)}
-                placeholder="Ask about scores, schools, tests, activities, or themes"
+                placeholder="Ask about a report area"
                 value={question}
               />
             </label>
@@ -112,62 +94,38 @@ export function ReportChatWidget({
 
             {!error && !answer ? (
               <div className="rounded-[1rem] border border-dashed border-slate-200 bg-white/75 px-4 py-5 text-sm leading-6 text-slate-600">
-                Ask a quick factual question like “Any internships?” or “What is the Class 10 physics score?”
+                Ask about academics, tests, activities, writing, focus areas, or interview questions.
               </div>
             ) : null}
 
             {!error && answer ? (
-              <div className="space-y-3">
-                <div className="rounded-[1rem] border border-slate-200 bg-[linear-gradient(135deg,rgba(239,246,255,0.92),rgba(255,255,255,0.92))] px-4 py-3">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Answer</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-900">{answer.answer_summary}</p>
-                  {answer.response_state === "degraded" ? (
-                    <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-amber-700">
-                      Summary recovered, section links unavailable
-                    </p>
-                  ) : answer.response_state !== "clean" ? (
-                    <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-amber-700">
-                      Recovered response
-                    </p>
-                  ) : null}
-                </div>
+              <div className="rounded-[1rem] border border-slate-200 bg-[linear-gradient(135deg,rgba(239,246,255,0.92),rgba(255,255,255,0.92))] px-4 py-3">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Answer</p>
+                <p className="mt-2 text-sm leading-6 text-slate-900">{answer.answer_summary}</p>
 
-                {answer.not_found ? (
-                  <div className="space-y-3 rounded-[1rem] border border-slate-200 bg-white/80 px-4 py-3 text-sm leading-6 text-slate-600">
-                    <p>I could not find that in the current report.</p>
-                    <Button disabled={submitting} onClick={() => void handleRetry()} size="sm" type="button" variant="secondary">
-                      Try again
-                    </Button>
-                  </div>
+                {answer.response_kind === "scope_redirect" ? (
+                  <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-slate-500">Area summaries only</p>
                 ) : null}
 
-                {!answer.not_found ? (
-                  <div className="space-y-3">
-                    {answer.results.length === 0 ? (
-                      <div className="space-y-3 rounded-[1rem] border border-slate-200 bg-white/80 px-4 py-3 text-sm leading-6 text-slate-600">
-                        <p>Section links are unavailable for this answer, but the summary above is still usable.</p>
-                        {(answer.response_state === "degraded" || answer.response_state === "retried") ? (
-                          <Button disabled={submitting} onClick={() => void handleRetry()} size="sm" type="button" variant="secondary">
-                            Try again
-                          </Button>
-                        ) : null}
-                      </div>
-                    ) : null}
-                    {answer.results.map((result, index) => (
-                      <button
-                        key={`${result.section_key}-${result.anchor_id}-${index}`}
-                        className="block w-full rounded-[1rem] border border-slate-200 bg-white/92 px-4 py-3 text-left shadow-sm transition hover:border-blue-200 hover:bg-blue-50/50"
-                        onClick={() => void onNavigateResult(result)}
-                        type="button"
-                      >
-                        <p className="text-sm font-semibold text-slate-900">{result.label}</p>
-                        <p className="mt-1 text-sm leading-6 text-slate-700">{result.value}</p>
-                        <div className="mt-3 flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                          <span>{getReportChatSourceLabel(result)}</span>
-                          <span>Jump to section</span>
-                        </div>
-                      </button>
-                    ))}
+                {answer.response_state === "degraded" ? (
+                  <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-amber-700">High-level fallback</p>
+                ) : null}
+
+                {answer.sources.length ? (
+                  <div className="mt-4 border-t border-slate-200/80 pt-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">Grounded in</span>
+                      {answer.sources.map((source, index) => (
+                        <button
+                          key={`${source.anchor_id}-${source.section_key}-${index}`}
+                          className="inline-flex items-center rounded-full border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:text-blue-700"
+                          onClick={() => void onNavigateResult(source)}
+                          type="button"
+                        >
+                          {getReportChatSourceLabel(source)}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
               </div>

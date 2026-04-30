@@ -311,12 +311,13 @@ def ask_report_chat(
     try:
         response = answer_report_question(question, context)
         logger.info(
-            "Report chat API completed status_code=200 shape=%s operation=%s target=%s response_state=%s result_count=%s not_found=%s",
+            "Report chat API completed status_code=200 shape=%s operation=%s target=%s response_kind=%s response_state=%s source_count=%s not_found=%s",
             context.get("question_shape_bucket"),
             context.get("detected_operation"),
             context.get("detected_target"),
+            response.response_kind,
             response.response_state,
-            len(response.results),
+            len(response.sources),
             response.not_found,
         )
         return response

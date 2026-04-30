@@ -219,23 +219,26 @@ ReportChatSectionKey = Literal[
     "page5_question_groups",
 ]
 ReportChatResponseState = Literal["clean", "repaired", "retried", "degraded"]
+ReportChatResponseKind = Literal["lookup", "domain_summary", "scope_redirect", "degraded"]
 
 
 class ReportChatRequest(BaseModel):
     question: str
 
 
-class ReportChatResult(BaseModel):
+class ReportChatSource(BaseModel):
     label: str
-    value: str
     target_tab: ReportChatTargetTab
     section_key: ReportChatSectionKey
     anchor_id: str
+    entity_id: Optional[str] = None
+    fragment_id: Optional[str] = None
 
 
 class ReportChatResponse(BaseModel):
     answer_summary: str
-    results: list[ReportChatResult]
+    response_kind: ReportChatResponseKind = "lookup"
+    sources: list[ReportChatSource]
     not_found: bool
     response_state: ReportChatResponseState = "clean"
 

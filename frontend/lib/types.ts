@@ -100,17 +100,19 @@ export type ReportChatRequestPayload = {
   question: string;
 };
 
-export type ReportChatResult = {
+export type ReportChatSource = {
   label: string;
-  value: string;
   target_tab: ReportChatTargetTab;
   section_key: ReportChatSectionKey;
   anchor_id: string;
+  entity_id?: string | null;
+  fragment_id?: string | null;
 };
 
 export type ReportChatResponse = {
   answer_summary: string;
-  results: ReportChatResult[];
+  response_kind: "lookup" | "domain_summary" | "scope_redirect" | "degraded";
+  sources: ReportChatSource[];
   not_found: boolean;
   response_state: "clean" | "repaired" | "retried" | "degraded";
 };

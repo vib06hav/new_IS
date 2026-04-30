@@ -1,6 +1,14 @@
 from typing import Dict, Any, Tuple, List
 import copy
 
+
+def _project_activity_entry(entry: Dict[str, Any]) -> Dict[str, Any]:
+    projected = copy.deepcopy(entry)
+    duration = projected.get("duration")
+    if duration not in (None, ""):
+        projected["duration_years"] = duration
+    return projected
+
 def _assign_entity_ids(canonical_data: Dict[str, Any]) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     """
     Deterministically assigns entity_ids to canonical entries based on array position.
@@ -78,7 +86,7 @@ def _project_page_1(annotated: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _project_page_2(annotated: Dict[str, Any]) -> Dict[str, Any]:
-    activities = annotated.get("activity_entries", [])
+    activities = [_project_activity_entry(entry) for entry in annotated.get("activity_entries", [])]
     
     extra = [a for a in activities if a.get("activity_type") in ("extracurricular", "other")]
     co_curr = [a for a in activities if a.get("activity_type") == "co_curricular"]

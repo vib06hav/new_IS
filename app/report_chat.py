@@ -2,18 +2,10 @@ import json
 import logging
 import re
 from dataclasses import dataclass
-from json import JSONDecodeError
 from typing import Any, Literal, Optional
 
-from pydantic import ValidationError
-
-from app.api.schemas import ReportChatResponse
-from app.llm.client import (
-    LLMClientError,
-    LLMRequestOptions,
-    LLMStructuredOutputUnsupportedError,
-    generate,
-)
+from app.api.schemas import ReportChatResponse, ReportChatSource
+from app.llm.client import LLMClientError, generate
 
 
 logger = logging.getLogger(__name__)
@@ -34,6 +26,8 @@ ReportChatTarget = Literal[
 ReportChatAnswerMode = Literal["fact", "reshaped", "precomputed_reasoning", "redirect"]
 ReportChatSourceScope = Literal["pages_1_3", "page4_only", "page5_only", "page4_and_5", "mixed"]
 ReportChatQuestionShape = Literal["narrow", "broad_summary", "comparison"]
+ReportChatResponseKind = Literal["lookup", "domain_summary", "scope_redirect", "degraded"]
+ReportChatCoverageMode = Literal["single_fact", "all_items", "domain_summary"]
 
 
 REPORT_CHAT_SECTION_TARGETS = {
@@ -87,7 +81,6 @@ REPORT_CHAT_SECTION_TARGETS = {
     },
 }
 
-
 EXPLAIN_KEYWORDS = (
     "why",
     "support",
@@ -130,12 +123,7 @@ TRANSFORM_KEYWORDS = (
     "summarise",
     "summarize",
     "summary",
-    "short profile",
-    "profile summary",
-    "profile look like",
-    "candidate like",
     "tell me about",
-    "give me a profile",
     "overview",
     "bullet",
     "bullets",
@@ -179,6 +167,116 @@ QUERY_NORMALIZATIONS = (
     ("grades", "scores"),
     ("percentage", "score"),
 )
+SCOPE_REDIRECT_KEYWORDS = (
+    "candidate",
+    "participant",
+    "profile",
+    "overall",
+    "whole",
+    "entire",
+    "person",
+    "impressive",
+    "strong applicant",
+    "weak applicant",
+    "assess",
+    "evaluation",
+    "evaluate",
+    "judge",
+)
+SUMMARY_ALLOWED_TARGETS = {
+    "academics",
+    "tests",
+    "activities",
+    "leadership",
+    "essays",
+    "themes",
+    "signals",
+    "question_groups",
+}
+COMMON_QUERY_FILLER_TOKENS = {
+    "a",
+    "all",
+    "an",
+    "and",
+    "any",
+    "are",
+    "can",
+    "for",
+    "give",
+    "in",
+    "is",
+    "listed",
+    "list",
+    "me",
+    "of",
+    "on",
+    "show",
+    "the",
+    "their",
+    "there",
+    "these",
+    "this",
+    "those",
+    "what",
+    "which",
+}
+ACTIVITY_DOMAIN_TOKENS = {
+    "activity",
+    "activities",
+    "club",
+    "clubs",
+    "competition",
+    "competitions",
+    "sports",
+    "internship",
+    "internships",
+    "extracurricular",
+    "extracurriculars",
+    "co",
+    "curricular",
+    "cocurricular",
+}
+LEADERSHIP_DOMAIN_TOKENS = {
+    "leadership",
+    "leader",
+    "leaders",
+    "role",
+    "roles",
+    "captain",
+    "president",
+}
+TEST_DOMAIN_TOKENS = {
+    "test",
+    "tests",
+    "standardized",
+    "exam",
+    "exams",
+    "entrance",
+    "score",
+    "scores",
+    "result",
+    "results",
+}
+ACADEMIC_DOMAIN_TOKENS = {
+    "academic",
+    "academics",
+    "board",
+    "boards",
+    "class",
+    "school",
+    "performance",
+    "score",
+    "scores",
+    "subject",
+    "subjects",
+}
+ESSAY_DOMAIN_TOKENS = {
+    "essay",
+    "essays",
+    "writing",
+    "prompt",
+    "statement",
+}
 
 
 @dataclass(frozen=True)
@@ -189,69 +287,11 @@ class ReportChatRoute:
     selected_sections: list[str]
     answer_mode: ReportChatAnswerMode
     not_found_summary: str | None = None
-    max_result_count: int = 3
     question_shape: ReportChatQuestionShape = "narrow"
 
 
 class ReportChatError(Exception):
     """Raised when the report chatbot cannot safely answer."""
-
-
-def _extract_json_candidate(response_text: str) -> str:
-    text = response_text.strip()
-    if not text:
-        return text
-
-    fenced_match = re.search(r"```(?:json)?\s*(.*?)```", text, flags=re.IGNORECASE | re.DOTALL)
-    if fenced_match:
-        text = fenced_match.group(1).strip()
-
-    if text.startswith("{") and text.endswith("}"):
-        return text
-
-    first_brace = text.find("{")
-    last_brace = text.rfind("}")
-    if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
-        return text[first_brace : last_brace + 1].strip()
-
-    return text
-
-
-def _recover_partial_report_chat_payload(response_text: str) -> dict[str, Any] | None:
-    candidate = _extract_json_candidate(response_text)
-    if not candidate:
-        return None
-
-    answer_summary_match = re.search(
-        r'"answer_summary"\s*:\s*"((?:\\.|[^"\\])*)',
-        candidate,
-        flags=re.DOTALL,
-    )
-    if not answer_summary_match:
-        return None
-
-    raw_summary = answer_summary_match.group(1)
-    try:
-        decoded_summary = json.loads(f'"{raw_summary}"')
-    except JSONDecodeError:
-        decoded_summary = raw_summary.replace('\\"', '"').replace("\\n", "\n").strip()
-
-    decoded_summary = decoded_summary.strip()
-    if not decoded_summary:
-        return None
-
-    if not decoded_summary.endswith((".", "!", "?", "…")):
-        decoded_summary = f"{decoded_summary}..."
-
-    not_found_match = re.search(r'"not_found"\s*:\s*(true|false)', candidate, flags=re.IGNORECASE)
-    not_found_value = not_found_match is not None and not_found_match.group(1).lower() == "true"
-
-    return {
-        "answer_summary": decoded_summary,
-        "results": [],
-        "not_found": not_found_value,
-        "response_state": "degraded",
-    }
 
 
 def validate_report_chat_question(question: str, *, max_chars: int, max_words: int) -> str:
@@ -270,7 +310,7 @@ def validate_report_chat_question(question: str, *, max_chars: int, max_words: i
 
 
 def _normalize_query_text(question: str) -> str:
-    normalized = question.lower().replace("’", "'").replace("-", " ")
+    normalized = question.lower().replace("â€™", "'").replace("-", " ")
     for source, replacement in QUERY_NORMALIZATIONS:
         normalized = re.sub(rf"\b{re.escape(source)}\b", replacement, normalized)
     normalized = re.sub(r"(\w)'s\b", r"\1", normalized)
@@ -295,6 +335,14 @@ def _matches_keywords(normalized: str, tokens: set[str], keywords: tuple[str, ..
     return False
 
 
+def _contains_score_intent(normalized: str, tokens: set[str]) -> bool:
+    return _matches_keywords(
+        normalized,
+        tokens,
+        ("score", "scores", "marks", "grade", "grades", "percentage", "percentile", "rank", "result"),
+    )
+
+
 def _detect_operation_from(normalized: str, tokens: set[str]) -> ReportChatOperation:
     if _matches_keywords(normalized, tokens, REDIRECT_KEYWORDS):
         return "redirect"
@@ -304,7 +352,7 @@ def _detect_operation_from(normalized: str, tokens: set[str]) -> ReportChatOpera
         return "transform"
     if _matches_keywords(normalized, tokens, WEAK_TRANSFORM_KEYWORDS):
         weak_target = _detect_target_from(normalized, tokens, "retrieve")
-        if weak_target in {"activities", "academics", "tests", "leadership", "essays", "full_report"}:
+        if weak_target in SUMMARY_ALLOWED_TARGETS:
             return "transform"
     return "retrieve"
 
@@ -315,10 +363,7 @@ def _detect_question_shape(normalized: str, tokens: set[str]) -> ReportChatQuest
         "entire report",
         "everything",
         "all details",
-        "deep analysis",
         "full profile",
-        "overall",
-        "good or bad profile",
         "what is this candidate like overall",
         "tell me everything",
     )
@@ -327,18 +372,7 @@ def _detect_question_shape(normalized: str, tokens: set[str]) -> ReportChatQuest
 
     compare_keywords = ("compare", "comparison", "versus", "vs", "gap", "mismatch")
     if _matches_keywords(normalized, tokens, compare_keywords):
-        domain_hits = 0
-        for domain_keywords in (
-            ("academic", "academics", "school", "board", "10th", "12th", "performance"),
-            ("test", "tests", "jee", "sat", "act", "mains", "entrance exam"),
-            ("activity", "activities", "club", "competition", "robotics"),
-            ("essay", "essays", "writing", "statement"),
-            ("leadership", "captain", "president", "leader"),
-        ):
-            if _matches_keywords(normalized, tokens, domain_keywords):
-                domain_hits += 1
-        if domain_hits >= 2:
-            return "comparison"
+        return "comparison"
 
     return "narrow"
 
@@ -349,7 +383,6 @@ def detect_operation(question: str) -> ReportChatOperation:
 
 
 def _detect_target_from(normalized: str, tokens: set[str], operation: ReportChatOperation) -> ReportChatTarget:
-
     if operation == "redirect":
         if _matches_keywords(normalized, tokens, ("ask", "probe", "interview", "follow up", "question")):
             return "question_groups"
@@ -380,28 +413,22 @@ def _detect_target_from(normalized: str, tokens: set[str], operation: ReportChat
         ),
     ):
         return "tests"
-    if _matches_keywords(normalized, tokens, ("activity", "activities", "club", "competition", "sports", "robotics")):
+    if _matches_keywords(normalized, tokens, ("activity", "activities", "club", "competition", "sports", "robotics", "internship")):
         return "activities"
     if _matches_keywords(normalized, tokens, ("leadership", "captain", "president", "leader", "leadership role")):
         return "leadership"
-    if operation == "transform" and _matches_keywords(
-        normalized,
-        tokens,
-        ("profile", "applicant", "candidate", "about", "full profile"),
-    ):
-        return "full_report"
     if _matches_keywords(
         normalized,
         tokens,
-        ("10th", "12th", "class 10", "class 12", "board", "academic", "academically", "academics", "school", "performance", "perform"),
+        ("10th", "11th", "12th", "class 10", "class 11", "class 12", "board", "academic", "academically", "academics", "school", "performance", "perform"),
     ):
         return "academics"
-    if _matches_keywords(normalized, tokens, ("name", "major", "background", "profile", "family", "home", "city", "state", "country", "identity")):
+    if _matches_keywords(normalized, tokens, ("name", "major", "background", "family", "home", "city", "state", "country", "identity")):
         return "identity"
     if _matches_keywords(
         normalized,
         tokens,
-        ("today", "overall", "applicant", "full report", "entire report", "about", "tell me about", "what is this candidate", "full profile", "who is", "give me a profile"),
+        ("today", "overall", "applicant", "full report", "entire report", "about", "what is this candidate", "full profile"),
     ):
         return "full_report"
 
@@ -421,16 +448,8 @@ def _page4_or_page5_missing_summary(operation: ReportChatOperation, target: Repo
     if target == "question_groups":
         return "Interview guidance is not available because Page 5 has not been generated for this report yet."
     if operation == "redirect":
-        return "The report does not include a generated Page 4/5 summary for that request yet."
-    return "That explanation is not available because the generated report sections are not present yet."
-
-
-def _result_cap_for(operation: ReportChatOperation) -> int:
-    if operation == "redirect":
-        return 2
-    if operation == "explain":
-        return 2
-    return 3
+        return "The report does not include generated focus areas or interview questions for that request yet."
+    return "That summary is not available because the generated report sections are not present yet."
 
 
 def _route_for(
@@ -447,23 +466,17 @@ def _route_for(
                 source_scope="page4_only",
                 selected_sections=["page4_focus_areas"],
                 answer_mode="precomputed_reasoning",
-                max_result_count=2,
                 question_shape=question_shape,
             )
         return ReportChatRoute(
-            operation="transform" if operation == "retrieve" else operation,
+            operation="transform",
             target="full_report",
             source_scope="pages_1_3",
             selected_sections=[
-                "page1_overview",
                 "page2_academics",
                 "page2_tests",
-                "page2_activities",
-                "page2_leadership",
-                "page3_essays",
             ],
             answer_mode="reshaped",
-            max_result_count=2,
             question_shape=question_shape,
         )
 
@@ -477,18 +490,9 @@ def _route_for(
                     selected_sections=[],
                     answer_mode="redirect",
                     not_found_summary=_page4_or_page5_missing_summary(operation, target),
-                    max_result_count=_result_cap_for(operation),
                     question_shape=question_shape,
                 )
-            return ReportChatRoute(
-                operation,
-                target,
-                "page5_only",
-                ["page5_question_groups"],
-                "redirect",
-                max_result_count=_result_cap_for(operation),
-                question_shape=question_shape,
-            )
+            return ReportChatRoute(operation, target, "page5_only", ["page5_question_groups"], "redirect", question_shape=question_shape)
         if not has_final_report:
             return ReportChatRoute(
                 operation=operation,
@@ -497,18 +501,9 @@ def _route_for(
                 selected_sections=[],
                 answer_mode="redirect",
                 not_found_summary=_page4_or_page5_missing_summary(operation, target),
-                max_result_count=_result_cap_for(operation),
                 question_shape=question_shape,
             )
-        return ReportChatRoute(
-            operation,
-            target,
-            "page4_only",
-            ["page4_focus_areas"],
-            "redirect",
-            max_result_count=_result_cap_for(operation),
-            question_shape=question_shape,
-        )
+        return ReportChatRoute(operation, target, "page4_only", ["page4_focus_areas"], "redirect", question_shape=question_shape)
 
     if operation == "explain":
         if not has_final_report:
@@ -519,7 +514,6 @@ def _route_for(
                 selected_sections=[],
                 answer_mode="precomputed_reasoning",
                 not_found_summary=_page4_or_page5_missing_summary(operation, target),
-                max_result_count=_result_cap_for(operation),
                 question_shape=question_shape,
             )
         return ReportChatRoute(
@@ -528,20 +522,18 @@ def _route_for(
             "page4_only",
             ["page4_focus_areas"],
             "precomputed_reasoning",
-            max_result_count=_result_cap_for(operation),
             question_shape=question_shape,
         )
 
-    if target == "themes" or target == "signals":
+    if target in {"themes", "signals"}:
         if not has_final_report:
             return ReportChatRoute(
                 operation=operation,
                 target=target,
                 source_scope="page4_only",
                 selected_sections=[],
-                answer_mode="fact" if operation == "retrieve" else "precomputed_reasoning",
+                answer_mode="precomputed_reasoning" if operation != "retrieve" else "fact",
                 not_found_summary=_page4_or_page5_missing_summary(operation, target),
-                max_result_count=_result_cap_for(operation),
                 question_shape=question_shape,
             )
         return ReportChatRoute(
@@ -549,8 +541,7 @@ def _route_for(
             target,
             "page4_only",
             ["page4_focus_areas"],
-            "fact" if operation == "retrieve" else "precomputed_reasoning",
-            max_result_count=_result_cap_for(operation),
+            "precomputed_reasoning" if operation != "retrieve" else "fact",
             question_shape=question_shape,
         )
 
@@ -563,7 +554,6 @@ def _route_for(
                 selected_sections=[],
                 answer_mode="redirect" if operation == "redirect" else "fact",
                 not_found_summary=_page4_or_page5_missing_summary(operation, target),
-                max_result_count=_result_cap_for(operation),
                 question_shape=question_shape,
             )
         return ReportChatRoute(
@@ -572,89 +562,21 @@ def _route_for(
             "page5_only",
             ["page5_question_groups"],
             "redirect" if operation == "redirect" else "fact",
-            max_result_count=_result_cap_for(operation),
-            question_shape=question_shape,
-        )
-
-    if question_shape == "broad_summary":
-        return ReportChatRoute(
-            operation="transform",
-            target="full_report",
-            source_scope="pages_1_3" if not has_final_report else "mixed",
-            selected_sections=[
-                "page1_overview",
-                "page2_academics",
-                "page2_tests",
-                "page2_activities",
-                "page2_leadership",
-                "page3_essays",
-                *([] if not has_final_report else ["page4_focus_areas"]),
-            ],
-            answer_mode="reshaped",
-            max_result_count=2,
             question_shape=question_shape,
         )
 
     if target == "identity":
-        return ReportChatRoute(
-            operation,
-            target,
-            "pages_1_3",
-            ["page1_overview"],
-            "fact" if operation == "retrieve" else "reshaped",
-            max_result_count=_result_cap_for(operation),
-            question_shape=question_shape,
-        )
+        return ReportChatRoute(operation, target, "pages_1_3", ["page1_overview"], "fact" if operation == "retrieve" else "reshaped", question_shape=question_shape)
     if target == "academics":
-        return ReportChatRoute(
-            operation,
-            target,
-            "pages_1_3",
-            ["page2_academics"],
-            "fact" if operation == "retrieve" else "reshaped",
-            max_result_count=_result_cap_for(operation),
-            question_shape=question_shape,
-        )
+        return ReportChatRoute(operation, target, "pages_1_3", ["page2_academics"], "fact" if operation == "retrieve" else "reshaped", question_shape=question_shape)
     if target == "tests":
-        return ReportChatRoute(
-            operation,
-            target,
-            "pages_1_3",
-            ["page2_tests"],
-            "fact" if operation == "retrieve" else "reshaped",
-            max_result_count=_result_cap_for(operation),
-            question_shape=question_shape,
-        )
+        return ReportChatRoute(operation, target, "pages_1_3", ["page2_tests"], "fact" if operation == "retrieve" else "reshaped", question_shape=question_shape)
     if target == "activities":
-        return ReportChatRoute(
-            operation,
-            target,
-            "pages_1_3",
-            ["page2_activities"],
-            "fact" if operation == "retrieve" else "reshaped",
-            max_result_count=_result_cap_for(operation),
-            question_shape=question_shape,
-        )
+        return ReportChatRoute(operation, target, "pages_1_3", ["page2_activities"], "fact" if operation == "retrieve" else "reshaped", question_shape=question_shape)
     if target == "leadership":
-        return ReportChatRoute(
-            operation,
-            target,
-            "pages_1_3",
-            ["page2_leadership"],
-            "fact" if operation == "retrieve" else "reshaped",
-            max_result_count=_result_cap_for(operation),
-            question_shape=question_shape,
-        )
+        return ReportChatRoute(operation, target, "pages_1_3", ["page2_leadership"], "fact" if operation == "retrieve" else "reshaped", question_shape=question_shape)
     if target == "essays":
-        return ReportChatRoute(
-            operation,
-            target,
-            "pages_1_3",
-            ["page3_essays"],
-            "fact" if operation == "retrieve" else "reshaped",
-            max_result_count=_result_cap_for(operation),
-            question_shape=question_shape,
-        )
+        return ReportChatRoute(operation, target, "pages_1_3", ["page3_essays"], "fact" if operation == "retrieve" else "reshaped", question_shape=question_shape)
 
     selected_sections = [
         "page1_overview",
@@ -664,15 +586,9 @@ def _route_for(
         "page2_leadership",
         "page3_essays",
     ]
-    return ReportChatRoute(
-        operation,
-        target,
-        "pages_1_3",
-        selected_sections,
-        "reshaped" if operation == "transform" else "fact",
-        max_result_count=_result_cap_for(operation),
-        question_shape=question_shape,
-    )
+    if has_final_report:
+        selected_sections.extend(["page4_focus_areas", "page5_question_groups"])
+    return ReportChatRoute(operation, target, "mixed" if has_final_report else "pages_1_3", selected_sections, "reshaped", question_shape=question_shape)
 
 
 def _build_selected_pages(
@@ -691,6 +607,7 @@ def _build_selected_pages(
                 "academic_records": page2.get("academic_records", []) if "page2_academics" in selected_sections else [],
                 "standardized_tests": page2.get("standardized_tests", []) if "page2_tests" in selected_sections else [],
                 "extracurricular_activities": page2.get("extracurricular_activities", []) if "page2_activities" in selected_sections else [],
+                "co_curricular_activities": page2.get("co_curricular_activities", []) if "page2_activities" in selected_sections else [],
                 "leadership_roles": page2.get("leadership_roles", []) if "page2_leadership" in selected_sections else [],
             }.items()
             if value
@@ -704,6 +621,36 @@ def _build_selected_pages(
     return pages
 
 
+def _extract_annotations(final_report_content: Optional[dict[str, Any]]) -> dict[str, Any]:
+    if not isinstance(final_report_content, dict):
+        return {}
+    signal_data = final_report_content.get("signal_data")
+    if not isinstance(signal_data, dict):
+        return {}
+    annotations = signal_data.get("annotations")
+    return annotations if isinstance(annotations, dict) else {}
+
+
+def _determine_response_kind(
+    normalized: str,
+    tokens: set[str],
+    operation: ReportChatOperation,
+    target: ReportChatTarget,
+    question_shape: ReportChatQuestionShape,
+) -> ReportChatResponseKind:
+    if target == "full_report":
+        return "scope_redirect"
+    if question_shape == "broad_summary":
+        return "scope_redirect"
+    if operation == "redirect" and target == "signals":
+        return "scope_redirect"
+    if operation in {"transform", "redirect"} and _matches_keywords(normalized, tokens, SCOPE_REDIRECT_KEYWORDS):
+        return "scope_redirect"
+    if operation == "retrieve":
+        return "lookup"
+    return "domain_summary"
+
+
 def build_report_chat_context(
     question: str,
     review_package_pages: dict[str, Any],
@@ -715,17 +662,22 @@ def build_report_chat_context(
     target = _detect_target_from(normalized, tokens, operation)
     question_shape = _detect_question_shape(normalized, tokens)
     route = _route_for(operation, target, has_final_report, question_shape)
+    response_kind = _determine_response_kind(normalized, tokens, route.operation, route.target, question_shape)
     pages = _build_selected_pages(route.selected_sections, review_package_pages, final_report_content)
 
     context: dict[str, Any] = {
+        "raw_question": question,
+        "normalized_question": normalized,
+        "question_tokens": sorted(tokens),
+        "response_kind": response_kind,
         "source_scope": route.source_scope,
         "selected_sections": route.selected_sections,
         "detected_operation": route.operation,
         "detected_target": route.target,
         "question_shape_bucket": question_shape,
         "answer_mode": route.answer_mode,
-        "max_result_count": route.max_result_count,
         "pages": pages,
+        "annotations": _extract_annotations(final_report_content),
         "section_targets": [
             {
                 "section_key": section_key,
@@ -740,359 +692,762 @@ def build_report_chat_context(
     }
     if route.not_found_summary:
         context["not_found_summary"] = route.not_found_summary
+    context["coverage_mode"] = _detect_coverage_mode(question, context)
 
     logger.info(
-        "Report chat routed operation=%s target=%s selected_sections=%s source_scope=%s",
+        "Report chat routed response_kind=%s operation=%s target=%s selected_sections=%s source_scope=%s coverage_mode=%s",
+        response_kind,
         route.operation,
         route.target,
         route.selected_sections,
         route.source_scope,
+        context["coverage_mode"],
     )
     return context
 
 
-def _build_report_chat_repair_messages(raw_response_text: str, max_result_count: int) -> list[dict[str, str]]:
-    return [
-        {
-            "role": "system",
-            "content": (
-                "Convert the malformed assistant output into valid JSON only.\n"
-                "Do not add facts or infer missing evidence.\n"
-                "If you cannot safely reconstruct results, return results=[].\n"
-                "Return at most "
-                f"{max_result_count}"
-                " results.\n"
-                'Return exactly this shape: {"answer_summary":"string","results":[{"label":"string","value":"string","target_tab":"page1|page2|page3|page4|page5","section_key":"page1_overview|page2_academics|page2_tests|page2_activities|page2_leadership|page3_essays|page4_focus_areas|page5_question_groups","anchor_id":"string"}],"not_found":boolean,"response_state":"clean|repaired|retried|degraded"}.\n'
-                'Use response_state="repaired".'
-            ),
-        },
-        {
-            "role": "user",
-            "content": raw_response_text,
-        },
-    ]
+def _section_target(section_key: str) -> dict[str, str]:
+    return REPORT_CHAT_SECTION_TARGETS[section_key]
 
 
-def _looks_like_absence_summary(summary: str) -> bool:
-    lowered = summary.lower()
-    absence_markers = (
-        "could not find",
-        "not available",
-        "not present",
-        "does not provide",
-        "does not contain",
-        "not included",
-        "is unavailable",
-        "unable to find",
-        "is absent",
+def _entity_anchor_id(entity_id: str) -> str:
+    return f"report-entity-{entity_id.lower()}"
+
+
+def _fragment_anchor_id(fragment_id: str) -> str:
+    return f"report-fragment-{fragment_id.lower()}"
+
+
+def _build_source(
+    section_key: str,
+    *,
+    label: Optional[str] = None,
+    entity_id: Optional[str] = None,
+    fragment_id: Optional[str] = None,
+) -> ReportChatSource:
+    target = _section_target(section_key)
+    anchor_id = target["anchor_id"]
+    if fragment_id:
+        anchor_id = _fragment_anchor_id(fragment_id)
+    elif entity_id:
+        anchor_id = _entity_anchor_id(entity_id)
+
+    return ReportChatSource(
+        label=label or target["section_label"],
+        target_tab=target["target_tab"],
+        section_key=section_key,
+        anchor_id=anchor_id,
+        entity_id=entity_id,
+        fragment_id=fragment_id,
     )
-    return any(marker in lowered for marker in absence_markers)
 
 
-def _normalize_report_chat_response(parsed: ReportChatResponse, context: dict[str, Any]) -> ReportChatResponse:
-    if parsed.results:
-        return ReportChatResponse(
-            answer_summary=parsed.answer_summary,
-            results=parsed.results,
-            not_found=False,
-            response_state=parsed.response_state,
+def _safe_string(value: Any) -> str | None:
+    if isinstance(value, str):
+        cleaned = value.strip()
+        return cleaned or None
+    if value is None:
+        return None
+    cleaned = str(value).strip()
+    return cleaned or None
+
+
+def _filter_informative_tokens(tokens: set[str], domain_tokens: set[str]) -> set[str]:
+    return {token for token in tokens if token not in COMMON_QUERY_FILLER_TOKENS and token not in domain_tokens}
+
+
+def _detect_activity_bucket(question: str) -> str | None:
+    lowered = question.lower().replace("-", " ")
+    if "co curricular" in lowered or "cocurricular" in lowered:
+        return "co_curricular"
+    if "extracurricular" in lowered or "extra curricular" in lowered:
+        return "extracurricular"
+    return None
+
+
+def _normalized_text(value: Any) -> str:
+    return _normalize_query_text(_safe_string(value) or "")
+
+
+def _extract_academic_level(normalized: str) -> str | None:
+    patterns = (
+        ("class 10", "Class 10"),
+        ("10th", "Class 10"),
+        ("class 11", "Class 11"),
+        ("11th", "Class 11"),
+        ("class 12", "Class 12"),
+        ("12th", "Class 12"),
+    )
+    for needle, label in patterns:
+        if needle in normalized:
+            return label
+    return None
+
+
+def _record_matches_level(record: dict[str, Any], level: str) -> bool:
+    return _normalized_text(record.get("academic_level")) == _normalize_query_text(level)
+
+
+def _find_subject_match(record: dict[str, Any], tokens: set[str]) -> dict[str, Any] | None:
+    for subject in record.get("subject_entries", []) or []:
+        if not isinstance(subject, dict):
+            continue
+        subject_name = _normalized_text(subject.get("subject_name"))
+        if not subject_name:
+            continue
+        subject_tokens = set(subject_name.split())
+        if subject_tokens & tokens:
+            return subject
+    return None
+
+
+def _format_score(value: Any, max_value: Any = None, grading_mode: Any = None) -> str | None:
+    score = _safe_string(value)
+    if not score:
+        return None
+    max_score = _safe_string(max_value)
+    if max_score:
+        return f"{score}/{max_score}"
+    if _safe_string(grading_mode) and _safe_string(grading_mode).lower() == "percentage":
+        return f"{score}%"
+    return score
+
+
+def _find_test_match(tests: list[dict[str, Any]], normalized: str, tokens: set[str]) -> dict[str, Any] | None:
+    named_matches: list[dict[str, Any]] = []
+    for entry in tests:
+        if not isinstance(entry, dict):
+            continue
+        test_name = _normalized_text(entry.get("test_name"))
+        if not test_name:
+            continue
+        if test_name in normalized or set(test_name.split()) & tokens:
+            named_matches.append(entry)
+    if named_matches:
+        return named_matches[0]
+    if len(tests) == 1 and (_contains_score_intent(normalized, tokens) or "entrance" in tokens or "test" in tokens):
+        return tests[0]
+    return None
+
+
+def _find_activity_match(activities: list[dict[str, Any]], tokens: set[str]) -> list[dict[str, Any]]:
+    matches: list[dict[str, Any]] = []
+    for entry in activities:
+        haystack = " ".join(
+            filter(
+                None,
+                (
+                    _safe_string(entry.get("activity_name")),
+                    _safe_string(entry.get("activity_type")),
+                    _safe_string(entry.get("position_title")),
+                    _safe_string(entry.get("description_raw")),
+                ),
+            )
         )
+        haystack_tokens = set(_normalize_query_text(haystack).split())
+        if haystack_tokens & tokens:
+            matches.append(entry)
+    return matches
 
-    summary = (parsed.answer_summary or "").strip()
-    question_shape = str(context.get("question_shape_bucket", "narrow"))
-    operation = str(context.get("detected_operation", "retrieve"))
 
-    if summary and (question_shape in {"broad_summary", "comparison"} or operation in {"transform", "redirect", "explain"}):
-        return ReportChatResponse(
-            answer_summary=summary,
-            results=[],
-            not_found=False,
-            response_state=parsed.response_state,
+def _activity_entries(page2: dict[str, Any], bucket: str | None = None) -> list[dict[str, Any]]:
+    if bucket == "extracurricular":
+        entries = page2.get("extracurricular_activities", [])
+        return [entry for entry in entries if isinstance(entry, dict)] if isinstance(entries, list) else []
+    if bucket == "co_curricular":
+        entries = page2.get("co_curricular_activities", [])
+        return [entry for entry in entries if isinstance(entry, dict)] if isinstance(entries, list) else []
+
+    combined: list[dict[str, Any]] = []
+    for collection_name in ("extracurricular_activities", "co_curricular_activities"):
+        entries = page2.get(collection_name, [])
+        if isinstance(entries, list):
+            combined.extend(entry for entry in entries if isinstance(entry, dict))
+    return combined
+
+
+def _source_list_for_entries(section_key: str, entries: list[dict[str, Any]], label_key: str) -> list[ReportChatSource]:
+    built: list[ReportChatSource] = []
+    for entry in entries:
+        label = _safe_string(entry.get(label_key))
+        entity_id = _safe_string(entry.get("entity_id"))
+        if label and entity_id:
+            built.append(_build_source(section_key, label=label, entity_id=entity_id))
+        if len(built) >= 4:
+            break
+    return built
+
+
+def _render_label_series(labels: list[str]) -> str:
+    if not labels:
+        return ""
+    if len(labels) == 1:
+        return labels[0]
+    if len(labels) == 2:
+        return f"{labels[0]} and {labels[1]}"
+    return f"{', '.join(labels[:-1])}, and {labels[-1]}"
+
+
+def _list_activity_items(entries: list[dict[str, Any]], bucket: str | None) -> ReportChatResponse:
+    if not entries:
+        if bucket == "extracurricular":
+            return _lookup_response("No extracurricular activities are listed in the Activities section.", [_build_source("page2_activities")], not_found=True)
+        if bucket == "co_curricular":
+            return _lookup_response("No co-curricular activities are listed in the Activities section.", [_build_source("page2_activities")], not_found=True)
+        return _lookup_response("No activities are listed in the Activities section.", [_build_source("page2_activities")], not_found=True)
+
+    extracurricular_labels = [label for label in (_safe_string(entry.get("activity_name")) for entry in entries if _activity_type_bucket(entry.get("activity_type")) == "extracurricular") if label]
+    co_curricular_labels = [label for label in (_safe_string(entry.get("activity_name")) for entry in entries if _activity_type_bucket(entry.get("activity_type")) == "co_curricular") if label]
+
+    if bucket == "extracurricular":
+        message = f"The extracurricular activities listed are {_render_label_series(extracurricular_labels)}."
+    elif bucket == "co_curricular":
+        message = f"The co-curricular activities listed are {_render_label_series(co_curricular_labels)}."
+    elif extracurricular_labels and co_curricular_labels:
+        message = (
+            f"The activities section lists extracurricular activities: {_render_label_series(extracurricular_labels)}. "
+            f"It also lists co-curricular activities: {_render_label_series(co_curricular_labels)}."
         )
+    elif extracurricular_labels:
+        message = f"The activities section lists extracurricular activities: {_render_label_series(extracurricular_labels)}."
+    elif co_curricular_labels:
+        message = f"The activities section lists co-curricular activities: {_render_label_series(co_curricular_labels)}."
+    else:
+        generic_labels = [label for label in (_safe_string(entry.get("activity_name")) for entry in entries) if label]
+        message = f"The activities listed are {_render_label_series(generic_labels)}."
 
-    if parsed.not_found and _looks_like_absence_summary(summary):
-        return parsed
-
-    if summary and not parsed.not_found:
-        return ReportChatResponse(
-            answer_summary=summary,
-            results=[],
-            not_found=False,
-            response_state=parsed.response_state,
-        )
-
-    return parsed
+    return _lookup_response(message, _source_list_for_entries("page2_activities", entries, "activity_name"))
 
 
-def _report_chat_json_schema(max_result_count: int) -> dict[str, Any]:
+def _list_test_items(tests: list[dict[str, Any]]) -> ReportChatResponse:
+    if not tests:
+        return _lookup_response("No tests are listed in the Tests section.", [_build_source("page2_tests")], not_found=True)
+
+    labels: list[str] = []
+    for entry in tests:
+        test_name = _safe_string(entry.get("test_name")) or "Test"
+        score = _safe_string(entry.get("total_score")) or _safe_string(entry.get("percentile")) or _safe_string(entry.get("rank"))
+        labels.append(f"{test_name} ({score})" if score else test_name)
+    return _lookup_response(
+        f"The listed tests are {_render_label_series(labels)}.",
+        _source_list_for_entries("page2_tests", tests, "test_name"),
+    )
+
+
+def _list_academic_items(records: list[dict[str, Any]]) -> ReportChatResponse:
+    if not records:
+        return _lookup_response("No academic records are listed in the Academics section.", [_build_source("page2_academics")], not_found=True)
+
+    labels: list[str] = []
+    for entry in records:
+        level = _safe_string(entry.get("academic_level")) or "Academic record"
+        overall_score = _format_score(entry.get("score_raw"), entry.get("max_score_raw"), entry.get("grading_mode"))
+        labels.append(f"{level} ({overall_score})" if overall_score else level)
+    return _lookup_response(
+        f"The academic records listed are {_render_label_series(labels)}.",
+        _source_list_for_entries("page2_academics", records, "academic_level"),
+    )
+
+
+def _list_leadership_items(entries: list[dict[str, Any]]) -> ReportChatResponse:
+    if not entries:
+        return _lookup_response("No leadership roles are listed in the Leadership section.", [_build_source("page2_leadership")], not_found=True)
+
+    labels = [label for label in (_safe_string(entry.get("position_title")) for entry in entries) if label]
+    if not labels:
+        return _lookup_response("Leadership details are available in the Leadership section.", [_build_source("page2_leadership")])
+    return _lookup_response(
+        f"The leadership roles listed are {_render_label_series(labels)}.",
+        _source_list_for_entries("page2_leadership", entries, "position_title"),
+    )
+
+
+def _list_essay_items(entries: list[dict[str, Any]]) -> ReportChatResponse:
+    if not entries:
+        return _lookup_response("No essays are listed in the Writing section.", [_build_source("page3_essays")], not_found=True)
+
+    labels = [label for label in (_safe_string(entry.get("prompt")) for entry in entries) if label]
+    if not labels:
+        return _lookup_response("Writing samples are available in the Writing section.", [_build_source("page3_essays")])
+    return _lookup_response(f"The essay prompts listed are {_render_label_series(labels)}.", [_build_source("page3_essays")])
+
+
+def _detect_coverage_mode(question: str, context: dict[str, Any]) -> ReportChatCoverageMode:
+    if context.get("response_kind") != "lookup":
+        return "domain_summary"
+
+    target = context.get("detected_target")
+    normalized = context.get("normalized_question", "")
+    tokens = set(context.get("question_tokens", []))
+    pages = context.get("pages") or {}
+
+    if target == "activities":
+        page2 = pages.get("page2") if isinstance(pages, dict) else {}
+        bucket = _detect_activity_bucket(question)
+        entries = _activity_entries(page2 if isinstance(page2, dict) else {}, bucket)
+        informative = _filter_informative_tokens(tokens, ACTIVITY_DOMAIN_TOKENS)
+        if informative and entries:
+            matches = _find_activity_match(entries, informative)
+            if matches and len(matches) < len(entries):
+                return "single_fact"
+        return "all_items"
+
+    if target == "leadership":
+        informative = _filter_informative_tokens(tokens, LEADERSHIP_DOMAIN_TOKENS)
+        return "single_fact" if informative else "all_items"
+
+    if target == "tests":
+        informative = _filter_informative_tokens(tokens, TEST_DOMAIN_TOKENS)
+        if _contains_score_intent(normalized, tokens) or informative:
+            return "single_fact"
+        return "all_items"
+
+    if target == "academics":
+        page2 = pages.get("page2") if isinstance(pages, dict) else {}
+        records = [entry for entry in page2.get("academic_records", []) if isinstance(entry, dict)] if isinstance(page2, dict) else []
+        subject_match = any(_find_subject_match(record, tokens) for record in records)
+        informative = _filter_informative_tokens(tokens, ACADEMIC_DOMAIN_TOKENS)
+        if _extract_academic_level(normalized) or _contains_score_intent(normalized, tokens) or subject_match or informative:
+            return "single_fact"
+        return "all_items"
+
+    if target == "essays":
+        informative = _filter_informative_tokens(tokens, ESSAY_DOMAIN_TOKENS)
+        if "prompt" in tokens or informative:
+            return "single_fact"
+        return "all_items"
+
+    return "single_fact"
+
+
+def _redirect_summary() -> ReportChatResponse:
+    return ReportChatResponse(
+        answer_summary="I can summarize specific report areas like academics, activities, writing, focus areas, or interview questions, but not the participant as a whole.",
+        response_kind="scope_redirect",
+        sources=[],
+        not_found=False,
+        response_state="clean",
+    )
+
+
+def _not_found_response(message: str) -> ReportChatResponse:
+    return ReportChatResponse(
+        answer_summary=message,
+        response_kind="degraded",
+        sources=[],
+        not_found=True,
+        response_state="clean",
+    )
+
+
+def _lookup_response(
+    answer_summary: str,
+    sources: list[ReportChatSource],
+    *,
+    response_kind: ReportChatResponseKind = "lookup",
+    not_found: bool = False,
+    response_state: str = "clean",
+) -> ReportChatResponse:
+    return ReportChatResponse(
+        answer_summary=answer_summary,
+        response_kind=response_kind,
+        sources=sources,
+        not_found=not_found,
+        response_state=response_state,  # type: ignore[arg-type]
+    )
+
+
+def _broader_pointer_answer(context: dict[str, Any], message: str) -> ReportChatResponse:
+    section_targets = context.get("section_targets") or []
+    if section_targets:
+        section_key = section_targets[0]["section_key"]
+        return _lookup_response(message, [_build_source(section_key)])
+    return _lookup_response(message, [], response_kind="degraded", response_state="degraded")
+
+
+def _answer_lookup(question: str, context: dict[str, Any]) -> ReportChatResponse:
+    normalized = context["normalized_question"]
+    tokens = set(context["question_tokens"])
+    target = context["detected_target"]
+    pages = context["pages"]
+    coverage_mode = context.get("coverage_mode", "single_fact")
+
+    if target == "identity":
+        page1 = pages.get("page1", {})
+        identity = page1.get("identity", {}) if isinstance(page1, dict) else {}
+        full_name = _safe_string(identity.get("full_name"))
+        preferred_major = _safe_string(identity.get("preferred_major"))
+        geo = identity.get("geographic_context") if isinstance(identity, dict) else {}
+        location = ", ".join(filter(None, (_safe_string(geo.get("city")), _safe_string(geo.get("state")), _safe_string(geo.get("country"))))) if isinstance(geo, dict) else None
+
+        if "name" in tokens and full_name:
+            return _lookup_response(f"The applicant name is {full_name}.", [_build_source("page1_overview")])
+        if "major" in tokens and preferred_major:
+            return _lookup_response(f"The preferred major is {preferred_major}.", [_build_source("page1_overview")])
+        if {"city", "state", "country", "location", "home"} & tokens and location:
+            return _lookup_response(f"The report lists the location as {location}.", [_build_source("page1_overview")])
+        return _broader_pointer_answer(context, "The relevant background details are in the Overview section.")
+
+    if target == "academics":
+        page2 = pages.get("page2", {})
+        records = [entry for entry in page2.get("academic_records", []) if isinstance(entry, dict)] if isinstance(page2, dict) else []
+        if coverage_mode == "all_items":
+            return _list_academic_items(records)
+        level = _extract_academic_level(normalized)
+        score_intent = _contains_score_intent(normalized, tokens)
+        matching_record = next((entry for entry in records if level and _record_matches_level(entry, level)), None)
+
+        if matching_record:
+            entity_id = _safe_string(matching_record.get("entity_id"))
+            label = _safe_string(matching_record.get("academic_level")) or "Academics"
+            subject_match = _find_subject_match(matching_record, tokens)
+            if subject_match and score_intent:
+                return _lookup_response(
+                    f"I found the relevant marks in the {label} academic record.",
+                    [_build_source("page2_academics", label=label, entity_id=entity_id)],
+                )
+
+            overall_score = _format_score(
+                matching_record.get("score_raw"),
+                matching_record.get("max_score_raw"),
+                matching_record.get("grading_mode"),
+            )
+            if score_intent and overall_score:
+                return _lookup_response(
+                    f"The {label} overall score is {overall_score}.",
+                    [_build_source("page2_academics", label=label, entity_id=entity_id)],
+                )
+
+            return _lookup_response(
+                f"The relevant academic details are in the {label} record.",
+                [_build_source("page2_academics", label=label, entity_id=entity_id)],
+            )
+
+        if len(records) == 1 and score_intent:
+            only_record = records[0]
+            label = _safe_string(only_record.get("academic_level")) or "Academics"
+            overall_score = _format_score(
+                only_record.get("score_raw"),
+                only_record.get("max_score_raw"),
+                only_record.get("grading_mode"),
+            )
+            if overall_score:
+                return _lookup_response(
+                    f"The {label} overall score is {overall_score}.",
+                    [_build_source("page2_academics", label=label, entity_id=_safe_string(only_record.get("entity_id")))],
+                )
+
+        return _broader_pointer_answer(context, "The relevant academic details are in the Academics section.")
+
+    if target == "tests":
+        page2 = pages.get("page2", {})
+        tests = [entry for entry in page2.get("standardized_tests", []) if isinstance(entry, dict)] if isinstance(page2, dict) else []
+        if coverage_mode == "all_items":
+            return _list_test_items(tests)
+        matched_test = _find_test_match(tests, normalized, tokens)
+        if matched_test:
+            test_name = _safe_string(matched_test.get("test_name")) or "Test"
+            entity_id = _safe_string(matched_test.get("entity_id"))
+            score = _safe_string(matched_test.get("total_score")) or _safe_string(matched_test.get("percentile")) or _safe_string(matched_test.get("rank"))
+            if score:
+                suffix = "score"
+                if matched_test.get("percentile"):
+                    suffix = "percentile"
+                elif matched_test.get("rank"):
+                    suffix = "rank"
+                return _lookup_response(
+                    f"The {test_name} {suffix} is {score}.",
+                    [_build_source("page2_tests", label=test_name, entity_id=entity_id)],
+                )
+            return _lookup_response(
+                f"The relevant test details are under {test_name}.",
+                [_build_source("page2_tests", label=test_name, entity_id=entity_id)],
+            )
+
+        return _broader_pointer_answer(context, "The relevant test details are in the Tests section.")
+
+    if target == "activities":
+        page2 = pages.get("page2", {})
+        bucket = _detect_activity_bucket(question)
+        activities = _activity_entries(page2 if isinstance(page2, dict) else {}, bucket)
+        if coverage_mode == "all_items":
+            return _list_activity_items(activities, bucket)
+        matches = _find_activity_match(activities, tokens)
+        if matches:
+            activity_name = _safe_string(matches[0].get("activity_name")) or "activity"
+            return _lookup_response(
+                f"The report includes {activity_name} in the Activities section.",
+                [_build_source("page2_activities")],
+            )
+        if "internship" in tokens:
+            return _lookup_response(
+                "I did not find a specific internship entry, but the Activities section is the best place to review related experience.",
+                [_build_source("page2_activities")],
+                not_found=True,
+            )
+        return _broader_pointer_answer(context, "The relevant activity details are in the Activities section.")
+
+    if target == "leadership":
+        page2 = pages.get("page2", {})
+        leadership = [entry for entry in page2.get("leadership_roles", []) if isinstance(entry, dict)] if isinstance(page2, dict) else []
+        if coverage_mode == "all_items":
+            return _list_leadership_items(leadership)
+        if leadership:
+            title = _safe_string(leadership[0].get("position_title"))
+            if title:
+                return _lookup_response(
+                    f"The report lists {title} in the Leadership section.",
+                    [_build_source("page2_leadership")],
+                )
+        return _broader_pointer_answer(context, "The relevant leadership details are in the Leadership section.")
+
+    if target == "essays":
+        page3 = pages.get("page3", {})
+        essays = [entry for entry in page3.get("essays", []) if isinstance(entry, dict)] if isinstance(page3, dict) else []
+        if coverage_mode == "all_items":
+            return _list_essay_items(essays)
+        if essays:
+            prompt = _safe_string(essays[0].get("prompt"))
+            if prompt and "prompt" in tokens:
+                return _lookup_response(f"The essay prompt shown is {prompt}.", [_build_source("page3_essays")])
+        return _broader_pointer_answer(context, "The relevant writing details are in the Writing section.")
+
+    if target in {"themes", "signals"}:
+        page4 = pages.get("page4", {})
+        themes = [entry for entry in page4.get("themes", []) if isinstance(entry, dict)] if isinstance(page4, dict) else []
+        signals = [entry for entry in page4.get("signals", []) if isinstance(entry, dict)] if isinstance(page4, dict) else []
+        if themes:
+            theme_title = _safe_string(themes[0].get("title"))
+            if theme_title:
+                return _lookup_response(f"The main focus area is {theme_title}.", [_build_source("page4_focus_areas")])
+        if signals:
+            signal_title = _safe_string(signals[0].get("title"))
+            if signal_title:
+                return _lookup_response(f"The report highlights {signal_title}.", [_build_source("page4_focus_areas")])
+        return _broader_pointer_answer(context, "The relevant generated focus areas are in the Focus Areas section.")
+
+    if target == "question_groups":
+        page5 = pages.get("page5", {})
+        groups = [entry for entry in page5.get("question_groups", []) if isinstance(entry, dict)] if isinstance(page5, dict) else []
+        if groups:
+            group_title = _safe_string(groups[0].get("group_title"))
+            if group_title:
+                return _lookup_response(
+                    f"The interview prompts are grouped under {group_title}.",
+                    [_build_source("page5_question_groups")],
+                )
+        return _broader_pointer_answer(context, "The relevant interview prompts are in the Questions section.")
+
+    return _lookup_response(
+        "I found relevant information in the report, but I cannot safely narrow it further right now.",
+        [],
+        response_kind="degraded",
+        response_state="degraded",
+    )
+
+
+def _summary_sources(context: dict[str, Any]) -> list[ReportChatSource]:
+    target = context["detected_target"]
+    section_targets = context.get("section_targets") or []
+
+    if target == "essays":
+        annotations = context.get("annotations") or {}
+        fragments = annotations.get("page_3_fragments") if isinstance(annotations, dict) else None
+        if isinstance(fragments, dict):
+            built: list[ReportChatSource] = []
+            excerpt_index = 1
+            for fragment_list in fragments.values():
+                if not isinstance(fragment_list, list):
+                    continue
+                for fragment in fragment_list:
+                    if not isinstance(fragment, dict):
+                        continue
+                    fragment_id = _safe_string(fragment.get("fragment_id"))
+                    if fragment_id:
+                        built.append(
+                            _build_source(
+                                "page3_essays",
+                                label=f"Essay excerpt {excerpt_index}",
+                                fragment_id=fragment_id,
+                            )
+                        )
+                        excerpt_index += 1
+                    if len(built) >= 2:
+                        return built
+            if built:
+                return built
+
+    return [_build_source(target_info["section_key"]) for target_info in section_targets[:3]]
+
+
+def _summary_fallback(context: dict[str, Any]) -> str:
+    target = context["detected_target"]
+    fallbacks = {
+        "academics": "The report contains academic records and performance details.",
+        "tests": "The report contains standardized test details.",
+        "activities": "The report contains activity and extracurricular information.",
+        "leadership": "The report contains leadership information.",
+        "essays": "The report contains essay and writing information.",
+        "themes": "The report contains generated focus areas.",
+        "signals": "The report contains generated focus areas.",
+        "question_groups": "The report contains generated interview question areas.",
+    }
+    return fallbacks.get(target, "The report contains relevant information for that area.")
+
+
+def _normalize_activity_type_label(value: Any) -> str | None:
+    raw = _safe_string(value)
+    if not raw:
+        return None
+    normalized = raw.replace("_", " ").strip().lower()
+    if normalized == "co curricular":
+        return "Co-curricular"
+    return normalized.capitalize()
+
+
+def _activity_type_bucket(value: Any) -> str | None:
+    raw = _safe_string(value)
+    if not raw:
+        return None
+    normalized = raw.replace("_", " ").replace("-", " ").strip().lower()
+    if normalized == "co curricular":
+        return "co_curricular"
+    if normalized == "extracurricular":
+        return "extracurricular"
+    return normalized
+
+
+def _duration_years_value(entry: dict[str, Any]) -> str | None:
+    duration_years = _safe_string(entry.get("duration_years"))
+    if duration_years:
+        return duration_years
+    return _safe_string(entry.get("duration"))
+
+
+def _build_activity_summary_context(page2: dict[str, Any]) -> dict[str, Any]:
+    def build_collection(collection_name: str) -> list[dict[str, Any]]:
+        cleaned_entries: list[dict[str, Any]] = []
+        entries = page2.get(collection_name, [])
+        if not isinstance(entries, list):
+            return cleaned_entries
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            cleaned: dict[str, Any] = {}
+            activity_name = _safe_string(entry.get("activity_name"))
+            activity_type = _normalize_activity_type_label(entry.get("activity_type"))
+            level = _safe_string(entry.get("level"))
+            duration_years = _duration_years_value(entry)
+            source_note = _safe_string(entry.get("achievement")) or _safe_string(entry.get("description_raw"))
+            if activity_name:
+                cleaned["name"] = activity_name
+            if activity_type:
+                cleaned["type_label"] = activity_type
+            if level:
+                cleaned["level_label"] = level
+            if duration_years:
+                cleaned["duration_years"] = duration_years
+            if source_note:
+                cleaned["source_note"] = source_note
+            if cleaned:
+                cleaned_entries.append(cleaned)
+        return cleaned_entries
+
     return {
-        "name": "report_chat_response",
-        "strict": True,
-        "schema": {
-            "type": "object",
-            "additionalProperties": False,
-            "properties": {
-                "answer_summary": {"type": "string"},
-                "results": {
-                    "type": "array",
-                    "maxItems": max_result_count,
-                    "items": {
-                        "type": "object",
-                        "additionalProperties": False,
-                        "properties": {
-                            "label": {"type": "string"},
-                            "value": {"type": "string"},
-                            "target_tab": {"type": "string", "enum": ["page1", "page2", "page3", "page4", "page5"]},
-                            "section_key": {
-                                "type": "string",
-                                "enum": [
-                                    "page1_overview",
-                                    "page2_academics",
-                                    "page2_tests",
-                                    "page2_activities",
-                                    "page2_leadership",
-                                    "page3_essays",
-                                    "page4_focus_areas",
-                                    "page5_question_groups",
-                                ],
-                            },
-                            "anchor_id": {"type": "string"},
-                        },
-                        "required": ["label", "value", "target_tab", "section_key", "anchor_id"],
-                    },
-                },
-                "not_found": {"type": "boolean"},
-                "response_state": {
-                    "type": "string",
-                    "enum": ["clean", "repaired", "retried", "degraded"],
-                },
-            },
-            "required": ["answer_summary", "results", "not_found", "response_state"],
-        },
+        "extracurricular_activities": build_collection("extracurricular_activities"),
+        "co_curricular_activities": build_collection("co_curricular_activities"),
     }
 
 
-def _build_report_chat_messages(question: str, context: dict[str, Any]) -> list[dict[str, str]]:
-    max_result_count = int(context.get("max_result_count", 3))
+def _build_summary_report_context(context: dict[str, Any]) -> dict[str, Any]:
+    target = context.get("detected_target")
+    pages = context.get("pages")
+    if not isinstance(pages, dict):
+        return {}
+    if target == "activities":
+        page2 = pages.get("page2")
+        if isinstance(page2, dict):
+            return {"page2": _build_activity_summary_context(page2)}
+    return pages
+
+
+def _build_summary_messages(question: str, context: dict[str, Any]) -> list[dict[str, str]]:
     return [
         {
             "role": "system",
             "content": (
-                "You answer one-shot questions from a structured application report.\n"
+                "You summarize a single report domain from a structured application report.\n"
                 "Use only the supplied report context.\n"
-                "This assistant is read-only and non-inferential.\n"
-                "Never add new judgment, evaluation, or conclusions beyond the provided report.\n"
-                "The context includes detected_operation, detected_target, answer_mode, selected sections, section targets, and max_result_count.\n"
-                "Behavior by answer_mode:\n"
-                "- fact: return exact factual information from the provided report context.\n"
-                "- reshaped: restate the same information in a new format without adding conclusions.\n"
-                "- precomputed_reasoning: only restate existing Page 4 reasoning/evidence already in the report.\n"
-                "- redirect: answer briefly using only Page 4/5 content, then point to the most relevant Page 4/5 section.\n"
-                "Use only section targets listed in the provided context.\n"
-                "Do not use external knowledge.\n"
-                "Do not wrap the JSON in markdown fences.\n"
-                f"Return at most {max_result_count} results.\n"
-                "For broad or full-report questions, return a concise summary and only the top relevant anchors instead of an exhaustive dump.\n"
-                "Return JSON only with this shape: "
-                '{"answer_summary":"string","results":[{"label":"string","value":"string","target_tab":"page1|page2|page3|page4|page5","section_key":"page1_overview|page2_academics|page2_tests|page2_activities|page2_leadership|page3_essays|page4_focus_areas|page5_question_groups","anchor_id":"string"}],"not_found":boolean,"response_state":"clean|repaired|retried|degraded"}.\n'
-                'Set response_state="clean" when answering normally.\n'
-                "If the answer is absent or unsupported by the supplied report, return not_found=true and results=[].\n"
-                "Keep answer_summary concise, factual, and grounded in the provided report only."
+                "Do not evaluate, rank, judge, or summarize the participant as a whole.\n"
+                "Do not invent citations or mention unavailable evidence.\n"
+                "Treat duration_years values as counts of years.\n"
+                "Use clean, readable product language instead of repeating awkward source field phrasing.\n"
+                "For activity summaries, cover both extracurricular and co-curricular entries when both are present.\n"
+                "Keep the answer to 2-4 concise sentences.\n"
+                "Return plain text only."
             ),
         },
         {
             "role": "user",
-            "content": json.dumps({"question": question, "report_context": context}),
+            "content": json.dumps(
+                {
+                    "question": question,
+                    "domain": context.get("detected_target"),
+                    "selected_sections": context.get("selected_sections"),
+                    "report_context": _build_summary_report_context(context),
+                }
+            ),
         },
     ]
 
 
-def _parse_report_chat_payload(response_text: str) -> tuple[dict[str, Any] | None, str]:
-    json_candidate = _extract_json_candidate(response_text)
+def _answer_domain_summary(question: str, context: dict[str, Any]) -> ReportChatResponse:
+    target = context["detected_target"]
+    if target not in SUMMARY_ALLOWED_TARGETS:
+        return _redirect_summary()
+
     try:
-        parsed_payload = json.loads(json_candidate)
-        response_state = "repaired" if json_candidate != response_text.strip() else "clean"
-        return parsed_payload, response_state
-    except JSONDecodeError:
-        recovered_payload = _recover_partial_report_chat_payload(response_text)
-        if recovered_payload is not None:
-            return recovered_payload, "degraded"
-    return None, "invalid"
+        response_text = generate(_build_summary_messages(question, context), call_label="report_chat")
+        answer_summary = " ".join(response_text.split()).strip()
+    except LLMClientError:
+        answer_summary = ""
 
+    if not answer_summary:
+        return ReportChatResponse(
+            answer_summary=_summary_fallback(context),
+            response_kind="degraded",
+            sources=[],
+            not_found=False,
+            response_state="degraded",
+        )
 
-def _validate_report_chat_payload(
-    parsed_payload: dict[str, Any],
-    *,
-    response_state: str,
-    max_result_count: int,
-) -> ReportChatResponse:
-    payload = dict(parsed_payload)
-    payload["response_state"] = response_state
-    if len(payload.get("results", [])) > max_result_count:
-        payload["results"] = payload["results"][:max_result_count]
-    return ReportChatResponse.model_validate(payload)
+    return ReportChatResponse(
+        answer_summary=answer_summary,
+        response_kind="domain_summary",
+        sources=_summary_sources(context),
+        not_found=False,
+        response_state="clean",
+    )
 
 
 def answer_report_question(question: str, context: dict[str, Any]) -> ReportChatResponse:
+    if context.get("response_kind") == "scope_redirect":
+        return _redirect_summary()
+
     if context.get("not_found_summary") and not context.get("section_targets"):
-        return ReportChatResponse(
-            answer_summary=str(context["not_found_summary"]),
-            results=[],
-            not_found=True,
-            response_state="clean",
-        )
+        return _not_found_response(str(context["not_found_summary"]))
 
-    messages = _build_report_chat_messages(question, context)
-    max_result_count = int(context.get("max_result_count", 3))
-    schema_request = LLMRequestOptions(
-        response_format_type="json_schema",
-        response_schema=_report_chat_json_schema(max_result_count),
-        temperature_override=0.1,
-    )
-    json_object_request = LLMRequestOptions(
-        response_format_type="json_object",
-        temperature_override=0.1,
-    )
+    if context.get("response_kind") == "lookup":
+        return _answer_lookup(question, context)
 
-    try:
-        response_text = generate(messages, call_label="report_chat", request_options=schema_request)
-    except LLMStructuredOutputUnsupportedError:
-        logger.warning("Report chat provider rejected json_schema; downgrading to json_object mode.")
-        try:
-            response_text = generate(messages, call_label="report_chat", request_options=json_object_request)
-        except LLMClientError as exc:
-            raise ReportChatError("Report assistant is temporarily unavailable.") from exc
-    except LLMClientError as exc:
-        raise ReportChatError("Report assistant is temporarily unavailable.") from exc
-
-    parsed_payload, response_state = _parse_report_chat_payload(response_text)
-    if parsed_payload is None:
-        logger.warning("Report chat parse failed on primary attempt; running repair-model pass.")
-        try:
-            repair_text = generate(
-                _build_report_chat_repair_messages(response_text, max_result_count),
-                call_label="report_chat",
-                request_options=LLMRequestOptions(
-                    response_format_type="json_object",
-                    temperature_override=0.0,
-                    prefer_fallback_model=True,
-                ),
-            )
-        except LLMClientError:
-            repair_text = ""
-
-        if repair_text:
-            parsed_payload, repair_state = _parse_report_chat_payload(repair_text)
-            if parsed_payload is not None:
-                response_state = "repaired" if repair_state != "degraded" else "degraded"
-
-    if parsed_payload is None:
-        logger.warning("Report chat repair-model pass failed; retrying with fallback model.")
-        try:
-            retry_text = generate(
-                messages,
-                call_label="report_chat",
-                request_options=LLMRequestOptions(
-                    response_format_type="json_object",
-                    temperature_override=0.1,
-                    prefer_fallback_model=True,
-                ),
-            )
-        except LLMClientError as exc:
-            raise ReportChatError("Report assistant is temporarily unavailable.") from exc
-        parsed_payload, retry_state = _parse_report_chat_payload(retry_text)
-        if parsed_payload is None:
-            logger.error(
-                "Report chat invalid JSON response after repair and retry. raw_response=%r repair_response=%r retry_response=%r question_shape=%s",
-                response_text,
-                repair_text if 'repair_text' in locals() else "",
-                retry_text,
-                context.get("question_shape_bucket"),
-            )
-            raise ReportChatError("Report assistant returned an invalid response.")
-        response_state = "retried" if retry_state == "clean" else "degraded"
-
-    try:
-        parsed = _validate_report_chat_payload(
-            parsed_payload,
-            response_state=response_state,
-            max_result_count=max_result_count,
-        )
-    except ValidationError as exc:
-        logger.warning("Report chat schema validation failed on parsed payload; retrying with fallback model.")
-        try:
-            retry_text = generate(
-                messages,
-                call_label="report_chat",
-                request_options=LLMRequestOptions(
-                    response_format_type="json_object",
-                    temperature_override=0.1,
-                    prefer_fallback_model=True,
-                ),
-            )
-        except LLMClientError as retry_exc:
-            raise ReportChatError("Report assistant is temporarily unavailable.") from retry_exc
-        parsed_retry_payload, retry_state = _parse_report_chat_payload(retry_text)
-        if parsed_retry_payload is None:
-            logger.error(
-                "Report chat schema retry failed. raw_response=%r retry_response=%r question_shape=%s errors=%s",
-                response_text,
-                retry_text,
-                context.get("question_shape_bucket"),
-                exc.errors(),
-            )
-            raise ReportChatError("Report assistant returned an invalid response.") from exc
-        try:
-            parsed = _validate_report_chat_payload(
-                parsed_retry_payload,
-                response_state="retried" if retry_state == "clean" else "degraded",
-                max_result_count=max_result_count,
-            )
-        except ValidationError as retry_exc:
-            logger.error(
-                "Report chat schema validation failed after retry. raw_response=%r retry_response=%r question_shape=%s errors=%s",
-                response_text,
-                retry_text,
-                context.get("question_shape_bucket"),
-                retry_exc.errors(),
-            )
-            raise ReportChatError("Report assistant returned an invalid response.") from retry_exc
-
-    parsed = _normalize_report_chat_response(parsed, context)
-
-    if parsed.not_found:
-        logger.info(
-            "Report chat completed status=not_found shape=%s operation=%s target=%s response_state=%s result_count=%s",
-            context.get("question_shape_bucket"),
-            context.get("detected_operation"),
-            context.get("detected_target"),
-            parsed.response_state,
-            len(parsed.results),
-        )
-        return parsed
-
-    if not parsed.results:
-        normalized = ReportChatResponse(
-            answer_summary=parsed.answer_summary or "I could summarize that from the current report, but section links are unavailable.",
-            results=[],
-            not_found=False,
-            response_state="degraded" if parsed.response_state == "clean" else parsed.response_state,
-        )
-        logger.info(
-            "Report chat completed status=degraded_success shape=%s operation=%s target=%s response_state=%s result_count=0",
-            context.get("question_shape_bucket"),
-            context.get("detected_operation"),
-            context.get("detected_target"),
-            normalized.response_state,
-        )
-        return normalized
-
+    response = _answer_domain_summary(question, context)
     logger.info(
-        "Report chat completed status=clean_success shape=%s operation=%s target=%s response_state=%s result_count=%s",
+        "Report chat completed response_kind=%s shape=%s operation=%s target=%s response_state=%s source_count=%s",
+        response.response_kind,
         context.get("question_shape_bucket"),
         context.get("detected_operation"),
         context.get("detected_target"),
-        parsed.response_state,
-        len(parsed.results),
+        response.response_state,
+        len(response.sources),
     )
-    return parsed
+    return response
