@@ -44,7 +44,6 @@ type ReportLike = Record<string, unknown> & {
 };
 
 type ReportTab = "page4" | "page5";
-
 export function SynthesisReportSection({
   report,
   title = "Final Report",
@@ -203,10 +202,9 @@ export function SynthesisReportSection({
                                   {signal.title || `Signal ${index + 1}`}
                                 </p>
                               </div>
-                              <SignalBlock label="Direct read" value={signal.direct_read} />
+                              <SignalBlock label="What stands out" value={signal.direct_read} />
                               <SignalBlock label="Why it matters" value={signal.why_it_matters} />
-                              <SignalBlock label="Depth opening" value={signal.depth_opening} />
-                              <EvidenceSources values={signal.referenced_entity_ids} />
+                              <SignalBlock label="Interview focus" value={signal.depth_opening} />
                             </div>
                           </article>
                         ))
@@ -229,7 +227,7 @@ export function SynthesisReportSection({
                     className="rounded-[1.3rem] border border-slate-200 bg-white/82 p-5 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
                   >
                     <div className="flex flex-wrap items-center gap-2">
-                      {group.theme_id ? <Tag>{group.theme_id}</Tag> : null}
+                      {group.theme_id ? <Tag>{getThemeName(group.theme_id, themes)}</Tag> : null}
                       <p className="text-base font-semibold text-[color:var(--ink)]">{group.group_title || "Question group"}</p>
                     </div>
                     <ol className="mt-4 grid gap-3">
@@ -277,55 +275,6 @@ function SignalBlock({ label, value }: { label: string; value?: string }) {
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">{label}</p>
       <p className="mt-2 text-sm leading-7 text-[color:var(--ink)]">{value}</p>
     </div>
-  );
-}
-
-function EvidenceSources({ values }: { values?: string[] }) {
-  if (!values?.length) {
-    return null;
-  }
-
-  const grouped = groupEvidenceSources(values);
-  const bucketLabels = Object.keys(grouped);
-
-  return (
-    <details className="mt-4 rounded-[1rem] border border-slate-200 bg-slate-50/78 px-4 py-3">
-      <summary className="cursor-pointer list-none">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[color:var(--muted)]">
-            Evidence sources
-          </span>
-          {bucketLabels.map((label) => (
-            <BucketChip key={label} label={label} />
-          ))}
-        </div>
-      </summary>
-      <div className="mt-3 grid gap-3">
-        {Object.entries(grouped).map(([label, entries]) => (
-          <div key={label} className="space-y-2">
-            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)]">{label}</p>
-            <div className="flex flex-wrap gap-2">
-              {entries.map((entry) => (
-                <span
-                  key={`${label}-${entry}`}
-                  className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-[color:var(--ink)] shadow-[0_10px_20px_rgba(15,23,42,0.05)]"
-                >
-                  {entry}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </details>
-  );
-}
-
-function BucketChip({ label }: { label: string }) {
-  return (
-    <span className="inline-flex rounded-full bg-[color:var(--accent-soft)] px-2.5 py-1 text-[11px] font-bold text-[color:var(--accent-strong)]">
-      {label}
-    </span>
   );
 }
 
@@ -409,59 +358,6 @@ function getThemeTabLabel(theme: ThemeRecord, index: number) {
   return title.length > 34 ? `${title.slice(0, 31).trimEnd()}...` : title;
 }
 
-function groupEvidenceSources(values: string[]) {
-  const grouped: Record<string, string[]> = {};
-
-  for (const value of values) {
-    const bucket = getEvidenceBucket(value);
-    const detail = getEvidenceDetail(value);
-    if (!grouped[bucket]) {
-      grouped[bucket] = [];
-    }
-    if (!grouped[bucket].includes(detail)) {
-      grouped[bucket].push(detail);
-    }
-  }
-
-  return grouped;
-}
-
-function getEvidenceBucket(value: string) {
-  if (value.startsWith("ACA-")) {
-    return "Academics";
-  }
-  if (value.startsWith("ACT-") || value.startsWith("LEAD-")) {
-    return "Activities";
-  }
-  if (value.startsWith("TEST-")) {
-    return "Tests";
-  }
-  if (value.startsWith("ESS-")) {
-    return "Writing";
-  }
-  return "Application";
-}
-
-function getEvidenceDetail(value: string) {
-  if (value.startsWith("ACA-")) {
-    const number = parseInt(value.replace("ACA-", ""), 10);
-    return Number.isFinite(number) ? `Academic record ${number}` : "Academic record";
-  }
-  if (value.startsWith("ACT-")) {
-    const number = parseInt(value.replace("ACT-", ""), 10);
-    return Number.isFinite(number) ? `Activity ${number}` : "Activity";
-  }
-  if (value.startsWith("LEAD-")) {
-    const number = parseInt(value.replace("LEAD-", ""), 10);
-    return Number.isFinite(number) ? `Leadership ${number}` : "Leadership";
-  }
-  if (value.startsWith("TEST-")) {
-    const number = parseInt(value.replace("TEST-", ""), 10);
-    return Number.isFinite(number) ? `Test ${number}` : "Test";
-  }
-  if (value.startsWith("ESS-")) {
-    const number = parseInt(value.replace("ESS-", ""), 10);
-    return Number.isFinite(number) ? `Essay ${number}` : "Essay";
-  }
-  return "Source detail";
+function getThemeName(themeId: string, themes: ThemeRecord[]) {
+  return themes.find((theme) => theme.theme_id === themeId)?.title || themeId;
 }

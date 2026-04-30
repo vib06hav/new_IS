@@ -968,7 +968,7 @@ def _list_essay_items(entries: list[dict[str, Any]]) -> ReportChatResponse:
 
     labels = [label for label in (_safe_string(entry.get("prompt")) for entry in entries) if label]
     if not labels:
-        return _lookup_response("Writing samples are available in the Writing section.", [_build_source("page3_essays")])
+        return _lookup_response("Essays are available in the Writing section.", [_build_source("page3_essays")])
     return _lookup_response(f"The essay prompts listed are {_render_label_series(labels)}.", [_build_source("page3_essays")])
 
 

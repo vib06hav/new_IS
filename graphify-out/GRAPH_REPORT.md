@@ -1,11 +1,11 @@
-# Graph Report - C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser  (2026-04-30)
+# Graph Report - C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser  (2026-05-01)
 
 ## Corpus Check
-- 169 files · ~218,167 words
+- 169 files · ~218,402 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 949 nodes · 1647 edges · 111 communities detected
+- 938 nodes · 1636 edges · 111 communities detected
 - Extraction: 74% EXTRACTED · 26% INFERRED · 0% AMBIGUOUS · INFERRED: 423 edges (avg confidence: 0.77)
 - Token cost: 0 input · 0 output
 
@@ -137,92 +137,92 @@
 ## Surprising Connections (you probably didn't know these)
 - `enforce_csrf()` --calls--> `ensure_csrf_protection()`  [INFERRED]
   C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\main.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\security\csrf.py
+- `analyze_integrity()` --calls--> `has_mojibake()`  [INFERRED]
+  C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\agents\integrity_analyzer.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\utils\text_normalization.py
 - `login()` --calls--> `client_ip()`  [INFERRED]
   C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\auth\router.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\security\rate_limit.py
-- `get_canonical_for_pdf()` --calls--> `extract_activities()`  [INFERRED]
-  C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\get_canonical_jsons.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\agents\activity_extractor.py
-- `get_canonical_for_pdf()` --calls--> `assemble_canonical()`  [INFERRED]
-  C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\get_canonical_jsons.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\agents\assembler.py
-- `get_canonical_for_pdf()` --calls--> `sanitize_for_json()`  [INFERRED]
-  C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\get_canonical_jsons.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\utils\sanitizer.py
+- `get_canonical_for_pdf()` --calls--> `extract_layout_blocks()`  [INFERRED]
+  C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\get_canonical_jsons.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\agents\layout_extractor.py
+- `get_canonical_for_pdf()` --calls--> `detect_sections()`  [INFERRED]
+  C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\get_canonical_jsons.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\agents\section_detector.py
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.03
-Nodes (69): _apply_spatial_metadata(), extract_academic_records(), Extract academic records using precise spatial layout blocks.     Clusters block, Aligns metadata blocks to anchors using distance-ranked pairing., extract_additional_info(), dedupe_near_overlapping_blocks(), Collapse near-identical overlapping text blocks created by edited PDFs., detect_cross_sections() (+61 more)
-
-### Community 1 - "Community 1"
 Cohesion: 0.04
 Nodes (43): acquire(), CapacityFullError, GenerationJobLimiter, acquire(), BaseLockBackend, CoordinationManager, get_coordination_manager(), InMemoryLockBackend (+35 more)
 
-### Community 2 - "Community 2"
+### Community 1 - "Community 1"
 Cohesion: 0.05
 Nodes (56): ApiError, apiRequest(), askReportChat(), assignApplication(), completeInterviewWorkspace(), createInterviewer(), createInterviewWorkspace(), deactivateInterviewer() (+48 more)
 
-### Community 3 - "Community 3"
-Cohesion: 0.06
-Nodes (55): get_llm_capacity(), _apply_response_format(), _clean_json_response(), _extract_openai_compatible_text(), generate(), _generate_aicredits(), _generate_openai_compatible(), _get_braintrust_logger() (+47 more)
+### Community 2 - "Community 2"
+Cohesion: 0.04
+Nodes (52): Application, assemble_ros_v1(), Deterministic ROS assembly.     Merges Pages 1-3 (from projection), Call 1 theme, Base, construct_bundle(), Agent 15: Theme-first signal-evidence bundle constructor.     Groups validated i, CanonicalRecord, detect_cross_sections() (+44 more)
 
-### Community 4 - "Community 4"
+### Community 3 - "Community 3"
 Cohesion: 0.06
 Nodes (57): assemble_canonical(), Canonical Structure Assembler.     Merges all extracted collections into the fi, BaseModel, build_assignment_list_item(), AcademicEntry, ActivityEntry, AgentScore, Anomaly (+49 more)
 
+### Community 4 - "Community 4"
+Cohesion: 0.11
+Nodes (54): _activity_entries(), _activity_type_bucket(), _answer_domain_summary(), _answer_lookup(), answer_report_question(), _broader_pointer_answer(), _build_activity_summary_context(), build_report_chat_context() (+46 more)
+
 ### Community 5 - "Community 5"
-Cohesion: 0.05
-Nodes (42): Application, assemble_ros_v1(), Deterministic ROS assembly.     Merges Pages 1-3 (from projection), Call 1 theme, Base, construct_bundle(), Agent 15: Theme-first signal-evidence bundle constructor.     Groups validated i, CanonicalRecord, FinalReport (+34 more)
+Cohesion: 0.07
+Nodes (49): get_llm_capacity(), _apply_response_format(), _clean_json_response(), _extract_openai_compatible_text(), generate(), _generate_aicredits(), _generate_openai_compatible(), _get_braintrust_logger() (+41 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.12
-Nodes (48): _activity_entries(), _activity_type_bucket(), _answer_lookup(), _broader_pointer_answer(), _build_activity_summary_context(), build_report_chat_context(), _build_selected_pages(), _build_source() (+40 more)
+Cohesion: 0.11
+Nodes (48): assign_application(), delete_application(), _delete_application_with_related_data(), generate_final_report(), _get_interviewer_or_400(), hide_application(), list_applications(), list_assignments() (+40 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.08
-Nodes (27): delete_application(), _delete_application_with_related_data(), remove_application_from_queue(), derive_display_id(), get_application_source_pdf(), _handle_application_insert_integrity_error(), staged_upload_file(), upload_application() (+19 more)
+Cohesion: 0.07
+Nodes (38): extract_additional_info(), dedupe_near_overlapping_blocks(), Collapse near-identical overlapping text blocks created by edited PDFs., _empty_family_background(), extract_family_background(), _find_value_for_label(), _all_field_labels(), _extract_candidate() (+30 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.12
-Nodes (43): assign_application(), generate_final_report(), _get_interviewer_or_400(), hide_application(), list_applications(), list_assignments(), reassign_application(), retry_application() (+35 more)
-
-### Community 9 - "Community 9"
 Cohesion: 0.09
 Nodes (34): Assignment, get_current_user(), build_interviewer_list_item(), create_access_token(), decode_access_token(), get_password_hash(), bootstrap_admin_user(), build_public_profile_image_url() (+26 more)
 
+### Community 9 - "Community 9"
+Cohesion: 0.09
+Nodes (22): derive_display_id(), get_application_source_pdf(), _handle_application_insert_integrity_error(), staged_upload_file(), upload_application(), validate_uploaded_pdf(), write_upload_with_limit(), check_writable_dir() (+14 more)
+
 ### Community 10 - "Community 10"
+Cohesion: 0.07
+Nodes (31): _apply_spatial_metadata(), extract_academic_records(), Extract academic records using precise spatial layout blocks.     Clusters block, Aligns metadata blocks to anchors using distance-ranked pairing., extract_activities(), _looks_like_descriptive_text(), _normalize_activity_entry(), Extract activities using a Grid-Line based spatial approach with Dynamic Column (+23 more)
+
+### Community 11 - "Community 11"
 Cohesion: 0.09
 Nodes (29): isApiErrorStatus(), saveInterviewWorkspace(), clearInterviewDraft(), getDraftKey(), readInterviewDraft(), writeInterviewDraft(), addQuestion(), cycleQuestionStatus() (+21 more)
 
-### Community 11 - "Community 11"
+### Community 12 - "Community 12"
 Cohesion: 0.15
 Nodes (25): get_prohibited_terms(), get_version(), PolicyConfig, Configuration for the policy guard. Externalized rules to ensure no     hardcod, _append_text_violations(), _backfill_signal_references(), _first_present(), _normalize_question_group_output() (+17 more)
 
-### Community 12 - "Community 12"
+### Community 13 - "Community 13"
 Cohesion: 0.16
 Nodes (22): _allowed_origins(), clear_csrf_cookie(), ensure_csrf_protection(), generate_csrf_token(), _is_allowed_loopback_origin(), _origin_from_url(), request_uses_session_cookie(), set_csrf_cookie() (+14 more)
 
-### Community 13 - "Community 13"
+### Community 14 - "Community 14"
 Cohesion: 0.13
 Nodes (13): clearSessionCache(), clearWorkflowActive(), emitSessionStore(), getSession(), markWorkflowActive(), revalidateSession(), signOut(), updateSessionStore() (+5 more)
 
-### Community 14 - "Community 14"
+### Community 15 - "Community 15"
 Cohesion: 0.18
 Nodes (17): build_judge_prompt_call_1(), build_judge_prompt_call_2(), check_prohibited_terms(), eval_sample(), load_json(), main(), eval_pipeline.py ---------------- Evaluation harness for the Interview Standardi, Performs deterministic checks on Call 2 output. (+9 more)
 
-### Community 15 - "Community 15"
-Cohesion: 0.12
-Nodes (2): buildItemAnnotationTitle(), getItemAnnotation()
-
 ### Community 16 - "Community 16"
-Cohesion: 0.19
-Nodes (10): extract_activities(), _looks_like_descriptive_text(), _normalize_activity_entry(), Extract activities using a Grid-Line based spatial approach with Dynamic Column, is_valid_activity(), Centralized validation for activity entries.     Filters out common hallucinatio, get_page_heights(), get_vertical_lines() (+2 more)
-
-### Community 17 - "Community 17"
 Cohesion: 0.2
 Nodes (0): 
 
-### Community 18 - "Community 18"
+### Community 17 - "Community 17"
 Cohesion: 0.47
 Nodes (5): build_synthesis_projection(), compress_text(), Apply strictly deterministic projection, flattening, and compression     to can, Deterministically compress text by normalizing whitespace., _render_projection()
+
+### Community 18 - "Community 18"
+Cohesion: 0.4
+Nodes (2): buildItemAnnotationTitle(), getItemAnnotation()
 
 ### Community 19 - "Community 19"
 Cohesion: 0.83
@@ -234,7 +234,7 @@ Nodes (0):
 
 ### Community 21 - "Community 21"
 Cohesion: 0.5
-Nodes (0): 
+Nodes (2): Badge(), cn()
 
 ### Community 22 - "Community 22"
 Cohesion: 0.5
@@ -242,11 +242,11 @@ Nodes (0):
 
 ### Community 23 - "Community 23"
 Cohesion: 0.5
-Nodes (2): ReportsDashboardSandboxPlayground(), usePolling()
+Nodes (0): 
 
 ### Community 24 - "Community 24"
 Cohesion: 0.5
-Nodes (2): Badge(), cn()
+Nodes (2): ReportsDashboardSandboxPlayground(), usePolling()
 
 ### Community 25 - "Community 25"
 Cohesion: 0.67
@@ -759,12 +759,12 @@ Nodes (1): enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Dat
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `run_pipeline()` connect `Community 5` to `Community 0`, `Community 16`, `Community 4`?**
-  _High betweenness centrality (0.126) - this node is a cross-community bridge._
-- **Why does `run_synthesis_pipeline()` connect `Community 5` to `Community 8`, `Community 1`, `Community 11`?**
-  _High betweenness centrality (0.082) - this node is a cross-community bridge._
-- **Why does `LLMClientError` connect `Community 3` to `Community 1`, `Community 5`?**
-  _High betweenness centrality (0.061) - this node is a cross-community bridge._
+- **Why does `run_pipeline()` connect `Community 2` to `Community 10`, `Community 3`, `Community 7`?**
+  _High betweenness centrality (0.129) - this node is a cross-community bridge._
+- **Why does `run_synthesis_pipeline()` connect `Community 2` to `Community 0`, `Community 12`, `Community 6`?**
+  _High betweenness centrality (0.084) - this node is a cross-community bridge._
+- **Why does `LLMClientError` connect `Community 5` to `Community 0`, `Community 2`?**
+  _High betweenness centrality (0.062) - this node is a cross-community bridge._
 - **Are the 19 inferred relationships involving `run_pipeline()` (e.g. with `extract_layout_blocks()` and `normalize_layout()`) actually correct?**
   _`run_pipeline()` has 19 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 20 inferred relationships involving `get_application_or_404()` (e.g. with `retry_application()` and `generate_final_report()`) actually correct?**
@@ -772,4 +772,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `Builds the Stage 1.7 Call 2 prompt messages.     Instructs the LLM to generate i`, `Agent 16: Interview generator (LLM Call 2).     Makes exactly one LLM call to pr`, `Builds the Stage 1.7 Call 1 prompt messages.     Instructs the LLM to perform cr` to the rest of the system?**
   _83 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.03 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.04 - nodes in this community are weakly interconnected._

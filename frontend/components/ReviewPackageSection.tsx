@@ -8,6 +8,33 @@ import { SegmentedControl } from "@/components/ui/SegmentedControl";
 
 export type ReviewPageTab = "page1" | "page2" | "page3" | "page4" | "page5" | "page6";
 
+type ThemeRecord = {
+  theme_id?: string;
+  title?: string;
+  unifying_axis?: string;
+  interview_direction?: string;
+  supporting_signal_ids?: string[];
+};
+
+type SignalRecord = {
+  signal_id?: string;
+  theme_id?: string;
+  title?: string;
+  direct_read?: string;
+  why_it_matters?: string;
+  depth_opening?: string;
+};
+
+type ReviewAnnotationContext = {
+  page_2_entities?: Record<string, { signal_ids?: string[]; theme_ids?: string[] }>;
+  page_3_fragments?: Record<
+    string,
+    Array<{ fragment_id: string; start_char: number; end_char: number; signal_ids?: string[]; theme_ids?: string[] }>
+  >;
+  themes?: ThemeRecord[];
+  signals?: SignalRecord[];
+};
+
 export function ReviewPackageSection({
   reviewPackage,
   annotationSource,
@@ -20,7 +47,7 @@ export function ReviewPackageSection({
   onActiveTabChange?: (tab: ReviewPageTab) => void;
 }) {
   const [internalActiveTab, setInternalActiveTab] = useState<ReviewPageTab>("page1");
-  const annotations = extractAnnotations(annotationSource);
+  const annotationContext = extractAnnotationContext(annotationSource);
   const hasSynthesisContent = Boolean(annotationSource);
   const activeTab = controlledActiveTab ?? internalActiveTab;
   const setActiveTab = onActiveTabChange ?? setInternalActiveTab;
@@ -58,11 +85,11 @@ export function ReviewPackageSection({
         {activeTab === "page2" ? (
           <ReviewPageTwoSection
             data={reviewPackage.pages_1_3.page_2_academic_and_engagement}
-            annotations={annotations}
+            annotations={annotationContext}
           />
         ) : null}
         {activeTab === "page3" ? (
-          <ReviewPageThreeSection data={reviewPackage.pages_1_3.page_3_essays} annotations={annotations} />
+          <ReviewPageThreeSection data={reviewPackage.pages_1_3.page_3_essays} annotations={annotationContext} />
         ) : null}
         {activeTab === "page4" && annotationSource ? (
           <SynthesisReportSection
@@ -87,7 +114,8 @@ export function ReviewPackageSection({
   );
 }
 
-function extractAnnotations(source?: Record<string, unknown> | null) {
+function extractAnnotationContext(source?: Record<string, unknown> | null): ReviewAnnotationContext | null {
+  const page4 = source?.page_4_focus_areas;
   const signalData = source?.signal_data;
   if (!signalData || typeof signalData !== "object" || Array.isArray(signalData)) {
     return null;
@@ -98,11 +126,18 @@ function extractAnnotations(source?: Record<string, unknown> | null) {
     return null;
   }
 
-  return annotations as {
-    page_2_entities?: Record<string, { signal_ids?: string[]; theme_ids?: string[] }>;
-    page_3_fragments?: Record<
-      string,
-      Array<{ fragment_id: string; start_char: number; end_char: number; signal_ids?: string[]; theme_ids?: string[] }>
-    >;
+  const themes =
+    page4 && typeof page4 === "object" && !Array.isArray(page4) && Array.isArray((page4 as Record<string, unknown>).themes)
+      ? ((page4 as Record<string, unknown>).themes as ThemeRecord[])
+      : [];
+  const signals =
+    page4 && typeof page4 === "object" && !Array.isArray(page4) && Array.isArray((page4 as Record<string, unknown>).signals)
+      ? ((page4 as Record<string, unknown>).signals as SignalRecord[])
+      : [];
+
+  return {
+    ...(annotations as ReviewAnnotationContext),
+    themes,
+    signals,
   };
 }

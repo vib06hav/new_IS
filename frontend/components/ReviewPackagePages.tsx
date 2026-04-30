@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState, type ReactNode } from "react";
+import { Fragment, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { Card } from "@/components/ui/Card";
 import { JsonSection } from "@/components/JsonSection";
 
@@ -20,6 +20,25 @@ type FragmentAnnotation = {
 type ReviewAnnotations = {
   page_2_entities?: Record<string, EntityAnnotation>;
   page_3_fragments?: Record<string, FragmentAnnotation[]>;
+  themes?: ThemeRecord[];
+  signals?: SignalRecord[];
+};
+
+type ThemeRecord = {
+  theme_id?: string;
+  title?: string;
+  unifying_axis?: string;
+  interview_direction?: string;
+  supporting_signal_ids?: string[];
+};
+
+type SignalRecord = {
+  signal_id?: string;
+  theme_id?: string;
+  title?: string;
+  direct_read?: string;
+  why_it_matters?: string;
+  depth_opening?: string;
 };
 
 type Page2Record = Record<string, unknown> & { entity_id?: string };
@@ -192,12 +211,12 @@ function ReviewPageTwoSectionLegacy({
                   return (
                     <article
                       key={`${key}-${entityId || index}`}
-                      className={`rounded-[1.2rem] border p-4 transition-colors ${highlighted
+                      className={`group/annotation relative rounded-[1.2rem] border p-4 transition-colors ${highlighted
                           ? "border-blue-200 bg-[linear-gradient(180deg,rgba(239,246,255,0.98),rgba(255,255,255,0.96))] shadow-[0_16px_30px_rgba(59,130,246,0.10)]"
                           : "border-slate-200 bg-white/80 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
                         }`}
-                      title={buildAnnotationTitle(annotation)}
                     >
+                      <StyledTooltip content={buildAnnotationTitle(annotation, annotations)} />
                       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                         <p className="font-semibold text-[color:var(--ink)]">{derivePageTwoTitle(item, label)}</p>
                         {entityId ? (
@@ -273,12 +292,12 @@ export function ReviewPageTwoSection({
             label: normalizeAcademicLabel(record, index),
             anchorId: readString(record.entity_id) ? buildEntityAnchorId(readString(record.entity_id)!) : undefined,
             highlighted: Boolean(getItemAnnotation(record, entityAnnotations)),
-            title: buildItemAnnotationTitle(record, entityAnnotations),
+            title: buildItemAnnotationTitle(record, annotations),
           }))}
           activeIndex={activeAcademic ? Math.min(selectedAcademic, pageData.academicRecords.length - 1) : -1}
           onSelect={setSelectedAcademic}
           highlighted={Boolean(activeAcademic && getItemAnnotation(activeAcademic, entityAnnotations))}
-          annotationTitle={buildItemAnnotationTitle(activeAcademic, entityAnnotations)}
+          annotationTitle={buildItemAnnotationTitle(activeAcademic, annotations)}
         >
           {activeAcademic ? (
             <div className="space-y-4">
@@ -290,6 +309,7 @@ export function ReviewPageTwoSection({
                   <p className="text-sm leading-6 text-[color:var(--muted)]">
                     {readString(activeAcademic.board_name) || "Board information unavailable"}
                   </p>
+                  <RelationSummary item={activeAcademic} annotations={annotations} />
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <CompactMetric
@@ -355,12 +375,12 @@ export function ReviewPageTwoSection({
             label: `ACT${index + 1}`,
             anchorId: readString(activity.entity_id) ? buildEntityAnchorId(readString(activity.entity_id)!) : undefined,
             highlighted: Boolean(getItemAnnotation(activity, entityAnnotations)),
-            title: buildItemAnnotationTitle(activity, entityAnnotations),
+            title: buildItemAnnotationTitle(activity, annotations),
           }))}
           activeIndex={activeActivity ? Math.min(selectedActivity, pageData.activities.length - 1) : -1}
           onSelect={setSelectedActivity}
           highlighted={Boolean(activeActivity && getItemAnnotation(activeActivity, entityAnnotations))}
-          annotationTitle={buildItemAnnotationTitle(activeActivity, entityAnnotations)}
+          annotationTitle={buildItemAnnotationTitle(activeActivity, annotations)}
         >
           {activeActivity ? (
             <div className="space-y-4">
@@ -374,6 +394,7 @@ export function ReviewPageTwoSection({
                     {normalizeActivityType(activeActivity.activity_type)}
                   </p>
                 ) : null}
+                <RelationSummary item={activeActivity} annotations={annotations} />
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
@@ -426,12 +447,12 @@ export function ReviewPageTwoSection({
             label: `LEAD${index + 1}`,
             anchorId: readString(entry.entity_id) ? buildEntityAnchorId(readString(entry.entity_id)!) : undefined,
             highlighted: Boolean(getItemAnnotation(entry, entityAnnotations)),
-            title: buildItemAnnotationTitle(entry, entityAnnotations),
+            title: buildItemAnnotationTitle(entry, annotations),
           }))}
           activeIndex={activeLeadership ? Math.min(selectedLeadership, pageData.leadership.length - 1) : -1}
           onSelect={setSelectedLeadership}
           highlighted={Boolean(activeLeadership && getItemAnnotation(activeLeadership, entityAnnotations))}
-          annotationTitle={buildItemAnnotationTitle(activeLeadership, entityAnnotations)}
+          annotationTitle={buildItemAnnotationTitle(activeLeadership, annotations)}
         >
           {activeLeadership ? (
             <div className="space-y-4">
@@ -448,6 +469,7 @@ export function ReviewPageTwoSection({
                       .join(" · ")}
                   </p>
                 ) : null}
+                <RelationSummary item={activeLeadership} annotations={annotations} />
               </div>
 
               <div className="grid gap-3">
@@ -491,12 +513,12 @@ export function ReviewPageTwoSection({
             label: normalizeTestLabel(entry, index),
             anchorId: readString(entry.entity_id) ? buildEntityAnchorId(readString(entry.entity_id)!) : undefined,
             highlighted: Boolean(getItemAnnotation(entry, entityAnnotations)),
-            title: buildItemAnnotationTitle(entry, entityAnnotations),
+            title: buildItemAnnotationTitle(entry, annotations),
           }))}
           activeIndex={activeTest ? Math.min(selectedTest, pageData.tests.length - 1) : -1}
           onSelect={setSelectedTest}
           highlighted={Boolean(activeTest && getItemAnnotation(activeTest, entityAnnotations))}
-          annotationTitle={buildItemAnnotationTitle(activeTest, entityAnnotations)}
+          annotationTitle={buildItemAnnotationTitle(activeTest, annotations)}
         >
           {activeTest ? (
             <div className="space-y-4">
@@ -505,6 +527,7 @@ export function ReviewPageTwoSection({
                   <p className="text-lg font-semibold tracking-tight text-[color:var(--ink)]">
                     {readString(activeTest.test_name) || "Test"}
                   </p>
+                  <RelationSummary item={activeTest} annotations={annotations} />
                 </div>
                 <CompactMetric label="Overall Result" value={formatTestScore(activeTest)} />
               </div>
@@ -583,10 +606,10 @@ export function ReviewPageThreeSection({
               <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-6">
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">Essay {index + 1}</span>
                     <p className="text-sm font-bold tracking-tight text-slate-800">{essay.prompt || "Personal Statement"}</p>
                   </div>
-                  <p className="text-[11px] font-medium tracking-wide text-slate-400">
+                  <p className="text-[11px] font-medium tracking-wide text-slate-400">{essay.word_count || 0} words</p>
+                  <p className="hidden text-[11px] font-medium tracking-wide text-slate-400">
                     {essay.word_count || 0} words {essay.entity_id ? `· ID: ${essay.entity_id}` : ""}
                   </p>
                 </div>
@@ -597,9 +620,8 @@ export function ReviewPageThreeSection({
                 ) : null}
               </div>
               <div className="text-base leading-relaxed text-slate-700">
-                <ApplicantProvidedLabel label="Writing Sample" />
-                <div className="mt-4">
-                  {renderEssayText(essay.full_text || "", essayAnnotations)}
+                <div>
+                  {renderEssayText(essay.full_text || "", essayAnnotations, annotations)}
                 </div>
               </div>
             </article>
@@ -660,8 +682,39 @@ function getItemAnnotation(item: Page2Record | undefined, annotations: Record<st
   return entityId ? annotations[entityId] : undefined;
 }
 
-function buildItemAnnotationTitle(item: Page2Record | undefined, annotations: Record<string, EntityAnnotation>) {
-  return buildAnnotationTitle(getItemAnnotation(item, annotations));
+function buildItemAnnotationTitle(item: Page2Record | undefined, annotations?: ReviewAnnotations | null) {
+  return buildAnnotationTitle(getItemAnnotation(item, annotations?.page_2_entities || {}), annotations);
+}
+
+function RelationSummary({ item, annotations }: { item: Page2Record | undefined; annotations?: ReviewAnnotations | null }) {
+  const annotation = getItemAnnotation(item, annotations?.page_2_entities || {});
+  if (!annotation) {
+    return null;
+  }
+
+  const themeMap = buildThemeMap(annotations?.themes || []);
+  const signalMap = buildSignalMap(annotations?.signals || []);
+  const themeTitle = (annotation.theme_ids || []).map((themeId) => themeMap[themeId]?.title).find(Boolean);
+  const signalTitle = (annotation.signal_ids || []).map((signalId) => signalMap[signalId]?.title).find(Boolean);
+
+  if (!themeTitle && !signalTitle) {
+    return null;
+  }
+
+  return (
+    <div className="pt-1 text-[11px] leading-4 text-slate-500">
+      {themeTitle ? (
+        <p>
+          <span className="font-semibold text-slate-600">Theme:</span> {themeTitle}
+        </p>
+      ) : null}
+      {signalTitle ? (
+        <p>
+          <span className="font-semibold text-slate-600">Signal:</span> {signalTitle}
+        </p>
+      ) : null}
+    </div>
+  );
 }
 
 function normalizeAcademicLabel(record: Page2Record, index: number) {
@@ -780,7 +833,7 @@ function normalizeEssayAnnotations(annotations: FragmentAnnotation[]) {
     .sort((left, right) => left.start_char - right.start_char);
 }
 
-function renderEssayText(text: string, annotations: FragmentAnnotation[]) {
+function renderEssayText(text: string, annotations: FragmentAnnotation[], annotationContext?: ReviewAnnotations | null) {
   if (!text) return null;
 
   // Stable segmentation: We identify [start, end] ranges for each paragraph
@@ -850,9 +903,9 @@ function renderEssayText(text: string, annotations: FragmentAnnotation[]) {
               <span
                 key={annotation.fragment_id}
                 id={buildFragmentAnchorId(annotation.fragment_id)}
-                className="rounded-sm bg-blue-100/60 px-0.5 font-medium underline decoration-blue-500/40 decoration-2 underline-offset-4 transition-colors hover:bg-blue-100"
-                title={buildAnnotationTitle(annotation)}
+                className="group/annotation relative rounded-sm bg-blue-100/60 px-0.5 font-medium underline decoration-blue-500/40 decoration-2 underline-offset-4 transition-colors hover:bg-blue-100"
               >
+                <StyledTooltip content={buildAnnotationTitle(annotation, annotationContext)} compact />
                 {segText.slice(startInP, endInP)}
               </span>
             );
@@ -870,14 +923,95 @@ function renderEssayText(text: string, annotations: FragmentAnnotation[]) {
   );
 }
 
-function buildAnnotationTitle(annotation?: EntityAnnotation | FragmentAnnotation) {
+function buildAnnotationTitle(annotation?: EntityAnnotation | FragmentAnnotation, annotationContext?: ReviewAnnotations | null) {
   if (!annotation) {
     return undefined;
   }
 
-  const signalPart = annotation.signal_ids?.length ? `Signals: ${annotation.signal_ids.join(", ")}` : "";
-  const themePart = annotation.theme_ids?.length ? `Themes: ${annotation.theme_ids.join(", ")}` : "";
-  return [signalPart, themePart].filter(Boolean).join(" | ") || undefined;
+  const themeMap = buildThemeMap(annotationContext?.themes || []);
+  const signalMap = buildSignalMap(annotationContext?.signals || []);
+  const themeTitles = (annotation.theme_ids || [])
+    .map((themeId) => themeMap[themeId]?.title)
+    .filter(Boolean) as string[];
+  const resolvedSignals = (annotation.signal_ids || [])
+    .map((signalId) => signalMap[signalId])
+    .filter(Boolean) as SignalRecord[];
+  const signalTitles = resolvedSignals.map((signal) => signal.title).filter(Boolean) as string[];
+  return [
+    themeTitles.length ? `Relevant to: ${themeTitles.join(", ")}` : "",
+    signalTitles.length ? `Signal: ${signalTitles.join(", ")}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n") || undefined;
+}
+
+function buildAnnotationBadge(annotation?: EntityAnnotation | FragmentAnnotation, annotationContext?: ReviewAnnotations | null) {
+  if (!annotation) {
+    return "Referenced in the synthesized report.";
+  }
+
+  const themeMap = buildThemeMap(annotationContext?.themes || []);
+  const signalMap = buildSignalMap(annotationContext?.signals || []);
+  const themeTitle = (annotation.theme_ids || []).map((themeId) => themeMap[themeId]?.title).find(Boolean);
+  const signalTitle = (annotation.signal_ids || []).map((signalId) => signalMap[signalId]?.title).find(Boolean);
+
+  if (themeTitle && signalTitle) {
+    return `${themeTitle} · ${signalTitle}`;
+  }
+  if (themeTitle) {
+    return themeTitle;
+  }
+  if (signalTitle) {
+    return signalTitle;
+  }
+  return "Referenced in synthesis";
+}
+
+function buildThemeMap(themes: ThemeRecord[]) {
+  return Object.fromEntries(
+    themes
+      .filter((theme) => theme.theme_id)
+      .map((theme) => [theme.theme_id as string, theme]),
+  ) as Record<string, ThemeRecord>;
+}
+
+function buildSignalMap(signals: SignalRecord[]) {
+  return Object.fromEntries(
+    signals
+      .filter((signal) => signal.signal_id)
+      .map((signal) => [signal.signal_id as string, signal]),
+  ) as Record<string, SignalRecord>;
+}
+
+function StyledTooltip({ content, compact = false }: { content?: string; compact?: boolean }) {
+  if (!content) {
+    return null;
+  }
+
+  const lines = content
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  return (
+    <span
+      className={`pointer-events-none absolute left-1/2 top-0 z-30 w-max max-w-[16rem] -translate-x-1/2 -translate-y-[calc(100%+0.45rem)] rounded-[0.7rem] border border-slate-300/80 bg-[#fffdf8] px-2.5 py-2 text-left shadow-[0_4px_10px_rgba(15,23,42,0.06)] opacity-0 transition-opacity duration-100 group-hover/annotation:opacity-100 group-focus-within/annotation:opacity-100 ${
+        compact ? "max-w-[12rem]" : ""
+      }`}
+      role="tooltip"
+    >
+      <span className="relative block space-y-0.5">
+        {lines.map((line, index) => (
+          <span
+            key={`${line}-${index}`}
+            className={`block ${index === 0 ? "text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-500" : "text-[11px] font-medium leading-4 text-slate-900"}`}
+          >
+            {line}
+          </span>
+        ))}
+      </span>
+    </span>
+  );
 }
 
 function derivePageTwoTitle(item: Page2Record, label: string) {
@@ -1005,12 +1139,11 @@ function PageTwoPanel({
   return (
     <section
       id={anchorId}
-      className={`isolate overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_18px_36px_rgba(15,23,42,0.08)] transition-colors ${
+      className={`isolate relative overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_18px_36px_rgba(15,23,42,0.08)] transition-colors ${
         highlighted
           ? "border-blue-200 shadow-[0_18px_32px_rgba(59,130,246,0.12)]"
           : "border-slate-200"
         }`}
-      title={annotationTitle}
     >
       {tabs.length ? (
         <div className="relative z-0 overflow-x-auto border-b border-slate-200 bg-[linear-gradient(180deg,rgba(248,250,252,0.96),rgba(255,255,255,0.82))] px-4 pt-3">
@@ -1028,7 +1161,6 @@ function PageTwoPanel({
                     onSelect(index);
                   }}
                   onClick={() => onSelect(index)}
-                  title={tab.title}
                   className={`relative touch-manipulation rounded-t-[1rem] border px-4 py-2.5 text-left transition-all focus:outline-none ${active
                       ? "z-10 border-slate-200 border-b-white bg-white text-[color:var(--ink)] shadow-[0_-4px_14px_rgba(15,23,42,0.08)]"
                       : "z-0 border-transparent bg-white/45 text-[color:var(--muted)] hover:bg-white/75"
