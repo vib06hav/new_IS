@@ -8,6 +8,7 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.auth.workos import build_state
 from app.auth.security import create_access_token
 from app.config import settings
 from app.database import Base, get_db
@@ -65,6 +66,12 @@ def session_csrf_headers(client: TestClient, *, origin: str = "http://testserver
         settings.CSRF_HEADER_NAME: token,
         "Origin": origin,
     }
+
+
+def set_oauth_state_cookie(client: TestClient, portal: str, nonce: str) -> str:
+    state = build_state(portal, nonce)  # type: ignore[arg-type]
+    client.cookies.set("agis_oauth_state", state)
+    return state
 
 
 class FakeWorkOSUser:
@@ -280,10 +287,11 @@ def test_founder_callback_bootstraps_admin(monkeypatch):
         monkeypatch,
         {"founder-code": FakeWorkOSUser(user_id="founder-1", email=settings.FOUNDER_ADMIN_EMAIL, first_name="Founder", last_name="Admin")},
     )
+    state = set_oauth_state_cookie(client, "admin", "test-nonce-founder")
 
     response = client.get(
         "/auth/callback",
-        params={"code": "founder-code", "state": "eyJwb3J0YWwiOiJhZG1pbiJ9"},
+        params={"code": "founder-code", "state": state},
         follow_redirects=False,
     )
 
@@ -319,10 +327,11 @@ def test_invited_interviewer_activates_on_first_login(monkeypatch):
         monkeypatch,
         {"invite-code": FakeWorkOSUser(user_id="workos-invite", email="invited@example.com")},
     )
+    state = set_oauth_state_cookie(client, "interviewer", "test-nonce-invite")
 
     response = client.get(
         "/auth/callback",
-        params={"code": "invite-code", "state": "eyJwb3J0YWwiOiJpbnRlcnZpZXdlciJ9"},
+        params={"code": "invite-code", "state": state},
         follow_redirects=False,
     )
 
@@ -348,10 +357,11 @@ def test_uninvited_identity_is_denied(monkeypatch):
         monkeypatch,
         {"stranger-code": FakeWorkOSUser(user_id="stranger-1", email="stranger@example.com")},
     )
+    state = set_oauth_state_cookie(client, "interviewer", "test-nonce-stranger")
 
     response = client.get(
         "/auth/callback",
-        params={"code": "stranger-code", "state": "eyJwb3J0YWwiOiJpbnRlcnZpZXdlciJ9"},
+        params={"code": "stranger-code", "state": state},
         follow_redirects=False,
     )
 
@@ -378,10 +388,11 @@ def test_deactivated_interviewer_cannot_access_session(monkeypatch):
         monkeypatch,
         {"disabled-code": FakeWorkOSUser(user_id="disabled-1", email="disabled@example.com")},
     )
+    state = set_oauth_state_cookie(client, "interviewer", "test-nonce-disabled")
 
     login_response = client.get(
         "/auth/callback",
-        params={"code": "disabled-code", "state": "eyJwb3J0YWwiOiJpbnRlcnZpZXdlciJ9"},
+        params={"code": "disabled-code", "state": state},
         follow_redirects=False,
     )
     assert login_response.status_code == 302
@@ -399,10 +410,11 @@ def test_cookie_session_requires_csrf_header_for_mutations(monkeypatch):
         monkeypatch,
         {"founder-code": FakeWorkOSUser(user_id="founder-2", email=settings.FOUNDER_ADMIN_EMAIL)},
     )
+    state = set_oauth_state_cookie(client, "admin", "test-nonce-csrf-blocked")
 
     login_response = client.get(
         "/auth/callback",
-        params={"code": "founder-code", "state": "eyJwb3J0YWwiOiJhZG1pbiJ9"},
+        params={"code": "founder-code", "state": state},
         follow_redirects=False,
     )
     assert login_response.status_code == 302
@@ -427,10 +439,11 @@ def test_cookie_session_mutation_succeeds_with_matching_csrf_header(monkeypatch)
         monkeypatch,
         {"founder-code": FakeWorkOSUser(user_id="founder-3", email=settings.FOUNDER_ADMIN_EMAIL)},
     )
+    state = set_oauth_state_cookie(client, "admin", "test-nonce-csrf-allowed")
 
     login_response = client.get(
         "/auth/callback",
-        params={"code": "founder-code", "state": "eyJwb3J0YWwiOiJhZG1pbiJ9"},
+        params={"code": "founder-code", "state": state},
         follow_redirects=False,
     )
     assert login_response.status_code == 302
@@ -456,10 +469,11 @@ def test_session_endpoint_can_proactively_refresh_cookie(monkeypatch):
         monkeypatch,
         {"founder-code": FakeWorkOSUser(user_id="founder-5", email=settings.FOUNDER_ADMIN_EMAIL)},
     )
+    state = set_oauth_state_cookie(client, "admin", "test-nonce-refresh")
 
     login_response = client.get(
         "/auth/callback",
-        params={"code": "founder-code", "state": "eyJwb3J0YWwiOiJhZG1pbiJ9"},
+        params={"code": "founder-code", "state": state},
         follow_redirects=False,
     )
     assert login_response.status_code == 302
@@ -485,10 +499,11 @@ def test_logout_clears_session_cookie_and_returns_logout_url(monkeypatch):
         monkeypatch,
         {"founder-code": FakeWorkOSUser(user_id="founder-4", email=settings.FOUNDER_ADMIN_EMAIL)},
     )
+    state = set_oauth_state_cookie(client, "admin", "test-nonce-logout")
 
     login_response = client.get(
         "/auth/callback",
-        params={"code": "founder-code", "state": "eyJwb3J0YWwiOiJhZG1pbiJ9"},
+        params={"code": "founder-code", "state": state},
         follow_redirects=False,
     )
     assert login_response.status_code == 302
@@ -498,6 +513,29 @@ def test_logout_clears_session_cookie_and_returns_logout_url(monkeypatch):
 
     assert response.status_code == 200
     assert response.json()["logout_url"] == settings.WORKOS_LOGOUT_REDIRECT_URI
+
+
+def test_callback_rejects_missing_oauth_state_cookie(monkeypatch):
+    client = make_client()
+    db = TestingSessionLocal()
+    db.query(User).delete()
+    db.commit()
+    db.close()
+
+    install_fake_workos(
+        monkeypatch,
+        {"founder-code": FakeWorkOSUser(user_id="founder-6", email=settings.FOUNDER_ADMIN_EMAIL)},
+    )
+
+    state = build_state("admin", "test-nonce-missing-cookie")
+    response = client.get(
+        "/auth/callback",
+        params={"code": "founder-code", "state": state},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 302
+    assert "/admin/login?error=Invalid+login+state" in response.headers["location"]
 
 
 def test_ensure_dev_admin_user_is_idempotent():

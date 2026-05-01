@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import inspect
 import json
+import secrets
 from urllib.parse import urlencode, urljoin
 from functools import lru_cache
 from typing import Literal
@@ -15,6 +16,7 @@ from workos.types.user_management import User as WorkOSUser
 from app.config import settings
 
 PortalRole = Literal["admin", "interviewer"]
+OAUTH_STATE_COOKIE_NAME = "agis_oauth_state"
 
 
 @lru_cache(maxsize=1)
@@ -22,13 +24,17 @@ def get_workos_client() -> WorkOSClient:
     return WorkOSClient(api_key=settings.WORKOS_API_KEY, client_id=settings.WORKOS_CLIENT_ID)
 
 
-def build_state(role: PortalRole) -> str:
-    payload = {"portal": role}
+def build_state(role: PortalRole, nonce: str) -> str:
+    payload = {"portal": role, "nonce": nonce}
     encoded = json.dumps(payload, separators=(",", ":")).encode("utf-8")
     return base64.urlsafe_b64encode(encoded).decode("utf-8")
 
 
-def parse_state(value: str | None) -> PortalRole:
+def generate_oauth_state(role: PortalRole) -> str:
+    return build_state(role, secrets.token_urlsafe(32))
+
+
+def parse_state(value: str | None) -> tuple[PortalRole, str]:
     if not value:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing login state")
     try:
@@ -37,17 +43,18 @@ def parse_state(value: str | None) -> PortalRole:
     except Exception as exc:  # pragma: no cover - defensive input guard
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid login state") from exc
     portal = payload.get("portal")
-    if portal not in {"admin", "interviewer"}:
+    nonce = payload.get("nonce")
+    if portal not in {"admin", "interviewer"} or not isinstance(nonce, str) or not nonce:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid login state")
-    return portal
+    return portal, nonce
 
 
-def get_authorization_url(role: PortalRole) -> str:
+def get_authorization_url(role: PortalRole, state: str) -> str:
     client = get_workos_client()
     return client.user_management.get_authorization_url(
         provider="authkit",
         redirect_uri=settings.WORKOS_REDIRECT_URI,
-        state=build_state(role),
+        state=state,
     )
 
 

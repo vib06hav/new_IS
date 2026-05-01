@@ -17,6 +17,7 @@ import type {
   SessionResponse,
 } from "@/lib/types";
 import { getCsrfToken } from "@/lib/csrf";
+import { revalidateSession } from "@/lib/auth";
 
 export class ApiError extends Error {
   status: number;
@@ -55,7 +56,7 @@ async function parseError(response: Response) {
   return `${response.status} ${response.statusText}`;
 }
 
-async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function apiRequest<T>(path: string, init: RequestInit = {}, _isRetry = false): Promise<T> {
   const headers = new Headers(init.headers);
   const method = (init.method || "GET").toUpperCase();
   if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(method)) {
@@ -70,6 +71,20 @@ async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
     ...init,
     headers,
   });
+
+  if (response.status === 401 && !_isRetry) {
+    // Multiple concurrent requests often hit 401 simultaneously when the WorkOS
+    // access token expires. revalidateSession() is deduplicated via inflightValidation —
+    // all concurrent callers share one in-flight refresh, so only ONE WorkOS
+    // refresh call is made regardless of how many requests failed at once.
+    const snapshot = await revalidateSession();
+    if (snapshot.authState === "authenticated") {
+      return apiRequest<T>(path, init, true);
+    }
+    // Session genuinely expired — let the 401 propagate.
+    throw new ApiError(401, "Not authenticated");
+  }
+
   if (!response.ok) {
     throw new ApiError(response.status, await parseError(response));
   }

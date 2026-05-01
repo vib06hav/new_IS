@@ -99,9 +99,10 @@ def bootstrap_dev_admin():
 def health_check(db: Session = Depends(get_db)):
     # Simply running a query to verify db connection is alive
     db.execute(text("SELECT 1"))
-    coordination = get_coordination_manager()
-    return {
-        "status": "ok",
-        "message": "Service is healthy and database is reachable.",
-        "coordination": "redis" if coordination.uses_redis else "in-memory",
-    }
+    if settings.APP_ENV == "development":
+        coordination = get_coordination_manager()
+        return {
+            "status": "ok",
+            "coordination": "redis" if coordination.uses_redis else "in-memory",
+        }
+    return {"status": "ok"}

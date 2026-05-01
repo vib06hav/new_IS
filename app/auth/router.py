@@ -1,4 +1,5 @@
 import logging
+from hmac import compare_digest
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from fastapi.responses import RedirectResponse
@@ -6,7 +7,15 @@ from sqlalchemy.orm import Session
 
 from app.auth.schemas import LogoutResponse, SessionResponse, SessionUser
 from app.auth.service import build_profile_image_url, get_logout_url, sync_user_from_workos_identity
-from app.auth.workos import authenticate_with_code_and_seal, build_error_redirect, build_frontend_url, get_authorization_url, parse_state
+from app.auth.workos import (
+    OAUTH_STATE_COOKIE_NAME,
+    authenticate_with_code_and_seal,
+    build_error_redirect,
+    build_frontend_url,
+    generate_oauth_state,
+    get_authorization_url,
+    parse_state,
+)
 from app.config import settings
 from app.database import get_db
 from app.models.user import User
@@ -50,20 +59,54 @@ def _clear_session_cookie(response: Response) -> None:
     )
 
 
+def _set_oauth_state_cookie(response: Response, state: str) -> None:
+    response.set_cookie(
+        key=OAUTH_STATE_COOKIE_NAME,
+        value=state,
+        httponly=True,
+        secure=settings.APP_ENV == "production",
+        samesite="lax",
+        path="/",
+        max_age=600,
+    )
+
+
+def _clear_oauth_state_cookie(response: Response) -> None:
+    response.delete_cookie(
+        key=OAUTH_STATE_COOKIE_NAME,
+        httponly=True,
+        secure=settings.APP_ENV == "production",
+        samesite="lax",
+        path="/",
+    )
+
+
 @router.get("/login")
 def login(portal: str = Query(..., pattern="^(admin|interviewer)$")):
-    return RedirectResponse(url=get_authorization_url(portal))  # type: ignore[arg-type]
+    state = generate_oauth_state(portal)  # type: ignore[arg-type]
+    response = RedirectResponse(url=get_authorization_url(portal, state))
+    _set_oauth_state_cookie(response, state)
+    return response
 
 
 @router.get("/callback")
 def callback(
+    request: Request,
     code: str | None = Query(default=None),
     state: str | None = Query(default=None),
     db: Session = Depends(get_db),
 ):
-    portal = parse_state(state)
+    response: RedirectResponse | None = None
+    portal, _nonce = parse_state(state)
+    state_cookie = request.cookies.get(OAUTH_STATE_COOKIE_NAME)
+    if not state_cookie or not state or not compare_digest(state_cookie, state):
+        response = RedirectResponse(url=build_error_redirect(portal, "Invalid login state"), status_code=302)
+        _clear_oauth_state_cookie(response)
+        return response
     if not code:
-        return RedirectResponse(url=build_error_redirect(portal, "Missing authentication code"), status_code=302)
+        response = RedirectResponse(url=build_error_redirect(portal, "Missing authentication code"), status_code=302)
+        _clear_oauth_state_cookie(response)
+        return response
 
     try:
         workos_user, sealed_session = authenticate_with_code_and_seal(code)
@@ -76,13 +119,18 @@ def callback(
         response = RedirectResponse(url=redirect_target, status_code=302)
         _set_session_cookie(response, sealed_session)
         set_csrf_cookie(response, generate_csrf_token())
+        _clear_oauth_state_cookie(response)
         return response
     except HTTPException as exc:
         logger.warning("AuthKit login rejected for portal=%s: %s", portal, exc.detail)
-        return RedirectResponse(url=build_error_redirect(portal, str(exc.detail)), status_code=302)
+        response = RedirectResponse(url=build_error_redirect(portal, str(exc.detail)), status_code=302)
+        _clear_oauth_state_cookie(response)
+        return response
     except Exception:
         logger.exception("AuthKit callback failed for portal=%s", portal)
-        return RedirectResponse(url=build_error_redirect(portal, "Unable to complete sign in"), status_code=302)
+        response = RedirectResponse(url=build_error_redirect(portal, "Unable to complete sign in"), status_code=302)
+        _clear_oauth_state_cookie(response)
+        return response
 
 
 @router.get("/session", response_model=SessionResponse)

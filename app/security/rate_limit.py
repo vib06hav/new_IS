@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import threading
 import time
 from collections import deque
@@ -16,6 +17,8 @@ except ModuleNotFoundError:  # pragma: no cover - depends on local environment
         """Fallback redis error when the redis package is unavailable."""
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class RateLimiterBackend(Protocol):
@@ -72,6 +75,7 @@ class RateLimiter:
     def __init__(self) -> None:
         self._fallback = InMemoryRateLimiter()
         self._redis_backend: RedisRateLimiter | None = None
+        self.backend_name = "memory"
         if settings.REDIS_URL and Redis is not None:
             try:
                 client = Redis.from_url(
@@ -82,10 +86,16 @@ class RateLimiter:
                 )
                 client.ping()
                 self._redis_backend = RedisRateLimiter(client, settings.REDIS_KEY_PREFIX)
+                self.backend_name = "redis"
             except RedisError:
                 self._redis_backend = None
+                logger.warning("Rate limiter Redis connection failed; falling back to in-memory buckets.")
         elif settings.REDIS_URL:
             self._redis_backend = None
+            logger.warning("REDIS_URL is configured but redis client is unavailable; falling back to in-memory buckets.")
+
+        if settings.APP_ENV == "production" and self.backend_name != "redis":
+            logger.warning("Production rate limiting is running in fallback in-memory mode.")
 
     def clear(self) -> None:
         self._fallback.clear()

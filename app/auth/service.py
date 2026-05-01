@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import logging
+import threading
+import time
 from datetime import datetime
 from typing import Any
 
@@ -18,6 +21,40 @@ from app.models.user import User
 AUTHKIT_PLACEHOLDER_PASSWORD = "authkit-disabled-local-password"
 INTERVIEWER_ACCESS_STATES = {"invited", "active", "deactivated"}
 logger = logging.getLogger(__name__)
+
+# ─── Session refresh concurrency guard ────────────────────────────────────────
+# WorkOS treats simultaneous use of the same refresh token as a security event
+# and may revoke the session. When the access token expires and multiple
+# concurrent requests all try session.refresh() at once, we serialize the
+# actual WorkOS call per session and reuse the result within a short window.
+
+_REFRESH_CACHE: dict[str, tuple[str, float]] = {}   # session_hash -> (new_sealed, monotonic_ts)
+_REFRESH_LOCKS: dict[str, threading.Lock] = {}
+_REFRESH_REGISTRY_LOCK = threading.Lock()
+_REFRESH_CACHE_TTL = 15  # seconds
+
+
+def _get_refresh_lock(session_hash: str) -> threading.Lock:
+    with _REFRESH_REGISTRY_LOCK:
+        if session_hash not in _REFRESH_LOCKS:
+            _REFRESH_LOCKS[session_hash] = threading.Lock()
+        return _REFRESH_LOCKS[session_hash]
+
+
+def _get_cached_sealed(session_hash: str) -> str | None:
+    with _REFRESH_REGISTRY_LOCK:
+        entry = _REFRESH_CACHE.get(session_hash)
+        if entry:
+            new_sealed, ts = entry
+            if time.monotonic() - ts < _REFRESH_CACHE_TTL:
+                return new_sealed
+            del _REFRESH_CACHE[session_hash]
+    return None
+
+
+def _cache_sealed(session_hash: str, new_sealed: str) -> None:
+    with _REFRESH_REGISTRY_LOCK:
+        _REFRESH_CACHE[session_hash] = (new_sealed, time.monotonic())
 
 
 def build_profile_image_url(user: User) -> str | None:
@@ -307,25 +344,80 @@ def get_current_user_from_workos_session(
                     )
             return sync_user_from_workos_identity(db, auth_response.user)
 
-        try:
-            refresh_response = session.refresh()
-        except Exception as exc:
-            logger.exception("auth.provider_refresh_exception error=%s", exc.__class__.__name__)
-            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Authentication service unavailable") from exc
+        # ── Token expired: refresh with concurrency guard ─────────────────
+        # Concurrent requests sharing the same expired sealed session must not
+        # all call session.refresh() simultaneously — WorkOS detects refresh-
+        # token reuse and revokes the session as a security measure.
+        session_hash = hashlib.sha256(sealed_session[:128].encode()).hexdigest()
 
-        if not refresh_response.authenticated:
-            logger.info("auth.refresh_failed")
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-        logger.info("auth.refresh_succeeded")
-        response.set_cookie(
-            key=settings.SESSION_COOKIE_NAME,
-            value=refresh_response.sealed_session,
-            httponly=True,
-            secure=settings.APP_ENV == "production",
-            samesite=settings.SESSION_COOKIE_SAMESITE,
-            path="/",
-        )
-        return sync_user_from_workos_identity(db, refresh_response.user)
+        def _apply_sealed(sealed: str) -> User | None:
+            """Load a refreshed sealed session and return the user if still valid."""
+            try:
+                refreshed = get_workos_client().user_management.load_sealed_session(
+                    session_data=sealed,
+                    cookie_password=settings.WORKOS_COOKIE_PASSWORD,
+                )
+                auth = refreshed.authenticate()
+                if auth.authenticated:
+                    response.set_cookie(
+                        key=settings.SESSION_COOKIE_NAME,
+                        value=sealed,
+                        httponly=True,
+                        secure=settings.APP_ENV == "production",
+                        samesite=settings.SESSION_COOKIE_SAMESITE,
+                        path="/",
+                    )
+                    return sync_user_from_workos_identity(db, auth.user)
+            except Exception:
+                pass
+            return None
+
+        # Fast path: another request already refreshed this session.
+        cached = _get_cached_sealed(session_hash)
+        if cached:
+            user = _apply_sealed(cached)
+            if user:
+                logger.info("auth.refresh_cache_hit")
+                return user
+
+        # Slow path: acquire per-session lock so only ONE WorkOS refresh call
+        # is made regardless of how many concurrent requests share this session.
+        refresh_lock = _get_refresh_lock(session_hash)
+        with refresh_lock:
+            # Double-check after acquiring the lock — another thread may have
+            # already refreshed while we were waiting.
+            cached = _get_cached_sealed(session_hash)
+            if cached:
+                user = _apply_sealed(cached)
+                if user:
+                    logger.info("auth.refresh_cache_hit_after_lock")
+                    return user
+
+            try:
+                refresh_response = session.refresh()
+            except Exception as exc:
+                logger.exception("auth.provider_refresh_exception error=%s", exc.__class__.__name__)
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="Authentication service unavailable",
+                ) from exc
+
+            if not refresh_response.authenticated:
+                logger.info("auth.refresh_failed")
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+
+            logger.info("auth.refresh_succeeded")
+            new_sealed = refresh_response.sealed_session
+            _cache_sealed(session_hash, new_sealed)
+            response.set_cookie(
+                key=settings.SESSION_COOKIE_NAME,
+                value=new_sealed,
+                httponly=True,
+                secure=settings.APP_ENV == "production",
+                samesite=settings.SESSION_COOKIE_SAMESITE,
+                path="/",
+            )
+            return sync_user_from_workos_identity(db, refresh_response.user)
     except HTTPException:
         raise
     except Exception as exc:
