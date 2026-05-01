@@ -10,7 +10,7 @@ from uuid import UUID
 
 import httpx
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -25,8 +25,8 @@ from app.auth.security import get_password_hash
 
 
 API_BASE_URL = "http://127.0.0.1:8000"
-DEFAULT_PDF = "tests/pdfs/Dummy App (1)_v8_filled.pdf"
-OUTPUT_ROOT = Path("tests/outputs/stage_1_7_runs")
+DEFAULT_PDF = "demo-pdfs/Dummy App (1)_v8_filled.pdf"
+OUTPUT_ROOT = Path("dev/generated/test-outputs/stage_1_7_runs")
 
 # Credentials for our test admin
 TEST_ADMIN_EMAIL = "test_admin_pipeline@example.com"
@@ -311,7 +311,7 @@ def main() -> int:
     parser.add_argument(
         "--pdf",
         default=DEFAULT_PDF,
-        help="Path to the PDF to upload. Defaults to a sample file in tests/pdfs.",
+        help="Path to the PDF to upload. Defaults to a sample file in demo-pdfs.",
     )
     args = parser.parse_args()
 

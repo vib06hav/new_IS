@@ -11,7 +11,7 @@ from app.agents.personal_extractor import extract_personal_info
 from app.agents.section_scope_resolver import resolve_section_scopes
 from app.agents.section_detector import detect_sections
 from app.agents.test_extractor import extract_test_records
-from tests.corpus_harness import _run_deterministic_pipeline_stages
+from dev.tests.corpus_harness import _run_deterministic_pipeline_stages, PDF_DIR
 from app.utils.row_grouper import build_layout_rows, group_blocks_into_rows
 from app.utils.section_types import classify_section_label
 from app.utils.text_normalization import normalize_pdf_text
@@ -491,7 +491,7 @@ def test_corpus_parent_and_12th_regressions_are_fixed():
         "Dummy App (8)_v8_filled.pdf",
     ]:
         stages = _run_deterministic_pipeline_stages(
-            Path("tests/pdfs") / pdf_name,
+            PDF_DIR / pdf_name,
             parser_engine_version="v2",
         )
         family_background = stages["personal_data"]["identifiers"]["family_background"]

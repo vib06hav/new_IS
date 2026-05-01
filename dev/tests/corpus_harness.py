@@ -20,7 +20,8 @@ from app.agents.test_extractor import extract_test_records
 from app.utils.layout_normalizer import normalize_layout
 
 
-PDF_DIR = Path(__file__).resolve().parent / "pdfs"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+PDF_DIR = REPO_ROOT / "demo-pdfs"
 MANIFEST_PATH = Path(__file__).resolve().parent / "corpus_manifest.json"
 ARTIFACT_STAGE_FILES = {
     "layout_data": "01_layout_raw.json",

@@ -8,7 +8,7 @@ from typing import Any
 from uuid import UUID
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -27,7 +27,7 @@ from app.policy.guard import validate_signals, validate_themes
 from app.projection.ros_projector import project_ros
 
 
-OUTPUT_ROOT = Path("tests/outputs/stage_1_7_boundary_runs")
+OUTPUT_ROOT = Path("dev/generated/test-outputs/stage_1_7_boundary_runs")
 
 
 def _jsonable(value: Any) -> Any:

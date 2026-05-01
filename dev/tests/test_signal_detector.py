@@ -7,8 +7,8 @@ from app.agents.signal_detector import detect_signals
 from app.policy.guard import validate_question_groups, validate_signals
 
 
-FIXTURE_DIR = Path(__file__).resolve().parent / "pipeline_stages"
-STAGE17_FIXTURE_DIR = Path(__file__).resolve().parent / "stage17_fake_llm_output"
+FIXTURE_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "pipeline-stages"
+STAGE17_FIXTURE_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "fake-llm-output"
 
 
 def _academic_entry(

@@ -1,6 +1,6 @@
 import json
 
-from tests.corpus_harness import diff_corpus_versions, dump_pdf_artifacts, load_manifest, run_corpus, PDF_DIR
+from dev.tests.corpus_harness import diff_corpus_versions, dump_pdf_artifacts, load_manifest, run_corpus, PDF_DIR
 
 
 def test_deterministic_parser_matches_corpus_manifest():

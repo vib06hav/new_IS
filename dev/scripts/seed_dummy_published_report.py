@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from uuid import UUID
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -120,7 +120,7 @@ def find_existing_interviewer(db, lookup: str) -> User | None:
 
 
 def copy_source_pdf(application_id: UUID) -> str:
-    source_pdf = PROJECT_ROOT / "tests" / "pdfs" / f"{SEED_DISPLAY_ID}.pdf"
+    source_pdf = PROJECT_ROOT / "demo-pdfs" / f"{SEED_DISPLAY_ID}.pdf"
     if not source_pdf.exists():
         raise FileNotFoundError(f"Seed PDF not found: {source_pdf}")
 
@@ -230,8 +230,8 @@ def main() -> int:
     args = parser.parse_args()
     application_id = UUID(args.application_id)
 
-    canonical_path = PROJECT_ROOT / "tests" / "pipeline_stages" / "11_canonical_assembled.json"
-    ros_path = PROJECT_ROOT / "tests" / "stage17_fake_llm_output" / "09_final_ros.json"
+    canonical_path = PROJECT_ROOT / "dev" / "fixtures" / "pipeline-stages" / "11_canonical_assembled.json"
+    ros_path = PROJECT_ROOT / "dev" / "fixtures" / "fake-llm-output" / "09_final_ros.json"
     canonical_data = load_json(canonical_path)
     ros_content = load_json(ros_path)
     storage_key = copy_source_pdf(application_id)

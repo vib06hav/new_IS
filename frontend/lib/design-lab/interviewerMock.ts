@@ -1,5 +1,5 @@
 import type { ApplicationDetailInterviewer } from "@/lib/types";
-import finalRos from "../../../tests/stage17_fake_llm_output/09_final_ros.json";
+import finalRos from "../../../dev/fixtures/fake-llm-output/09_final_ros.json";
 
 type RosPayload = typeof finalRos;
 

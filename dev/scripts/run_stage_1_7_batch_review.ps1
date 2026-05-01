@@ -1,5 +1,5 @@
 param(
-    [string]$PdfDir = "tests/pdfs",
+    [string]$PdfDir = "demo-pdfs",
     [switch]$Rebuild
 )
 
@@ -12,7 +12,7 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $projectRoot
 
 $timestamp = (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ")
-$reviewRoot = Join-Path $projectRoot ("tests/outputs/stage_1_7_batch_review/" + $timestamp)
+$reviewRoot = Join-Path $projectRoot ("dev/generated/test-outputs/stage_1_7_batch_review/" + $timestamp)
 $fullRunsHostRoot = Join-Path $reviewRoot "full_runs"
 $boundaryRunsHostRoot = Join-Path $reviewRoot "boundary_runs"
 $logsRoot = Join-Path $reviewRoot "logs"
@@ -70,10 +70,10 @@ function Copy-ContainerPath {
 
 foreach ($pdf in $pdfFiles) {
     $safeName = [IO.Path]::GetFileNameWithoutExtension($pdf.Name).Replace(" ", "_").Replace("(", "").Replace(")", "")
-    $containerPdfPath = "tests/pdfs/$($pdf.Name)"
+    $containerPdfPath = "demo-pdfs/$($pdf.Name)"
     $startedAt = (Get-Date).ToUniversalTime().ToString("o")
 
-    $runOutput = & docker compose exec api python scripts/run_stage_1_7_pipeline_debug.py --pdf $containerPdfPath 2>$null
+    $runOutput = & docker compose exec api python dev/scripts/run_stage_1_7_pipeline_debug.py --pdf $containerPdfPath 2>$null
     $runExitCode = $LASTEXITCODE
     $endedAt = (Get-Date).ToUniversalTime().ToString("o")
 
@@ -96,7 +96,7 @@ foreach ($pdf in $pdfFiles) {
 
     if ($applicationId -and $policyPassed -ne "True") {
         $boundaryStartedAt = (Get-Date).ToUniversalTime().ToString("o")
-        $boundaryOutput = & docker compose exec api python scripts/run_stage_1_7_boundary_debug.py --application-id $applicationId 2>$null
+        $boundaryOutput = & docker compose exec api python dev/scripts/run_stage_1_7_boundary_debug.py --application-id $applicationId 2>$null
         $boundaryExitCode = $LASTEXITCODE
         $boundaryEndedAt = (Get-Date).ToUniversalTime().ToString("o")
 

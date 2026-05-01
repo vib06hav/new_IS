@@ -3,7 +3,7 @@ import shutil
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -17,8 +17,8 @@ from app.policy.guard import validate_question_groups, validate_signals
 from app.projection.ros_projector import project_ros
 from app.ros.assembler import assemble_ros_v1
 
-FIXTURE_DIR = ROOT / "tests" / "pipeline_stages"
-OUTPUT_DIR = ROOT / "tests" / "stage17_fake_llm_output"
+FIXTURE_DIR = ROOT / "dev" / "fixtures" / "pipeline-stages"
+OUTPUT_DIR = ROOT / "dev" / "fixtures" / "fake-llm-output"
 
 
 def _write_json(path: Path, payload) -> None:
