@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, MinusCircle, Plus, Rocket, Save, Sparkles, Trash2, XCircle } from "lucide-react";
+import { CheckCircle2, ChevronDown, MinusCircle, Plus, Rocket, Save, Sparkles, Trash2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { usePortalSession } from "@/components/auth/PortalSessionProvider";
@@ -61,6 +61,9 @@ export function InterviewWorkspaceEditor({
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [draftRestored, setDraftRestored] = useState(() => Boolean(readInterviewDraft(applicationId, mode)));
+  const [activePostgameQuestionId, setActivePostgameQuestionId] = useState<string | null>(() =>
+    mode === "postgame" ? getFirstQuestionId(initialWorkspace.content.themes) : null,
+  );
 
   const pageTitle = mode === "configure" ? "Configure Interview" : "Interview Feedback";
   const subtitle =
@@ -88,6 +91,28 @@ export function InterviewWorkspaceEditor({
   useEffect(() => {
     writeInterviewDraft(applicationId, mode, workspace.content);
   }, [applicationId, mode, workspace.content]);
+
+  useEffect(() => {
+    if (mode !== "postgame") {
+      return;
+    }
+
+    const allQuestionIds = workspace.content.themes.flatMap((theme) => theme.questions.map((question) => question.id));
+    if (allQuestionIds.length === 0) {
+      if (activePostgameQuestionId !== null) {
+        setActivePostgameQuestionId(null);
+      }
+      return;
+    }
+
+    if (activePostgameQuestionId === null) {
+      return;
+    }
+
+    if (!allQuestionIds.includes(activePostgameQuestionId)) {
+      setActivePostgameQuestionId(allQuestionIds[0]);
+    }
+  }, [activePostgameQuestionId, mode, workspace.content.themes]);
 
   function updateTheme(themeId: string, updater: (theme: InterviewWorkspaceTheme) => InterviewWorkspaceTheme) {
     setWorkspace((current) => ({
@@ -495,191 +520,221 @@ export function InterviewWorkspaceEditor({
                   .sort((left, right) => left.order - right.order)
                   .map((question, questionIndex) => {
                     const isEditablePostgameQuestion = mode === "postgame" && question.source === "custom";
+                    const isExpandedPostgameQuestion = mode === "postgame" && activePostgameQuestionId === question.id;
+                    const questionPreview = question.text.trim() || "Untitled question";
                     return (
                       <div key={question.id} className="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
-                        <div className="flex items-start justify-between gap-3">
-                        <div className="space-y-1">
-                          <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Question {questionIndex + 1}</p>
-                          <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
-                            {question.source}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          {mode === "postgame" ? (
+                        {mode === "postgame" ? (
+                          <>
                             <button
-                              className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 transition hover:text-blue-800"
-                              onClick={() => addFollowUp(theme.id, question.id)}
+                              className="flex w-full items-start justify-between gap-3 text-left"
+                              onClick={() =>
+                                setActivePostgameQuestionId((current) => (current === question.id ? null : question.id))
+                              }
                               type="button"
                             >
-                              <Plus className="size-3.5" />
-                              Follow-up
-                            </button>
-                          ) : null}
-                          {((mode === "configure" && theme.questions.length > 1) || isEditablePostgameQuestion) ? (
-                            <button
-                              className="text-xs font-semibold text-rose-700"
-                              onClick={() => removeQuestion(theme.id, question.id)}
-                              type="button"
-                            >
-                              Remove
-                            </button>
-                          ) : null}
-                        </div>
-                      </div>
+                              <div className="min-w-0 flex-1 space-y-2">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                                    Question {questionIndex + 1}
+                                  </p>
+                                  <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
+                                    {question.source}
+                                  </span>
+                                </div>
+                                <p className="truncate text-sm leading-6 text-slate-900">{questionPreview}</p>
+                              </div>
 
-                        {mode === "configure" ? (
-                          <textarea
-                            className="mt-3 min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
-                            onChange={(event) =>
-                              updateQuestion(theme.id, question.id, (current) => ({ ...current, text: event.target.value }))
-                            }
-                            value={question.text}
-                          />
-                        ) : isEditablePostgameQuestion ? (
-                          <div className="mt-3 space-y-4">
-                            <textarea
-                              className="min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
-                              onChange={(event) =>
-                                updateQuestion(theme.id, question.id, (current) => ({ ...current, text: event.target.value }))
-                              }
-                              placeholder="Type question"
-                              value={question.text}
-                            />
-                            <QuestionStatusSelector
-                              status={question.status}
-                              onChange={(status) =>
-                                updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))
-                              }
-                            />
-                          <TextAreaField
-                            label="Question note"
-                            onChange={(value) =>
-                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
-                            }
-                            rows={4}
-                            value={question.note}
-                          />
-                          <RefinementControls
-                            applicationId={applicationId}
-                            content={workspace.content}
-                            currentValue={question.note}
-                            mode="question_note"
-                            onAccept={(value) =>
-                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
-                            }
-                            questionId={question.id}
-                            themeId={theme.id}
-                          />
-                        </div>
-                      ) : (
-                        <div className="mt-3 space-y-4">
-                          <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900">
-                            {question.text || "Untitled question"}
-                            </p>
-                            <QuestionStatusSelector
-                              status={question.status}
-                              onChange={(status) =>
-                                updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))
-                              }
-                            />
-                          <TextAreaField
-                            label="Question note"
-                            onChange={(value) =>
-                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
-                            }
-                            rows={4}
-                            value={question.note}
-                          />
-                          <RefinementControls
-                            applicationId={applicationId}
-                            content={workspace.content}
-                            currentValue={question.note}
-                            mode="question_note"
-                            onAccept={(value) =>
-                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
-                            }
-                            questionId={question.id}
-                            themeId={theme.id}
-                          />
-                        </div>
-                      )}
+                              <div className="flex shrink-0 items-center gap-2">
+                                <span
+                                  className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${getQuestionStatusClasses(question.status)}`}
+                                >
+                                  {getQuestionStatusLabel(question.status)}
+                                </span>
+                                {question.follow_ups.length ? (
+                                  <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
+                                    {question.follow_ups.length} follow-up{question.follow_ups.length === 1 ? "" : "s"}
+                                  </span>
+                                ) : null}
+                                <ChevronDown
+                                  className={`size-4 text-slate-500 transition-transform ${
+                                    isExpandedPostgameQuestion ? "rotate-180" : ""
+                                  }`}
+                                />
+                              </div>
+                            </button>
 
-                        {mode === "postgame" && question.follow_ups.length ? (
-                          <div className="mt-4 space-y-3 rounded-[1rem] border border-slate-200 bg-white/70 p-3">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Follow-ups</p>
-                            {question.follow_ups
-                              .slice()
-                              .sort((left, right) => left.order - right.order)
-                              .map((followUp, followUpIndex) => (
-                                <div key={followUp.id} className="rounded-[0.95rem] border border-slate-200 bg-white p-3">
-                                  <div className="flex items-start justify-between gap-3">
-                                    <div className="space-y-1">
-                                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                                        Follow-up {followUpIndex + 1}
-                                      </p>
-                                      <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
-                                        {followUp.source}
-                                      </span>
-                                    </div>
+                            {isExpandedPostgameQuestion ? (
+                              <div className="mt-3 space-y-4">
+                                <div className="flex flex-wrap items-center gap-3">
+                                  <button
+                                    className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 transition hover:text-blue-800"
+                                    onClick={() => addFollowUp(theme.id, question.id)}
+                                    type="button"
+                                  >
+                                    <Plus className="size-3.5" />
+                                    Follow-up
+                                  </button>
+                                  {isEditablePostgameQuestion ? (
                                     <button
                                       className="text-xs font-semibold text-rose-700"
-                                      onClick={() => removeFollowUp(theme.id, question.id, followUp.id)}
+                                      onClick={() => removeQuestion(theme.id, question.id)}
                                       type="button"
                                     >
                                       Remove
                                     </button>
-                                  </div>
-                                  <div className="mt-3 space-y-4">
-                                    <textarea
-                                      className="min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
-                                      onChange={(event) =>
-                                        updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
-                                          ...current,
-                                          text: event.target.value,
-                                        }))
-                                      }
-                                      placeholder="Type follow-up"
-                                      value={followUp.text}
-                                    />
-                                    <QuestionStatusSelector
-                                      status={followUp.status}
-                                      onChange={(status) =>
-                                        updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
-                                          ...current,
-                                          status,
-                                        }))
-                                      }
-                                    />
-                                    <TextAreaField
-                                      label="Follow-up note"
-                                      onChange={(value) =>
-                                        updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
-                                          ...current,
-                                          note: value,
-                                        }))
-                                      }
-                                      rows={4}
-                                      value={followUp.note}
-                                    />
-                                    <RefinementControls
-                                      applicationId={applicationId}
-                                      content={workspace.content}
-                                      currentValue={followUp.note}
-                                      followUpId={followUp.id}
-                                      mode="follow_up_note"
-                                      onAccept={(value) =>
-                                        updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
-                                          ...current,
-                                          note: value,
-                                        }))
-                                      }
-                                      questionId={question.id}
-                                      themeId={theme.id}
-                                    />
-                                  </div>
+                                  ) : null}
                                 </div>
-                              ))}
-                          </div>
+
+                                {isEditablePostgameQuestion ? (
+                                  <textarea
+                                    className="min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                    onChange={(event) =>
+                                      updateQuestion(theme.id, question.id, (current) => ({ ...current, text: event.target.value }))
+                                    }
+                                    placeholder="Type question"
+                                    value={question.text}
+                                  />
+                                ) : (
+                                  <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900">
+                                    {questionPreview}
+                                  </p>
+                                )}
+                                <QuestionStatusSelector
+                                  status={question.status}
+                                  onChange={(status) =>
+                                    updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))
+                                  }
+                                />
+                                <TextAreaField
+                                  label="Question note"
+                                  onChange={(value) =>
+                                    updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
+                                  }
+                                  rows={4}
+                                  value={question.note}
+                                />
+                                <RefinementControls
+                                  applicationId={applicationId}
+                                  content={workspace.content}
+                                  currentValue={question.note}
+                                  mode="question_note"
+                                  onAccept={(value) =>
+                                    updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
+                                  }
+                                  questionId={question.id}
+                                  themeId={theme.id}
+                                />
+
+                                {question.follow_ups.length ? (
+                                  <div className="space-y-3 rounded-[1rem] border border-slate-200 bg-white/70 p-3">
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Follow-ups</p>
+                                    {question.follow_ups
+                                      .slice()
+                                      .sort((left, right) => left.order - right.order)
+                                      .map((followUp, followUpIndex) => (
+                                        <div key={followUp.id} className="rounded-[0.95rem] border border-slate-200 bg-white p-3">
+                                          <div className="flex items-start justify-between gap-3">
+                                            <div className="space-y-1">
+                                              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                                                Follow-up {followUpIndex + 1}
+                                              </p>
+                                              <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
+                                                {followUp.source}
+                                              </span>
+                                            </div>
+                                            <button
+                                              className="text-xs font-semibold text-rose-700"
+                                              onClick={() => removeFollowUp(theme.id, question.id, followUp.id)}
+                                              type="button"
+                                            >
+                                              Remove
+                                            </button>
+                                          </div>
+                                          <div className="mt-3 space-y-4">
+                                            <textarea
+                                              className="min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                              onChange={(event) =>
+                                                updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
+                                                  ...current,
+                                                  text: event.target.value,
+                                                }))
+                                              }
+                                              placeholder="Type follow-up"
+                                              value={followUp.text}
+                                            />
+                                            <QuestionStatusSelector
+                                              status={followUp.status}
+                                              onChange={(status) =>
+                                                updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
+                                                  ...current,
+                                                  status,
+                                                }))
+                                              }
+                                            />
+                                            <TextAreaField
+                                              label="Follow-up note"
+                                              onChange={(value) =>
+                                                updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
+                                                  ...current,
+                                                  note: value,
+                                                }))
+                                              }
+                                              rows={4}
+                                              value={followUp.note}
+                                            />
+                                            <RefinementControls
+                                              applicationId={applicationId}
+                                              content={workspace.content}
+                                              currentValue={followUp.note}
+                                              followUpId={followUp.id}
+                                              mode="follow_up_note"
+                                              onAccept={(value) =>
+                                                updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
+                                                  ...current,
+                                                  note: value,
+                                                }))
+                                              }
+                                              questionId={question.id}
+                                              themeId={theme.id}
+                                            />
+                                          </div>
+                                        </div>
+                                      ))}
+                                  </div>
+                                ) : null}
+                              </div>
+                            ) : null}
+                          </>
+                        ) : mode === "configure" ? (
+                          <>
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="space-y-1">
+                                <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                                  Question {questionIndex + 1}
+                                </p>
+                                <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
+                                  {question.source}
+                                </span>
+                              </div>
+                              {theme.questions.length > 1 ? (
+                                <button
+                                  className="text-xs font-semibold text-rose-700"
+                                  onClick={() => removeQuestion(theme.id, question.id)}
+                                  type="button"
+                                >
+                                  Remove
+                                </button>
+                              ) : null}
+                            </div>
+                            <textarea
+                              className="mt-3 min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                              onChange={(event) =>
+                                updateQuestion(theme.id, question.id, (current) => ({ ...current, text: event.target.value }))
+                              }
+                              value={question.text}
+                            />
+                          </>
                         ) : null}
                       </div>
                     );
@@ -991,6 +1046,16 @@ function flattenWorkspaceQuestions(workspace: InterviewWorkspaceSummary) {
   return workspace.content.themes.flatMap((theme) =>
     theme.questions.flatMap((question) => [question, ...question.follow_ups]),
   );
+}
+
+function getFirstQuestionId(themes: InterviewWorkspaceTheme[]) {
+  for (const theme of themes) {
+    if (theme.questions.length > 0) {
+      return theme.questions[0].id;
+    }
+  }
+
+  return null;
 }
 
 function withQuestionFollowUps(content: InterviewWorkspaceSummary["content"]) {
