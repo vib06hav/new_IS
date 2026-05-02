@@ -70,8 +70,8 @@ export function Page4FocusAreaSandbox() {
                     <select
                       id="sandbox-focus-theme-select"
                       className="w-full rounded-[1rem] border border-slate-200 bg-white/90 px-4 py-3 text-sm text-[color:var(--ink)] shadow-[0_10px_22px_rgba(15,23,42,0.05)]"
-                      value={THEMES[0]}
-                      readOnly
+                      defaultValue={THEMES[0]}
+                      disabled
                     >
                       {THEMES.map((theme) => (
                         <option key={theme} value={theme}>
