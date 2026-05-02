@@ -68,6 +68,15 @@ InterviewWorkspaceStatus = Literal["draft", "launched", "postgame", "completed"]
 InterviewQuestionStatus = Literal["unasked", "satisfactory", "mixed", "unsatisfactory"]
 
 
+class InterviewWorkspaceFollowUp(BaseModel):
+    id: str
+    text: str
+    source: Literal["custom"] = "custom"
+    status: InterviewQuestionStatus = "unasked"
+    note: str = ""
+    order: int = 0
+
+
 class InterviewWorkspaceQuestion(BaseModel):
     id: str
     text: str
@@ -75,6 +84,7 @@ class InterviewWorkspaceQuestion(BaseModel):
     status: InterviewQuestionStatus = "unasked"
     note: str = ""
     order: int = 0
+    follow_ups: list[InterviewWorkspaceFollowUp] = []
 
 
 class InterviewWorkspaceTheme(BaseModel):

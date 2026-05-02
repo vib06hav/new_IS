@@ -10,6 +10,7 @@ import { clearInterviewDraft, readInterviewDraft, writeInterviewDraft } from "@/
 import type {
   InterviewQuestionStatus,
   InterviewWorkspaceQuestion,
+  InterviewWorkspaceQuestionFollowUp,
   InterviewWorkspaceSummary,
   InterviewWorkspaceTheme,
 } from "@/lib/types";
@@ -32,13 +33,13 @@ export function InterviewOverlayRunner({
     if (!draft) {
       return {
         ...initialWorkspace,
-        content: ensureCustomThemePresence(initialWorkspace.content),
+        content: ensureCustomThemePresence(withQuestionFollowUps(initialWorkspace.content)),
       };
     }
 
     return {
       ...initialWorkspace,
-      content: ensureCustomThemePresence(draft),
+      content: ensureCustomThemePresence(withQuestionFollowUps(draft)),
     };
   });
   const [savingState, setSavingState] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -46,6 +47,9 @@ export function InterviewOverlayRunner({
   const [error, setError] = useState<string | null>(null);
   const [autosaveFrozen, setAutosaveFrozen] = useState(false);
   const [draftRestored, setDraftRestored] = useState(() => Boolean(readInterviewDraft(applicationId, "overlay")));
+  const [activeThemeId, setActiveThemeId] = useState(
+    () => initialWorkspace.content.themes.find((theme) => theme.id !== CUSTOM_THEME_ID)?.id ?? initialWorkspace.content.themes[0]?.id ?? CUSTOM_THEME_ID,
+  );
   const saveTimerRef = useRef<number | null>(null);
   const firstRenderRef = useRef(true);
   const serializedContent = JSON.stringify(workspace.content);
@@ -54,13 +58,13 @@ export function InterviewOverlayRunner({
   );
 
   const totalQuestions = useMemo(
-    () => workspace.content.themes.reduce((sum, theme) => sum + theme.questions.length, 0),
+    () => workspace.content.themes.reduce((sum, theme) => sum + countThemeQuestions(theme), 0),
     [workspace.content.themes],
   );
   const askedQuestions = useMemo(
     () =>
       workspace.content.themes.reduce(
-        (sum, theme) => sum + theme.questions.filter((question) => question.status !== "unasked").length,
+        (sum, theme) => sum + countAskedThemeQuestions(theme),
         0,
       ),
     [workspace.content.themes],
@@ -96,7 +100,7 @@ export function InterviewOverlayRunner({
       try {
         const nextWorkspace = await saveInterviewWorkspace(applicationId, workspace.content);
         const mergedContent = ensureCustomThemePresence(
-          mergeOverlayDraftContent(workspace.content, nextWorkspace.content),
+          withQuestionFollowUps(mergeOverlayDraftContent(workspace.content, nextWorkspace.content)),
         );
         setWorkspace({
           ...nextWorkspace,
@@ -138,24 +142,58 @@ export function InterviewOverlayRunner({
     }));
   }
 
-  function updateQuestion(themeId: string, questionId: string, updater: (question: InterviewWorkspaceQuestion) => InterviewWorkspaceQuestion) {
+  function updateQuestion(
+    themeId: string,
+    questionId: string,
+    updater: (question: InterviewWorkspaceQuestion) => InterviewWorkspaceQuestion,
+  ) {
     updateTheme(themeId, (theme) => ({
       ...theme,
       questions: theme.questions.map((question) => (question.id === questionId ? updater(question) : question)),
     }));
   }
 
+  function updateFollowUp(
+    themeId: string,
+    questionId: string,
+    followUpId: string,
+    updater: (followUp: InterviewWorkspaceQuestionFollowUp) => InterviewWorkspaceQuestionFollowUp,
+  ) {
+    updateQuestion(themeId, questionId, (question) => ({
+      ...question,
+      follow_ups: question.follow_ups.map((followUp) => (followUp.id === followUpId ? updater(followUp) : followUp)),
+    }));
+  }
+
   function cycleQuestionStatus(themeId: string, questionId: string) {
-    updateQuestion(themeId, questionId, (question) => {
-      const currentIndex = STATUS_CYCLE.indexOf(question.status);
-      const nextStatus = STATUS_CYCLE[(currentIndex + 1) % STATUS_CYCLE.length];
-      return { ...question, status: nextStatus };
-    });
+    updateQuestion(themeId, questionId, (question) => ({
+      ...question,
+      status: getNextStatus(question.status),
+    }));
+  }
+
+  function cycleFollowUpStatus(themeId: string, questionId: string, followUpId: string) {
+    updateFollowUp(themeId, questionId, followUpId, (followUp) => ({
+      ...followUp,
+      status: getNextStatus(followUp.status),
+    }));
   }
 
   function createOverlayQuestion(themeId: string, order: number): InterviewWorkspaceQuestion {
     return {
       id: `${themeId}-q-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      text: "",
+      source: "custom",
+      status: "unasked",
+      note: "",
+      order,
+      follow_ups: [],
+    };
+  }
+
+  function createOverlayFollowUp(parentQuestionId: string, order: number): InterviewWorkspaceQuestionFollowUp {
+    return {
+      id: `${parentQuestionId}-f-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       text: "",
       source: "custom",
       status: "unasked",
@@ -171,12 +209,28 @@ export function InterviewOverlayRunner({
     }));
   }
 
+  function addFollowUp(themeId: string, questionId: string) {
+    updateQuestion(themeId, questionId, (question) => ({
+      ...question,
+      follow_ups: [...question.follow_ups, createOverlayFollowUp(question.id, question.follow_ups.length)],
+    }));
+  }
+
   function removeQuestion(themeId: string, questionId: string) {
     updateTheme(themeId, (theme) => ({
       ...theme,
       questions: theme.questions
         .filter((question) => question.id !== questionId)
         .map((question, index) => ({ ...question, order: index })),
+    }));
+  }
+
+  function removeFollowUp(themeId: string, questionId: string, followUpId: string) {
+    updateQuestion(themeId, questionId, (question) => ({
+      ...question,
+      follow_ups: question.follow_ups
+        .filter((followUp) => followUp.id !== followUpId)
+        .map((followUp, index) => ({ ...followUp, order: index })),
     }));
   }
 
@@ -205,8 +259,8 @@ export function InterviewOverlayRunner({
 
       const nextThemes = existingCustomTheme
         ? current.content.themes.map((theme) =>
-            theme.id === CUSTOM_THEME_ID ? { ...theme, questions: [...theme.questions, nextQuestion] } : theme,
-          )
+          theme.id === CUSTOM_THEME_ID ? { ...theme, questions: [...theme.questions, nextQuestion] } : theme,
+        )
         : [...current.content.themes, { ...customTheme, questions: [nextQuestion] }];
 
       return {
@@ -253,7 +307,7 @@ export function InterviewOverlayRunner({
     try {
       const nextWorkspace = await saveInterviewWorkspace(applicationId, workspace.content);
       const mergedContent = ensureCustomThemePresence(
-        mergeOverlayDraftContent(workspace.content, nextWorkspace.content),
+        withQuestionFollowUps(mergeOverlayDraftContent(workspace.content, nextWorkspace.content)),
       );
       setWorkspace({
         ...nextWorkspace,
@@ -314,7 +368,7 @@ export function InterviewOverlayRunner({
               <div>
                 <h1 className="text-xl font-semibold tracking-tight text-slate-900">Interview overlay</h1>
                 <p className="mt-1 text-sm text-slate-600">
-                  Mark questions as you go and add custom prompts without leaving the conversation.
+                  Mark questions, capture quick notes, and attach follow-ups without leaving the conversation.
                 </p>
               </div>
               <Button disabled={finishBusy} onClick={() => void handleFinish()} size="sm">
@@ -322,9 +376,10 @@ export function InterviewOverlayRunner({
               </Button>
             </div>
 
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-2 sm:grid-cols-3">
               <MiniStat label="Questions" value={`${askedQuestions}/${totalQuestions}`} />
               <MiniStat label="Themes" value={String(workspace.content.themes.length)} />
+              <MiniStat label="Autosave" value={getSaveLabel(savingState)} />
             </div>
           </div>
         </section>
@@ -346,20 +401,26 @@ export function InterviewOverlayRunner({
         ) : null}
 
         <section className="space-y-3">
-          {orderedThemes.map((theme, index) => (
+          {orderedThemes.map((theme) => (
             <details
               key={theme.id}
               className="group rounded-[1.4rem] border border-slate-200 bg-white/90 shadow-[0_18px_36px_rgba(15,23,42,0.1)] backdrop-blur"
-              open={index === 0}
+              open={activeThemeId === theme.id}
             >
-              <summary className="cursor-pointer list-none px-4 py-4">
+              <summary
+                className="cursor-pointer list-none px-4 py-4"
+                onClick={(event) => {
+                  event.preventDefault();
+                  setActiveThemeId((current) => (current === theme.id ? current : theme.id));
+                }}
+              >
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{theme.question_group_title}</p>
                     <h2 className="mt-1 text-base font-semibold text-slate-900">{theme.title || CUSTOM_THEME_TITLE}</h2>
                   </div>
                   <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-700">
-                    {theme.questions.filter((question) => question.status !== "unasked").length}/{theme.questions.length}
+                    {countAskedThemeQuestions(theme)}/{countThemeQuestions(theme)}
                   </span>
                 </div>
               </summary>
@@ -385,7 +446,7 @@ export function InterviewOverlayRunner({
                           >
                             {getCycleIcon(question.status)}
                           </button>
-                          <div className="min-w-0 flex-1 space-y-2">
+                          <div className="min-w-0 flex-1 space-y-3">
                             <div className="flex flex-wrap items-center justify-between gap-2">
                               <div className="flex flex-wrap items-center gap-2">
                                 <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Q{questionIndex + 1}</span>
@@ -393,19 +454,30 @@ export function InterviewOverlayRunner({
                                   {question.source}
                                 </span>
                               </div>
-                              {isOverlayCreated ? (
+                              <div className="flex items-center gap-3">
                                 <button
-                                  className="text-xs font-semibold text-rose-700 transition hover:text-rose-800"
-                                  onClick={() => removeQuestion(theme.id, question.id)}
+                                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 transition hover:text-blue-800"
+                                  onClick={() => addFollowUp(theme.id, question.id)}
                                   type="button"
                                 >
-                                  Remove
+                                  <Plus className="size-3.5" />
+                                  Follow-up
                                 </button>
-                              ) : null}
+                                {isOverlayCreated ? (
+                                  <button
+                                    className="text-xs font-semibold text-rose-700 transition hover:text-rose-800"
+                                    onClick={() => removeQuestion(theme.id, question.id)}
+                                    type="button"
+                                  >
+                                    Remove
+                                  </button>
+                                ) : null}
+                              </div>
                             </div>
+
                             {isOverlayCreated ? (
                               <textarea
-                                className="min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                className="min-h-20 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                                 onChange={(event) =>
                                   updateQuestion(theme.id, question.id, (current) => ({ ...current, text: event.target.value }))
                                 }
@@ -415,6 +487,71 @@ export function InterviewOverlayRunner({
                             ) : (
                               <p className="text-sm leading-6 text-slate-900">{question.text}</p>
                             )}
+
+                            <CompactNoteField
+                              label="Question note"
+                              value={question.note}
+                              onChange={(value) =>
+                                updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
+                              }
+                            />
+
+                            {question.follow_ups.length ? (
+                              <div className="space-y-2.5 rounded-[1rem] border border-slate-200/80 bg-white/75 p-3">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Follow-ups</p>
+                                {question.follow_ups
+                                  .slice()
+                                  .sort((left, right) => left.order - right.order)
+                                  .map((followUp, followUpIndex) => (
+                                    <div key={followUp.id} className="rounded-[0.95rem] border border-slate-200 bg-white p-3">
+                                      <div className="flex items-start gap-3">
+                                        <button
+                                          className={`mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition ${getCycleClasses(followUp.status)}`}
+                                          onClick={() => cycleFollowUpStatus(theme.id, question.id, followUp.id)}
+                                          type="button"
+                                        >
+                                          {getCycleIcon(followUp.status)}
+                                        </button>
+                                        <div className="min-w-0 flex-1 space-y-3">
+                                          <div className="flex flex-wrap items-center justify-between gap-2">
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                                              Follow-up {followUpIndex + 1}
+                                            </span>
+                                            <button
+                                              className="text-xs font-semibold text-rose-700 transition hover:text-rose-800"
+                                              onClick={() => removeFollowUp(theme.id, question.id, followUp.id)}
+                                              type="button"
+                                            >
+                                              Remove
+                                            </button>
+                                          </div>
+                                          <textarea
+                                            className="min-h-20 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                            onChange={(event) =>
+                                              updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
+                                                ...current,
+                                                text: event.target.value,
+                                              }))
+                                            }
+                                            placeholder="Type follow-up"
+                                            value={followUp.text}
+                                          />
+                                          <CompactNoteField
+                                            label="Follow-up note"
+                                            value={followUp.note}
+                                            onChange={(value) =>
+                                              updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
+                                                ...current,
+                                                note: value,
+                                              }))
+                                            }
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                              </div>
+                            ) : null}
                           </div>
                         </div>
                       </div>
@@ -432,7 +569,6 @@ export function InterviewOverlayRunner({
               </div>
             </details>
           ))}
-
         </section>
       </div>
     </div>
@@ -445,6 +581,29 @@ function MiniStat({ label, value }: { label: string; value: string }) {
       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">{label}</p>
       <p className="mt-1 text-sm font-semibold text-slate-900">{value}</p>
     </div>
+  );
+}
+
+function CompactNoteField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">{label}</span>
+      <textarea
+        className="mt-2 min-h-20 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+        onChange={(event) => onChange(event.target.value)}
+        placeholder="Add your notes and takeaways here"
+        rows={3}
+        value={value}
+      />
+    </label>
   );
 }
 
@@ -469,6 +628,23 @@ function getCycleIcon(status: InterviewQuestionStatus) {
   return <span className="inline-block size-2 rounded-full border border-current" />;
 }
 
+function getNextStatus(status: InterviewQuestionStatus) {
+  const currentIndex = STATUS_CYCLE.indexOf(status);
+  return STATUS_CYCLE[(currentIndex + 1) % STATUS_CYCLE.length];
+}
+
+function countThemeQuestions(theme: InterviewWorkspaceTheme) {
+  return theme.questions.reduce((sum, question) => sum + 1 + question.follow_ups.length, 0);
+}
+
+function countAskedThemeQuestions(theme: InterviewWorkspaceTheme) {
+  return theme.questions.reduce((sum, question) => {
+    const askedSelf = question.status !== "unasked" ? 1 : 0;
+    const askedFollowUps = question.follow_ups.filter((followUp) => followUp.status !== "unasked").length;
+    return sum + askedSelf + askedFollowUps;
+  }, 0);
+}
+
 function mergeOverlayDraftContent(
   localContent: InterviewWorkspaceSummary["content"],
   remoteContent: InterviewWorkspaceSummary["content"],
@@ -486,9 +662,28 @@ function mergeOverlayDraftContent(
       (question) => question.source === "custom" && !remoteQuestionIds.has(question.id),
     );
 
+    const mergedQuestions = remoteTheme.questions.map((remoteQuestion, index) => {
+      const localQuestion = localTheme.questions.find((question) => question.id === remoteQuestion.id);
+      if (!localQuestion) {
+        return { ...remoteQuestion, order: index };
+      }
+
+      const remoteFollowUpIds = new Set(remoteQuestion.follow_ups.map((followUp) => followUp.id));
+      const draftOnlyFollowUps = localQuestion.follow_ups.filter((followUp) => !remoteFollowUpIds.has(followUp.id));
+
+      return {
+        ...remoteQuestion,
+        order: index,
+        follow_ups: [...remoteQuestion.follow_ups, ...draftOnlyFollowUps].map((followUp, followUpIndex) => ({
+          ...followUp,
+          order: followUpIndex,
+        })),
+      };
+    });
+
     return {
       ...remoteTheme,
-      questions: [...remoteTheme.questions, ...draftOnlyQuestions].map((question, index) => ({
+      questions: [...mergedQuestions, ...draftOnlyQuestions].map((question, index) => ({
         ...question,
         order: index,
       })),
@@ -515,7 +710,13 @@ function normalizeAuthoredContent(content: InterviewWorkspaceSummary["content"])
         ...theme,
         questions: theme.questions
           .filter((question) => question.source !== "custom" || question.text.trim().length > 0)
-          .map((question, index) => ({ ...question, order: index })),
+          .map((question, index) => ({
+            ...question,
+            order: index,
+            follow_ups: question.follow_ups
+              .filter((followUp) => followUp.text.trim().length > 0)
+              .map((followUp, followUpIndex) => ({ ...followUp, order: followUpIndex })),
+          })),
       }))
       .filter((theme) => theme.id !== CUSTOM_THEME_ID || theme.questions.length > 0),
   };
@@ -540,5 +741,18 @@ function ensureCustomThemePresence(content: InterviewWorkspaceSummary["content"]
         questions: [],
       },
     ],
+  };
+}
+
+function withQuestionFollowUps(content: InterviewWorkspaceSummary["content"]) {
+  return {
+    ...content,
+    themes: content.themes.map((theme) => ({
+      ...theme,
+      questions: theme.questions.map((question) => ({
+        ...question,
+        follow_ups: question.follow_ups ?? [],
+      })),
+    })),
   };
 }

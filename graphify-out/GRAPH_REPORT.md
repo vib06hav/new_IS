@@ -1,11 +1,11 @@
 # Graph Report - C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser  (2026-05-02)
 
 ## Corpus Check
-- 169 files · ~219,148 words
+- 170 files · ~285,036 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 945 nodes · 1651 edges · 113 communities detected
+- 958 nodes · 1670 edges · 115 communities detected
 - Extraction: 74% EXTRACTED · 26% INFERRED · 0% AMBIGUOUS · INFERRED: 427 edges (avg confidence: 0.77)
 - Token cost: 0 input · 0 output
 
@@ -123,6 +123,8 @@
 - [[_COMMUNITY_Community 110|Community 110]]
 - [[_COMMUNITY_Community 111|Community 111]]
 - [[_COMMUNITY_Community 112|Community 112]]
+- [[_COMMUNITY_Community 113|Community 113]]
+- [[_COMMUNITY_Community 114|Community 114]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `apiRequest()` - 35 edges
@@ -139,40 +141,40 @@
 ## Surprising Connections (you probably didn't know these)
 - `enforce_csrf()` --calls--> `ensure_csrf_protection()`  [INFERRED]
   C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\main.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\security\csrf.py
+- `analyze_integrity()` --calls--> `has_mojibake()`  [INFERRED]
+  C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\agents\integrity_analyzer.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\utils\text_normalization.py
 - `login()` --calls--> `client_ip()`  [INFERRED]
   C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\auth\router.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\security\rate_limit.py
 - `get_coordination_manager()` --calls--> `health_check()`  [INFERRED]
   C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\coordination.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\main.py
 - `persist_final_report_export()` --calls--> `storage_key_for_final_report_export()`  [INFERRED]
   C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\final_report_exports.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\storage\service.py
-- `sync_final_report_export()` --calls--> `retry_application()`  [INFERRED]
-  C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\final_report_exports.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\api\admin.py
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.03
-Nodes (69): _apply_spatial_metadata(), extract_academic_records(), Extract academic records using precise spatial layout blocks.     Clusters block, Aligns metadata blocks to anchors using distance-ranked pairing., extract_additional_info(), dedupe_near_overlapping_blocks(), Collapse near-identical overlapping text blocks created by edited PDFs., detect_cross_sections() (+61 more)
+Cohesion: 0.04
+Nodes (43): acquire(), CapacityFullError, GenerationJobLimiter, acquire(), BaseLockBackend, CoordinationManager, get_coordination_manager(), InMemoryLockBackend (+35 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.04
-Nodes (44): get_llm_capacity(), acquire(), CapacityFullError, GenerationJobLimiter, acquire(), BaseLockBackend, CoordinationManager, get_coordination_manager() (+36 more)
+Nodes (60): Application, assemble_ros_v1(), Deterministic ROS assembly.     Merges Pages 1-3 (from projection), Call 1 theme, Base, construct_bundle(), Agent 15: Theme-first signal-evidence bundle constructor.     Groups validated i, CanonicalRecord, detect_cross_sections() (+52 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.05
 Nodes (53): ApiError, apiRequest(), askReportChat(), assignApplication(), completeInterviewWorkspace(), createInterviewer(), createInterviewWorkspace(), deactivateInterviewer() (+45 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.04
-Nodes (50): Application, assemble_ros_v1(), Deterministic ROS assembly.     Merges Pages 1-3 (from projection), Call 1 theme, Base, construct_bundle(), Agent 15: Theme-first signal-evidence bundle constructor.     Groups validated i, CanonicalRecord, FinalReport (+42 more)
+Cohesion: 0.06
+Nodes (58): assemble_canonical(), Canonical Structure Assembler.     Merges all extracted collections into the fi, BaseModel, build_assignment_list_item(), AcademicEntry, ActivityEntry, AgentScore, Anomaly (+50 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.06
-Nodes (57): assemble_canonical(), Canonical Structure Assembler.     Merges all extracted collections into the fi, BaseModel, build_assignment_list_item(), AcademicEntry, ActivityEntry, AgentScore, Anomaly (+49 more)
+Cohesion: 0.08
+Nodes (47): get_llm_capacity(), _apply_response_format(), _clean_json_response(), _extract_openai_compatible_text(), generate(), _generate_aicredits(), _generate_openai_compatible(), _get_braintrust_logger() (+39 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.09
-Nodes (46): _apply_response_format(), _clean_json_response(), _extract_openai_compatible_text(), generate(), _generate_aicredits(), _generate_openai_compatible(), _get_braintrust_logger(), get_llm_capacity_snapshot() (+38 more)
+Cohesion: 0.07
+Nodes (38): extract_additional_info(), dedupe_near_overlapping_blocks(), Collapse near-identical overlapping text blocks created by edited PDFs., _empty_family_background(), extract_family_background(), _find_value_for_label(), _all_field_labels(), _extract_candidate() (+30 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.12
@@ -183,36 +185,36 @@ Cohesion: 0.08
 Nodes (28): delete_application(), _delete_application_with_related_data(), remove_application_from_queue(), derive_display_id(), get_application_source_pdf(), _handle_application_insert_integrity_error(), staged_upload_file(), upload_application() (+20 more)
 
 ### Community 8 - "Community 8"
+Cohesion: 0.12
+Nodes (43): assign_application(), generate_final_report(), _get_interviewer_or_400(), hide_application(), list_applications(), list_assignments(), reassign_application(), retry_application() (+35 more)
+
+### Community 9 - "Community 9"
 Cohesion: 0.08
 Nodes (37): Assignment, get_current_user(), build_interviewer_list_item(), create_access_token(), decode_access_token(), get_password_hash(), bootstrap_admin_user(), build_public_profile_image_url() (+29 more)
 
-### Community 9 - "Community 9"
-Cohesion: 0.13
-Nodes (42): assign_application(), generate_final_report(), _get_interviewer_or_400(), hide_application(), list_applications(), list_assignments(), reassign_application(), retry_application() (+34 more)
-
 ### Community 10 - "Community 10"
-Cohesion: 0.11
-Nodes (25): isApiErrorStatus(), saveInterviewWorkspace(), clearInterviewDraft(), getDraftKey(), readInterviewDraft(), writeInterviewDraft(), addQuestion(), cycleQuestionStatus() (+17 more)
+Cohesion: 0.08
+Nodes (32): isApiErrorStatus(), saveInterviewWorkspace(), clearInterviewDraft(), getDraftKey(), readInterviewDraft(), writeInterviewDraft(), addFollowUp(), addQuestion() (+24 more)
 
 ### Community 11 - "Community 11"
+Cohesion: 0.07
+Nodes (31): _apply_spatial_metadata(), extract_academic_records(), Extract academic records using precise spatial layout blocks.     Clusters block, Aligns metadata blocks to anchors using distance-ranked pairing., extract_activities(), _looks_like_descriptive_text(), _normalize_activity_entry(), Extract activities using a Grid-Line based spatial approach with Dynamic Column (+23 more)
+
+### Community 12 - "Community 12"
 Cohesion: 0.14
 Nodes (25): _allowed_origins(), clear_csrf_cookie(), ensure_csrf_protection(), generate_csrf_token(), _is_allowed_loopback_origin(), _origin_from_url(), request_uses_session_cookie(), set_csrf_cookie() (+17 more)
 
-### Community 12 - "Community 12"
+### Community 13 - "Community 13"
 Cohesion: 0.15
 Nodes (25): get_prohibited_terms(), get_version(), PolicyConfig, Configuration for the policy guard. Externalized rules to ensure no     hardcod, _append_text_violations(), _backfill_signal_references(), _first_present(), _normalize_question_group_output() (+17 more)
 
-### Community 13 - "Community 13"
+### Community 14 - "Community 14"
 Cohesion: 0.13
 Nodes (13): clearSessionCache(), clearWorkflowActive(), emitSessionStore(), getSession(), markWorkflowActive(), revalidateSession(), signOut(), updateSessionStore() (+5 more)
 
-### Community 14 - "Community 14"
+### Community 15 - "Community 15"
 Cohesion: 0.18
 Nodes (17): build_judge_prompt_call_1(), build_judge_prompt_call_2(), check_prohibited_terms(), eval_sample(), load_json(), main(), eval_pipeline.py ---------------- Evaluation harness for the Interview Standardi, Performs deterministic checks on Call 2 output. (+9 more)
-
-### Community 15 - "Community 15"
-Cohesion: 0.19
-Nodes (10): extract_activities(), _looks_like_descriptive_text(), _normalize_activity_entry(), Extract activities using a Grid-Line based spatial approach with Dynamic Column, is_valid_activity(), Centralized validation for activity entries.     Filters out common hallucinatio, get_page_heights(), get_vertical_lines() (+2 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.27
@@ -231,16 +233,16 @@ Cohesion: 0.4
 Nodes (2): buildItemAnnotationTitle(), getItemAnnotation()
 
 ### Community 20 - "Community 20"
-Cohesion: 0.83
-Nodes (2): Reveal(), useScrollReveal()
-
-### Community 21 - "Community 21"
 Cohesion: 0.5
 Nodes (0): 
 
-### Community 22 - "Community 22"
+### Community 21 - "Community 21"
 Cohesion: 0.5
 Nodes (2): Badge(), cn()
+
+### Community 22 - "Community 22"
+Cohesion: 0.5
+Nodes (0): 
 
 ### Community 23 - "Community 23"
 Cohesion: 0.5
@@ -248,11 +250,11 @@ Nodes (0):
 
 ### Community 24 - "Community 24"
 Cohesion: 0.5
-Nodes (0): 
+Nodes (2): ReportsDashboardSandboxPlayground(), usePolling()
 
 ### Community 25 - "Community 25"
-Cohesion: 0.5
-Nodes (2): ReportsDashboardSandboxPlayground(), usePolling()
+Cohesion: 1.0
+Nodes (2): Reveal(), useScrollReveal()
 
 ### Community 26 - "Community 26"
 Cohesion: 0.67
@@ -508,97 +510,105 @@ Nodes (0):
 
 ### Community 89 - "Community 89"
 Cohesion: 1.0
-Nodes (1): Fallback redis error when the redis package is unavailable.
+Nodes (0): 
 
 ### Community 90 - "Community 90"
 Cohesion: 1.0
-Nodes (1): Deterministically assigns entity_ids to canonical entries based on array positio
+Nodes (0): 
 
 ### Community 91 - "Community 91"
 Cohesion: 1.0
-Nodes (1): Deterministic projection layer.     Returns: (page_1, page_2, page_3, annotated
+Nodes (1): Fallback redis error when the redis package is unavailable.
 
 ### Community 92 - "Community 92"
 Cohesion: 1.0
-Nodes (1): Run migrations in 'offline' mode.      This configures the context with just a U
+Nodes (1): Deterministically assigns entity_ids to canonical entries based on array positio
 
 ### Community 93 - "Community 93"
 Cohesion: 1.0
-Nodes (1): Run migrations in 'online' mode.      In this scenario we need to create an Engi
+Nodes (1): Deterministic projection layer.     Returns: (page_1, page_2, page_3, annotated
 
 ### Community 94 - "Community 94"
 Cohesion: 1.0
-Nodes (1): create_canonical_records_table  Revision ID: 6ea7523611f4 Revises: a3ba4d865b1f
+Nodes (1): Run migrations in 'offline' mode.      This configures the context with just a U
 
 ### Community 95 - "Community 95"
 Cohesion: 1.0
-Nodes (1): add final report export fields  Revision ID: a1b2c3d4e5f7 Revises: f1a2b3c4d5
+Nodes (1): Run migrations in 'online' mode.      In this scenario we need to create an Engi
 
 ### Community 96 - "Community 96"
 Cohesion: 1.0
-Nodes (1): create_applications_table  Revision ID: a3ba4d865b1f Revises: ad9fb8d26e40 Creat
+Nodes (1): create_canonical_records_table  Revision ID: 6ea7523611f4 Revises: a3ba4d865b1f
 
 ### Community 97 - "Community 97"
 Cohesion: 1.0
-Nodes (1): add_display_id_to_applications  Revision ID: a8b7c6d5e4f3 Revises: f7a9c1d2e3b4
+Nodes (1): add final report export fields  Revision ID: a1b2c3d4e5f7 Revises: f1a2b3c4d5
 
 ### Community 98 - "Community 98"
 Cohesion: 1.0
-Nodes (1): create_users_table  Revision ID: ad9fb8d26e40 Revises: fe57dd6ef27e Create Date:
+Nodes (1): create_applications_table  Revision ID: a3ba4d865b1f Revises: ad9fb8d26e40 Creat
 
 ### Community 99 - "Community 99"
 Cohesion: 1.0
-Nodes (1): create_synthesis_records_table  Revision ID: ae34404b0e2f Revises: 6ea7523611f4
+Nodes (1): add_display_id_to_applications  Revision ID: a8b7c6d5e4f3 Revises: f7a9c1d2e3b4
 
 ### Community 100 - "Community 100"
 Cohesion: 1.0
-Nodes (1): create processing jobs table  Revision ID: b2c3d4e5f6a8 Revises: a1b2c3d4e5f7
+Nodes (1): create_users_table  Revision ID: ad9fb8d26e40 Revises: fe57dd6ef27e Create Date:
 
 ### Community 101 - "Community 101"
 Cohesion: 1.0
-Nodes (1): target_state_foundation  Revision ID: b3c1f2d4e5f6 Revises: ae34404b0e2f Create
+Nodes (1): create_synthesis_records_table  Revision ID: ae34404b0e2f Revises: 6ea7523611f4
 
 ### Community 102 - "Community 102"
 Cohesion: 1.0
-Nodes (1): rename file_path to storage_key  Revision ID: c3d4e5f6a7b9 Revises: b2c3d4e5f
+Nodes (1): create processing jobs table  Revision ID: b2c3d4e5f6a8 Revises: a1b2c3d4e5f7
 
 ### Community 103 - "Community 103"
 Cohesion: 1.0
-Nodes (1): drop_synthesis_records  Revision ID: c4d5e6f7a8b9 Revises: b3c1f2d4e5f6 Create D
+Nodes (1): target_state_foundation  Revision ID: b3c1f2d4e5f6 Revises: ae34404b0e2f Create
 
 ### Community 104 - "Community 104"
 Cohesion: 1.0
-Nodes (1): replace_drafts_with_final_reports  Revision ID: c7d8e9f0a1b2 Revises: f9b8c7d
+Nodes (1): rename file_path to storage_key  Revision ID: c3d4e5f6a7b9 Revises: b2c3d4e5f
 
 ### Community 105 - "Community 105"
 Cohesion: 1.0
-Nodes (1): restore_last_activity_default  Revision ID: d1e2f3a4b5c6 Revises: c7d8e9f0a1b
+Nodes (1): drop_synthesis_records  Revision ID: c4d5e6f7a8b9 Revises: b3c1f2d4e5f6 Create D
 
 ### Community 106 - "Community 106"
 Cohesion: 1.0
-Nodes (1): add_review_package_to_canonical_records  Revision ID: d2f4e6a8b9c1 Revises: c4d5
+Nodes (1): replace_drafts_with_final_reports  Revision ID: c7d8e9f0a1b2 Revises: f9b8c7d
 
 ### Community 107 - "Community 107"
 Cohesion: 1.0
-Nodes (1): add processing job retry fields  Revision ID: d4e5f6a7b8c0 Revises: c3d4e5f6a
+Nodes (1): restore_last_activity_default  Revision ID: d1e2f3a4b5c6 Revises: c7d8e9f0a1b
 
 ### Community 108 - "Community 108"
 Cohesion: 1.0
-Nodes (1): create_interview_workspaces_table  Revision ID: e3f4a5b6c7d8 Revises: d1e2f3a
+Nodes (1): add_review_package_to_canonical_records  Revision ID: d2f4e6a8b9c1 Revises: c4d5
 
 ### Community 109 - "Community 109"
 Cohesion: 1.0
-Nodes (1): add profile image fields to users  Revision ID: f1a2b3c4d5e6 Revises: e3f4a5b
+Nodes (1): add processing job retry fields  Revision ID: d4e5f6a7b8c0 Revises: c3d4e5f6a
 
 ### Community 110 - "Community 110"
 Cohesion: 1.0
-Nodes (1): add_hidden_state_to_applications  Revision ID: f7a9c1d2e3b4 Revises: d2f4e6a8b9c
+Nodes (1): create_interview_workspaces_table  Revision ID: e3f4a5b6c7d8 Revises: d1e2f3a
 
 ### Community 111 - "Community 111"
 Cohesion: 1.0
-Nodes (1): add_last_activity_and_interviewer_hide_state  Revision ID: f9b8c7d6e5a4 Revises:
+Nodes (1): add profile image fields to users  Revision ID: f1a2b3c4d5e6 Revises: e3f4a5b
 
 ### Community 112 - "Community 112"
+Cohesion: 1.0
+Nodes (1): add_hidden_state_to_applications  Revision ID: f7a9c1d2e3b4 Revises: d2f4e6a8b9c
+
+### Community 113 - "Community 113"
+Cohesion: 1.0
+Nodes (1): add_last_activity_and_interviewer_hide_state  Revision ID: f9b8c7d6e5a4 Revises:
+
+### Community 114 - "Community 114"
 Cohesion: 1.0
 Nodes (1): enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Date: 2026-03-
 
@@ -699,84 +709,88 @@ Nodes (1): enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Dat
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 78`** (1 nodes): `tailwind.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 79`** (1 nodes): `LoginForm.tsx`
+- **Thin community `Community 79`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 80`** (1 nodes): `ReviewPackageSection.tsx`
+- **Thin community `Community 80`** (1 nodes): `LoginForm.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 81`** (1 nodes): `PublishedReportPreviewSandbox.tsx`
+- **Thin community `Community 81`** (1 nodes): `ReviewPackageSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 82`** (1 nodes): `FinalInterviewReportSection.tsx`
+- **Thin community `Community 82`** (1 nodes): `PublishedReportPreviewSandbox.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 83`** (1 nodes): `Card.tsx`
+- **Thin community `Community 83`** (1 nodes): `FinalInterviewReportSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 84`** (1 nodes): `SegmentedControl.tsx`
+- **Thin community `Community 84`** (1 nodes): `HeroOverlayShowcase.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 85`** (1 nodes): `types.ts`
+- **Thin community `Community 85`** (1 nodes): `Card.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 86`** (1 nodes): `adminInterviewersMock.ts`
+- **Thin community `Community 86`** (1 nodes): `SegmentedControl.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 87`** (1 nodes): `interviewerMock.ts`
+- **Thin community `Community 87`** (1 nodes): `types.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 88`** (1 nodes): `reportsDashboardMock.ts`
+- **Thin community `Community 88`** (1 nodes): `adminInterviewersMock.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 89`** (1 nodes): `Fallback redis error when the redis package is unavailable.`
+- **Thin community `Community 89`** (1 nodes): `interviewerMock.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 90`** (1 nodes): `Deterministically assigns entity_ids to canonical entries based on array positio`
+- **Thin community `Community 90`** (1 nodes): `reportsDashboardMock.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 91`** (1 nodes): `Deterministic projection layer.     Returns: (page_1, page_2, page_3, annotated`
+- **Thin community `Community 91`** (1 nodes): `Fallback redis error when the redis package is unavailable.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 92`** (1 nodes): `Run migrations in 'offline' mode.      This configures the context with just a U`
+- **Thin community `Community 92`** (1 nodes): `Deterministically assigns entity_ids to canonical entries based on array positio`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 93`** (1 nodes): `Run migrations in 'online' mode.      In this scenario we need to create an Engi`
+- **Thin community `Community 93`** (1 nodes): `Deterministic projection layer.     Returns: (page_1, page_2, page_3, annotated`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 94`** (1 nodes): `create_canonical_records_table  Revision ID: 6ea7523611f4 Revises: a3ba4d865b1f`
+- **Thin community `Community 94`** (1 nodes): `Run migrations in 'offline' mode.      This configures the context with just a U`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 95`** (1 nodes): `add final report export fields  Revision ID: a1b2c3d4e5f7 Revises: f1a2b3c4d5`
+- **Thin community `Community 95`** (1 nodes): `Run migrations in 'online' mode.      In this scenario we need to create an Engi`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 96`** (1 nodes): `create_applications_table  Revision ID: a3ba4d865b1f Revises: ad9fb8d26e40 Creat`
+- **Thin community `Community 96`** (1 nodes): `create_canonical_records_table  Revision ID: 6ea7523611f4 Revises: a3ba4d865b1f`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 97`** (1 nodes): `add_display_id_to_applications  Revision ID: a8b7c6d5e4f3 Revises: f7a9c1d2e3b4`
+- **Thin community `Community 97`** (1 nodes): `add final report export fields  Revision ID: a1b2c3d4e5f7 Revises: f1a2b3c4d5`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 98`** (1 nodes): `create_users_table  Revision ID: ad9fb8d26e40 Revises: fe57dd6ef27e Create Date:`
+- **Thin community `Community 98`** (1 nodes): `create_applications_table  Revision ID: a3ba4d865b1f Revises: ad9fb8d26e40 Creat`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 99`** (1 nodes): `create_synthesis_records_table  Revision ID: ae34404b0e2f Revises: 6ea7523611f4`
+- **Thin community `Community 99`** (1 nodes): `add_display_id_to_applications  Revision ID: a8b7c6d5e4f3 Revises: f7a9c1d2e3b4`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 100`** (1 nodes): `create processing jobs table  Revision ID: b2c3d4e5f6a8 Revises: a1b2c3d4e5f7`
+- **Thin community `Community 100`** (1 nodes): `create_users_table  Revision ID: ad9fb8d26e40 Revises: fe57dd6ef27e Create Date:`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 101`** (1 nodes): `target_state_foundation  Revision ID: b3c1f2d4e5f6 Revises: ae34404b0e2f Create`
+- **Thin community `Community 101`** (1 nodes): `create_synthesis_records_table  Revision ID: ae34404b0e2f Revises: 6ea7523611f4`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 102`** (1 nodes): `rename file_path to storage_key  Revision ID: c3d4e5f6a7b9 Revises: b2c3d4e5f`
+- **Thin community `Community 102`** (1 nodes): `create processing jobs table  Revision ID: b2c3d4e5f6a8 Revises: a1b2c3d4e5f7`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 103`** (1 nodes): `drop_synthesis_records  Revision ID: c4d5e6f7a8b9 Revises: b3c1f2d4e5f6 Create D`
+- **Thin community `Community 103`** (1 nodes): `target_state_foundation  Revision ID: b3c1f2d4e5f6 Revises: ae34404b0e2f Create`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 104`** (1 nodes): `replace_drafts_with_final_reports  Revision ID: c7d8e9f0a1b2 Revises: f9b8c7d`
+- **Thin community `Community 104`** (1 nodes): `rename file_path to storage_key  Revision ID: c3d4e5f6a7b9 Revises: b2c3d4e5f`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 105`** (1 nodes): `restore_last_activity_default  Revision ID: d1e2f3a4b5c6 Revises: c7d8e9f0a1b`
+- **Thin community `Community 105`** (1 nodes): `drop_synthesis_records  Revision ID: c4d5e6f7a8b9 Revises: b3c1f2d4e5f6 Create D`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 106`** (1 nodes): `add_review_package_to_canonical_records  Revision ID: d2f4e6a8b9c1 Revises: c4d5`
+- **Thin community `Community 106`** (1 nodes): `replace_drafts_with_final_reports  Revision ID: c7d8e9f0a1b2 Revises: f9b8c7d`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 107`** (1 nodes): `add processing job retry fields  Revision ID: d4e5f6a7b8c0 Revises: c3d4e5f6a`
+- **Thin community `Community 107`** (1 nodes): `restore_last_activity_default  Revision ID: d1e2f3a4b5c6 Revises: c7d8e9f0a1b`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 108`** (1 nodes): `create_interview_workspaces_table  Revision ID: e3f4a5b6c7d8 Revises: d1e2f3a`
+- **Thin community `Community 108`** (1 nodes): `add_review_package_to_canonical_records  Revision ID: d2f4e6a8b9c1 Revises: c4d5`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 109`** (1 nodes): `add profile image fields to users  Revision ID: f1a2b3c4d5e6 Revises: e3f4a5b`
+- **Thin community `Community 109`** (1 nodes): `add processing job retry fields  Revision ID: d4e5f6a7b8c0 Revises: c3d4e5f6a`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 110`** (1 nodes): `add_hidden_state_to_applications  Revision ID: f7a9c1d2e3b4 Revises: d2f4e6a8b9c`
+- **Thin community `Community 110`** (1 nodes): `create_interview_workspaces_table  Revision ID: e3f4a5b6c7d8 Revises: d1e2f3a`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 111`** (1 nodes): `add_last_activity_and_interviewer_hide_state  Revision ID: f9b8c7d6e5a4 Revises:`
+- **Thin community `Community 111`** (1 nodes): `add profile image fields to users  Revision ID: f1a2b3c4d5e6 Revises: e3f4a5b`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 112`** (1 nodes): `enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Date: 2026-03-`
+- **Thin community `Community 112`** (1 nodes): `add_hidden_state_to_applications  Revision ID: f7a9c1d2e3b4 Revises: d2f4e6a8b9c`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 113`** (1 nodes): `add_last_activity_and_interviewer_hide_state  Revision ID: f9b8c7d6e5a4 Revises:`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 114`** (1 nodes): `enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Date: 2026-03-`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `run_pipeline()` connect `Community 3` to `Community 0`, `Community 4`, `Community 15`?**
-  _High betweenness centrality (0.129) - this node is a cross-community bridge._
-- **Why does `run_synthesis_pipeline()` connect `Community 3` to `Community 1`, `Community 12`, `Community 9`?**
-  _High betweenness centrality (0.089) - this node is a cross-community bridge._
-- **Why does `LLMClientError` connect `Community 5` to `Community 1`, `Community 3`?**
-  _High betweenness centrality (0.060) - this node is a cross-community bridge._
+- **Why does `run_pipeline()` connect `Community 1` to `Community 3`, `Community 11`, `Community 5`?**
+  _High betweenness centrality (0.126) - this node is a cross-community bridge._
+- **Why does `run_synthesis_pipeline()` connect `Community 1` to `Community 0`, `Community 8`, `Community 13`?**
+  _High betweenness centrality (0.087) - this node is a cross-community bridge._
+- **Why does `LLMClientError` connect `Community 4` to `Community 0`, `Community 1`?**
+  _High betweenness centrality (0.058) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `apiRequest()` (e.g. with `getCsrfToken()` and `revalidateSession()`) actually correct?**
   _`apiRequest()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 19 inferred relationships involving `run_pipeline()` (e.g. with `extract_layout_blocks()` and `normalize_layout()`) actually correct?**

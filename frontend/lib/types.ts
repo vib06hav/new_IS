@@ -55,6 +55,16 @@ export type InterviewWorkspaceQuestion = {
   status: InterviewQuestionStatus;
   note: string;
   order: number;
+  follow_ups: InterviewWorkspaceQuestionFollowUp[];
+};
+
+export type InterviewWorkspaceQuestionFollowUp = {
+  id: string;
+  text: string;
+  source: "custom";
+  status: InterviewQuestionStatus;
+  note: string;
+  order: number;
 };
 
 export type InterviewWorkspaceTheme = {

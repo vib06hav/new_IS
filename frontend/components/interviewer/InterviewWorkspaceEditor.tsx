@@ -17,6 +17,7 @@ import { openInterviewPopupPlaceholder } from "@/lib/interviewPopup";
 import type {
   InterviewQuestionStatus,
   InterviewWorkspaceQuestion,
+  InterviewWorkspaceQuestionFollowUp,
   InterviewWorkspaceSummary,
   InterviewWorkspaceTheme,
 } from "@/lib/types";
@@ -41,12 +42,15 @@ export function InterviewWorkspaceEditor({
   const [workspace, setWorkspace] = useState<InterviewWorkspaceSummary>(() => {
     const draft = readInterviewDraft(applicationId, mode);
     if (!draft) {
-      return initialWorkspace;
+      return {
+        ...initialWorkspace,
+        content: withQuestionFollowUps(initialWorkspace.content),
+      };
     }
 
     return {
       ...initialWorkspace,
-      content: draft,
+      content: withQuestionFollowUps(draft),
     };
   });
   const [saving, setSaving] = useState(false);
@@ -63,7 +67,7 @@ export function InterviewWorkspaceEditor({
       : "Review every asked question, adjust ratings, add notes, and publish the final interview report.";
   const canLaunch = workspace.content.themes.some((theme) => theme.questions.length > 0) && workspace.status !== "completed";
   const completionCounts = useMemo(() => {
-    const allQuestions = workspace.content.themes.flatMap((theme) => theme.questions);
+    const allQuestions = flattenWorkspaceQuestions(workspace);
     return {
       total: allQuestions.length,
       satisfactory: allQuestions.filter((question) => question.status === "satisfactory").length,
@@ -139,12 +143,51 @@ export function InterviewWorkspaceEditor({
     }));
   }
 
+  function updateFollowUp(
+    themeId: string,
+    questionId: string,
+    followUpId: string,
+    updater: (followUp: InterviewWorkspaceQuestionFollowUp) => InterviewWorkspaceQuestionFollowUp,
+  ) {
+    updateQuestion(themeId, questionId, (question) => ({
+      ...question,
+      follow_ups: question.follow_ups.map((followUp) => (followUp.id === followUpId ? updater(followUp) : followUp)),
+    }));
+  }
+
   function removeQuestion(themeId: string, questionId: string) {
     updateTheme(themeId, (theme) => ({
       ...theme,
       questions: theme.questions
         .filter((question) => question.id !== questionId)
         .map((question, index) => ({ ...question, order: index })),
+    }));
+  }
+
+  function removeFollowUp(themeId: string, questionId: string, followUpId: string) {
+    updateQuestion(themeId, questionId, (question) => ({
+      ...question,
+      follow_ups: question.follow_ups
+        .filter((followUp) => followUp.id !== followUpId)
+        .map((followUp, index) => ({ ...followUp, order: index })),
+    }));
+  }
+
+  function createFollowUp(parentQuestionId: string, order: number): InterviewWorkspaceQuestionFollowUp {
+    return {
+      id: `${parentQuestionId}-f-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      text: "",
+      source: "custom",
+      status: "unasked",
+      note: "",
+      order,
+    };
+  }
+
+  function addFollowUp(themeId: string, questionId: string) {
+    updateQuestion(themeId, questionId, (question) => ({
+      ...question,
+      follow_ups: [...question.follow_ups, createFollowUp(question.id, question.follow_ups.length)],
     }));
   }
 
@@ -246,7 +289,10 @@ export function InterviewWorkspaceEditor({
     setMessage(null);
     try {
       const nextWorkspace = await saveInterviewWorkspace(applicationId, workspace.content);
-      setWorkspace(nextWorkspace);
+      setWorkspace({
+        ...nextWorkspace,
+        content: withQuestionFollowUps(nextWorkspace.content),
+      });
       clearInterviewDraft(applicationId, mode);
       setDraftRestored(false);
       setMessage(successMessage);
@@ -274,7 +320,10 @@ export function InterviewWorkspaceEditor({
     setMessage(null);
     try {
       const nextWorkspace = await launchInterviewWorkspace(applicationId, workspace.content);
-      setWorkspace(nextWorkspace);
+      setWorkspace({
+        ...nextWorkspace,
+        content: withQuestionFollowUps(nextWorkspace.content),
+      });
       clearInterviewDraft(applicationId, mode);
       setDraftRestored(false);
       if (popup) {
@@ -310,7 +359,10 @@ export function InterviewWorkspaceEditor({
     try {
       const normalizedContent = normalizeAuthoredContent(workspace.content);
       const nextWorkspace = await completeInterviewWorkspace(applicationId, normalizedContent);
-      setWorkspace(nextWorkspace);
+      setWorkspace({
+        ...nextWorkspace,
+        content: withQuestionFollowUps(nextWorkspace.content),
+      });
       clearInterviewDraft(applicationId, mode);
       setDraftRestored(false);
       setMessage("Final interview report published.");
@@ -443,81 +495,157 @@ export function InterviewWorkspaceEditor({
                   .map((question, questionIndex) => {
                     const isEditablePostgameQuestion = mode === "postgame" && question.source === "custom";
                     return (
-                    <div key={question.id} className="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
-                      <div className="flex items-start justify-between gap-3">
+                      <div key={question.id} className="rounded-[1.2rem] border border-slate-200 bg-slate-50/70 p-4">
+                        <div className="flex items-start justify-between gap-3">
                         <div className="space-y-1">
                           <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Question {questionIndex + 1}</p>
                           <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
                             {question.source}
                           </span>
                         </div>
-                        {((mode === "configure" && theme.questions.length > 1) || isEditablePostgameQuestion) ? (
-                          <button
-                            className="text-xs font-semibold text-rose-700"
-                            onClick={() => removeQuestion(theme.id, question.id)}
-                            type="button"
-                          >
-                            Remove
-                          </button>
-                        ) : null}
+                        <div className="flex items-center gap-3">
+                          {mode === "postgame" ? (
+                            <button
+                              className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 transition hover:text-blue-800"
+                              onClick={() => addFollowUp(theme.id, question.id)}
+                              type="button"
+                            >
+                              <Plus className="size-3.5" />
+                              Follow-up
+                            </button>
+                          ) : null}
+                          {((mode === "configure" && theme.questions.length > 1) || isEditablePostgameQuestion) ? (
+                            <button
+                              className="text-xs font-semibold text-rose-700"
+                              onClick={() => removeQuestion(theme.id, question.id)}
+                              type="button"
+                            >
+                              Remove
+                            </button>
+                          ) : null}
+                        </div>
                       </div>
 
-                      {mode === "configure" ? (
-                        <textarea
-                          className="mt-3 min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
-                          onChange={(event) =>
-                            updateQuestion(theme.id, question.id, (current) => ({ ...current, text: event.target.value }))
-                          }
-                          value={question.text}
-                        />
-                      ) : isEditablePostgameQuestion ? (
-                        <div className="mt-3 space-y-4">
+                        {mode === "configure" ? (
                           <textarea
-                            className="min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                            className="mt-3 min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                             onChange={(event) =>
                               updateQuestion(theme.id, question.id, (current) => ({ ...current, text: event.target.value }))
                             }
-                            placeholder="Type question"
                             value={question.text}
                           />
-                          <QuestionStatusSelector
-                            status={question.status}
-                            onChange={(status) =>
-                              updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))
-                            }
-                          />
-                          <TextAreaField
-                            label="Question note"
-                            onChange={(value) =>
-                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
-                            }
-                            rows={4}
-                            value={question.note}
-                          />
-                        </div>
-                      ) : (
-                        <div className="mt-3 space-y-4">
-                          <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900">
-                            {question.text || "Untitled question"}
-                          </p>
-                          <QuestionStatusSelector
-                            status={question.status}
-                            onChange={(status) =>
-                              updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))
-                            }
-                          />
-                          <TextAreaField
-                            label="Question note"
-                            onChange={(value) =>
-                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
-                            }
-                            rows={4}
-                            value={question.note}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )})}
+                        ) : isEditablePostgameQuestion ? (
+                          <div className="mt-3 space-y-4">
+                            <textarea
+                              className="min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                              onChange={(event) =>
+                                updateQuestion(theme.id, question.id, (current) => ({ ...current, text: event.target.value }))
+                              }
+                              placeholder="Type question"
+                              value={question.text}
+                            />
+                            <QuestionStatusSelector
+                              status={question.status}
+                              onChange={(status) =>
+                                updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))
+                              }
+                            />
+                            <TextAreaField
+                              label="Question note"
+                              onChange={(value) =>
+                                updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
+                              }
+                              rows={4}
+                              value={question.note}
+                            />
+                          </div>
+                        ) : (
+                          <div className="mt-3 space-y-4">
+                            <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900">
+                              {question.text || "Untitled question"}
+                            </p>
+                            <QuestionStatusSelector
+                              status={question.status}
+                              onChange={(status) =>
+                                updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))
+                              }
+                            />
+                            <TextAreaField
+                              label="Question note"
+                              onChange={(value) =>
+                                updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
+                              }
+                              rows={4}
+                              value={question.note}
+                            />
+                          </div>
+                        )}
+
+                        {mode === "postgame" && question.follow_ups.length ? (
+                          <div className="mt-4 space-y-3 rounded-[1rem] border border-slate-200 bg-white/70 p-3">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Follow-ups</p>
+                            {question.follow_ups
+                              .slice()
+                              .sort((left, right) => left.order - right.order)
+                              .map((followUp, followUpIndex) => (
+                                <div key={followUp.id} className="rounded-[0.95rem] border border-slate-200 bg-white p-3">
+                                  <div className="flex items-start justify-between gap-3">
+                                    <div className="space-y-1">
+                                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                                        Follow-up {followUpIndex + 1}
+                                      </p>
+                                      <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
+                                        {followUp.source}
+                                      </span>
+                                    </div>
+                                    <button
+                                      className="text-xs font-semibold text-rose-700"
+                                      onClick={() => removeFollowUp(theme.id, question.id, followUp.id)}
+                                      type="button"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                  <div className="mt-3 space-y-4">
+                                    <textarea
+                                      className="min-h-24 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                                      onChange={(event) =>
+                                        updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
+                                          ...current,
+                                          text: event.target.value,
+                                        }))
+                                      }
+                                      placeholder="Type follow-up"
+                                      value={followUp.text}
+                                    />
+                                    <QuestionStatusSelector
+                                      status={followUp.status}
+                                      onChange={(status) =>
+                                        updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
+                                          ...current,
+                                          status,
+                                        }))
+                                      }
+                                    />
+                                    <TextAreaField
+                                      label="Follow-up note"
+                                      onChange={(value) =>
+                                        updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
+                                          ...current,
+                                          note: value,
+                                        }))
+                                      }
+                                      rows={4}
+                                      value={followUp.note}
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })}
 
                 <button
                   className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white px-3 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
@@ -571,6 +699,7 @@ function createQuestion(themeId: string, order: number, source: "generated" | "c
     status: "unasked",
     note: "",
     order,
+    follow_ups: [],
   };
 }
 
@@ -674,8 +803,33 @@ function normalizeAuthoredContent(content: InterviewWorkspaceSummary["content"])
         ...theme,
         questions: theme.questions
           .filter((question) => question.source !== "custom" || question.text.trim().length > 0)
-          .map((question, index) => ({ ...question, order: index })),
+          .map((question, index) => ({
+            ...question,
+            order: index,
+            follow_ups: question.follow_ups
+              .filter((followUp) => followUp.text.trim().length > 0)
+              .map((followUp, followUpIndex) => ({ ...followUp, order: followUpIndex })),
+          })),
       }))
       .filter((theme) => theme.id !== CUSTOM_THEME_ID || theme.questions.length > 0),
+  };
+}
+
+function flattenWorkspaceQuestions(workspace: InterviewWorkspaceSummary) {
+  return workspace.content.themes.flatMap((theme) =>
+    theme.questions.flatMap((question) => [question, ...question.follow_ups]),
+  );
+}
+
+function withQuestionFollowUps(content: InterviewWorkspaceSummary["content"]) {
+  return {
+    ...content,
+    themes: content.themes.map((theme) => ({
+      ...theme,
+      questions: theme.questions.map((question) => ({
+        ...question,
+        follow_ups: question.follow_ups ?? [],
+      })),
+    })),
   };
 }

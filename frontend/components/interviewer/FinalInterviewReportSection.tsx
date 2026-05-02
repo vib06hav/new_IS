@@ -7,7 +7,7 @@ export function FinalInterviewReportSection({
 }: {
   workspace: InterviewWorkspaceSummary;
 }) {
-  const questions = workspace.content.themes.flatMap((theme) => theme.questions);
+  const questions = flattenWorkspaceQuestions(workspace);
   const totals = {
     questions: questions.length,
     satisfactory: questions.filter((question) => question.status === "satisfactory").length,
@@ -95,6 +95,30 @@ export function FinalInterviewReportSection({
                           <p className="mt-2 text-sm leading-7 text-slate-700">
                             {question.note || "No question note recorded."}
                           </p>
+                          {question.follow_ups.length ? (
+                            <div className="mt-4 space-y-2 rounded-[0.95rem] border border-slate-200 bg-white/80 p-3">
+                              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Follow-ups</p>
+                              {question.follow_ups
+                                .slice()
+                                .sort((left, right) => left.order - right.order)
+                                .map((followUp, followUpIndex) => (
+                                  <div key={followUp.id} className="rounded-[0.9rem] border border-slate-200 bg-slate-50/80 p-3">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
+                                        Follow-up {followUpIndex + 1}
+                                      </span>
+                                      <span className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${getStatusClasses(followUp.status)}`}>
+                                        {formatStatus(followUp.status)}
+                                      </span>
+                                    </div>
+                                    <p className="mt-3 text-sm leading-7 text-slate-900">{followUp.text}</p>
+                                    <p className="mt-2 text-sm leading-7 text-slate-700">
+                                      {followUp.note || "No follow-up note recorded."}
+                                    </p>
+                                  </div>
+                                ))}
+                            </div>
+                          ) : null}
                         </div>
                       ))
                   ) : (
@@ -148,4 +172,10 @@ function getTotalToneClasses(tone: "slate" | "emerald" | "amber" | "rose") {
   if (tone === "amber") return "border-amber-100 bg-amber-50 text-amber-900";
   if (tone === "rose") return "border-rose-100 bg-rose-50 text-rose-900";
   return "border-slate-100 bg-slate-50 text-slate-800";
+}
+
+function flattenWorkspaceQuestions(workspace: InterviewWorkspaceSummary) {
+  return workspace.content.themes.flatMap((theme) =>
+    theme.questions.flatMap((question) => [question, ...question.follow_ups]),
+  );
 }

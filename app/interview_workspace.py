@@ -10,6 +10,35 @@ QUESTION_SOURCE_VALUES = {"generated", "custom"}
 WORKSPACE_STATUS_VALUES = {"draft", "launched", "postgame", "completed"}
 
 
+def _normalize_follow_up(
+    raw_follow_up: Any,
+    *,
+    parent_question_id: str,
+    follow_up_index: int,
+) -> dict[str, Any] | None:
+    if not isinstance(raw_follow_up, dict):
+        return None
+
+    follow_up_text = str(raw_follow_up.get("text") or raw_follow_up.get("question") or "").strip()
+    if not follow_up_text:
+        return None
+
+    raw_status = str(raw_follow_up.get("status") or "unasked").strip()
+    try:
+        order = int(raw_follow_up.get("order") if raw_follow_up.get("order") is not None else follow_up_index)
+    except (TypeError, ValueError):
+        order = follow_up_index
+
+    return {
+        "id": str(raw_follow_up.get("id") or f"{parent_question_id}-f{follow_up_index + 1}"),
+        "text": follow_up_text,
+        "source": "custom",
+        "status": raw_status if raw_status in QUESTION_STATUS_VALUES else "unasked",
+        "note": str(raw_follow_up.get("note") or "").strip(),
+        "order": order,
+    }
+
+
 def _normalize_question(
     raw_question: Any,
     *,
@@ -28,6 +57,7 @@ def _normalize_question(
             "status": "unasked",
             "note": "",
             "order": question_index,
+            "follow_ups": [],
         }
 
     if not isinstance(raw_question, dict):
@@ -43,13 +73,24 @@ def _normalize_question(
         order = int(raw_question.get("order") if raw_question.get("order") is not None else question_index)
     except (TypeError, ValueError):
         order = question_index
+    question_id = str(raw_question.get("id") or f"{theme_id}-q{question_index + 1}")
+    follow_ups = []
+    for follow_up_index, raw_follow_up in enumerate(raw_question.get("follow_ups") or raw_question.get("followUps") or []):
+        follow_up = _normalize_follow_up(
+            raw_follow_up,
+            parent_question_id=question_id,
+            follow_up_index=follow_up_index,
+        )
+        if follow_up is not None:
+            follow_ups.append(follow_up)
     return {
-        "id": str(raw_question.get("id") or f"{theme_id}-q{question_index + 1}"),
+        "id": question_id,
         "text": question_text,
         "source": raw_source if raw_source in QUESTION_SOURCE_VALUES else default_source,
         "status": raw_status if raw_status in QUESTION_STATUS_VALUES else "unasked",
         "note": str(raw_question.get("note") or "").strip(),
         "order": order,
+        "follow_ups": follow_ups,
     }
 
 
