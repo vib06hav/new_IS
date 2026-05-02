@@ -170,6 +170,7 @@ class _RequestCapacity:
 _policy_capacities = {
     "generation": _RequestCapacity(settings.AICREDITS_GENERATION_MAX_CONCURRENCY),
     "report_chat": _RequestCapacity(settings.AICREDITS_REPORT_CHAT_MAX_CONCURRENCY),
+    "interview_refinement": _RequestCapacity(settings.AICREDITS_INTERVIEW_REFINEMENT_MAX_CONCURRENCY),
 }
 
 
@@ -188,6 +189,17 @@ def _policy_for_call(call_label: str | None) -> LLMPolicy:
             backoff_seconds=settings.AICREDITS_GENERATION_BACKOFF_SECONDS,
             max_concurrency=settings.AICREDITS_GENERATION_MAX_CONCURRENCY,
             max_tokens=settings.AICREDITS_GENERATION_MAX_TOKENS,
+        )
+    if call_label == "interview_refinement":
+        return LLMPolicy(
+            name="interview_refinement",
+            api_key=settings.AICREDITS_INTERVIEW_REFINEMENT_API_KEY,
+            primary_model=settings.AICREDITS_INTERVIEW_REFINEMENT_MODEL_PRIMARY,
+            fallback_model=settings.AICREDITS_INTERVIEW_REFINEMENT_MODEL_FALLBACK,
+            max_retries=settings.AICREDITS_INTERVIEW_REFINEMENT_MAX_RETRIES,
+            backoff_seconds=settings.AICREDITS_INTERVIEW_REFINEMENT_BACKOFF_SECONDS,
+            max_concurrency=settings.AICREDITS_INTERVIEW_REFINEMENT_MAX_CONCURRENCY,
+            max_tokens=settings.AICREDITS_INTERVIEW_REFINEMENT_MAX_TOKENS,
         )
     return LLMPolicy(
         name="report_chat",

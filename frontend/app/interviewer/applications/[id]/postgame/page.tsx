@@ -36,7 +36,7 @@ export default function InterviewPostgamePage() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Postgame review</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Interview Notes</p>
             <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Finalize interview report</h1>
           </div>
           <Link

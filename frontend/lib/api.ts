@@ -8,6 +8,8 @@ import type {
   InterviewerAssignmentSavePayload,
   InterviewerAssignmentSummary,
   InterviewWorkspaceContent,
+  InterviewWorkspaceRefinementRequest,
+  InterviewWorkspaceRefinementResponse,
   InterviewWorkspaceSummary,
   FinalReportMutationResponse,
   InterviewerListItem,
@@ -319,6 +321,19 @@ export async function completeInterviewWorkspace(applicationId: string, content:
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ content }),
+  });
+}
+
+export async function refineInterviewWorkspaceText(
+  applicationId: string,
+  payload: InterviewWorkspaceRefinementRequest,
+) {
+  return apiRequest<InterviewWorkspaceRefinementResponse>(`/me/applications/${applicationId}/workspace/refine`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
   });
 }
 

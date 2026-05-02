@@ -86,13 +86,24 @@ class Settings:
         self.AICREDITS_REPORT_CHAT_MAX_RETRIES = os.environ.get("AICREDITS_REPORT_CHAT_MAX_RETRIES", "3")
         self.AICREDITS_REPORT_CHAT_BACKOFF_SECONDS = os.environ.get("AICREDITS_REPORT_CHAT_BACKOFF_SECONDS", "1")
         self.AICREDITS_REPORT_CHAT_MAX_CONCURRENCY = os.environ.get("AICREDITS_REPORT_CHAT_MAX_CONCURRENCY", "2")
+        self.AICREDITS_INTERVIEW_REFINEMENT_API_KEY = os.environ.get("AICREDITS_INTERVIEW_REFINEMENT_API_KEY", self.LLM_API_KEY or "")
+        self.AICREDITS_INTERVIEW_REFINEMENT_MODEL_PRIMARY = os.environ.get("AICREDITS_INTERVIEW_REFINEMENT_MODEL_PRIMARY", self.LLM_MODEL_NAME or "")
+        self.AICREDITS_INTERVIEW_REFINEMENT_MODEL_FALLBACK = os.environ.get("AICREDITS_INTERVIEW_REFINEMENT_MODEL_FALLBACK", self.LLM_MODEL_NAME or "")
+        self.AICREDITS_INTERVIEW_REFINEMENT_MAX_RETRIES = os.environ.get("AICREDITS_INTERVIEW_REFINEMENT_MAX_RETRIES", "2")
+        self.AICREDITS_INTERVIEW_REFINEMENT_BACKOFF_SECONDS = os.environ.get("AICREDITS_INTERVIEW_REFINEMENT_BACKOFF_SECONDS", "1")
+        self.AICREDITS_INTERVIEW_REFINEMENT_MAX_CONCURRENCY = os.environ.get("AICREDITS_INTERVIEW_REFINEMENT_MAX_CONCURRENCY", "2")
         self.AICREDITS_GENERATION_MAX_TOKENS = os.environ.get("AICREDITS_GENERATION_MAX_TOKENS", "1600")
         self.AICREDITS_REPORT_CHAT_MAX_TOKENS = os.environ.get("AICREDITS_REPORT_CHAT_MAX_TOKENS", "700")
+        self.AICREDITS_INTERVIEW_REFINEMENT_MAX_TOKENS = os.environ.get("AICREDITS_INTERVIEW_REFINEMENT_MAX_TOKENS", "900")
         self.AICREDITS_REPORT_CHAT_PER_USER_LIMIT = os.environ.get("AICREDITS_REPORT_CHAT_PER_USER_LIMIT", "12")
         self.AICREDITS_REPORT_CHAT_WINDOW_SECONDS = os.environ.get("AICREDITS_REPORT_CHAT_WINDOW_SECONDS", "60")
         self.AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER = os.environ.get("AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER", "1")
+        self.AICREDITS_INTERVIEW_REFINEMENT_PER_USER_LIMIT = os.environ.get("AICREDITS_INTERVIEW_REFINEMENT_PER_USER_LIMIT", "16")
+        self.AICREDITS_INTERVIEW_REFINEMENT_WINDOW_SECONDS = os.environ.get("AICREDITS_INTERVIEW_REFINEMENT_WINDOW_SECONDS", "60")
         self.REPORT_CHAT_MAX_QUESTION_CHARS = os.environ.get("REPORT_CHAT_MAX_QUESTION_CHARS", "500")
         self.REPORT_CHAT_MAX_QUESTION_WORDS = os.environ.get("REPORT_CHAT_MAX_QUESTION_WORDS", "80")
+        self.INTERVIEW_REFINEMENT_MAX_TEXT_CHARS = os.environ.get("INTERVIEW_REFINEMENT_MAX_TEXT_CHARS", "4000")
+        self.INTERVIEW_REFINEMENT_MAX_INSTRUCTION_CHARS = os.environ.get("INTERVIEW_REFINEMENT_MAX_INSTRUCTION_CHARS", "200")
         self.PARSER_ENGINE_VERSION = os.environ.get("PARSER_ENGINE_VERSION", "v2")
         self.UPLOAD_DIRECTORY = os.environ.get("UPLOAD_DIRECTORY")
         self.STORAGE_BACKEND = os.environ.get("STORAGE_BACKEND", "local").strip().lower()
@@ -267,10 +278,14 @@ class Settings:
                 errors.append("AICREDITS_GENERATION_API_KEY is required when LLM_PROVIDER=aicredits")
             if not self.AICREDITS_REPORT_CHAT_API_KEY:
                 errors.append("AICREDITS_REPORT_CHAT_API_KEY is required when LLM_PROVIDER=aicredits")
+            if not self.AICREDITS_INTERVIEW_REFINEMENT_API_KEY:
+                errors.append("AICREDITS_INTERVIEW_REFINEMENT_API_KEY is required when LLM_PROVIDER=aicredits")
             if not self.AICREDITS_GENERATION_MODEL_PRIMARY:
                 errors.append("AICREDITS_GENERATION_MODEL_PRIMARY is required when LLM_PROVIDER=aicredits")
             if not self.AICREDITS_REPORT_CHAT_MODEL_PRIMARY:
                 errors.append("AICREDITS_REPORT_CHAT_MODEL_PRIMARY is required when LLM_PROVIDER=aicredits")
+            if not self.AICREDITS_INTERVIEW_REFINEMENT_MODEL_PRIMARY:
+                errors.append("AICREDITS_INTERVIEW_REFINEMENT_MODEL_PRIMARY is required when LLM_PROVIDER=aicredits")
 
         try:
             self.AICREDITS_GENERATION_MAX_RETRIES = int(self.AICREDITS_GENERATION_MAX_RETRIES)
@@ -287,6 +302,13 @@ class Settings:
             errors.append("AICREDITS_REPORT_CHAT_MAX_RETRIES must be an integer")
 
         try:
+            self.AICREDITS_INTERVIEW_REFINEMENT_MAX_RETRIES = int(self.AICREDITS_INTERVIEW_REFINEMENT_MAX_RETRIES)
+            if self.AICREDITS_INTERVIEW_REFINEMENT_MAX_RETRIES < 0:
+                errors.append("AICREDITS_INTERVIEW_REFINEMENT_MAX_RETRIES must be >= 0")
+        except ValueError:
+            errors.append("AICREDITS_INTERVIEW_REFINEMENT_MAX_RETRIES must be an integer")
+
+        try:
             self.AICREDITS_GENERATION_BACKOFF_SECONDS = float(self.AICREDITS_GENERATION_BACKOFF_SECONDS)
             if self.AICREDITS_GENERATION_BACKOFF_SECONDS < 0:
                 errors.append("AICREDITS_GENERATION_BACKOFF_SECONDS must be >= 0")
@@ -299,6 +321,13 @@ class Settings:
                 errors.append("AICREDITS_REPORT_CHAT_BACKOFF_SECONDS must be >= 0")
         except ValueError:
             errors.append("AICREDITS_REPORT_CHAT_BACKOFF_SECONDS must be a number")
+
+        try:
+            self.AICREDITS_INTERVIEW_REFINEMENT_BACKOFF_SECONDS = float(self.AICREDITS_INTERVIEW_REFINEMENT_BACKOFF_SECONDS)
+            if self.AICREDITS_INTERVIEW_REFINEMENT_BACKOFF_SECONDS < 0:
+                errors.append("AICREDITS_INTERVIEW_REFINEMENT_BACKOFF_SECONDS must be >= 0")
+        except ValueError:
+            errors.append("AICREDITS_INTERVIEW_REFINEMENT_BACKOFF_SECONDS must be a number")
 
         try:
             self.AICREDITS_GENERATION_MAX_CONCURRENCY = int(self.AICREDITS_GENERATION_MAX_CONCURRENCY)
@@ -315,6 +344,13 @@ class Settings:
             errors.append("AICREDITS_REPORT_CHAT_MAX_CONCURRENCY must be an integer")
 
         try:
+            self.AICREDITS_INTERVIEW_REFINEMENT_MAX_CONCURRENCY = int(self.AICREDITS_INTERVIEW_REFINEMENT_MAX_CONCURRENCY)
+            if self.AICREDITS_INTERVIEW_REFINEMENT_MAX_CONCURRENCY <= 0:
+                errors.append("AICREDITS_INTERVIEW_REFINEMENT_MAX_CONCURRENCY must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_INTERVIEW_REFINEMENT_MAX_CONCURRENCY must be an integer")
+
+        try:
             self.AICREDITS_GENERATION_MAX_TOKENS = int(self.AICREDITS_GENERATION_MAX_TOKENS)
             if self.AICREDITS_GENERATION_MAX_TOKENS <= 0:
                 errors.append("AICREDITS_GENERATION_MAX_TOKENS must be > 0")
@@ -327,6 +363,13 @@ class Settings:
                 errors.append("AICREDITS_REPORT_CHAT_MAX_TOKENS must be > 0")
         except ValueError:
             errors.append("AICREDITS_REPORT_CHAT_MAX_TOKENS must be an integer")
+
+        try:
+            self.AICREDITS_INTERVIEW_REFINEMENT_MAX_TOKENS = int(self.AICREDITS_INTERVIEW_REFINEMENT_MAX_TOKENS)
+            if self.AICREDITS_INTERVIEW_REFINEMENT_MAX_TOKENS <= 0:
+                errors.append("AICREDITS_INTERVIEW_REFINEMENT_MAX_TOKENS must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_INTERVIEW_REFINEMENT_MAX_TOKENS must be an integer")
 
         try:
             self.AICREDITS_GENERATION_MAX_ACTIVE_JOBS = int(self.AICREDITS_GENERATION_MAX_ACTIVE_JOBS)
@@ -350,6 +393,20 @@ class Settings:
             errors.append("AICREDITS_REPORT_CHAT_WINDOW_SECONDS must be an integer")
 
         try:
+            self.AICREDITS_INTERVIEW_REFINEMENT_PER_USER_LIMIT = int(self.AICREDITS_INTERVIEW_REFINEMENT_PER_USER_LIMIT)
+            if self.AICREDITS_INTERVIEW_REFINEMENT_PER_USER_LIMIT <= 0:
+                errors.append("AICREDITS_INTERVIEW_REFINEMENT_PER_USER_LIMIT must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_INTERVIEW_REFINEMENT_PER_USER_LIMIT must be an integer")
+
+        try:
+            self.AICREDITS_INTERVIEW_REFINEMENT_WINDOW_SECONDS = int(self.AICREDITS_INTERVIEW_REFINEMENT_WINDOW_SECONDS)
+            if self.AICREDITS_INTERVIEW_REFINEMENT_WINDOW_SECONDS <= 0:
+                errors.append("AICREDITS_INTERVIEW_REFINEMENT_WINDOW_SECONDS must be > 0")
+        except ValueError:
+            errors.append("AICREDITS_INTERVIEW_REFINEMENT_WINDOW_SECONDS must be an integer")
+
+        try:
             self.AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER = int(self.AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER)
             if self.AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER <= 0:
                 errors.append("AICREDITS_REPORT_CHAT_MAX_ACTIVE_PER_USER must be > 0")
@@ -369,6 +426,20 @@ class Settings:
                 errors.append("REPORT_CHAT_MAX_QUESTION_WORDS must be > 0")
         except ValueError:
             errors.append("REPORT_CHAT_MAX_QUESTION_WORDS must be an integer")
+
+        try:
+            self.INTERVIEW_REFINEMENT_MAX_TEXT_CHARS = int(self.INTERVIEW_REFINEMENT_MAX_TEXT_CHARS)
+            if self.INTERVIEW_REFINEMENT_MAX_TEXT_CHARS <= 0:
+                errors.append("INTERVIEW_REFINEMENT_MAX_TEXT_CHARS must be > 0")
+        except ValueError:
+            errors.append("INTERVIEW_REFINEMENT_MAX_TEXT_CHARS must be an integer")
+
+        try:
+            self.INTERVIEW_REFINEMENT_MAX_INSTRUCTION_CHARS = int(self.INTERVIEW_REFINEMENT_MAX_INSTRUCTION_CHARS)
+            if self.INTERVIEW_REFINEMENT_MAX_INSTRUCTION_CHARS <= 0:
+                errors.append("INTERVIEW_REFINEMENT_MAX_INSTRUCTION_CHARS must be > 0")
+        except ValueError:
+            errors.append("INTERVIEW_REFINEMENT_MAX_INSTRUCTION_CHARS must be an integer")
 
         self.LLM_JSON_MODE = str(self.LLM_JSON_MODE).strip().lower() in {"1", "true", "yes", "on"}
 
@@ -518,8 +589,11 @@ class Settings:
         logger.info(f"AICREDITS_GENERATION_MODEL_FALLBACK: {self.AICREDITS_GENERATION_MODEL_FALLBACK}")
         logger.info(f"AICREDITS_REPORT_CHAT_MODEL_PRIMARY: {self.AICREDITS_REPORT_CHAT_MODEL_PRIMARY}")
         logger.info(f"AICREDITS_REPORT_CHAT_MODEL_FALLBACK: {self.AICREDITS_REPORT_CHAT_MODEL_FALLBACK}")
+        logger.info(f"AICREDITS_INTERVIEW_REFINEMENT_MODEL_PRIMARY: {self.AICREDITS_INTERVIEW_REFINEMENT_MODEL_PRIMARY}")
+        logger.info(f"AICREDITS_INTERVIEW_REFINEMENT_MODEL_FALLBACK: {self.AICREDITS_INTERVIEW_REFINEMENT_MODEL_FALLBACK}")
         logger.info("LLM_API_KEY: ***[REDACTED]***")
         logger.info("AICREDITS_GENERATION_API_KEY: ***[REDACTED]***")
         logger.info("AICREDITS_REPORT_CHAT_API_KEY: ***[REDACTED]***")
+        logger.info("AICREDITS_INTERVIEW_REFINEMENT_API_KEY: ***[REDACTED]***")
 
 settings = Settings()

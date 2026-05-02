@@ -12,14 +12,23 @@ from app.api.helpers import (
     get_final_report,
     get_interview_workspace,
 )
-from app.api.schemas import ApplicationListItem, InterviewWorkspaceSummary, InterviewWorkspaceUpsertRequest
+from app.api.schemas import (
+    ApplicationListItem,
+    InterviewWorkspaceRefinementRequest,
+    InterviewWorkspaceRefinementResponse,
+    InterviewWorkspaceSummary,
+    InterviewWorkspaceUpsertRequest,
+)
 from app.auth.dependencies import require_interviewer
 from app.database import get_db
+from app.interview_refinement import InterviewRefinementError, refine_interview_text
 from app.interview_workspace import build_workspace_seed, normalize_workspace_content
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.interview_workspace import InterviewWorkspace
 from app.models.user import User
+from app.security.rate_limit import limiter
+from app.config import settings
 
 
 router = APIRouter(tags=["Interviewer"])
@@ -233,3 +242,40 @@ def complete_my_interview_workspace(
     db.commit()
     db.refresh(workspace)
     return build_interview_workspace_summary(workspace)
+
+
+@router.post(
+    "/me/applications/{application_id}/workspace/refine",
+    response_model=InterviewWorkspaceRefinementResponse,
+)
+def refine_my_interview_workspace_text(
+    application_id: UUID,
+    payload: InterviewWorkspaceRefinementRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_interviewer),
+):
+    _require_workspace(db, application_id, current_user)
+
+    limiter.check(
+        f"interview-refinement:{current_user.id}",
+        limit=settings.AICREDITS_INTERVIEW_REFINEMENT_PER_USER_LIMIT,
+        window_seconds=settings.AICREDITS_INTERVIEW_REFINEMENT_WINDOW_SECONDS,
+        detail="Interview refinement limit reached for your account. Please wait a moment and try again.",
+    )
+
+    try:
+        refined_text = refine_interview_text(
+            mode=payload.mode,
+            text=payload.text,
+            instruction=payload.instruction,
+            content=payload.content,
+            theme_id=payload.theme_id,
+            question_id=payload.question_id,
+            follow_up_id=payload.follow_up_id,
+        )
+    except InterviewRefinementError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    return InterviewWorkspaceRefinementResponse(refined_text=refined_text)

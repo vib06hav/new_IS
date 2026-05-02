@@ -230,6 +230,7 @@ ReportChatSectionKey = Literal[
 ]
 ReportChatResponseState = Literal["clean", "repaired", "retried", "degraded"]
 ReportChatResponseKind = Literal["lookup", "domain_summary", "scope_redirect", "degraded"]
+InterviewRefinementMode = Literal["question_note", "follow_up_note", "final_summary"]
 
 
 class ReportChatRequest(BaseModel):
@@ -255,6 +256,20 @@ class ReportChatResponse(BaseModel):
 
 class InterviewWorkspaceUpsertRequest(BaseModel):
     content: InterviewWorkspaceContent
+
+
+class InterviewWorkspaceRefinementRequest(BaseModel):
+    mode: InterviewRefinementMode
+    text: str
+    instruction: str = ""
+    content: InterviewWorkspaceContent
+    theme_id: Optional[str] = None
+    question_id: Optional[str] = None
+    follow_up_id: Optional[str] = None
+
+
+class InterviewWorkspaceRefinementResponse(BaseModel):
+    refined_text: str
 
 
 class InterviewerAssignmentSummaryItem(BaseModel):

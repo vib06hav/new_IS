@@ -47,6 +47,7 @@ export type FinalReportSummary = {
 
 export type InterviewWorkspaceStatus = "draft" | "launched" | "postgame" | "completed";
 export type InterviewQuestionStatus = "unasked" | "satisfactory" | "mixed" | "unsatisfactory";
+export type InterviewRefinementMode = "question_note" | "follow_up_note" | "final_summary";
 
 export type InterviewWorkspaceQuestion = {
   id: string;
@@ -92,6 +93,20 @@ export type InterviewWorkspaceSummary = {
   updated_at: string;
   launched_at?: string | null;
   completed_at?: string | null;
+};
+
+export type InterviewWorkspaceRefinementRequest = {
+  mode: InterviewRefinementMode;
+  text: string;
+  instruction?: string;
+  content: InterviewWorkspaceContent;
+  theme_id?: string;
+  question_id?: string;
+  follow_up_id?: string;
+};
+
+export type InterviewWorkspaceRefinementResponse = {
+  refined_text: string;
 };
 
 export type ReportChatTargetTab = "page1" | "page2" | "page3" | "page4" | "page5";

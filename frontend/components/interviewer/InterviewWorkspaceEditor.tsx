@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, MinusCircle, Plus, Rocket, Save, Trash2, XCircle } from "lucide-react";
+import { CheckCircle2, MinusCircle, Plus, Rocket, Save, Sparkles, Trash2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { usePortalSession } from "@/components/auth/PortalSessionProvider";
 import {
   completeInterviewWorkspace,
+  refineInterviewWorkspaceText,
   isApiErrorStatus,
   launchInterviewWorkspace,
   saveInterviewWorkspace,
@@ -16,6 +17,7 @@ import { clearInterviewDraft, readInterviewDraft, writeInterviewDraft } from "@/
 import { openInterviewPopupPlaceholder } from "@/lib/interviewPopup";
 import type {
   InterviewQuestionStatus,
+  InterviewRefinementMode,
   InterviewWorkspaceQuestion,
   InterviewWorkspaceQuestionFollowUp,
   InterviewWorkspaceSummary,
@@ -384,7 +386,6 @@ export function InterviewWorkspaceEditor({
         <Card title={pageTitle} description={subtitle} eyebrow={null}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex flex-wrap gap-3">
-              <StatusPill label="Stage" value={workspace.status.toUpperCase()} />
               <StatusPill label="Themes" value={String(workspace.content.themes.length)} />
               <StatusPill label="Questions" value={String(completionCounts.total)} />
             </div>
@@ -550,19 +551,30 @@ export function InterviewWorkspaceEditor({
                                 updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))
                               }
                             />
-                            <TextAreaField
-                              label="Question note"
-                              onChange={(value) =>
-                                updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
-                              }
-                              rows={4}
-                              value={question.note}
-                            />
-                          </div>
-                        ) : (
-                          <div className="mt-3 space-y-4">
-                            <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900">
-                              {question.text || "Untitled question"}
+                          <TextAreaField
+                            label="Question note"
+                            onChange={(value) =>
+                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
+                            }
+                            rows={4}
+                            value={question.note}
+                          />
+                          <RefinementControls
+                            applicationId={applicationId}
+                            content={workspace.content}
+                            currentValue={question.note}
+                            mode="question_note"
+                            onAccept={(value) =>
+                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
+                            }
+                            questionId={question.id}
+                            themeId={theme.id}
+                          />
+                        </div>
+                      ) : (
+                        <div className="mt-3 space-y-4">
+                          <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900">
+                            {question.text || "Untitled question"}
                             </p>
                             <QuestionStatusSelector
                               status={question.status}
@@ -570,16 +582,27 @@ export function InterviewWorkspaceEditor({
                                 updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))
                               }
                             />
-                            <TextAreaField
-                              label="Question note"
-                              onChange={(value) =>
-                                updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
-                              }
-                              rows={4}
-                              value={question.note}
-                            />
-                          </div>
-                        )}
+                          <TextAreaField
+                            label="Question note"
+                            onChange={(value) =>
+                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
+                            }
+                            rows={4}
+                            value={question.note}
+                          />
+                          <RefinementControls
+                            applicationId={applicationId}
+                            content={workspace.content}
+                            currentValue={question.note}
+                            mode="question_note"
+                            onAccept={(value) =>
+                              updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))
+                            }
+                            questionId={question.id}
+                            themeId={theme.id}
+                          />
+                        </div>
+                      )}
 
                         {mode === "postgame" && question.follow_ups.length ? (
                           <div className="mt-4 space-y-3 rounded-[1rem] border border-slate-200 bg-white/70 p-3">
@@ -638,6 +661,21 @@ export function InterviewWorkspaceEditor({
                                       rows={4}
                                       value={followUp.note}
                                     />
+                                    <RefinementControls
+                                      applicationId={applicationId}
+                                      content={workspace.content}
+                                      currentValue={followUp.note}
+                                      followUpId={followUp.id}
+                                      mode="follow_up_note"
+                                      onAccept={(value) =>
+                                        updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
+                                          ...current,
+                                          note: value,
+                                        }))
+                                      }
+                                      questionId={question.id}
+                                      themeId={theme.id}
+                                    />
                                   </div>
                                 </div>
                               ))}
@@ -674,17 +712,31 @@ export function InterviewWorkspaceEditor({
 
       {mode === "postgame" ? (
         <Card title="Final summary" description="Optional top-line wrap-up for the final interview report." eyebrow={null}>
-          <TextAreaField
-            label="Final summary"
-            onChange={(value) =>
-              setWorkspace((current) => ({
-                ...current,
-                content: { ...current.content, final_summary: value },
-              }))
-            }
-            rows={6}
-            value={workspace.content.final_summary}
-          />
+          <div className="space-y-4">
+            <TextAreaField
+              label="Final summary"
+              onChange={(value) =>
+                setWorkspace((current) => ({
+                  ...current,
+                  content: { ...current.content, final_summary: value },
+                }))
+              }
+              rows={6}
+              value={workspace.content.final_summary}
+            />
+            <RefinementControls
+              applicationId={applicationId}
+              content={workspace.content}
+              currentValue={workspace.content.final_summary}
+              mode="final_summary"
+              onAccept={(value) =>
+                setWorkspace((current) => ({
+                  ...current,
+                  content: { ...current.content, final_summary: value },
+                }))
+              }
+            />
+          </div>
         </Card>
       ) : null}
     </div>
@@ -733,6 +785,126 @@ function TextAreaField({
         value={value}
       />
     </label>
+  );
+}
+
+function RefinementControls({
+  applicationId,
+  content,
+  currentValue,
+  mode,
+  onAccept,
+  themeId,
+  questionId,
+  followUpId,
+}: {
+  applicationId: string;
+  content: InterviewWorkspaceSummary["content"];
+  currentValue: string;
+  mode: InterviewRefinementMode;
+  onAccept: (value: string) => void;
+  themeId?: string;
+  questionId?: string;
+  followUpId?: string;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [instructionOpen, setInstructionOpen] = useState(false);
+  const [instruction, setInstruction] = useState("");
+  const [preview, setPreview] = useState<string | null>(null);
+
+  async function handleRefine() {
+    if (!currentValue.trim()) {
+      setError("Add some text before running refinement.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await refineInterviewWorkspaceText(applicationId, {
+        mode,
+        text: currentValue,
+        instruction,
+        content,
+        theme_id: themeId,
+        question_id: questionId,
+        follow_up_id: followUpId,
+      });
+      setPreview(response.refined_text);
+    } catch (refineError) {
+      setError(refineError instanceof Error ? refineError.message : "Unable to refine this text right now.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function resetPreview() {
+    setPreview(null);
+    setError(null);
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 transition hover:text-blue-800 disabled:text-slate-400"
+          disabled={loading}
+          onClick={() => void handleRefine()}
+          type="button"
+        >
+          <Sparkles className="size-3.5" />
+          {loading ? "Refining..." : "Refine"}
+        </button>
+        <button
+          className="text-xs font-medium text-slate-500 transition hover:text-slate-700"
+          onClick={() => setInstructionOpen((current) => !current)}
+          type="button"
+        >
+          {instructionOpen ? "Hide instruction" : "Add instruction"}
+        </button>
+      </div>
+
+      {instructionOpen ? (
+        <label className="block text-sm text-slate-600">
+          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Instruction</span>
+          <textarea
+            className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+            onChange={(event) => setInstruction(event.target.value)}
+            placeholder="Optional: make this sharper, turn into bullets, emphasize constraints..."
+            rows={2}
+            value={instruction}
+          />
+        </label>
+      ) : null}
+
+      {error ? <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">{error}</p> : null}
+
+      {preview ? (
+        <div className="space-y-3 rounded-[1rem] border border-blue-200 bg-blue-50/70 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-800">Preview</p>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => {
+                  onAccept(preview);
+                  resetPreview();
+                }}
+                size="sm"
+              >
+                Accept
+              </Button>
+              <Button onClick={resetPreview} size="sm" variant="secondary">
+                Cancel
+              </Button>
+            </div>
+          </div>
+          <div className="rounded-xl border border-blue-100 bg-white/80 px-4 py-3 text-sm leading-7 text-slate-900 whitespace-pre-wrap">
+            {preview}
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
