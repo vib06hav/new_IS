@@ -1,5 +1,6 @@
 "use client";
 
+import { NotebookPen } from "lucide-react";
 import type { InterviewWorkspaceSummary } from "@/lib/types";
 
 export function FinalInterviewReportSection({
@@ -17,50 +18,53 @@ export function FinalInterviewReportSection({
   };
 
   return (
-    <div className="space-y-5">
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-stretch">
-        <section className="rounded-[1.8rem] border border-amber-200/70 bg-[linear-gradient(135deg,rgba(255,251,235,0.98),rgba(255,255,255,0.94))] px-6 py-6 shadow-[0_20px_48px_rgba(180,138,34,0.12)]">
-          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-amber-700">Post-Interview</p>
-          <h1 className="mt-3 text-[2rem] font-semibold tracking-[-0.05em] text-slate-950 sm:text-[2.4rem]">
-            Final Interview Report
-          </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">
-            Final interviewer feedback and question outcomes captured after interview completion.
-          </p>
+    <div className="space-y-3">
+      <div className="grid gap-2.5 xl:grid-cols-[minmax(0,1fr)_34rem] xl:items-stretch">
+        <section className="overflow-hidden rounded-[1.55rem] border border-slate-200 bg-white/80 px-5 py-3.5 shadow-[0_12px_24px_rgba(15,23,42,0.07)] backdrop-blur-sm">
+          <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-slate-500">
+            <span className="inline-flex items-center gap-2 text-slate-800">
+              <NotebookPen className="size-3.5" />
+              Post-Interview
+            </span>
+          </div>
+          <div className="mt-2.5 space-y-2">
+            <h1 className="max-w-4xl text-[1.9rem] font-black leading-[0.96] tracking-tight text-slate-800 md:text-[2.3rem]">
+              Final Interview Report
+            </h1>
+            <p className="max-w-3xl text-[0.9rem] leading-6 text-slate-600">
+              Final interviewer feedback and question outcomes captured after interview completion.
+            </p>
+          </div>
         </section>
 
-        <aside className="rounded-[1.8rem] border border-slate-200 bg-white/92 px-5 py-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
-          <p className="px-1 text-[9px] font-bold uppercase tracking-widest text-slate-400">Status totals</p>
-          <div className="mt-3 space-y-2">
+        <aside className="flex h-full flex-col justify-center rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_12px_24px_rgba(15,23,42,0.06)] backdrop-blur-sm">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Status totals</p>
+          <div className="mt-3 grid grid-cols-[minmax(5.9rem,1fr)_minmax(5.9rem,1fr)_minmax(5.4rem,0.92fr)_minmax(7.15rem,1.18fr)_minmax(5.4rem,0.92fr)] gap-2">
             <StatusTotal label="Questions" value={totals.questions} />
-            <div className="grid grid-cols-2 gap-2">
-              <StatusTotal label="Satisfied" value={totals.satisfactory} tone="emerald" />
-              <StatusTotal label="Mixed" value={totals.mixed} tone="amber" />
-              <StatusTotal label="Unsatisfied" value={totals.unsatisfactory} tone="rose" />
-              <StatusTotal label="Unasked" value={totals.unasked} />
-            </div>
+            <StatusTotal label="Satisfied" value={totals.satisfactory} tone="emerald" />
+            <StatusTotal label="Mixed" value={totals.mixed} tone="amber" />
+            <StatusTotal label="Unsatisfied" value={totals.unsatisfactory} tone="rose" />
+            <StatusTotal label="Unasked" value={totals.unasked} />
           </div>
         </aside>
       </div>
 
-      <section className="rounded-[1.5rem] border border-slate-200 bg-white/88 p-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
+      <section className="rounded-[1.3rem] border border-slate-200 bg-white/88 p-4 shadow-[0_14px_28px_rgba(15,23,42,0.08)]">
         <div className="space-y-2">
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Summary</p>
           <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Interview Summary</h2>
         </div>
-        <p className="mt-4 text-sm leading-7 text-slate-800">
+        <p className="mt-2.5 text-sm leading-7 text-slate-800">
           {workspace.content.final_summary || "No final summary was recorded."}
         </p>
       </section>
 
-      <section className="rounded-[1.5rem] border border-slate-200 bg-white/88 p-5 shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
+      <section className="rounded-[1.3rem] border border-slate-200 bg-white/88 p-4 shadow-[0_14px_28px_rgba(15,23,42,0.08)]">
         <div className="space-y-2">
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Outcomes</p>
           <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Question Outcomes</h2>
           <p className="text-sm leading-6 text-slate-600">Final interviewer ratings and notes grouped by theme.</p>
         </div>
 
-        <div className="mt-5 space-y-4">
+        <div className="mt-3.5 space-y-3">
           {workspace.content.themes.length ? (
             workspace.content.themes.map((theme, index) => (
               <article
@@ -140,15 +144,17 @@ function StatusTotal({
   label,
   value,
   tone = "slate",
+  className,
 }: {
   label: string;
   value: number;
   tone?: "slate" | "emerald" | "amber" | "rose";
+  className?: string;
 }) {
   return (
-    <div className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 transition-all ${getTotalToneClasses(tone)}`}>
-      <span className="text-[9px] font-bold uppercase tracking-widest">{label}</span>
-      <span className="text-xs font-semibold">{value}</span>
+    <div className={`${className ?? ""} flex min-w-0 items-center justify-between gap-2 rounded-[0.95rem] border px-3 py-3 transition-all ${getTotalToneClasses(tone)}`}>
+      <span className="whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.13em]">{label}</span>
+      <span className="whitespace-nowrap text-[0.85rem] font-semibold">{value}</span>
     </div>
   );
 }

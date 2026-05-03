@@ -165,10 +165,10 @@ export default function InterviewerApplicationPage() {
   return (
     <InterviewerShell>
       <div
-        className={`${plexSans.variable} space-y-6 ${isAssignedView || isCompletedView ? "pb-28 md:pb-32" : ""}`}
+        className={`${plexSans.variable} space-y-2.5 ${isAssignedView || isCompletedView ? "pb-28 md:pb-32" : ""}`}
         style={{ fontFamily: "var(--font-reports-plex)" }}
       >
-        <section className="rounded-[1.6rem] border border-slate-200 bg-white/80 px-4 py-4 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+        <section className="rounded-[1.6rem] border border-slate-200 bg-white/80 px-4 py-3 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2.5">
               <StatusBadge status={item.status} />
