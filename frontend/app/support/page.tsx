@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState, FormEvent } from "react";
 import { Libre_Franklin, IBM_Plex_Sans } from "next/font/google";
 
 const libreFranklin = Libre_Franklin({
@@ -19,19 +18,6 @@ const ibmPlexSans = IBM_Plex_Sans({
 });
 
 export default function SupportPage() {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
-
-    const handleSubmit = (e: FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        // Simulate API call for the mockup
-        setTimeout(() => {
-            setIsSubmitting(false);
-            setIsSubmitted(true);
-        }, 1500);
-    };
-
     return (
         <div className={`min-h-screen bg-slate-50 flex flex-col ${libreFranklin.variable} ${ibmPlexSans.variable} font-sans`}>
             {/* Background Decorators */}
@@ -79,115 +65,76 @@ export default function SupportPage() {
                                 <span className="text-blue-700">interview process?</span>
                             </h1>
                             <p className="text-lg text-slate-600 leading-relaxed font-body">
-                                Whether you're a new user looking to learn more about Interview Standardiser, curious about how our platform structures preparation, or an existing user needing technical assistance, our team is here to help. Drop us a message and we'll get back to you!
+                                Whether you&apos;re exploring Interview Standardiser for your team or you&apos;re already using the platform and need help, choose the path that fits your request and we&apos;ll collect the right details.
                             </p>
                         </div>
                     </div>
 
                     {/* Right Form Component */}
                     <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] border border-slate-200/50 shadow-[0_24px_48px_-12px_rgba(15,23,42,0.15)] ring-1 ring-black/5 p-8 sm:p-10">
-                        {isSubmitted ? (
-                            <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center space-y-4 py-12">
-                                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 ring-8 ring-emerald-50">
-                                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-2xl font-bold text-slate-800">Request Sent Successfully</h3>
-                                <p className="text-slate-600 max-w-sm mx-auto">
-                                    Thank you for reaching out. A support representative will review your message and contact you via email shortly.
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-800 mb-1">Choose a support path</h2>
+                                <p className="text-sm text-slate-500 mb-6">
+                                    Opens a short Google Form so we can contact you.
                                 </p>
-                                <button
-                                    onClick={() => setIsSubmitted(false)}
-                                    className="mt-8 text-sm font-bold uppercase tracking-wider text-blue-600 hover:text-blue-700 transition"
-                                >
-                                    Send another message
-                                </button>
                             </div>
-                        ) : (
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div>
-                                    <h2 className="text-xl font-bold text-slate-800 mb-1">Send a Message</h2>
-                                    <p className="text-sm text-slate-500 mb-6">Please fill out all mandatory fields below.</p>
-                                </div>
 
-                                <div className="space-y-5">
-                                    <div className="space-y-2">
-                                        <label htmlFor="name" className="block text-xs font-bold uppercase tracking-widest text-slate-500">
-                                            Full Name <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            id="name"
-                                            type="text"
-                                            required
-                                            placeholder="Jane Doe"
-                                            className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3.5 text-sm font-medium text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-400 shadow-sm"
-                                        />
+                            <div className="space-y-4">
+                                <a
+                                    href="https://docs.google.com/forms/d/e/1FAIpQLSfN5Y-j5zO8M8AEkjMAi-8ln4hz2vlx907BJ3L4kbSfSCP9GA/viewform?usp=publish-editor"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="group block rounded-[1.5rem] border border-slate-200 bg-white/70 p-5 shadow-sm transition hover:border-blue-200 hover:bg-white hover:shadow-[0_18px_36px_rgba(37,99,235,0.12)]"
+                                >
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="space-y-2">
+                                            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-700">New teams</p>
+                                            <h3 className="text-lg font-bold text-slate-900">Request a demo</h3>
+                                            <p className="text-sm leading-6 text-slate-600">
+                                                Learn how Interview Standardiser can support your interview workflow and share what you&apos;re evaluating.
+                                            </p>
+                                        </div>
+                                        <ArrowIcon />
                                     </div>
+                                </a>
 
-                                    <div className="space-y-2">
-                                        <label htmlFor="email" className="block text-xs font-bold uppercase tracking-widest text-slate-500">
-                                            Email Address <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            id="email"
-                                            type="email"
-                                            required
-                                            placeholder="jane@university.edu"
-                                            className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3.5 text-sm font-medium text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-400 shadow-sm"
-                                        />
+                                <a
+                                    href="https://docs.google.com/forms/d/e/1FAIpQLSfl3CNPL9H_nqFSIKDnWjEWgEmI5AuioO7eGdAWaJLCGAcA1Q/viewform?usp=publish-editor"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="group block rounded-[1.5rem] border border-slate-200 bg-white/70 p-5 shadow-sm transition hover:border-indigo-200 hover:bg-white hover:shadow-[0_18px_36px_rgba(79,70,229,0.12)]"
+                                >
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="space-y-2">
+                                            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-700">Current users</p>
+                                            <h3 className="text-lg font-bold text-slate-900">Existing user support</h3>
+                                            <p className="text-sm leading-6 text-slate-600">
+                                                Get help with workflow issues, questions, or anything blocking your team inside the platform.
+                                            </p>
+                                        </div>
+                                        <ArrowIcon />
                                     </div>
-
-                                    <div className="space-y-2">
-                                        <label htmlFor="phone" className="block text-xs font-bold uppercase tracking-widest text-slate-500">
-                                            Contact Number <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            id="phone"
-                                            type="tel"
-                                            required
-                                            placeholder="+1 (555) 000-0000"
-                                            className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3.5 text-sm font-medium text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-400 shadow-sm"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label htmlFor="message" className="block text-xs font-bold uppercase tracking-widest text-slate-500">
-                                            How can we help?
-                                        </label>
-                                        <textarea
-                                            id="message"
-                                            rows={4}
-                                            placeholder="Please describe the issue you are facing or the question you have..."
-                                            className="w-full rounded-xl border border-slate-200 bg-white/50 px-4 py-3.5 text-sm font-medium text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-400 shadow-sm resize-none"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="pt-2">
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 text-sm font-bold text-white shadow-[0_8px_20px_rgba(37,99,235,0.25)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_12px_28px_rgba(37,99,235,0.35)] disabled:opacity-70 disabled:hover:scale-100"
-                                    >
-                                        {isSubmitting ? (
-                                            <>
-                                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                                </svg>
-                                                Sending request...
-                                            </>
-                                        ) : (
-                                            "Submit Support Request"
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        )}
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
         </div>
+    );
+}
+
+function ArrowIcon() {
+    return (
+        <svg
+            className="mt-1 h-5 w-5 shrink-0 text-slate-400 transition group-hover:text-blue-700"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+        >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+        </svg>
     );
 }
