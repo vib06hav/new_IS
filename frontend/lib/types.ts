@@ -47,7 +47,7 @@ export type FinalReportSummary = {
 
 export type InterviewWorkspaceStatus = "draft" | "launched" | "postgame" | "completed";
 export type InterviewQuestionStatus = "unasked" | "satisfactory" | "mixed" | "unsatisfactory";
-export type InterviewRefinementMode = "question_note" | "follow_up_note" | "final_summary";
+export type InterviewRefinementMode = "question_note" | "follow_up_note" | "final_summary" | "theme_direction" | "question_text";
 
 export type InterviewWorkspaceQuestion = {
   id: string;
@@ -72,8 +72,9 @@ export type InterviewWorkspaceTheme = {
   id: string;
   source: "generated" | "custom";
   title: string;
-  unifying_axis: string;
   interview_direction: string;
+  territory: string;
+  what_makes_it_worth_time: string;
   question_group_title: string;
   questions: InterviewWorkspaceQuestion[];
 };
@@ -82,6 +83,8 @@ export type InterviewWorkspaceContent = {
   themes: InterviewWorkspaceTheme[];
   final_summary: string;
 };
+
+export type InterviewWorkspaceOpening = InterviewWorkspaceQuestion;
 
 export type InterviewWorkspaceSummary = {
   id: string;
@@ -131,7 +134,7 @@ export type ReportChatSectionKey =
   | "page2_leadership"
   | "page3_essays"
   | "page4_focus_areas"
-  | "page5_question_groups";
+  | "page5_interview_openings";
 
 export type ReportChatRequestPayload = {
   question: string;

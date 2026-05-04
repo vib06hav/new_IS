@@ -83,9 +83,11 @@ export default function AdminApplicationDetailPage() {
   const createdAt = new Date(item.created_at).toLocaleString();
   const assignee = item.assigned_interviewer?.name || "Not assigned";
   const hasFinalReportPages = Boolean(item.final_report?.content);
+  const hasPostgameReport = item.interview_workspace?.status === "completed";
   const copilotActions = [
     "review Pages 1-3",
     ...(hasFinalReportPages ? ["inspect focus areas", "review interview questions"] : []),
+    ...(hasPostgameReport ? ["review post-interview outcomes"] : []),
     "open source PDF",
   ];
   const pageOptions: Array<{ value: ReviewPageTab; label: string; meta: string }> = [
@@ -96,6 +98,11 @@ export default function AdminApplicationDetailPage() {
       ? [
           { value: "page4" as const, label: "Focus Areas", meta: "Themes and signals" },
           { value: "page5" as const, label: "Questions", meta: "Interview prompts" },
+        ]
+      : []),
+    ...(hasPostgameReport
+      ? [
+          { value: "page6" as const, label: "Final Report", meta: "Post-interview outcomes" },
         ]
       : []),
   ];
@@ -178,7 +185,7 @@ export default function AdminApplicationDetailPage() {
           </>
         ) : null}
 
-        {item.interview_workspace?.status === "completed" ? (
+        {activePageTab === "page6" && item.interview_workspace?.status === "completed" ? (
           <FinalInterviewReportSection workspace={item.interview_workspace} />
         ) : null}
 

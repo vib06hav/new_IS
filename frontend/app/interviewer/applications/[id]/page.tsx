@@ -162,9 +162,9 @@ export default function InterviewerApplicationPage() {
     { value: "page2", label: "Academics & Activities", meta: "Study and engagement" },
     { value: "page3", label: "Writing", meta: "Essays and excerpts" },
     ...(hasFinalReportPages
-      ? [
-          { value: "page4" as const, label: "Focus Areas", meta: "Themes and signals" },
-          { value: "page5" as const, label: "Questions", meta: "Interview prompts" },
+        ? [
+          { value: "page4" as const, label: "Focus Areas", meta: "Interviewer synthesis" },
+          { value: "page5" as const, label: "Question Groups", meta: "Live interview sheet" },
         ]
       : []),
     ...(isCompletedView ? [{ value: "page6" as const, label: "Final Report", meta: "Interview feedback", featured: true }] : []),
@@ -175,7 +175,7 @@ export default function InterviewerApplicationPage() {
       ? ["review final interview report", "compare the interview outcome with earlier pages", "revisit Pages 1-5"]
       : [
           "review report pages",
-          ...(hasFinalReportPages ? ["inspect focus areas", "review interview questions"] : []),
+          ...(hasFinalReportPages ? ["inspect focus areas", "review question groups"] : []),
           ...(workspace?.status === "completed"
             ? ["review final interview report"]
             : workspace?.status === "postgame"

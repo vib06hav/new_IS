@@ -15,7 +15,7 @@ const SECTION_META: Record<ReportChatSectionKey, { pageLabel: string; sectionLab
   page2_leadership: { pageLabel: "Page 2", sectionLabel: "Leadership" },
   page3_essays: { pageLabel: "Page 3", sectionLabel: "Writing" },
   page4_focus_areas: { pageLabel: "Page 4", sectionLabel: "Focus Areas" },
-  page5_question_groups: { pageLabel: "Page 5", sectionLabel: "Questions" },
+  page5_interview_openings: { pageLabel: "Page 5", sectionLabel: "Interview Openings" },
 };
 
 const PAGE_LABELS: Record<ReportChatCurrentPage, string> = {
@@ -23,7 +23,7 @@ const PAGE_LABELS: Record<ReportChatCurrentPage, string> = {
   page2: "Page 2 Academics & Activities",
   page3: "Page 3 Writing",
   page4: "Page 4 Focus Areas",
-  page5: "Page 5 Questions",
+  page5: "Page 5 Interview Openings",
   page6: "Page 6 Final Report",
   configure: "Configure Workspace",
   overlay: "Interview Overlay",
@@ -85,14 +85,14 @@ export function getReportCopilotStarters({
     return [
       "What gaps remain in the interview notes?",
       "Help me tighten the final summary",
-      "Which question outcomes look mixed or unresolved?",
+      "Which interview-opening outcomes look mixed or unresolved?",
     ];
   }
 
   if (surfaceType === "configure") {
     return [
       "How should I prepare from this report?",
-      "Which question groups should I refine first?",
+      "Which opening groups should I refine first?",
       "What should I ask about this profile?",
     ];
   }
@@ -107,9 +107,9 @@ export function getReportCopilotStarters({
 
   if (currentPage === "page5") {
     return [
-      "How should I use these questions in the interview?",
-      "Which question group should I prioritize first?",
-      "What follow-ups would deepen this line of questioning?",
+      "How should I use these openings in the interview?",
+      "Which opening group should I prioritize first?",
+      "What follow-ups would deepen one of these openings?",
     ];
   }
 

@@ -1,20 +1,20 @@
 "use client";
 
 import { NotebookPen } from "lucide-react";
-import type { InterviewWorkspaceSummary } from "@/lib/types";
+import type { InterviewWorkspaceQuestion, InterviewWorkspaceSummary, InterviewWorkspaceTheme } from "@/lib/types";
 
 export function FinalInterviewReportSection({
   workspace,
 }: {
   workspace: InterviewWorkspaceSummary;
 }) {
-  const questions = flattenWorkspaceQuestions(workspace);
+  const trackedItems = flattenWorkspaceItems(workspace);
   const totals = {
-    questions: questions.length,
-    satisfactory: questions.filter((question) => question.status === "satisfactory").length,
-    mixed: questions.filter((question) => question.status === "mixed").length,
-    unsatisfactory: questions.filter((question) => question.status === "unsatisfactory").length,
-    unasked: questions.filter((question) => question.status === "unasked").length,
+    questions: trackedItems.length,
+    satisfactory: trackedItems.filter((item) => item.status === "satisfactory").length,
+    mixed: trackedItems.filter((item) => item.status === "mixed").length,
+    unsatisfactory: trackedItems.filter((item) => item.status === "unsatisfactory").length,
+    unasked: trackedItems.filter((item) => item.status === "unasked").length,
   };
 
   return (
@@ -32,7 +32,7 @@ export function FinalInterviewReportSection({
               Final Interview Report
             </h1>
             <p className="max-w-3xl text-[0.9rem] leading-6 text-slate-600">
-              Final interviewer feedback and question outcomes captured after interview completion.
+              Final interviewer feedback and question-group outcomes captured after interview completion.
             </p>
           </div>
         </section>
@@ -60,8 +60,8 @@ export function FinalInterviewReportSection({
 
       <section className="rounded-[1.3rem] border border-slate-200 bg-white/88 p-4 shadow-[0_14px_28px_rgba(15,23,42,0.08)]">
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Question Outcomes</h2>
-          <p className="text-sm leading-6 text-slate-600">Final interviewer ratings and notes grouped by theme.</p>
+          <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Question Group Outcomes</h2>
+          <p className="text-sm leading-6 text-slate-600">Final interviewer ratings and notes grouped by focus area.</p>
         </div>
 
         <div className="mt-3.5 space-y-3">
@@ -73,13 +73,17 @@ export function FinalInterviewReportSection({
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">
-                    Theme {index + 1}
+                    Focus Area {index + 1}
                   </span>
                   <span className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">
                     {theme.source}
                   </span>
                 </div>
-                <h3 className="mt-3 text-lg font-semibold tracking-tight text-slate-900">{theme.title || "Untitled theme"}</h3>
+                <h3 className="mt-3 text-lg font-semibold tracking-tight text-slate-900">{theme.title || "Untitled focus area"}</h3>
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
+                  <DetailBlock label="Question group" value={theme.question_group_title || "Question group"} />
+                  <DetailBlock label="Line of inquiry" value={theme.interview_direction || "No line of inquiry recorded."} />
+                </div>
                 <div className="mt-4 space-y-3">
                   {theme.questions.length ? (
                     theme.questions
@@ -89,14 +93,14 @@ export function FinalInterviewReportSection({
                         <div key={question.id} className="rounded-[1rem] border border-slate-200 bg-slate-50/80 p-3">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
-                              Q{questionIndex + 1}
+                              Question {questionIndex + 1}
                             </span>
                             <span className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${getStatusClasses(question.status)}`}>
                               {formatStatus(question.status)}
                             </span>
                           </div>
-                          <p className="mt-3 text-sm leading-7 text-slate-900">{question.text}</p>
-                          <p className="mt-2 text-sm leading-7 text-slate-700">
+                          <p className="mt-3 text-base font-semibold text-slate-900">{question.text || "Untitled question"}</p>
+                          <p className="mt-3 text-sm leading-7 text-slate-700">
                             {question.note || "No question note recorded."}
                           </p>
                           {question.follow_ups.length ? (
@@ -126,7 +130,7 @@ export function FinalInterviewReportSection({
                         </div>
                       ))
                   ) : (
-                    <p className="text-sm leading-7 text-slate-600">No questions were recorded under this theme.</p>
+                    <p className="text-sm leading-7 text-slate-600">No questions were recorded under this focus area.</p>
                   )}
                 </div>
               </article>
@@ -159,6 +163,15 @@ function StatusTotal({
   );
 }
 
+function DetailBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[0.95rem] bg-white/65 px-3 py-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">{label}</p>
+      <p className="mt-2 text-sm leading-7 text-slate-900">{value}</p>
+    </div>
+  );
+}
+
 function formatStatus(status: string) {
   if (status === "satisfactory") return "Satisfied";
   if (status === "mixed") return "Mixed";
@@ -180,8 +193,16 @@ function getTotalToneClasses(tone: "slate" | "emerald" | "amber" | "rose") {
   return "border-slate-100 bg-slate-50 text-slate-800";
 }
 
-function flattenWorkspaceQuestions(workspace: InterviewWorkspaceSummary) {
+function flattenWorkspaceItems(workspace: InterviewWorkspaceSummary) {
   return workspace.content.themes.flatMap((theme) =>
     theme.questions.flatMap((question) => [question, ...question.follow_ups]),
   );
+}
+
+function getThemeQuestions(theme: InterviewWorkspaceTheme) {
+  return theme.questions ?? [];
+}
+
+function getQuestionHeadline(question: InterviewWorkspaceQuestion) {
+  return question.text?.trim() || "Untitled question";
 }

@@ -57,8 +57,8 @@ export function ReviewPackageSection({
     { value: "page3", label: "Writing", meta: "Essays and excerpts" },
     ...(hasSynthesisContent
       ? [
-          { value: "page4" as const, label: "Focus Areas", meta: "Themes and signals" },
-          { value: "page5" as const, label: "Questions", meta: "Interview prompts" },
+          { value: "page4" as const, label: "Focus Areas", meta: "Interviewer synthesis" },
+          { value: "page5" as const, label: "Question Groups", meta: "Live interview sheet" },
         ]
       : []),
   ];
@@ -95,7 +95,7 @@ export function ReviewPackageSection({
           <SynthesisReportSection
             report={annotationSource}
             title="Focus Areas"
-            description="Themes, signals, and what still needs resolution."
+            description="Interviewer-facing synthesis of what is worth spending time on."
             initialTab="page4"
             hideInternalTabs
           />
@@ -103,8 +103,8 @@ export function ReviewPackageSection({
         {activeTab === "page5" && annotationSource ? (
           <SynthesisReportSection
             report={annotationSource}
-            title="Interview Questions"
-            description="Question groups derived from the synthesized themes."
+            title="Question Groups"
+            description="Lean live-interview question groups derived from the synthesized focus areas."
             initialTab="page5"
             hideInternalTabs
           />
@@ -115,7 +115,6 @@ export function ReviewPackageSection({
 }
 
 function extractAnnotationContext(source?: Record<string, unknown> | null): ReviewAnnotationContext | null {
-  const page4 = source?.page_4_focus_areas;
   const signalData = source?.signal_data;
   if (!signalData || typeof signalData !== "object" || Array.isArray(signalData)) {
     return null;
@@ -126,14 +125,12 @@ function extractAnnotationContext(source?: Record<string, unknown> | null): Revi
     return null;
   }
 
-  const themes =
-    page4 && typeof page4 === "object" && !Array.isArray(page4) && Array.isArray((page4 as Record<string, unknown>).themes)
-      ? ((page4 as Record<string, unknown>).themes as ThemeRecord[])
-      : [];
-  const signals =
-    page4 && typeof page4 === "object" && !Array.isArray(page4) && Array.isArray((page4 as Record<string, unknown>).signals)
-      ? ((page4 as Record<string, unknown>).signals as SignalRecord[])
-      : [];
+  const themes = Array.isArray((signalData as Record<string, unknown>).themes)
+    ? ((signalData as Record<string, unknown>).themes as ThemeRecord[])
+    : [];
+  const signals = Array.isArray((signalData as Record<string, unknown>).signals)
+    ? ((signalData as Record<string, unknown>).signals as SignalRecord[])
+    : [];
 
   return {
     ...(annotations as ReviewAnnotationContext),
