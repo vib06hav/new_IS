@@ -329,7 +329,7 @@ def _build_report_chat_messages(
         system_lines.append(
             "This is a synthesis question. Write one focused paragraph. "
             "Lead with the most important insight, then support it briefly. "
-            "Do not list every detail - prioritize what matters most for the interview."
+            "Do not list every detail — prioritize what matters most for the interview."
         )
     else:
         system_lines.append(
@@ -655,11 +655,11 @@ def _determine_answer_shape(question: str, context: dict[str, Any]) -> ReportCha
     if intent == "mixed":
         return "mixed"
 
-    # Synthesis questions always win before factual checks, even when phrased briefly.
+    # Synthesis questions always win before factual checks — even short ones.
     if any(token in normalized for token in ("difference between", "compare", "what stands out", "summarize", "tell me about")):
         return "broad_synthesis"
 
-    # Status/completion questions should stay narrow regardless of detected target.
+    # Status/completion questions are always narrow facts regardless of detected target.
     if any(token in normalized for token in ("is this", "is it", "does this", "completed", "complete", "done", "status")):
         return "fact"
 

@@ -134,7 +134,9 @@ export function ReportChatWidget({
                   ) : null}
                 </div>
 
-                <p className="mt-3 text-sm leading-7 text-slate-900">{answer.answer_summary}</p>
+                <div className="mt-3 max-h-64 overflow-y-auto pr-1">
+                  <p className="text-sm leading-7 text-slate-900">{answer.answer_summary}</p>
+                </div>
 
                 {answer.sources.length ? (
                   <div className="mt-3 border-t border-slate-200/80 pt-3">
