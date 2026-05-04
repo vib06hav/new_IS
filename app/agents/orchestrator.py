@@ -22,13 +22,19 @@ from app.projection.ros_projector import project_ros
 from app.agents.signal_detector import detect_signals
 from app.agents.projection_builder import build_projection
 from app.agents.signal_interpreter import interpret_signals
-from app.agents.bundle_constructor import construct_bundle
+from app.agents.bundle_constructor import construct_focus_area_bundle, construct_question_bundle
+from app.agents.interview_synthesizer import synthesize_interview_focus_areas
 from app.agents.interview_generator import generate_interview
 from app.agents.report_annotations import build_report_annotations
 from app.llm.client import LLMClientError
 
 # Policy and ROS
-from app.policy.guard import validate_question_groups, validate_signals, sanitise_llm_output
+from app.policy.guard import (
+    validate_focus_areas,
+    validate_question_groups,
+    validate_signals,
+    sanitise_llm_output,
+)
 from app.ros.assembler import assemble_ros_v1
 
 # Models and Utilities
@@ -396,13 +402,13 @@ def run_synthesis_pipeline(
         )
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": val_res_1, "confidence": agg_conf}
 
-    logger.debug(f"Agent 15: Bundle Constructor (keys in val_res_1: {list(val_res_1.keys())})")
+    logger.debug(f"Agent 15: Focus-Area Bundle Constructor (keys in val_res_1: {list(val_res_1.keys())})")
     validated_call_1_output = val_res_1["sanitized_output"]
-    signal_evidence_bundle = construct_bundle(validated_call_1_output, canonical_data, entity_id_map)
+    focus_area_bundle = construct_focus_area_bundle(validated_call_1_output, canonical_data, entity_id_map)
 
-    logger.debug("Agent 16: Interview Generator (LLM Call 2)")
+    logger.debug("Agent 16: Interview Synthesizer (LLM Call 2)")
     try:
-        raw_call_2_output = generate_interview(signal_evidence_bundle, entity_id_map)
+        raw_call_2_output = synthesize_interview_focus_areas(focus_area_bundle)
     except LLMClientError as e:
         logger.error(f"LLM Call 2 Transport/Load Failure: {str(e)}")
         abort_res = {
@@ -421,13 +427,13 @@ def run_synthesis_pipeline(
             artifacts={
                 "stage": "call_2_transport",
                 "validation_result": abort_res,
-                "signal_evidence_bundle": signal_evidence_bundle,
+                "focus_area_bundle": focus_area_bundle,
             },
         )
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": abort_res, "confidence": agg_conf}
 
-    logger.debug("Policy Guard: Question Group Validation")
-    val_res_2 = validate_question_groups(raw_call_2_output, entity_id_map, signal_evidence_bundle)
+    logger.debug("Policy Guard: Focus Area Validation")
+    val_res_2 = validate_focus_areas(raw_call_2_output, validated_call_1_output)
 
     if not val_res_2["passed"]:
         logger.error(f"Call 2 Validation Failed for {application_id}")
@@ -439,15 +445,68 @@ def run_synthesis_pipeline(
                 "stage": "call_2_validation",
                 "raw_call_2_output": raw_call_2_output,
                 "validation_result": val_res_2,
-                "signal_evidence_bundle": signal_evidence_bundle,
+                "focus_area_bundle": focus_area_bundle,
             },
         )
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": val_res_2, "confidence": agg_conf}
 
+    validated_focus_areas = val_res_2["sanitized_output"]
+    question_bundle = construct_question_bundle(
+        validated_call_1_output,
+        validated_focus_areas,
+        canonical_data,
+        entity_id_map,
+    )
+
+    logger.debug("Agent 17: Interview Generator (LLM Call 3)")
+    try:
+        raw_call_3_output = generate_interview(question_bundle, entity_id_map)
+    except LLMClientError as e:
+        logger.error(f"LLM Call 3 Transport/Load Failure: {str(e)}")
+        abort_res = {
+            "passed": False,
+            "violations_log": [{
+                "violation_id": str(uuid.uuid4()),
+                "field": "llm_call_3",
+                "type": "transport_error",
+                "context": str(e)
+            }]
+        }
+        _handle_abort(
+            application_id,
+            abort_res,
+            db,
+            artifacts={
+                "stage": "call_3_transport",
+                "validation_result": abort_res,
+                "question_bundle": question_bundle,
+            },
+        )
+        return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": abort_res, "confidence": agg_conf}
+
+    logger.debug("Policy Guard: Question Group Validation")
+    val_res_3 = validate_question_groups(raw_call_3_output, entity_id_map, question_bundle)
+
+    if not val_res_3["passed"]:
+        logger.error(f"Call 3 Validation Failed for {application_id}")
+        _handle_abort(
+            application_id,
+            val_res_3,
+            db,
+            artifacts={
+                "stage": "call_3_validation",
+                "raw_call_3_output": raw_call_3_output,
+                "validation_result": val_res_3,
+                "question_bundle": question_bundle,
+            },
+        )
+        return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": val_res_3, "confidence": agg_conf}
+
     logger.debug("ROS Assembler")
     validated_themes = validated_call_1_output["themes"]
     validated_signals = validated_call_1_output["signals"]
-    validated_question_groups = val_res_2["sanitized_output"]["question_groups"]
+    validated_focus_area_items = validated_focus_areas["focus_areas"]
+    validated_question_groups = val_res_3["sanitized_output"]["question_groups"]
 
     report_meta = {
         "application_number": application_id,
@@ -460,8 +519,7 @@ def run_synthesis_pipeline(
         page_1=page_1,
         page_2=page_2,
         page_3=page_3,
-        themes=validated_themes,
-        signals=validated_signals,
+        focus_areas=validated_focus_area_items,
         question_groups=validated_question_groups,
         report_metadata=report_meta
     )
@@ -497,7 +555,7 @@ def run_synthesis_pipeline(
     return {
         "canonical_data": canonical_data,
         "ros_v1": synthesis_output,
-        "validation_result": val_res_2,
+        "validation_result": val_res_3,
         "confidence": agg_conf
     }
 

@@ -70,11 +70,11 @@ REPORT_CHAT_SECTION_TARGETS: dict[str, dict[str, str]] = {
         "page_label": "Page 4",
         "section_label": "Focus Areas",
     },
-    "page5_question_groups": {
+    "page5_interview_openings": {
         "target_tab": "page5",
-        "anchor_id": "report-page5-question-groups",
+        "anchor_id": "report-page5-interview-openings",
         "page_label": "Page 5",
-        "section_label": "Questions",
+        "section_label": "Interview Openings",
     },
 }
 
@@ -97,12 +97,12 @@ PAGE_MAP = {
     "page4": {
         "label": "Page 4",
         "name": "Focus Areas",
-        "purpose": "Synthesized themes and signals from the report.",
+        "purpose": "Synthesized interviewer focus areas from the report.",
     },
     "page5": {
         "label": "Page 5",
-        "name": "Questions",
-        "purpose": "Interview questions and probing directions.",
+        "name": "Interview Openings",
+        "purpose": "Concrete interview openings, hooks, and sample phrasing.",
     },
     "page6": {
         "label": "Page 6",
@@ -119,7 +119,7 @@ QUESTION_KEYWORDS: dict[str, tuple[str, ...]] = {
     "page2_leadership": ("leadership", "captain", "president", "head boy", "head girl", "leader", "role"),
     "page3_essays": ("essay", "essays", "writing", "statement", "prompt", "writing sample"),
     "page4_focus_areas": ("focus area", "focus areas", "theme", "themes", "signal", "signals", "stand out", "stands out"),
-    "page5_question_groups": ("question", "questions", "probe", "follow up", "follow-up", "interview prompt", "interview prompts"),
+    "page5_interview_openings": ("opening", "openings", "question theme", "question themes", "hook", "hooks", "interview opening", "interview openings", "sample question", "sample questions"),
 }
 
 WORKFLOW_KEYWORDS = (
@@ -236,7 +236,7 @@ def build_report_chat_context(
     actions = list(available_actions or [])
 
     page4 = final_report_content.get("page_4_focus_areas", {}) if isinstance(final_report_content, dict) else {}
-    page5 = final_report_content.get("page_5_question_groups", {}) if isinstance(final_report_content, dict) else {}
+    page5 = final_report_content.get("page_5_interview_openings", final_report_content.get("page_5_question_groups", {})) if isinstance(final_report_content, dict) else {}
     deterministic_signals = _extract_deterministic_signals(final_report_content)
     page6 = _build_page6_context(workspace)
 
@@ -247,7 +247,7 @@ def build_report_chat_context(
         "pages_1_3": review_package_pages,
         "pages_4_5": {
             "page_4_focus_areas": page4 if isinstance(page4, dict) else {},
-            "page_5_question_groups": page5 if isinstance(page5, dict) else {},
+            "page_5_interview_openings": page5 if isinstance(page5, dict) else {},
         },
         "page_6_final_report": page6,
         "workspace_content": workspace.get("content", {}) if isinstance(workspace, dict) else {},
@@ -504,28 +504,28 @@ def _fallback_answer(context: dict[str, Any]) -> str:
     page2 = pages_1_3.get("page_2_academic_and_engagement") if isinstance(pages_1_3, dict) else {}
     page3 = pages_1_3.get("page_3_essays") if isinstance(pages_1_3, dict) else {}
     page4 = (report_context.get("pages_4_5") or {}).get("page_4_focus_areas", {})
-    page5 = (report_context.get("pages_4_5") or {}).get("page_5_question_groups", {})
+    page5 = (report_context.get("pages_4_5") or {}).get("page_5_interview_openings", {})
     page6 = report_context.get("page_6_final_report") or {}
     actions = context.get("available_actions") or []
 
     if any(token in question for token in ("what can i do", "what should i do", "next step")):
         return _workflow_fallback(context.get("current_page"), context.get("workflow_stage"), actions)
 
-    if "page 5" in question or "question" in question or "probe" in question:
-        groups = page5.get("question_groups", []) if isinstance(page5, dict) else []
+    if "page 5" in question or "question" in question or "probe" in question or "opening" in question:
+        groups = page5.get("opening_groups", []) if isinstance(page5, dict) else []
         if isinstance(groups, list) and groups:
             titles = [str(group.get("group_title")).strip() for group in groups[:3] if isinstance(group, dict) and str(group.get("group_title")).strip()]
             if titles:
-                return "Page 5 groups interview prompts around " + ", ".join(titles) + "."
-        return "Page 5 is the interview-questions layer, but this report does not currently show generated question groups."
+                return "Page 5 groups interview openings around " + ", ".join(titles) + "."
+        return "Page 5 is the interview-openings layer, but this report does not currently show generated opening groups."
 
     if "page 4" in question or "focus" in question or "theme" in question or "signal" in question:
-        themes = page4.get("themes", []) if isinstance(page4, dict) else []
-        if isinstance(themes, list) and themes:
-            titles = [str(theme.get("title")).strip() for theme in themes[:3] if isinstance(theme, dict) and str(theme.get("title")).strip()]
+        focus_areas = page4.get("focus_areas", []) if isinstance(page4, dict) else []
+        if isinstance(focus_areas, list) and focus_areas:
+            titles = [str(item.get("title")).strip() for item in focus_areas[:3] if isinstance(item, dict) and str(item.get("title")).strip()]
             if titles:
                 return "Page 4 synthesizes the report into focus areas such as " + ", ".join(titles) + "."
-        return "Page 4 is the synthesis layer for themes and signals, but this report does not currently show generated focus areas."
+        return "Page 4 is the synthesis layer for interviewer focus areas, but this report does not currently show generated focus areas."
 
     if "activity" in question:
         summary = _summarize_activities(page2 if isinstance(page2, dict) else {})
@@ -555,9 +555,9 @@ def _fallback_answer(context: dict[str, Any]) -> str:
         if summary:
             return summary
         totals = page6.get("totals", {})
-        if isinstance(totals, dict) and totals.get("questions"):
+        if isinstance(totals, dict) and totals.get("openings"):
             return (
-                f"The final interview report records {totals.get('questions')} question outcomes, "
+                f"The final interview report records {totals.get('openings')} interview-opening outcomes, "
                 f"including {totals.get('satisfactory', 0)} satisfactory and {totals.get('mixed', 0)} mixed results."
             )
 
@@ -640,7 +640,7 @@ def _detect_intent(question: str) -> tuple[ReportChatIntent, ReportChatTarget]:
         return "content", "academics"
     if any(token in normalized for token in ("theme", "themes", "signal", "signals", "focus area")):
         return "content", "focus_areas"
-    if any(token in normalized for token in ("question", "questions", "probe", "follow up", "follow-up")):
+    if any(token in normalized for token in ("question", "questions", "probe", "follow up", "follow-up", "opening", "openings", "hook")):
         return "content", "questions"
     return "content", "mixed"
 
@@ -724,11 +724,11 @@ def _build_page6_context(workspace: Optional[dict[str, Any]]) -> dict[str, Any]:
     if not isinstance(content, dict):
         return {}
 
-    totals = {"questions": 0, "satisfactory": 0, "mixed": 0, "unsatisfactory": 0, "unasked": 0}
+    totals = {"openings": 0, "satisfactory": 0, "mixed": 0, "unsatisfactory": 0, "unasked": 0}
     for theme in content.get("themes", []):
         if not isinstance(theme, dict):
             continue
-        for question in theme.get("questions", []):
+        for question in theme.get("openings", theme.get("questions", [])):
             if isinstance(question, dict):
                 _tally_status(totals, _safe_string(question.get("status")))
                 for follow_up in question.get("follow_ups", []):
@@ -744,7 +744,7 @@ def _build_page6_context(workspace: Optional[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _tally_status(totals: dict[str, int], status: Optional[str]) -> None:
-    totals["questions"] += 1
+    totals["openings"] += 1
     if status in {"satisfactory", "mixed", "unsatisfactory", "unasked"}:
         totals[status] += 1
     else:
@@ -764,13 +764,13 @@ def _select_relevant_section_keys(question: str, current_page: Optional[str], su
         "page2": "page2_academics",
         "page3": "page3_essays",
         "page4": "page4_focus_areas",
-        "page5": "page5_question_groups",
+        "page5": "page5_interview_openings",
     }
     if current_page in current_page_map:
         selected.insert(0, current_page_map[current_page])
 
     if surface_type in {"configure", "overlay", "postgame", "final_report"} and not selected:
-        selected.extend(["page2_academics", "page2_activities", "page5_question_groups"])
+        selected.extend(["page2_academics", "page2_activities", "page5_interview_openings"])
 
     deduped: list[str] = []
     for key in selected:
@@ -822,9 +822,9 @@ def _default_followups(context: dict[str, Any]) -> list[str]:
         ]
     if current_page == "page5":
         return [
-            "How should I use these questions in the interview?",
-            "Which question group should I prioritize first?",
-            "What follow-ups would deepen this line of questioning?",
+            "How should I use these openings in the interview?",
+            "Which opening group should I prioritize first?",
+            "What follow-ups would deepen one of these openings?",
         ]
     if current_page == "page4":
         return [

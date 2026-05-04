@@ -4,268 +4,133 @@ from app.llm.client import generate
 
 
 def build_interview_messages(bundle: dict, entity_id_map: list) -> list[dict]:
-    """
-    Builds the Stage 1.7 Call 2 prompt messages.
-    Instructs the LLM to generate interview question groups grounded
-    in pre-defined themes and validated signals.
-    """
-
-    prohibited_terms = [
-        "Admit", "Reject", "Likelihood", "Top candidate", "Risk factor",
-        "Strength", "Weakness", "Outstanding", "Exceptional", "Excellent",
-        "Poor", "Impressive", "Concerning"
-    ]
-
     system_prompt = """
-You are preparing an interviewer who has never met this applicant but has read
-their application file. Your job is to produce question groups that give the
-interviewer access to the interior of what the application shows - not to audit
-gaps, but to understand how things actually work for this specific person.
+You are writing a lean interview question sheet for a specific applicant.
 
-The themes and signals have already been defined for you. Do not invent, merge,
-split, rename, or reinterpret them. Your job is to write exactly one question
-group for each provided theme_id.
+You are not writing opening cards, prep prose, or narrative scaffolding.
+You are writing one concise question group per focus area so an interviewer can
+move directly into the conversation.
 
-A signal is a line of understanding worth exploring. It may represent something
-unresolved, something present but underdeveloped, or something already strong
-whose internal structure is not yet visible. All three are equally valid as
-sources of questions. Do not treat signals as gap reports.
+You have two inputs:
+1. Plain-language focus areas that define the territory and why it is worth time.
+2. Grounded signal data that contains the real application details the questions must be based on.
 
-A theme defines the territory and direction of a portion of the interview. It
-is not a topic bucket. It carries a direction of understanding - what the
-interviewer is fundamentally trying to access in this conversation. Every
-question you write must serve that direction.
+The focus areas control the direction.
+The signal data controls the specificity and truth.
 
 ---
 
-EVALUATIVE CONTEXT - what the interviewer is ultimately trying to assess:
+HOW TO BUILD QUESTION GROUPS - apply these steps silently.
 
-The interviewer enters this conversation with three evaluative lenses. These do
-not replace or override the themes and signals - question generation is still
-driven by interview_direction and depth_opening. But as you build questions,
-be aware that the interviewer is trying to gather evidence on:
+For each focus area, produce exactly one question group.
+Each question group must contain 2 to 4 questions.
 
-  1. GRIT AND GROWTH - how the applicant responds to setbacks, difficulty, and
-     the gap between where they are and where they want to be.
-  2. PROBLEM SOLVING - how the applicant actually reasons through challenges,
-     not just that they solved something.
-  3. TECHNOLOGY ENGAGEMENT - whether the applicant's interest in technology is
-     genuine and self-directed, or primarily stated.
+STEP 1 - Read the focus area carefully.
+The territory tells you what kind of conversation this should become.
+The question group should feel like the practical interviewing version of that page.
 
-Where a question naturally surfaces evidence on one of these dimensions without
-compromising its specificity or its service to the theme, that is a stronger
-question. Do not force this. A question that serves the theme well but does not
-map neatly to one of these lenses is still correct. A question that maps to one
-of these lenses but drifts from interview_direction is not.
+STEP 2 - Write one strong line_of_inquiry for the whole group.
+This is the single strategic thing the interviewer is trying to understand from this area.
+It should be specific, investigative, and grounded in the application.
 
----
+STEP 3 - Choose questions that help the interviewer make progress on that line of inquiry.
+Vary the job each question does.
+Some can surface a concrete example, some can test reflection, some can probe decision-making,
+and some can check whether the application's strongest interpretation really holds up.
 
-YOUR INPUT:
-
-You will receive a theme-first signal-evidence bundle.
-Each theme entry contains:
-- theme: the validated theme you must target
-- signal_evidence_pairs: the validated signals and supporting evidence grouped under that theme
-
-Each signal contains these fields:
-- signal_id
-- theme_id
-- title
-- evidence_anchor
-- direct_read
-- depth_opening: the specific thing an interviewer would want to understand more deeply -
-  this may be an unresolved unknown, an underdeveloped area, or the internal structure
-  of something already strong. Treat all three equally.
-- why_it_matters
-
-Each theme contains these fields:
-- theme_id
-- title
-- unifying_axis: the single underlying idea that explains why these signals belong together.
-  This is abstract and does not reference any signal - it characterizes something specific
-  to this applicant.
-- interview_direction: what the interviewer is trying to understand across these signals,
-  stated as an actionable direction that stands independently of the signals.
-
-The primary drivers of question generation are:
-- interview_direction of the theme -> sets the direction and coherence frame for the group
-- depth_opening of each signal -> provides the specific opening that makes questions non-generic
-- evidence_anchor and direct_read -> ground every question in something particular to this applicant
-
-The theme controls direction. The signals control specificity. Both constraints must be
-satisfied simultaneously in every question you write.
+STEP 4 - Keep the questions natural and interviewable.
+They should sound like smart follow-through from someone who read the file,
+not like templates and not like committee language.
 
 ---
 
-HOW TO BUILD QUESTIONS - apply these steps silently in your head. Do not write any of this into your output:
+WRITING RULES:
 
-For each provided theme, produce exactly one question_group using the same theme_id.
-Each question_group must contain 3 to 4 questions.
-
-STEP 1 - Read the theme's interview_direction first.
-This is the direction the entire question group must serve. Every question you write
-must advance understanding along this direction. If a question does not clearly serve
-interview_direction, discard it regardless of how interesting it seems.
-
-STEP 2 - Read each signal's depth_opening and evidence_anchor.
-depth_opening is what an interviewer would want to understand more deeply. It is not
-always a gap. It may be the internal structure of something strong, the grounding
-behind something stated, or the lived reality behind something asserted.
-evidence_anchor is what in the application makes it possible to ask a real question.
-Every question must contain a specific referent drawn from the evidence_anchor or
-direct_read - a named thing the applicant did, wrote, or chose. A question without
-a specific referent from this application is not acceptable.
-
-STEP 3 - Build the question group as a panorama, not a sequence.
-Each question must enter the theme's territory from a genuinely different angle.
-Different angle means: different entry point into the applicant's profile, or a
-different dimension of what interview_direction is trying to reach. Questions that
-probe the same thing from slightly different phrasings are redundant - discard one.
-
-A well-formed group covers at least three of these four angles:
-- GROUNDING: where in the applicant's life has this actually been practiced or lived,
-  and what does that practice look like concretely?
-- REASONING: what was the actual logic or thinking behind a specific choice, direction,
-  or commitment this applicant made?
-- CONNECTION: what is the relationship between two specific things in this applicant's
-  profile - between what they wrote and what they did, or between two activities, or
-  between an academic direction and a stated goal?
-- DEPTH: for the signal most central to this theme, what does the depth_opening
-  specifically require an interviewer to understand?
-
-STEP 4 - Test every question before including it.
-
-TEST 1 - SPECIFIC REFERENT
-Does this question name a specific thing from this application - something the
-applicant did, wrote, chose, or stated? If not, rewrite it.
-Naming a field or general category ("your interest in technology") does not pass.
-Naming something particular ("your essay's claim that X" or "your activity in Y") passes.
-
-TEST 2 - UNANSWERABLE GENERICALLY
-Can this question be answered well without the applicant accounting for the specific
-referent named in it? If yes, the question is too open. Tighten it until a generic
-answer would fail to address what the question is actually asking.
-
-TEST 3 - SERVES INTERVIEW_DIRECTION
-Does this question clearly advance understanding along the theme's interview_direction?
-If it is interesting but tangential, cut it.
-
-TEST 4 - NOT ELABORATION
-Does this question ask the applicant to reason, account for, or connect something?
-If it effectively asks them to tell or elaborate, rewrite it.
-
-QUESTION TONE:
-The implicit stance is structural curiosity - you have read this application carefully
-and want to understand how things actually work for this person. Not skeptical. Not
-validating. Genuinely curious about the interior of what is already present.
-Do not frame questions as contradictions to resolve. Do not imply the interviewer
-has found a problem. Do not open with hedging phrases that signal doubt.
+- The group_label should be short and scannable.
+- line_of_inquiry should be one sentence.
+- Every question must be usable as-is in a real interview.
+- Questions should be specific to this applicant, not generic admissions prompts.
+- Do not infer gender.
+- Do not use committee language or framework language.
+- Do not overpack the questions with tiny technical details unless those details are the point.
 
 PROHIBITED QUESTION FORMS:
 - "Tell me about X"
 - "Can you elaborate on X"
+- "Could you tell me about"
+- "Could you walk me through"
+- "Walk me through"
+- "What drew you to X"
 - "How did your interest in X develop over time"
-- "Can you walk me through X"
-- "What drew you to X" (invites origin story, not reasoning)
-- Any question that names a general category rather than a specific thing from this application
-- Any question framed as a contradiction or inconsistency to resolve
-- Any question the applicant can answer well without engaging the specific referent named
+
+BAD QUESTION GROUP:
+{
+  "group_label": "Technical interest",
+  "line_of_inquiry": "Understand whether the applicant is really serious about technology.",
+  "questions": [
+    { "question_id": "Q-001", "question": "Tell me about your interest in technology." },
+    { "question_id": "Q-002", "question": "Walk me through your technical projects." }
+  ]
+}
+
+BETTER QUESTION GROUP:
+{
+  "group_label": "Interest versus making",
+  "line_of_inquiry": "Whether the applicant's stated interest in technology has translated into self-directed building, experimentation, or sustained technical choices.",
+  "questions": [
+    { "question_id": "Q-001", "question": "When you think about the projects or experiments that most shaped your technical confidence, which one actually changed how you worked and why?" },
+    { "question_id": "Q-002", "question": "Where does your file understate the hands-on work you have really done, and where does it overstate how far that work has gone?" },
+    { "question_id": "Q-003", "question": "What has kept your technical interests most alive so far: building, reading, problem-solving with others, or something else?" }
+  ]
+}
 
 ---
 
-CONTRAST EXAMPLE - understand what makes a question pass all four tests:
-
-Signal context: applicant's essay presents computational thinking as central to their
-identity and future direction. Activity profile shows math olympiad participation and
-self-directed reading in algorithms. depth_opening: whether this computational identity
-is grounded in self-directed practice - actual building or problem-solving outside
-structured competition - or exists primarily as a stated orientation supported by
-formal achievement.
-
-Theme interview_direction: understanding whether this applicant's relationship to
-computation is lived and self-directed, or primarily demonstrated through structured
-achievement contexts.
-
-WRONG question (fails TEST 1 and TEST 2):
-"How has your interest in computing developed over time?"
--> No specific referent. Answerable by any applicant who mentioned computing.
--> Invites biography, not reasoning.
-
-WRONG question (fails TEST 3 - interesting but drifts from interview_direction):
-"What was the hardest problem you encountered in the math olympiad?"
--> Names something specific, but probes difficulty in competition - not whether
-   practice is self-directed outside structured contexts.
-
-RIGHT question (passes all four tests):
-"Your essay frames computational thinking as the lens through which you approach
-problems, but your activities outside school sit almost entirely within structured
-competitions and reading - where outside those formats have you actually built or
-created something, and what drove you to do it?"
--> Names specific referents: the essay's framing, the activity pattern.
--> Cannot be answered generically - requires accounting for the specific pattern named.
--> Directly serves interview_direction: self-directed vs. structured-context practice.
--> Forces reasoning, not elaboration.
-
----
-
-PROHIBITED TERMS: """ + ", ".join(prohibited_terms) + """
-
-CRITICAL: Do not include any key not defined in the OUTPUT SCHEMA below.
-Your reasoning, planning, or question-testing process must remain entirely internal.
-Do not create an "analysis", "reasoning", "thinking", or any other extra key.
-Tokens spent on reasoning text in the output are wasted tokens that reduce the
-number of question groups that can be generated.
-
----
-
-OUTPUT SCHEMA - return exactly this structure, nothing else:
+OUTPUT SCHEMA - return exactly this structure:
 
 {
   "question_groups": [
     {
-      "theme_id": "THEME-###",
-      "group_title": "Short neutral label for the question group",
+      "focus_area_id": "FA-001",
+      "group_label": "Short scannable label for this question set",
+      "line_of_inquiry": "One sentence. The strategic thing the interviewer is trying to understand here.",
       "questions": [
-        "Question 1 - specific, probing, names something from this application",
-        "Question 2 - probes from a different angle",
-        "Question 3 - directly targets the most important depth opening"
-      ]
+        {
+          "question_id": "Q-001",
+          "question": "One interview-ready question."
+        }
+      ],
+      "source_theme_ids": ["THEME-001"],
+      "source_signal_ids": ["SIG-001", "SIG-002"]
     }
   ]
 }
 
-Reuse the provided theme_id values exactly as given.
-questions must be a flat array of plain strings only.
-Produce exactly one question_group per provided theme.
-Do not return a themes array.
+Produce exactly one question_group per provided focus_area_id.
+Produce 2 to 4 questions per group.
+source_theme_ids and source_signal_ids must reference real IDs from the grounding data.
 """
 
     user_prompt = f"""
-Produce interview question groups for this applicant based on the
-following theme-first signal-evidence bundle.
+Produce interview question groups for this applicant.
 
-THEME SIGNAL-EVIDENCE BUNDLE:
+FOCUS AREAS (primary input - direction and emphasis):
 {json.dumps(bundle, indent=2)}
 
 ENTITY REFERENCE MAP:
 {json.dumps(entity_id_map, indent=2)}
 
-Apply your internal question-building framework silently. Return only valid JSON matching the output schema.
-Produce exactly one question_group for every theme_id in the bundle, and no others.
+Return only valid JSON matching the output schema.
+Every question must be grounded in something specific from this application.
+Every group must feel ready for live use in the interview, not like prep notes.
 """
 
     return [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_prompt}
+        {"role": "user", "content": user_prompt},
     ]
 
 
 def generate_interview(bundle: dict, entity_id_map: list) -> str:
-    """
-    Agent 16: Interview generator (LLM Call 2).
-    Makes exactly one LLM call to produce interview question groups.
-    Returns the raw response text.
-    """
     messages = build_interview_messages(bundle, entity_id_map)
-    response_text = generate(messages, call_label="call_2")
-    return response_text
+    return generate(messages, call_label="call_3")

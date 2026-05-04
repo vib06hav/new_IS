@@ -8,32 +8,44 @@ from pydantic import BaseModel, ConfigDict, Field
 class Theme(BaseModel):
     theme_id: str
     title: str
-    unifying_axis: str
-    interview_direction: str
     supporting_signal_ids: list[str]
-    referenced_entity_ids: list[str]
 
 
 class Signal(BaseModel):
     signal_id: str
-    theme_id: str
     title: str
-    evidence_anchor: str
-    direct_read: str
-    depth_opening: str
-    why_it_matters: str
+    core_observation: str
+    interview_opening: str
     referenced_entity_ids: list[str]
+    supporting_fragment_ids: list[str] = []
+    supporting_det_signal_ids: list[str] = []
+
+
+class QuestionCard(BaseModel):
+    question_id: str
+    question: str
 
 
 class QuestionGroup(BaseModel):
-    theme_id: str
-    group_title: str
-    questions: list[str]
+    focus_area_id: str
+    group_label: str
+    line_of_inquiry: str
+    questions: list[QuestionCard]
+    source_theme_ids: list[str] = []
+    source_signal_ids: list[str] = []
+
+
+class FocusArea(BaseModel):
+    focus_area_id: str
+    title: str
+    territory: str
+    what_makes_it_worth_time: str
+    source_theme_ids: list[str]
+    source_signal_ids: list[str]
 
 
 class Page4FocusAreas(BaseModel):
-    themes: list[Theme]
-    signals: list[Signal]
+    focus_areas: list[FocusArea]
 
 
 class Page5QuestionGroups(BaseModel):
@@ -84,22 +96,29 @@ class InterviewWorkspaceQuestion(BaseModel):
     status: InterviewQuestionStatus = "unasked"
     note: str = ""
     order: int = 0
-    follow_ups: list[InterviewWorkspaceFollowUp] = []
+    follow_ups: list[InterviewWorkspaceFollowUp] = Field(default_factory=list)
 
 
 class InterviewWorkspaceTheme(BaseModel):
     id: str
     source: Literal["generated", "custom"]
     title: str
-    unifying_axis: str
     interview_direction: str
+    territory: str = ""
+    what_makes_it_worth_time: str = ""
     question_group_title: str
-    questions: list[InterviewWorkspaceQuestion]
+    questions: list[InterviewWorkspaceQuestion] = Field(default_factory=list)
 
 
 class InterviewWorkspaceContent(BaseModel):
     themes: list[InterviewWorkspaceTheme]
     final_summary: str = ""
+
+
+OpeningCard = QuestionCard
+OpeningGroup = QuestionGroup
+Page5InterviewOpenings = Page5QuestionGroups
+InterviewWorkspaceOpening = InterviewWorkspaceQuestion
 
 
 class InterviewWorkspaceSummary(BaseModel):
@@ -229,7 +248,7 @@ ReportChatSectionKey = Literal[
     "page2_leadership",
     "page3_essays",
     "page4_focus_areas",
-    "page5_question_groups",
+    "page5_interview_openings",
 ]
 ReportChatResponseState = Literal["clean", "repaired", "retried", "degraded"]
 ReportChatResponseKind = Literal["content", "workflow", "action", "mixed", "degraded"]

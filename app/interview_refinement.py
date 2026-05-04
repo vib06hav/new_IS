@@ -104,10 +104,11 @@ def _build_question_note_context(
             if question.id == question_id:
                 return "\n".join(
                     [
-                        f"Theme: {theme.title or theme.question_group_title}",
-                        f"Question group: {theme.question_group_title}",
+                        f"Focus area: {theme.title or theme.question_group_title}",
+                        f"Group label: {theme.question_group_title}",
+                        f"Line of inquiry: {theme.interview_direction}",
+                        f"Question: {question.text}",
                         f"Question status: {question.status}",
-                        f"Question text: {question.text}",
                     ]
                 )
 
@@ -134,9 +135,10 @@ def _build_follow_up_context(
                 if follow_up.id == follow_up_id:
                     return "\n".join(
                         [
-                            f"Theme: {theme.title or theme.question_group_title}",
-                            f"Question group: {theme.question_group_title}",
-                            f"Parent question: {question.text}",
+                            f"Focus area: {theme.title or theme.question_group_title}",
+                            f"Group label: {theme.question_group_title}",
+                            f"Line of inquiry: {theme.interview_direction}",
+                            f"Question: {question.text}",
                             f"Follow-up status: {follow_up.status}",
                             f"Follow-up text: {follow_up.text}",
                         ]
@@ -148,9 +150,13 @@ def _build_follow_up_context(
 def _build_final_summary_context(content: InterviewWorkspaceContent) -> str:
     lines = []
     for theme_index, theme in enumerate(content.themes, start=1):
-        lines.append(f"Theme {theme_index}: {theme.title or theme.question_group_title}")
+        lines.append(f"Focus Area {theme_index}: {theme.title or theme.question_group_title}")
+        if theme.question_group_title:
+            lines.append(f"Group label: {theme.question_group_title}")
+        if theme.interview_direction:
+            lines.append(f"Line of inquiry: {theme.interview_direction}")
         for question_index, question in enumerate(sorted(theme.questions, key=lambda item: item.order), start=1):
-            lines.append(f"- Q{question_index} [{question.status}]: {question.text}")
+            lines.append(f"- Question {question_index} [{question.status}]: {question.text}")
             if question.note:
                 lines.append(f"  Note: {question.note}")
             for follow_up_index, follow_up in enumerate(sorted(question.follow_ups, key=lambda item: item.order), start=1):

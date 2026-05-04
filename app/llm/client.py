@@ -179,7 +179,7 @@ def get_llm_capacity_snapshot() -> dict[str, dict[str, int]]:
 
 
 def _policy_for_call(call_label: str | None) -> LLMPolicy:
-    if call_label in {"call_1", "call_2"}:
+    if call_label in {"call_1", "call_2", "call_3"}:
         return LLMPolicy(
             name="generation",
             api_key=settings.AICREDITS_GENERATION_API_KEY,

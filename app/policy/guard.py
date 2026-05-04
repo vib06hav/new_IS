@@ -17,6 +17,34 @@ PROHIBITED_TERM_REWRITES = {
     "indicating strong performance": "",
 }
 
+FOCUS_AREA_BANNED_PHRASES = [
+    "this area explores",
+    "this covers",
+    "it is important to determine",
+    "it is important to",
+    "it's important to",
+    "this reveals whether",
+    "the candidate demonstrates",
+    "this signal suggests",
+    "understanding this reveals",
+    "ask them to",
+    "have them explain",
+    "get them to",
+    "buzzword",
+]
+
+QUESTION_BANNED_PHRASES = [
+    "tell me about",
+    "can you elaborate on",
+    "could you tell me about",
+    "could you walk me through",
+    "walk me through",
+    "what drew you to",
+]
+
+FOCUS_AREA_PRONOUN_RE = re.compile(r"\b(he|she|his|her)\b", flags=re.IGNORECASE)
+FIRST_QUESTION_CONTENTION_RE = re.compile(r"\b(yet|despite|while)\b", flags=re.IGNORECASE)
+
 logger = logging.getLogger(__name__)
 MAX_FRAGMENT_IDS_PER_SIGNAL = 3
 
@@ -97,14 +125,6 @@ def _normalize_theme_entries(raw_themes: Any, rules: List[str]) -> List[Dict[str
                 _first_present(theme, ["title", "theme_name", "name", "heading", "theme_title"], ""),
                 rules,
             ),
-            "unifying_axis": _rewrite_prohibited_phrasing(
-                _first_present(theme, ["unifying_axis", "framing", "description", "summary", "details", "theme_description"], ""),
-                rules,
-            ),
-            "interview_direction": _rewrite_prohibited_phrasing(
-                _first_present(theme, ["interview_direction", "what_this_theme_must_resolve", "resolution", "resolve", "interview_purpose"], ""),
-                rules,
-            ),
             "supporting_signal_ids": _first_present(
                 theme,
                 ["supporting_signal_ids", "signal_ids", "member_signal_ids"],
@@ -133,10 +153,8 @@ def _normalize_signal_output(data: Any, rules: List[str]) -> Any:
                 "signal_id": _first_present(sig, ["signal_id", "id"]),
                 "title": _rewrite_prohibited_phrasing(_first_present(sig, ["title", "name", "label"], ""), rules),
                 "theme_id": _first_present(sig, ["theme_id", "theme", "theme_ref"]),
-                "evidence_anchor": _first_present(sig, ["evidence_anchor"], ""),
-                "direct_read": _first_present(sig, ["direct_read"], ""),
-                "depth_opening": _first_present(sig, ["depth_opening", "what_remains_open"], ""),
-                "why_it_matters": _first_present(sig, ["why_it_matters"], ""),
+                "core_observation": _first_present(sig, ["core_observation", "direct_read", "evidence_anchor"], ""),
+                "interview_opening": _first_present(sig, ["interview_opening", "depth_opening", "what_remains_open"], ""),
                 "referenced_entity_ids": _first_present(sig, ["referenced_entity_ids", "entity_ids", "references"], []),
                 "supporting_det_signal_ids": _first_present(
                     sig,
@@ -189,31 +207,79 @@ def _backfill_signal_references(normalized_output: Any, deterministic_signals: L
     return normalized_output
 
 
-def _normalize_question_group_output(data: Any, rules: List[str]) -> Any:
+def _normalize_opening_group_output(data: Any, rules: List[str]) -> Any:
     if not isinstance(data, dict):
         return data
 
-    raw_question_groups = data.get("question_groups", [])
+    raw_question_groups = data.get("question_groups", data.get("opening_groups", []))
     normalized_question_groups = []
     if isinstance(raw_question_groups, list):
         for qg in raw_question_groups:
             if not isinstance(qg, dict):
                 continue
-            raw_questions = _first_present(qg, ["questions", "items", "question_list"], [])
+            raw_questions = _first_present(qg, ["questions", "openings", "items", "question_list"], [])
             questions = []
             if isinstance(raw_questions, list):
-                for item in raw_questions:
-                    questions.append(_normalize_question_item(item))
+                for item_index, item in enumerate(raw_questions):
+                    if isinstance(item, str):
+                        questions.append({
+                            "question_id": f"Q-{item_index + 1:03d}",
+                            "question": _normalize_whitespace(item),
+                        })
+                    elif isinstance(item, dict):
+                        questions.append({
+                            "question_id": _first_present(item, ["question_id", "opening_id", "id"], ""),
+                            "question": _normalize_question_item(
+                                _first_present(item, ["question", "text", "sample_question"], "")
+                            ),
+                        })
             normalized_question_groups.append({
-                "theme_id": _first_present(qg, ["theme_id", "theme", "theme_ref"]),
-                "group_title": _rewrite_prohibited_phrasing(
-                    _first_present(qg, ["group_title", "title", "heading", "name"], ""),
+                "focus_area_id": _first_present(qg, ["focus_area_id", "focus_area", "focus_area_ref", "theme_id", "theme", "theme_ref"]),
+                "group_label": _rewrite_prohibited_phrasing(
+                    _first_present(qg, ["group_label", "group_title", "title", "heading", "name"], ""),
+                    rules,
+                ),
+                "line_of_inquiry": _rewrite_prohibited_phrasing(
+                    _first_present(qg, ["line_of_inquiry", "interview_direction", "what_to_find_out", "inquiry"], ""),
                     rules,
                 ),
                 "questions": questions,
+                "source_theme_ids": _first_present(qg, ["source_theme_ids", "theme_ids"], []),
+                "source_signal_ids": _first_present(qg, ["source_signal_ids", "signal_ids"], []),
             })
 
     return {"question_groups": normalized_question_groups}
+
+
+def _normalize_focus_area_output(data: Any, rules: List[str]) -> Any:
+    if not isinstance(data, dict):
+        return data
+
+    raw_focus_areas = data.get("focus_areas", [])
+    normalized_focus_areas = []
+    if isinstance(raw_focus_areas, list):
+        for item in raw_focus_areas:
+            if not isinstance(item, dict):
+                continue
+            normalized_focus_areas.append({
+                "focus_area_id": _first_present(item, ["focus_area_id", "id"]),
+                "title": _rewrite_prohibited_phrasing(
+                    _first_present(item, ["title", "name", "heading"], ""),
+                    rules,
+                ),
+                "territory": _rewrite_prohibited_phrasing(
+                    _first_present(item, ["territory", "summary", "description"], ""),
+                    rules,
+                ),
+                "what_makes_it_worth_time": _rewrite_prohibited_phrasing(
+                    _first_present(item, ["what_makes_it_worth_time", "why_it_matters_here", "why_this_is_worth_time"], ""),
+                    rules,
+                ),
+                "source_theme_ids": _first_present(item, ["source_theme_ids", "theme_ids"], []),
+                "source_signal_ids": _first_present(item, ["source_signal_ids", "signal_ids"], []),
+            })
+
+    return {"focus_areas": normalized_focus_areas}
 
 
 def _append_text_violations(
@@ -226,6 +292,22 @@ def _append_text_violations(
     for violation in _scan_text(text, rules):
         violation["field"] = field_name
         violation["type"] = "prohibited_language"
+        violations_log.append(violation)
+        found_violation = True
+    return found_violation
+
+
+def _append_phrase_violations(
+    violations_log: List[Dict[str, Any]],
+    field_name: str,
+    text: str,
+    phrases: List[str],
+    violation_type: str,
+) -> bool:
+    found_violation = False
+    for violation in _scan_text(text, phrases):
+        violation["field"] = field_name
+        violation["type"] = violation_type
         violations_log.append(violation)
         found_violation = True
     return found_violation
@@ -441,10 +523,8 @@ def validate_signals(
         required = [
             "signal_id",
             "title",
-            "evidence_anchor",
-            "direct_read",
-            "depth_opening",
-            "why_it_matters",
+            "core_observation",
+            "interview_opening",
             "referenced_entity_ids",
             "supporting_det_signal_ids",
         ]
@@ -583,7 +663,7 @@ def validate_signals(
                     sig_passed = False
                     passed = False
 
-        for field in ["title", "evidence_anchor", "direct_read", "depth_opening", "why_it_matters"]:
+        for field in ["title", "core_observation", "interview_opening"]:
             if _append_text_violations(violations_log, f"signals[{idx}].{field}", sig.get(field, ""), rules):
                 sig_passed = False
                 passed = False
@@ -594,10 +674,8 @@ def validate_signals(
         sanitized_signal = {
             "signal_id": signal_id,
             "title": sig.get("title"),
-            "evidence_anchor": sig.get("evidence_anchor"),
-            "direct_read": sig.get("direct_read"),
-            "depth_opening": sig.get("depth_opening"),
-            "why_it_matters": sig.get("why_it_matters"),
+            "core_observation": sig.get("core_observation"),
+            "interview_opening": sig.get("interview_opening"),
             "referenced_entity_ids": referenced_entity_ids,
             "supporting_det_signal_ids": supporting_det_signal_ids,
             "supporting_fragment_ids": supporting_fragment_ids,
@@ -617,7 +695,7 @@ def validate_signals(
             continue
 
         theme_passed = True
-        required = ["theme_id", "title", "unifying_axis", "interview_direction", "supporting_signal_ids"]
+        required = ["theme_id", "title", "supporting_signal_ids"]
         for field in required:
             value = theme.get(field)
             if value is None or (isinstance(value, str) and not value.strip()):
@@ -674,7 +752,7 @@ def validate_signals(
                     theme_passed = False
                     passed = False
 
-        for field in ["title", "unifying_axis", "interview_direction"]:
+        for field in ["title"]:
             if _append_text_violations(violations_log, f"themes[{idx}].{field}", theme.get(field, ""), rules):
                 theme_passed = False
                 passed = False
@@ -694,8 +772,6 @@ def validate_signals(
         sanitized_themes.append({
             "theme_id": theme_id,
             "title": theme.get("title"),
-            "unifying_axis": theme.get("unifying_axis"),
-            "interview_direction": theme.get("interview_direction"),
             "supporting_signal_ids": supporting_signal_ids,
             "referenced_entity_ids": referenced_entity_ids,
         })
@@ -750,13 +826,8 @@ def validate_signals(
     }
 
 
-def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: dict | None = None) -> Dict[str, Any]:
-    """
-    Agent 15 - Call 2 Validation Layer.
-    Strictly validates LLM Call 2 output (question groups only).
-    Enforces schema, theme coverage/linkage, and neutral language.
-    """
-    logger.debug("Starting Call 2 question-group validation.")
+def validate_focus_areas(raw_text: str, call_1_output: dict | None = None) -> Dict[str, Any]:
+    logger.debug("Starting Call 2 focus-area validation.")
     rules = PolicyConfig.get_prohibited_terms()
     violations_log = []
 
@@ -770,7 +841,227 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
         })
         return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
 
-    normalized_output = _normalize_question_group_output(synthesis_output, rules)
+    normalized_output = _normalize_focus_area_output(synthesis_output, rules)
+    if not isinstance(normalized_output, dict):
+        violations_log.append({
+            "violation_id": str(uuid.uuid4()),
+            "field": "root",
+            "type": "structure_error",
+            "context": "Root is not a JSON object.",
+        })
+        return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
+
+    focus_areas = normalized_output.get("focus_areas")
+    if not isinstance(focus_areas, list) or len(focus_areas) == 0:
+        violations_log.append({
+            "violation_id": str(uuid.uuid4()),
+            "field": "focus_areas",
+            "type": "structure_error",
+            "context": "Missing or empty 'focus_areas' array. At least one focus area must be generated.",
+        })
+        return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
+    if len(focus_areas) < 2 or len(focus_areas) > 3:
+        violations_log.append({
+            "violation_id": str(uuid.uuid4()),
+            "field": "focus_areas",
+            "type": "invalid_focus_area_count",
+            "context": f"Focus areas must contain 2 to 3 items; received {len(focus_areas)}.",
+        })
+        return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
+
+    call_1_themes = []
+    call_1_signals = []
+    if isinstance(call_1_output, dict):
+        raw_themes = call_1_output.get("themes", [])
+        raw_signals = call_1_output.get("signals", [])
+        if isinstance(raw_themes, list):
+            call_1_themes = [theme for theme in raw_themes if isinstance(theme, dict)]
+        if isinstance(raw_signals, list):
+            call_1_signals = [signal for signal in raw_signals if isinstance(signal, dict)]
+
+    expected_theme_ids = {theme.get("theme_id") for theme in call_1_themes if theme.get("theme_id")}
+    expected_signal_ids = {signal.get("signal_id") for signal in call_1_signals if signal.get("signal_id")}
+
+    passed = True
+    seen_focus_area_ids = set()
+    covered_theme_ids = set()
+    sanitized_focus_areas = []
+
+    for idx, focus_area in enumerate(focus_areas):
+        if not isinstance(focus_area, dict):
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"focus_areas[{idx}]",
+                "type": "structure_error",
+                "context": "Each focus area must be an object.",
+            })
+            passed = False
+            continue
+
+        item_passed = True
+        required = [
+            "focus_area_id",
+            "title",
+            "territory",
+            "what_makes_it_worth_time",
+            "source_theme_ids",
+            "source_signal_ids",
+        ]
+        for field in required:
+            value = focus_area.get(field)
+            if value is None or (isinstance(value, str) and not value.strip()):
+                violations_log.append({
+                    "violation_id": str(uuid.uuid4()),
+                    "field": f"focus_areas[{idx}].{field}",
+                    "type": "missing_field",
+                    "context": f"Field '{field}' is missing or empty.",
+                })
+                item_passed = False
+                passed = False
+
+        focus_area_id = focus_area.get("focus_area_id")
+        if not focus_area_id or not re.match(r"^FA-\d{3}$", str(focus_area_id)):
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"focus_areas[{idx}].focus_area_id",
+                "type": "invalid_format",
+                "context": f"Invalid focus area ID format: {focus_area_id}",
+            })
+            item_passed = False
+            passed = False
+        elif focus_area_id in seen_focus_area_ids:
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"focus_areas[{idx}].focus_area_id",
+                "type": "duplicate_id",
+                "context": f"Duplicate focus_area_id: {focus_area_id}",
+            })
+            item_passed = False
+            passed = False
+        else:
+            seen_focus_area_ids.add(focus_area_id)
+
+        source_theme_ids = focus_area.get("source_theme_ids", [])
+        source_signal_ids = focus_area.get("source_signal_ids", [])
+        if not isinstance(source_theme_ids, list) or not source_theme_ids:
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"focus_areas[{idx}].source_theme_ids",
+                "type": "empty_array",
+                "context": "source_theme_ids must be a non-empty array.",
+            })
+            item_passed = False
+            passed = False
+        else:
+            for theme_id in source_theme_ids:
+                if theme_id not in expected_theme_ids:
+                    violations_log.append({
+                        "violation_id": str(uuid.uuid4()),
+                        "field": f"focus_areas[{idx}].source_theme_ids",
+                        "type": "broken_linkage",
+                        "context": f"Unknown theme_id: {theme_id}",
+                    })
+                    item_passed = False
+                    passed = False
+                else:
+                    covered_theme_ids.add(theme_id)
+
+        if not isinstance(source_signal_ids, list) or not source_signal_ids:
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"focus_areas[{idx}].source_signal_ids",
+                "type": "empty_array",
+                "context": "source_signal_ids must be a non-empty array.",
+            })
+            item_passed = False
+            passed = False
+        else:
+            for signal_id in source_signal_ids:
+                if signal_id not in expected_signal_ids:
+                    violations_log.append({
+                        "violation_id": str(uuid.uuid4()),
+                        "field": f"focus_areas[{idx}].source_signal_ids",
+                        "type": "broken_linkage",
+                        "context": f"Unknown signal_id: {signal_id}",
+                    })
+                    item_passed = False
+                    passed = False
+
+        for field in ["title", "territory", "what_makes_it_worth_time"]:
+            if _append_text_violations(violations_log, f"focus_areas[{idx}].{field}", focus_area.get(field, ""), rules):
+                item_passed = False
+                passed = False
+            if _append_phrase_violations(
+                violations_log,
+                f"focus_areas[{idx}].{field}",
+                focus_area.get(field, ""),
+                FOCUS_AREA_BANNED_PHRASES,
+                "framework_language",
+            ):
+                item_passed = False
+                passed = False
+            if FOCUS_AREA_PRONOUN_RE.search(str(focus_area.get(field, ""))):
+                violations_log.append({
+                    "violation_id": str(uuid.uuid4()),
+                    "field": f"focus_areas[{idx}].{field}",
+                    "type": "gender_inference",
+                    "context": "Focus areas should avoid he/she/his/her pronouns unless explicitly sourced.",
+                })
+                item_passed = False
+                passed = False
+
+        if not item_passed:
+            continue
+
+        sanitized_focus_areas.append({
+            "focus_area_id": focus_area_id,
+            "title": focus_area.get("title"),
+            "territory": focus_area.get("territory"),
+            "what_makes_it_worth_time": focus_area.get("what_makes_it_worth_time"),
+            "source_theme_ids": source_theme_ids,
+            "source_signal_ids": source_signal_ids,
+        })
+
+    missing_theme_ids = expected_theme_ids - covered_theme_ids
+    if missing_theme_ids:
+        violations_log.append({
+            "violation_id": str(uuid.uuid4()),
+            "field": "focus_areas",
+            "type": "missing_theme_coverage",
+            "context": f"Missing focus-area coverage for theme_ids: {sorted(missing_theme_ids)}",
+        })
+        passed = False
+
+    return {
+        "passed": passed,
+        "sanitized_output": {"focus_areas": sanitized_focus_areas} if passed else None,
+        "normalized_output": normalized_output,
+        "violations_log": violations_log,
+        "policy_version": PolicyConfig.get_version(),
+    }
+
+
+def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: dict | None = None) -> Dict[str, Any]:
+    """
+    Agent 15 - Call 3 Validation Layer.
+    Strictly validates LLM Call 3 output (question groups only).
+    Enforces schema, focus-area coverage/linkage, and neutral language.
+    """
+    logger.debug("Starting Call 3 question-group validation.")
+    rules = PolicyConfig.get_prohibited_terms()
+    violations_log = []
+
+    try:
+        synthesis_output = json.loads(raw_text)
+    except Exception as exc:
+        violations_log.append({
+            "violation_id": str(uuid.uuid4()),
+            "type": "structure_error",
+            "context": f"Malformed JSON: {str(exc)}",
+        })
+        return {"passed": False, "sanitized_output": None, "violations_log": violations_log}
+
+    normalized_output = _normalize_opening_group_output(synthesis_output, rules)
     if not isinstance(normalized_output, dict):
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
@@ -790,27 +1081,35 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
         })
         return {"passed": False, "sanitized_output": None, "normalized_output": normalized_output, "violations_log": violations_log}
 
-    bundle_themes = []
+    bundle_focus_areas = []
     if isinstance(bundle, dict):
-        raw_groups = bundle.get("theme_signal_evidence_groups", [])
-        if isinstance(raw_groups, list):
-            for group in raw_groups:
-                if not isinstance(group, dict):
+        raw_focus_areas = bundle.get("focus_areas", [])
+        if isinstance(raw_focus_areas, list):
+            for item in raw_focus_areas:
+                if not isinstance(item, dict):
                     continue
-                theme = group.get("theme")
-                if isinstance(theme, dict):
-                    bundle_themes.append(theme)
+                focus_area = item.get("focus_area")
+                if isinstance(focus_area, dict):
+                    bundle_focus_areas.append(focus_area)
 
-        if not bundle_themes:
-            raw_themes = bundle.get("themes", [])
-            if isinstance(raw_themes, list):
-                bundle_themes = [theme for theme in raw_themes if isinstance(theme, dict)]
+        if not bundle_focus_areas:
+            fallback_focus_areas = bundle.get("focus_areas", [])
+            if isinstance(fallback_focus_areas, list):
+                bundle_focus_areas = [
+                    item for item in fallback_focus_areas
+                    if isinstance(item, dict) and item.get("focus_area_id")
+                ]
 
-    expected_theme_ids = [theme.get("theme_id") for theme in bundle_themes if theme.get("theme_id")]
-    expected_theme_id_set = set(expected_theme_ids)
+    expected_focus_area_ids = [item.get("focus_area_id") for item in bundle_focus_areas if item.get("focus_area_id")]
+    expected_focus_area_id_set = set(expected_focus_area_ids)
+    focus_area_lookup = {
+        item.get("focus_area_id"): item
+        for item in bundle_focus_areas
+        if item.get("focus_area_id")
+    }
 
     passed = True
-    seen_theme_ids = set()
+    seen_focus_area_ids = set()
     sanitized_question_groups = []
 
     for idx, qg in enumerate(question_groups):
@@ -825,41 +1124,69 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
             continue
 
         qg_passed = True
-        theme_id = qg.get("theme_id")
-        if theme_id not in expected_theme_id_set:
+        focus_area_id = qg.get("focus_area_id")
+        if focus_area_id not in expected_focus_area_id_set:
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"question_groups[{idx}].theme_id",
+                "field": f"question_groups[{idx}].focus_area_id",
                 "type": "broken_linkage",
-                "context": f"References non-existent theme_id: {theme_id}",
+                "context": f"References non-existent focus_area_id: {focus_area_id}",
             })
             qg_passed = False
             passed = False
-        elif theme_id in seen_theme_ids:
+        elif focus_area_id in seen_focus_area_ids:
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"question_groups[{idx}].theme_id",
-                "type": "duplicate_theme_group",
-                "context": f"Duplicate question group for theme_id: {theme_id}",
+                "field": f"question_groups[{idx}].focus_area_id",
+                "type": "duplicate_focus_area_group",
+                "context": f"Duplicate question group for focus_area_id: {focus_area_id}",
             })
             qg_passed = False
             passed = False
         else:
-            seen_theme_ids.add(theme_id)
+            seen_focus_area_ids.add(focus_area_id)
 
-        group_title = qg.get("group_title")
-        if not isinstance(group_title, str) or not group_title.strip():
+        group_label = qg.get("group_label")
+        if not isinstance(group_label, str) or not group_label.strip():
             violations_log.append({
                 "violation_id": str(uuid.uuid4()),
-                "field": f"question_groups[{idx}].group_title",
+                "field": f"question_groups[{idx}].group_label",
                 "type": "missing_field",
-                "context": "Field 'group_title' is missing or empty.",
+                "context": "Field 'group_label' is missing or empty.",
             })
             qg_passed = False
             passed = False
-        elif _append_text_violations(violations_log, f"question_groups[{idx}].group_title", group_title, rules):
+        elif _append_text_violations(violations_log, f"question_groups[{idx}].group_label", group_label, rules):
             qg_passed = False
             passed = False
+
+        line_of_inquiry = qg.get("line_of_inquiry")
+        if not isinstance(line_of_inquiry, str) or not line_of_inquiry.strip():
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"question_groups[{idx}].line_of_inquiry",
+                "type": "missing_field",
+                "context": "Field 'line_of_inquiry' is missing or empty.",
+            })
+            qg_passed = False
+            passed = False
+        else:
+            if _append_text_violations(violations_log, f"question_groups[{idx}].line_of_inquiry", line_of_inquiry, rules):
+                qg_passed = False
+                passed = False
+            if _append_phrase_violations(
+                violations_log,
+                f"question_groups[{idx}].line_of_inquiry",
+                line_of_inquiry,
+                FOCUS_AREA_BANNED_PHRASES,
+                "framework_language",
+            ):
+                qg_passed = False
+                passed = False
+
+        expected_focus_area = focus_area_lookup.get(focus_area_id, {})
+        expected_theme_ids = expected_focus_area.get("source_theme_ids", []) if isinstance(expected_focus_area, dict) else []
+        expected_signal_ids = expected_focus_area.get("source_signal_ids", []) if isinstance(expected_focus_area, dict) else []
 
         questions = qg.get("questions")
         if not isinstance(questions, list) or not questions:
@@ -872,51 +1199,127 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
             qg_passed = False
             passed = False
         else:
-            for q_idx, q_text in enumerate(questions):
-                if not isinstance(q_text, str) or not q_text.strip():
+            for q_idx, question in enumerate(questions):
+                if not isinstance(question, dict):
                     violations_log.append({
                         "violation_id": str(uuid.uuid4()),
                         "field": f"question_groups[{idx}].questions[{q_idx}]",
-                        "type": "invalid_question_item",
-                        "context": "Each question must be a non-empty string.",
+                        "type": "structure_error",
+                        "context": "Each question must be an object.",
+                    })
+                    qg_passed = False
+                    passed = False
+                    continue
+                question_id = question.get("question_id")
+                if not isinstance(question_id, str) or not question_id.strip():
+                    violations_log.append({
+                        "violation_id": str(uuid.uuid4()),
+                        "field": f"question_groups[{idx}].questions[{q_idx}].question_id",
+                        "type": "missing_field",
+                        "context": "Each question must have a non-empty question_id.",
+                    })
+                    qg_passed = False
+                    passed = False
+                question_text = question.get("question")
+                if not isinstance(question_text, str) or not question_text.strip():
+                    violations_log.append({
+                        "violation_id": str(uuid.uuid4()),
+                        "field": f"question_groups[{idx}].questions[{q_idx}].question",
+                        "type": "missing_field",
+                        "context": "Field 'question' is missing or empty.",
                     })
                     qg_passed = False
                     passed = False
                     continue
                 if _append_text_violations(
                     violations_log,
-                    f"question_groups[{idx}].questions[{q_idx}]",
-                    q_text,
+                    f"question_groups[{idx}].questions[{q_idx}].question",
+                    question_text,
                     rules,
                 ):
                     qg_passed = False
                     passed = False
+                if isinstance(question_text, str):
+                    if _append_phrase_violations(
+                        violations_log,
+                        f"question_groups[{idx}].questions[{q_idx}].question",
+                        question_text,
+                        QUESTION_BANNED_PHRASES,
+                        "generic_question_form",
+                    ):
+                        qg_passed = False
+                        passed = False
+                    if FIRST_QUESTION_CONTENTION_RE.search(question_text):
+                        violations_log.append({
+                            "violation_id": str(uuid.uuid4()),
+                            "field": f"question_groups[{idx}].questions[{q_idx}].question",
+                            "type": "premature_contention",
+                            "context": "Questions should not begin from a contrastive contention before the applicant's frame is established.",
+                        })
+                        qg_passed = False
+                        passed = False
+
+            if not 2 <= len(questions) <= 4:
+                violations_log.append({
+                    "violation_id": str(uuid.uuid4()),
+                    "field": f"question_groups[{idx}].questions",
+                    "type": "invalid_question_count",
+                    "context": f"Question groups must contain 2 to 4 questions; received {len(questions)}.",
+                })
+                qg_passed = False
+                passed = False
+
+        source_theme_ids = qg.get("source_theme_ids", [])
+        source_signal_ids = qg.get("source_signal_ids", [])
+
+        if not isinstance(source_theme_ids, list) or sorted(source_theme_ids) != sorted(expected_theme_ids):
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"question_groups[{idx}].source_theme_ids",
+                "type": "broken_linkage",
+                "context": f"source_theme_ids must match focus area {focus_area_id}.",
+            })
+            qg_passed = False
+            passed = False
+
+        if not isinstance(source_signal_ids, list) or sorted(source_signal_ids) != sorted(expected_signal_ids):
+            violations_log.append({
+                "violation_id": str(uuid.uuid4()),
+                "field": f"question_groups[{idx}].source_signal_ids",
+                "type": "broken_linkage",
+                "context": f"source_signal_ids must match focus area {focus_area_id}.",
+            })
+            qg_passed = False
+            passed = False
 
         if not qg_passed:
             continue
 
         sanitized_question_groups.append({
-            "theme_id": theme_id,
-            "group_title": group_title,
+            "focus_area_id": focus_area_id,
+            "group_label": group_label,
+            "line_of_inquiry": line_of_inquiry,
             "questions": questions,
+            "source_theme_ids": source_theme_ids,
+            "source_signal_ids": source_signal_ids,
         })
 
-    missing_theme_ids = expected_theme_id_set - seen_theme_ids
-    extra_theme_ids = seen_theme_ids - expected_theme_id_set
-    if missing_theme_ids:
+    missing_focus_area_ids = expected_focus_area_id_set - seen_focus_area_ids
+    extra_focus_area_ids = seen_focus_area_ids - expected_focus_area_id_set
+    if missing_focus_area_ids:
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
             "field": "question_groups",
-            "type": "missing_theme_coverage",
-            "context": f"Missing question groups for theme_ids: {sorted(missing_theme_ids)}",
+            "type": "missing_focus_area_coverage",
+            "context": f"Missing question groups for focus_area_ids: {sorted(missing_focus_area_ids)}",
         })
         passed = False
-    if extra_theme_ids:
+    if extra_focus_area_ids:
         violations_log.append({
             "violation_id": str(uuid.uuid4()),
             "field": "question_groups",
-            "type": "extra_theme_coverage",
-            "context": f"Unexpected question groups for theme_ids: {sorted(extra_theme_ids)}",
+            "type": "extra_focus_area_coverage",
+            "context": f"Unexpected question groups for focus_area_ids: {sorted(extra_focus_area_ids)}",
         })
         passed = False
 
