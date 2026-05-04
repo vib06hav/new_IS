@@ -39,7 +39,7 @@ const reportCards: Array<{ item: ApplicationListItem; selectedInterviewerId?: st
   {
     item: {
       id: "rep-processed",
-      display_id: "IS-204",
+      display_id: "APPLICATION-20426",
       status: "PROCESSED",
       is_hidden: false,
       is_hidden_for_interviewer: false,
@@ -51,7 +51,7 @@ const reportCards: Array<{ item: ApplicationListItem; selectedInterviewerId?: st
   {
     item: {
       id: "rep-ready",
-      display_id: "IS-205",
+      display_id: "APPLICATION-20526",
       status: "READY",
       is_hidden: false,
       is_hidden_for_interviewer: false,
@@ -64,7 +64,7 @@ const reportCards: Array<{ item: ApplicationListItem; selectedInterviewerId?: st
   {
     item: {
       id: "rep-complete",
-      display_id: "IS-206",
+      display_id: "APPLICATION-20626",
       status: "COMPLETE",
       is_hidden: false,
       is_hidden_for_interviewer: false,
@@ -104,15 +104,15 @@ export function LandingAdminControlLayer() {
             item={item}
             interviewers={interviewers}
             selectedInterviewerId={selectedInterviewerId ?? ""}
-            onSelectedInterviewerChange={() => {}}
-            onAssign={() => {}}
-            onGenerate={() => {}}
-            onToggleHidden={() => {}}
-            onDelete={() => {}}
-            onStartEdit={() => {}}
-            onCancelEdit={() => {}}
-            onSaveEdit={() => {}}
-            onPendingDisplayIdChange={() => {}}
+            onSelectedInterviewerChange={() => { }}
+            onAssign={() => { }}
+            onGenerate={() => { }}
+            onToggleHidden={() => { }}
+            onDelete={() => { }}
+            onStartEdit={() => { }}
+            onCancelEdit={() => { }}
+            onSaveEdit={() => { }}
+            onPendingDisplayIdChange={() => { }}
             pendingDisplayId={item.display_id}
             isBusy={false}
             isGenerating={false}

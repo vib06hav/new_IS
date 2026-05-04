@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, Literal, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Theme(BaseModel):
@@ -218,6 +218,9 @@ class LLMCapacityStatusResponse(BaseModel):
 
 
 ReportChatTargetTab = Literal["page1", "page2", "page3", "page4", "page5"]
+ReportChatSurfaceType = Literal["report_viewer", "configure", "overlay", "postgame", "final_report"]
+ReportChatWorkflowStage = Literal["prep", "live_interview", "postgame", "completed"]
+ReportChatCurrentPage = Literal["page1", "page2", "page3", "page4", "page5", "page6", "configure", "overlay", "postgame"]
 ReportChatSectionKey = Literal[
     "page1_overview",
     "page2_academics",
@@ -229,12 +232,16 @@ ReportChatSectionKey = Literal[
     "page5_question_groups",
 ]
 ReportChatResponseState = Literal["clean", "repaired", "retried", "degraded"]
-ReportChatResponseKind = Literal["lookup", "domain_summary", "scope_redirect", "degraded"]
+ReportChatResponseKind = Literal["content", "workflow", "action", "mixed", "degraded"]
 InterviewRefinementMode = Literal["question_note", "follow_up_note", "final_summary"]
 
 
 class ReportChatRequest(BaseModel):
     question: str
+    surface_type: ReportChatSurfaceType = "report_viewer"
+    current_page: Optional[ReportChatCurrentPage] = None
+    workflow_stage: Optional[ReportChatWorkflowStage] = None
+    available_actions: list[str] = Field(default_factory=list)
 
 
 class ReportChatSource(BaseModel):
@@ -248,10 +255,11 @@ class ReportChatSource(BaseModel):
 
 class ReportChatResponse(BaseModel):
     answer_summary: str
-    response_kind: ReportChatResponseKind = "lookup"
+    response_kind: ReportChatResponseKind = "content"
     sources: list[ReportChatSource]
     not_found: bool
     response_state: ReportChatResponseState = "clean"
+    suggested_followups: list[str] = Field(default_factory=list)
 
 
 class InterviewWorkspaceUpsertRequest(BaseModel):

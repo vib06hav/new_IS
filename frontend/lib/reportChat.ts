@@ -1,4 +1,11 @@
-import type { ReportChatSectionKey, ReportChatSource, ReportChatTargetTab } from "@/lib/types";
+import type {
+  ReportChatCurrentPage,
+  ReportChatSectionKey,
+  ReportChatSource,
+  ReportChatSurfaceType,
+  ReportChatTargetTab,
+  ReportChatWorkflowStage,
+} from "@/lib/types";
 
 const SECTION_META: Record<ReportChatSectionKey, { pageLabel: string; sectionLabel: string }> = {
   page1_overview: { pageLabel: "Page 1", sectionLabel: "Overview" },
@@ -11,13 +18,106 @@ const SECTION_META: Record<ReportChatSectionKey, { pageLabel: string; sectionLab
   page5_question_groups: { pageLabel: "Page 5", sectionLabel: "Questions" },
 };
 
+const PAGE_LABELS: Record<ReportChatCurrentPage, string> = {
+  page1: "Page 1 Overview",
+  page2: "Page 2 Academics & Activities",
+  page3: "Page 3 Writing",
+  page4: "Page 4 Focus Areas",
+  page5: "Page 5 Questions",
+  page6: "Page 6 Final Report",
+  configure: "Configure Workspace",
+  overlay: "Interview Overlay",
+  postgame: "Postgame Review",
+};
+
+const STAGE_LABELS: Record<ReportChatWorkflowStage, string> = {
+  prep: "Prep",
+  live_interview: "Live Interview",
+  postgame: "Postgame",
+  completed: "Completed",
+};
+
 export function getReportChatSourceLabel(source: ReportChatSource) {
   if (source.label?.trim()) {
     return source.label;
   }
 
   const meta = SECTION_META[source.section_key];
-  return `${meta.pageLabel} · ${meta.sectionLabel}`;
+  return `${meta.pageLabel} - ${meta.sectionLabel}`;
+}
+
+export function getReportChatPageLabel(currentPage: ReportChatCurrentPage | null | undefined) {
+  if (!currentPage) return "Report";
+  return PAGE_LABELS[currentPage];
+}
+
+export function getReportChatStageLabel(workflowStage: ReportChatWorkflowStage | null | undefined) {
+  if (!workflowStage) return "Prep";
+  return STAGE_LABELS[workflowStage];
+}
+
+export function getReportCopilotStarters({
+  surfaceType,
+  currentPage,
+  workflowStage,
+}: {
+  surfaceType: ReportChatSurfaceType;
+  currentPage?: ReportChatCurrentPage | null;
+  workflowStage?: ReportChatWorkflowStage | null;
+}) {
+  if (surfaceType === "final_report" || currentPage === "page6" || workflowStage === "completed") {
+    return [
+      "Summarize the final interview outcome",
+      "Compare the final interview report with the earlier report",
+      "Which themes held up after the interview?",
+    ];
+  }
+
+  if (surfaceType === "overlay" || workflowStage === "live_interview") {
+    return [
+      "What should I probe next?",
+      "Which theme still feels unresolved?",
+      "What follow-up question would be useful here?",
+    ];
+  }
+
+  if (surfaceType === "postgame" || workflowStage === "postgame") {
+    return [
+      "What gaps remain in the interview notes?",
+      "Help me tighten the final summary",
+      "Which question outcomes look mixed or unresolved?",
+    ];
+  }
+
+  if (surfaceType === "configure") {
+    return [
+      "How should I prepare from this report?",
+      "Which question groups should I refine first?",
+      "What should I ask about this profile?",
+    ];
+  }
+
+  if (currentPage === "page4") {
+    return [
+      "Explain the main focus areas",
+      "Which signals matter most here?",
+      "How should these themes shape the interview?",
+    ];
+  }
+
+  if (currentPage === "page5") {
+    return [
+      "How should I use these questions in the interview?",
+      "Which question group should I prioritize first?",
+      "What follow-ups would deepen this line of questioning?",
+    ];
+  }
+
+  return [
+    "What stands out across this report?",
+    "Summarize this page for me",
+    "What should I ask about this student?",
+  ];
 }
 
 export async function navigateToReportResult(

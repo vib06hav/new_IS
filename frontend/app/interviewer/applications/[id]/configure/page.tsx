@@ -8,6 +8,7 @@ import { Loader } from "@/components/ui/Loader";
 import { createInterviewWorkspace, fetchInterviewWorkspace } from "@/lib/api";
 import type { InterviewWorkspaceSummary } from "@/lib/types";
 import { InterviewWorkspaceEditor } from "@/components/interviewer/InterviewWorkspaceEditor";
+import { ReportChatWidget } from "@/components/ReportChatWidget";
 
 export default function ConfigureInterviewPage() {
   const params = useParams<{ id: string }>();
@@ -61,7 +62,25 @@ export default function ConfigureInterviewPage() {
         {!loading && error ? (
           <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p>
         ) : null}
-        {!loading && workspace ? <InterviewWorkspaceEditor applicationId={params.id} initialWorkspace={workspace} mode="configure" /> : null}
+        {!loading && workspace ? (
+          <>
+            <InterviewWorkspaceEditor applicationId={params.id} initialWorkspace={workspace} mode="configure" />
+            <ReportChatWidget
+              applicationId={params.id}
+              surfaceType="configure"
+              currentPage="configure"
+              workflowStage="prep"
+              availableActions={[
+                "review Pages 1-5",
+                "refine themes",
+                "edit questions",
+                "add custom prompts",
+                "launch overlay",
+                "save draft",
+              ]}
+            />
+          </>
+        ) : null}
       </div>
     </InterviewerShell>
   );

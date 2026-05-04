@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from app.api.helpers import (
     build_admin_detail,
     build_interviewer_detail,
+    build_interview_workspace_summary,
     build_review_package_summary,
     get_application_or_404,
     get_assignment_for_application,
@@ -306,15 +307,26 @@ def ask_report_chat(
 
     final_report = get_final_report(db, application_id)
     final_report_content = final_report.content if final_report and isinstance(final_report.content, dict) else None
-    context = build_report_chat_context(question, review_package.pages_1_3.model_dump(), final_report_content)
+    interview_workspace = get_interview_workspace(db, application_id)
+    interview_workspace_summary = build_interview_workspace_summary(interview_workspace)
+    context = build_report_chat_context(
+        question,
+        review_package.pages_1_3.model_dump(),
+        final_report_content,
+        workspace=interview_workspace_summary.model_dump() if interview_workspace_summary else None,
+        surface_type=payload.surface_type,
+        current_page=payload.current_page,
+        workflow_stage=payload.workflow_stage,
+        available_actions=payload.available_actions,
+    )
 
     try:
         response = answer_report_question(question, context)
         logger.info(
-            "Report chat API completed status_code=200 shape=%s operation=%s target=%s response_kind=%s response_state=%s source_count=%s not_found=%s",
-            context.get("question_shape_bucket"),
-            context.get("detected_operation"),
+            "Report chat API completed status_code=200 intent=%s target=%s surface=%s response_kind=%s response_state=%s source_count=%s not_found=%s",
+            context.get("detected_intent"),
             context.get("detected_target"),
+            context.get("surface_type"),
             response.response_kind,
             response.response_state,
             len(response.sources),
@@ -323,10 +335,10 @@ def ask_report_chat(
         return response
     except ReportChatError as exc:
         logger.warning(
-            "Report chat API failed status_code=502 shape=%s operation=%s target=%s detail=%s",
-            context.get("question_shape_bucket"),
-            context.get("detected_operation"),
+            "Report chat API failed status_code=502 intent=%s target=%s surface=%s detail=%s",
+            context.get("detected_intent"),
             context.get("detected_target"),
+            context.get("surface_type"),
             str(exc),
         )
         raise HTTPException(status_code=502, detail=str(exc)) from exc

@@ -6,6 +6,7 @@ import { Loader } from "@/components/ui/Loader";
 import { fetchInterviewWorkspace } from "@/lib/api";
 import type { InterviewWorkspaceSummary } from "@/lib/types";
 import { InterviewOverlayRunner } from "@/components/interviewer/InterviewOverlayRunner";
+import { ReportChatWidget } from "@/components/ReportChatWidget";
 
 export default function InterviewOverlayPage() {
   const params = useParams<{ id: string }>();
@@ -37,7 +38,24 @@ export default function InterviewOverlayPage() {
           <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p>
         </div>
       ) : null}
-      {!loading && workspace ? <InterviewOverlayRunner applicationId={params.id} initialWorkspace={workspace} /> : null}
+      {!loading && workspace ? (
+        <>
+          <InterviewOverlayRunner applicationId={params.id} initialWorkspace={workspace} />
+          <ReportChatWidget
+            applicationId={params.id}
+            surfaceType="overlay"
+            currentPage="overlay"
+            workflowStage="live_interview"
+            availableActions={[
+              "mark question status",
+              "add notes",
+              "add follow-ups",
+              "add custom questions",
+              "finish interview",
+            ]}
+          />
+        </>
+      ) : null}
     </div>
   );
 }

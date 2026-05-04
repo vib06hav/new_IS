@@ -83,6 +83,11 @@ export default function AdminApplicationDetailPage() {
   const createdAt = new Date(item.created_at).toLocaleString();
   const assignee = item.assigned_interviewer?.name || "Not assigned";
   const hasFinalReportPages = Boolean(item.final_report?.content);
+  const copilotActions = [
+    "review Pages 1-3",
+    ...(hasFinalReportPages ? ["inspect focus areas", "review interview questions"] : []),
+    "open source PDF",
+  ];
   const pageOptions: Array<{ value: ReviewPageTab; label: string; meta: string }> = [
     { value: "page1", label: "Overview", meta: "Applicant profile" },
     { value: "page2", label: "Academics & Activities", meta: "Study and engagement" },
@@ -164,6 +169,10 @@ export default function AdminApplicationDetailPage() {
             />
             <ReportChatWidget
               applicationId={item.id}
+              surfaceType="report_viewer"
+              currentPage={activePageTab}
+              workflowStage={item.interview_workspace?.status === "completed" ? "completed" : "prep"}
+              availableActions={copilotActions}
               onNavigateResult={(result) => navigateToReportResult(result, setActivePageTab)}
             />
           </>

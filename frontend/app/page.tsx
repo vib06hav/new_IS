@@ -6,6 +6,7 @@ import { LandingFinalReportSlice } from "@/components/landing/LandingFinalReport
 import { LandingPostgameRefineSlice } from "@/components/landing/LandingPostgameRefineSlice";
 import { LandingAdminControlLayer } from "@/components/landing/LandingAdminControlLayer";
 import { LandingReportChatSlice } from "@/components/landing/LandingReportChatSlice";
+import { LandingInterviewOverlaySlice } from "@/components/landing/LandingInterviewOverlaySlice";
 
 const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
@@ -141,7 +142,7 @@ export default function LandingPage() {
           </section>
 
           <TransitionLine>
-            And you can explore it directly—ask questions, pull details, and clarify before the interview.
+            And you can explore and navigate it with a built-in copilot. Surface details, clarify focus areas, and get guidance as you move through the interview workflow.
           </TransitionLine>
 
           <section className="px-5 py-12 md:px-8 xl:px-10">
@@ -153,16 +154,37 @@ export default function LandingPage() {
                   className="text-3xl font-black tracking-[-0.04em] text-slate-950 md:text-4xl"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
-                  Explore the report instantly
+                  Use a copilot to explore and navigate the workflow
                 </h2>
                 <p className="text-base leading-7 text-slate-600">
-                  Ask questions about the candidate, pull specific details, or clarify focus areas—without scanning the entire report.
+                  Use the copilot to surface key details, clarify focus areas, and get guidance as you move through the report, the live interview, and the final write-up without losing control of the process.
                 </p>
               </div>
             </div>
           </section>
 
-          <TransitionLine>And it continues into how interviews are written up.</TransitionLine>
+          <TransitionLine>Then it carries directly into the live interview.</TransitionLine>
+
+          <section className="px-5 py-12 md:px-8 xl:px-10">
+            <div className="mx-auto grid w-full max-w-[88rem] gap-10 xl:grid-cols-[minmax(0,1.04fr)_minmax(22rem,0.96fr)] xl:items-center">
+              <div className="max-w-2xl space-y-4">
+                <h2
+                  className="text-3xl font-black tracking-[-0.04em] text-slate-950 md:text-4xl"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  Every interview follows a guided, structured flow
+                </h2>
+                <p className="text-base leading-7 text-slate-600">
+                  Interviewers move through questions, capture outcomes in the moment, and stay in control of the
+                  conversation without losing structure.
+                </p>
+              </div>
+
+              <LandingInterviewOverlaySlice />
+            </div>
+          </section>
+
+          <TransitionLine>After the interview, it continues into review and final write-up.</TransitionLine>
 
           <section className="px-5 py-12 md:px-8 xl:px-10">
             <div className="mx-auto grid w-full max-w-[88rem] gap-10 xl:grid-cols-[minmax(0,1.04fr)_minmax(22rem,0.96fr)] xl:items-center">

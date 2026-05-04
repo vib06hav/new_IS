@@ -110,6 +110,18 @@ export type InterviewWorkspaceRefinementResponse = {
 };
 
 export type ReportChatTargetTab = "page1" | "page2" | "page3" | "page4" | "page5";
+export type ReportChatSurfaceType = "report_viewer" | "configure" | "overlay" | "postgame" | "final_report";
+export type ReportChatWorkflowStage = "prep" | "live_interview" | "postgame" | "completed";
+export type ReportChatCurrentPage =
+  | "page1"
+  | "page2"
+  | "page3"
+  | "page4"
+  | "page5"
+  | "page6"
+  | "configure"
+  | "overlay"
+  | "postgame";
 
 export type ReportChatSectionKey =
   | "page1_overview"
@@ -123,6 +135,10 @@ export type ReportChatSectionKey =
 
 export type ReportChatRequestPayload = {
   question: string;
+  surface_type: ReportChatSurfaceType;
+  current_page?: ReportChatCurrentPage | null;
+  workflow_stage?: ReportChatWorkflowStage | null;
+  available_actions?: string[];
 };
 
 export type ReportChatSource = {
@@ -136,10 +152,11 @@ export type ReportChatSource = {
 
 export type ReportChatResponse = {
   answer_summary: string;
-  response_kind: "lookup" | "domain_summary" | "scope_redirect" | "degraded";
+  response_kind: "content" | "workflow" | "action" | "mixed" | "degraded";
   sources: ReportChatSource[];
   not_found: boolean;
   response_state: "clean" | "repaired" | "retried" | "degraded";
+  suggested_followups: string[];
 };
 
 export type ApplicationListItem = {

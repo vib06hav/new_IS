@@ -8,6 +8,7 @@ import { Loader } from "@/components/ui/Loader";
 import { fetchInterviewWorkspace } from "@/lib/api";
 import type { InterviewWorkspaceSummary } from "@/lib/types";
 import { InterviewWorkspaceEditor } from "@/components/interviewer/InterviewWorkspaceEditor";
+import { ReportChatWidget } from "@/components/ReportChatWidget";
 
 export default function InterviewPostgamePage() {
   const params = useParams<{ id: string }>();
@@ -51,7 +52,25 @@ export default function InterviewPostgamePage() {
         {!loading && error ? (
           <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p>
         ) : null}
-        {!loading && workspace ? <InterviewWorkspaceEditor applicationId={params.id} initialWorkspace={workspace} mode="postgame" /> : null}
+        {!loading && workspace ? (
+          <>
+            <InterviewWorkspaceEditor applicationId={params.id} initialWorkspace={workspace} mode="postgame" />
+            <ReportChatWidget
+              applicationId={params.id}
+              surfaceType="postgame"
+              currentPage="postgame"
+              workflowStage="postgame"
+              availableActions={[
+                "review question outcomes",
+                "edit question and follow-up notes",
+                "add custom questions",
+                "tighten the final summary",
+                "publish final interview report",
+                "save review",
+              ]}
+            />
+          </>
+        ) : null}
       </div>
     </InterviewerShell>
   );

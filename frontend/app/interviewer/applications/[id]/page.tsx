@@ -139,6 +139,14 @@ export default function InterviewerApplicationPage() {
   const workspace = item.interview_workspace;
   const isAssignedView = item.status === "ASSIGNED";
   const isCompletedView = item.status === "COMPLETE" && workspace?.status === "completed";
+  const workflowStage =
+    workspace?.status === "launched"
+      ? "live_interview"
+      : workspace?.status === "postgame"
+        ? "postgame"
+        : workspace?.status === "completed"
+          ? "completed"
+          : "prep";
   const workspaceActionLabel =
     workspace?.status === "completed"
       ? "View final interview report"
@@ -161,6 +169,21 @@ export default function InterviewerApplicationPage() {
       : []),
     ...(isCompletedView ? [{ value: "page6" as const, label: "Final Report", meta: "Interview feedback", featured: true }] : []),
   ];
+  const copilotSurfaceType = activePageTab === "page6" ? "final_report" : "report_viewer";
+  const copilotActions =
+    activePageTab === "page6"
+      ? ["review final interview report", "compare the interview outcome with earlier pages", "revisit Pages 1-5"]
+      : [
+          "review report pages",
+          ...(hasFinalReportPages ? ["inspect focus areas", "review interview questions"] : []),
+          ...(workspace?.status === "completed"
+            ? ["review final interview report"]
+            : workspace?.status === "postgame"
+              ? ["continue feedback"]
+              : workspace?.status === "launched"
+                ? ["rejoin overlay"]
+                : ["configure interview"]),
+        ];
 
   return (
     <InterviewerShell>
@@ -255,7 +278,17 @@ export default function InterviewerApplicationPage() {
         {item.review_package ? (
           <>
             {isCompletedView && activePageTab === "page6" ? (
-              <FinalInterviewReportSection workspace={workspace} />
+              <>
+                <FinalInterviewReportSection workspace={workspace} />
+                <ReportChatWidget
+                  applicationId={item.id}
+                  surfaceType={copilotSurfaceType}
+                  currentPage={activePageTab}
+                  workflowStage={workflowStage}
+                  availableActions={copilotActions}
+                  onNavigateResult={(result) => navigateToReportResult(result, setActivePageTab)}
+                />
+              </>
             ) : (
               <>
                 <ReviewPackageSection
@@ -266,6 +299,10 @@ export default function InterviewerApplicationPage() {
                 />
                 <ReportChatWidget
                   applicationId={item.id}
+                  surfaceType={copilotSurfaceType}
+                  currentPage={activePageTab}
+                  workflowStage={workflowStage}
+                  availableActions={copilotActions}
                   onNavigateResult={(result) => navigateToReportResult(result, setActivePageTab)}
                 />
               </>

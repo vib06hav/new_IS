@@ -1,66 +1,82 @@
-import { MessageSquareText, Search } from "lucide-react";
+import { ArrowRight, MessageSquareText, Sparkles } from "lucide-react";
 
-const SOURCES = ["Page 4 · Focus Areas", "Page 5 · Questions", "Page 2 · Activities"];
+const SOURCES = ["Page 4 - Focus Areas", "Page 5 - Questions", "Page 2 - Activities"];
+const FOLLOWUPS = [
+  "Summarize the focus area",
+  "What should I ask next?",
+  "What is still unvalidated?",
+];
 
 export function LandingReportChatSlice() {
   return (
-    <div className="space-y-4">
-      <section className="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-[0_18px_36px_rgba(15,23,42,0.12)]">
-        <div className="flex items-start justify-between gap-3">
-          <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Report Assistant</p>
-            <h3 className="text-xl font-semibold tracking-tight text-slate-900">Ask This Report</h3>
-          </div>
-          <span className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700">
-            <MessageSquareText className="size-3.5" />
-            Grounded answers
-          </span>
-        </div>
-      </section>
+    <section className="overflow-hidden rounded-[1.6rem] border border-slate-200 bg-[linear-gradient(155deg,rgba(255,255,255,0.98),rgba(241,245,249,0.98),rgba(255,255,255,0.96))] shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur">
+      <div className="border-b border-slate-200 px-4 py-2">
+        <span className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-blue-700">
+          <Sparkles className="size-3.5" />
+          Report Copilot
+        </span>
+      </div>
 
-      <section className="rounded-[1.4rem] border border-slate-200 bg-white shadow-[0_18px_36px_rgba(15,23,42,0.1)]">
-        <div className="border-b border-slate-200 px-4 py-4">
-          <div className="rounded-[1rem] border border-slate-200 bg-white/92 px-4 py-3 text-sm text-slate-900 shadow-[0_8px_18px_rgba(15,23,42,0.04)]">
-            What should I clarify before the interview?
-          </div>
-
-          <div className="mt-3 flex items-center justify-between gap-3">
-            <button
-              className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white shadow-[0_14px_28px_rgba(37,99,235,0.24)]"
-              type="button"
-            >
-              <Search className="size-3.5" />
-              Search report
-            </button>
-            <p className="text-[11px] leading-5 text-slate-500">
-              Ask about academics, writing, focus areas, or interview questions.
-            </p>
-          </div>
+      <div className="space-y-2 px-4 py-3">
+        <div className="min-h-20 rounded-[1rem] border border-slate-200 bg-white/92 px-4 py-3 text-sm leading-6 text-slate-900">
+          What should I probe first in this interview?
         </div>
 
-        <div className="bg-white/72 px-4 py-4">
-          <div className="rounded-[1rem] border border-slate-200 bg-[linear-gradient(135deg,rgba(239,246,255,0.92),rgba(255,255,255,0.92))] px-4 py-3">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Answer</p>
-            <p className="mt-2 text-sm leading-6 text-slate-900">
-              The report suggests clarifying whether the candidate&apos;s interest in technology has translated into hands-on building. It also points to question areas around practical execution and real project examples.
-            </p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <button
+            className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(37,99,235,0.28)] transition hover:bg-blue-800"
+            type="button"
+          >
+            <MessageSquareText className="size-4" />
+            Ask copilot
+          </button>
+        </div>
+      </div>
 
-            <div className="mt-4 border-t border-slate-200/80 pt-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">Grounded in</span>
-                {SOURCES.map((source) => (
-                  <span
-                    key={source}
-                    className="inline-flex items-center rounded-full border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-semibold text-slate-700"
-                  >
-                    {source}
-                  </span>
-                ))}
-              </div>
+      <div className="space-y-3 border-t border-slate-200 bg-white/75 px-4 py-3">
+        <div className="rounded-[1rem] border border-slate-200 bg-[linear-gradient(135deg,rgba(239,246,255,0.92),rgba(255,255,255,0.96))] px-4 py-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">Answer</span>
+            <span className="inline-flex rounded-full border border-slate-200 bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-600">
+              Report insight
+            </span>
+          </div>
+
+          <p className="mt-3 text-sm leading-7 text-slate-900">
+            Start by testing the gap between stated interest and demonstrated execution. The report shows
+            strong motivation and conceptual clarity, but the interview should probe for hands-on building,
+            concrete project ownership, and how the candidate works through technical problems in practice.
+          </p>
+
+          <div className="mt-3 border-t border-slate-200/80 pt-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {SOURCES.map((source) => (
+                <span
+                  key={source}
+                  className="inline-flex items-center rounded-full border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-semibold text-slate-700"
+                >
+                  {source}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-3 border-t border-slate-200/80 pt-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">Follow-ups</span>
+              {FOLLOWUPS.map((followup) => (
+                <span
+                  key={followup}
+                  className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700"
+                >
+                  {followup}
+                  <ArrowRight className="size-3.5" />
+                </span>
+              ))}
             </div>
           </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }
