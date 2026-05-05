@@ -24,3 +24,4 @@ base_frontend/node_modules/
 base_frontend/.next/
 graphify-out/cache
 dev/generated/
+tests/

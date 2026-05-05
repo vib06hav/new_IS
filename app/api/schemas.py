@@ -248,7 +248,7 @@ ReportChatSectionKey = Literal[
     "page2_leadership",
     "page3_essays",
     "page4_focus_areas",
-    "page5_interview_openings",
+    "page5_question_groups",
 ]
 ReportChatResponseState = Literal["clean", "repaired", "retried", "degraded"]
 ReportChatResponseKind = Literal["content", "workflow", "action", "mixed", "degraded"]

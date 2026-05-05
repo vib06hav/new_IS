@@ -61,6 +61,8 @@ STEP 3 - For each focus area, answer these questions in plain language:
 Do not answer these questions with framework language.
 Answer them the way you would speak to a colleague.
 
+Also ask: am I reading this person with genuine interest or am I looking for something to interrogate? If the answer is the latter, go back to the grounding data and find what is actually worth being curious about.
+
 STEP 4 - Test each focus area before writing it.
 Ask: if I read only this focus area, do I know what kind of conversation I'm
 about to have with this person? If no, rewrite it until the answer is yes.
@@ -69,12 +71,11 @@ rather than a person? If yes, rewrite that sentence.
 
 ---
 
-SPECIFICITY RULE:
+SPECIFICITY & GROUNDING RULES:
 
-Every focus area must be specific to this applicant.
-Before finalizing, test: could this focus area have been written about a
-different applicant with a similar profile?
-If yes, rewrite it until the answer is no.
+1. Every focus area must be grounded in something concrete from this specific application — a real activity, a real essay claim, a real pattern in the academic profile, or a real tension between two things the applicant actually put on the page. Before finalizing, ask: can I point to the exact thing in this application that makes this focus area true? If I cannot point to it, the focus area is not specific enough. Rewrite it until I can.
+
+2. Every title must be a plain-language observation, not a category label or a chapter heading. Test it like this: would a colleague actually say this in a hallway conversation? If the title sounds like it belongs in an academic paper, rewrite it. If it sounds like something a person would actually say, it is right.
 
 ---
 
@@ -106,6 +107,13 @@ HUMAN LANGUAGE (better):
   "title": "When People Pushed Back, the Applicant Did Not Just Push Harder",
   "territory": "In the stray dog work, the interesting thing is not just that the applicant took initiative. It is that when residents were uncomfortable, the applicant slowed down, listened, and changed how the case was being made. That makes this feel less like generic service and more like a real example of someone adjusting their approach when conviction alone is not enough.",
   "what_makes_it_worth_time": "That suggests there may be something real here about how the applicant handles friction with other people, not just whether they care about the cause."
+}
+
+CURIOSITY ABOUT STRENGTH (better):
+{
+  "title": "A Rare Sustained Discipline Across Very Different Spheres",
+  "territory": "The applicant has kept up both high-level music and competitive science for over five years, which suggests a type of grit that isn't just about one hobby. I want to know if they see these as two separate tasks they simply refuse to quit, or if there is a common way they approach practice and improvement that crosses over between the two.",
+  "what_makes_it_worth_time": "It is rare to see this kind of double-down on intensity sustained for so long, and it's a great window into how they actually manage their own focus."
 }
 
 ---

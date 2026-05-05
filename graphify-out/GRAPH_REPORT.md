@@ -1,12 +1,12 @@
 # Graph Report - C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser  (2026-05-05)
 
 ## Corpus Check
-- 191 files · ~232,054 words
+- 191 files · ~230,859 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1080 nodes · 1837 edges · 141 communities detected
-- Extraction: 73% EXTRACTED · 27% INFERRED · 0% AMBIGUOUS · INFERRED: 499 edges (avg confidence: 0.74)
+- 1080 nodes · 1840 edges · 141 communities detected
+- Extraction: 73% EXTRACTED · 27% INFERRED · 0% AMBIGUOUS · INFERRED: 503 edges (avg confidence: 0.74)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -154,8 +154,8 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `apiRequest()` - 36 edges
-2. `LLMClientError` - 29 edges
-3. `PolicyConfig` - 27 edges
+2. `PolicyConfig` - 31 edges
+3. `LLMClientError` - 29 edges
 4. `run_pipeline()` - 25 edges
 5. `run_synthesis_pipeline()` - 22 edges
 6. `get_application_or_404()` - 21 edges
@@ -203,28 +203,28 @@ Cohesion: 0.09
 Nodes (48): get_llm_capacity(), _apply_response_format(), _clean_json_response(), _extract_openai_compatible_text(), generate(), _generate_aicredits(), _generate_openai_compatible(), _get_braintrust_logger() (+40 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.06
-Nodes (33): check_writable_dir(), _looks_like_placeholder_secret(), _parse_bool(), _parse_csv_list(), Settings, build_judge_prompt_call_1(), build_judge_prompt_call_2(), check_prohibited_terms() (+25 more)
+Cohesion: 0.07
+Nodes (50): get_prohibited_terms(), get_version(), PolicyConfig, Configuration for the policy guard. Externalized rules to ensure no     hardcod, _append_phrase_violations(), _append_text_violations(), _backfill_signal_references(), _first_present() (+42 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.07
-Nodes (46): get_prohibited_terms(), get_version(), PolicyConfig, Configuration for the policy guard. Externalized rules to ensure no     hardcod, _append_phrase_violations(), _append_text_violations(), _backfill_signal_references(), _first_present() (+38 more)
+Cohesion: 0.06
+Nodes (33): check_writable_dir(), _looks_like_placeholder_secret(), _parse_bool(), _parse_csv_list(), Settings, build_judge_prompt_call_1(), build_judge_prompt_call_2(), check_prohibited_terms() (+25 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.07
 Nodes (36): assemble_ros_v1(), Deterministic ROS assembly.     Merges Pages 1-3 (from projection), Call 2 focus, _build_entity_cache(), _build_signal_evidence_pair(), _build_signal_snapshot(), _clean_entry(), _clean_text(), _compact_content() (+28 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.08
-Nodes (33): isApiErrorStatus(), saveInterviewWorkspace(), clearInterviewDraft(), getDraftKey(), readInterviewDraft(), writeInterviewDraft(), addFollowUp(), addOpening() (+25 more)
-
-### Community 10 - "Community 10"
 Cohesion: 0.09
 Nodes (36): get_current_user(), build_interviewer_list_item(), create_access_token(), decode_access_token(), get_password_hash(), bootstrap_admin_user(), build_public_profile_image_url(), build_session_token() (+28 more)
 
-### Community 11 - "Community 11"
+### Community 10 - "Community 10"
 Cohesion: 0.08
 Nodes (33): _allowed_origins(), clear_csrf_cookie(), ensure_csrf_protection(), generate_csrf_token(), _is_allowed_loopback_origin(), _origin_from_url(), request_uses_session_cookie(), set_csrf_cookie() (+25 more)
+
+### Community 11 - "Community 11"
+Cohesion: 0.09
+Nodes (34): isApiErrorStatus(), saveInterviewWorkspace(), clearInterviewDraft(), getDraftKey(), readInterviewDraft(), writeInterviewDraft(), addFollowUp(), addQuestion() (+26 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.11
@@ -743,7 +743,7 @@ Cohesion: 1.0
 Nodes (1): enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Date: 2026-03-
 
 ## Knowledge Gaps
-- **106 isolated node(s):** `Fallback redis error when the redis package is unavailable.`, `Raised when a non-blocking coordination lock cannot be acquired.`, `Extract academic records using precise spatial layout blocks.     Clusters block`, `Aligns metadata blocks to anchors using distance-ranked pairing.`, `Extract activities using a Grid-Line based spatial approach with Dynamic Column` (+101 more)
+- **110 isolated node(s):** `Fallback redis error when the redis package is unavailable.`, `Raised when a non-blocking coordination lock cannot be acquired.`, `Extract academic records using precise spatial layout blocks.     Clusters block`, `Aligns metadata blocks to anchors using distance-ranked pairing.`, `Extract activities using a Grid-Line based spatial approach with Dynamic Column` (+105 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 34`** (2 nodes): `database.py`, `get_db()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -964,16 +964,16 @@ Nodes (1): enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Dat
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `run_pipeline()` connect `Community 0` to `Community 8`, `Community 2`?**
-  _High betweenness centrality (0.138) - this node is a cross-community bridge._
-- **Why does `run_synthesis_pipeline()` connect `Community 8` to `Community 0`, `Community 3`, `Community 7`?**
-  _High betweenness centrality (0.126) - this node is a cross-community bridge._
+  _High betweenness centrality (0.119) - this node is a cross-community bridge._
+- **Why does `run_synthesis_pipeline()` connect `Community 8` to `Community 0`, `Community 3`, `Community 6`?**
+  _High betweenness centrality (0.085) - this node is a cross-community bridge._
 - **Why does `LLMClientError` connect `Community 5` to `Community 0`, `Community 15`?**
-  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+  _High betweenness centrality (0.060) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `apiRequest()` (e.g. with `getCsrfToken()` and `revalidateSession()`) actually correct?**
   _`apiRequest()` has 2 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 29 inferred relationships involving `PolicyConfig` (e.g. with `Scans a block of text against a list of prohibited phrases.     Uses basic subs` and `Pre-validation auto-repair layer.     Silently fixes all recoverable LLM output`) actually correct?**
+  _`PolicyConfig` has 29 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 17 inferred relationships involving `LLMClientError` (e.g. with `ReportChatError` and `Raised when the report chatbot cannot safely answer.`) actually correct?**
   _`LLMClientError` has 17 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 25 inferred relationships involving `PolicyConfig` (e.g. with `Scans a block of text against a list of prohibited phrases.     Uses basic subs` and `Pre-validation auto-repair layer.     Silently fixes all recoverable LLM output`) actually correct?**
-  _`PolicyConfig` has 25 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 19 inferred relationships involving `run_pipeline()` (e.g. with `extract_layout_blocks()` and `normalize_layout()`) actually correct?**
   _`run_pipeline()` has 19 INFERRED edges - model-reasoned connections that need verification._

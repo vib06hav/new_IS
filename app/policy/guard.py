@@ -33,14 +33,7 @@ FOCUS_AREA_BANNED_PHRASES = [
     "buzzword",
 ]
 
-QUESTION_BANNED_PHRASES = [
-    "tell me about",
-    "can you elaborate on",
-    "could you tell me about",
-    "could you walk me through",
-    "walk me through",
-    "what drew you to",
-]
+QUESTION_BANNED_PHRASES = []
 
 FOCUS_AREA_PRONOUN_RE = re.compile(r"\b(he|she|his|her)\b", flags=re.IGNORECASE)
 FIRST_QUESTION_CONTENTION_RE = re.compile(r"\b(yet|despite|while)\b", flags=re.IGNORECASE)
@@ -236,11 +229,11 @@ def _normalize_opening_group_output(data: Any, rules: List[str]) -> Any:
             normalized_question_groups.append({
                 "focus_area_id": _first_present(qg, ["focus_area_id", "focus_area", "focus_area_ref", "theme_id", "theme", "theme_ref"]),
                 "group_label": _rewrite_prohibited_phrasing(
-                    _first_present(qg, ["group_label", "group_title", "title", "heading", "name"], ""),
+                    _first_present(qg, ["group_label", "title", "heading", "name"], ""),
                     rules,
                 ),
                 "line_of_inquiry": _rewrite_prohibited_phrasing(
-                    _first_present(qg, ["line_of_inquiry", "interview_direction", "what_to_find_out", "inquiry"], ""),
+                    _first_present(qg, ["line_of_inquiry", "inquiry"], ""),
                     rules,
                 ),
                 "questions": questions,
@@ -1249,12 +1242,12 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
                     ):
                         qg_passed = False
                         passed = False
-                    if FIRST_QUESTION_CONTENTION_RE.search(question_text):
+                    if q_idx == 0 and FIRST_QUESTION_CONTENTION_RE.search(question_text):
                         violations_log.append({
                             "violation_id": str(uuid.uuid4()),
                             "field": f"question_groups[{idx}].questions[{q_idx}].question",
                             "type": "premature_contention",
-                            "context": "Questions should not begin from a contrastive contention before the applicant's frame is established.",
+                            "context": "The opening question should not begin with a contrastive contention (yet/despite/while). Give the applicant room to establish their frame first.",
                         })
                         qg_passed = False
                         passed = False

@@ -70,11 +70,11 @@ REPORT_CHAT_SECTION_TARGETS: dict[str, dict[str, str]] = {
         "page_label": "Page 4",
         "section_label": "Focus Areas",
     },
-    "page5_interview_openings": {
+    "page5_question_groups": {
         "target_tab": "page5",
-        "anchor_id": "report-page5-interview-openings",
+        "anchor_id": "report-page5-question-groups",
         "page_label": "Page 5",
-        "section_label": "Interview Openings",
+        "section_label": "Question Groups",
     },
 }
 
@@ -97,12 +97,12 @@ PAGE_MAP = {
     "page4": {
         "label": "Page 4",
         "name": "Focus Areas",
-        "purpose": "Synthesized interviewer focus areas from the report.",
+        "purpose": "Interpretive Context Dossier containing focus areas.",
     },
     "page5": {
         "label": "Page 5",
-        "name": "Interview Openings",
-        "purpose": "Concrete interview openings, hooks, and sample phrasing.",
+        "name": "Question Groups",
+        "purpose": "Lean live-interview question sheet with lines of inquiry.",
     },
     "page6": {
         "label": "Page 6",
@@ -119,7 +119,7 @@ QUESTION_KEYWORDS: dict[str, tuple[str, ...]] = {
     "page2_leadership": ("leadership", "captain", "president", "head boy", "head girl", "leader", "role"),
     "page3_essays": ("essay", "essays", "writing", "statement", "prompt", "writing sample"),
     "page4_focus_areas": ("focus area", "focus areas", "theme", "themes", "signal", "signals", "stand out", "stands out"),
-    "page5_interview_openings": ("opening", "openings", "question theme", "question themes", "hook", "hooks", "interview opening", "interview openings", "sample question", "sample questions"),
+    "page5_question_groups": ("question", "questions", "probe", "follow up", "follow-up", "line of inquiry", "direction", "question group", "question groups"),
 }
 
 WORKFLOW_KEYWORDS = (
@@ -236,7 +236,7 @@ def build_report_chat_context(
     actions = list(available_actions or [])
 
     page4 = final_report_content.get("page_4_focus_areas", {}) if isinstance(final_report_content, dict) else {}
-    page5 = final_report_content.get("page_5_interview_openings", final_report_content.get("page_5_question_groups", {})) if isinstance(final_report_content, dict) else {}
+    page5 = final_report_content.get("page_5_question_groups", {}) if isinstance(final_report_content, dict) else {}
     deterministic_signals = _extract_deterministic_signals(final_report_content)
     page6 = _build_page6_context(workspace)
 
@@ -247,7 +247,7 @@ def build_report_chat_context(
         "pages_1_3": review_package_pages,
         "pages_4_5": {
             "page_4_focus_areas": page4 if isinstance(page4, dict) else {},
-            "page_5_interview_openings": page5 if isinstance(page5, dict) else {},
+            "page_5_question_groups": page5 if isinstance(page5, dict) else {},
         },
         "page_6_final_report": page6,
         "workspace_content": workspace.get("content", {}) if isinstance(workspace, dict) else {},
@@ -299,6 +299,7 @@ def _build_report_chat_messages(
     system_lines = [
         "You are a grounded report copilot for a 6-page interview workflow.",
         "Answer only from the provided report, workflow, and UI context.",
+        "Maintain an objective, neutral, and factual tone. Avoid personality, conversational filler, or subjective praise.",
         "You may summarize, compare, explain pages, and suggest next steps based on the available actions.",
         "Do not invent numbers, subjects, activities, page contents, interview outcomes, or people.",
         "Do not infer missing facts or judge the student overall.",
@@ -504,20 +505,20 @@ def _fallback_answer(context: dict[str, Any]) -> str:
     page2 = pages_1_3.get("page_2_academic_and_engagement") if isinstance(pages_1_3, dict) else {}
     page3 = pages_1_3.get("page_3_essays") if isinstance(pages_1_3, dict) else {}
     page4 = (report_context.get("pages_4_5") or {}).get("page_4_focus_areas", {})
-    page5 = (report_context.get("pages_4_5") or {}).get("page_5_interview_openings", {})
+    page5 = (report_context.get("pages_4_5") or {}).get("page_5_question_groups", {})
     page6 = report_context.get("page_6_final_report") or {}
     actions = context.get("available_actions") or []
 
     if any(token in question for token in ("what can i do", "what should i do", "next step")):
         return _workflow_fallback(context.get("current_page"), context.get("workflow_stage"), actions)
 
-    if "page 5" in question or "question" in question or "probe" in question or "opening" in question:
-        groups = page5.get("opening_groups", []) if isinstance(page5, dict) else []
+    if "page 5" in question or "question" in question or "probe" in question or "inquiry" in question:
+        groups = page5.get("question_groups", []) if isinstance(page5, dict) else []
         if isinstance(groups, list) and groups:
-            titles = [str(group.get("group_title")).strip() for group in groups[:3] if isinstance(group, dict) and str(group.get("group_title")).strip()]
+            titles = [str(group.get("group_label")).strip() for group in groups[:3] if isinstance(group, dict) and str(group.get("group_label")).strip()]
             if titles:
-                return "Page 5 groups interview openings around " + ", ".join(titles) + "."
-        return "Page 5 is the interview-openings layer, but this report does not currently show generated opening groups."
+                return "Page 5 contains question groups for: " + ", ".join(titles) + "."
+        return "Page 5 is the question sheet, but this report does not currently show generated question groups."
 
     if "page 4" in question or "focus" in question or "theme" in question or "signal" in question:
         focus_areas = page4.get("focus_areas", []) if isinstance(page4, dict) else []
@@ -764,13 +765,13 @@ def _select_relevant_section_keys(question: str, current_page: Optional[str], su
         "page2": "page2_academics",
         "page3": "page3_essays",
         "page4": "page4_focus_areas",
-        "page5": "page5_interview_openings",
+        "page5": "page5_question_groups",
     }
     if current_page in current_page_map:
         selected.insert(0, current_page_map[current_page])
 
     if surface_type in {"configure", "overlay", "postgame", "final_report"} and not selected:
-        selected.extend(["page2_academics", "page2_activities", "page5_interview_openings"])
+        selected.extend(["page2_academics", "page2_activities", "page5_question_groups"])
 
     deduped: list[str] = []
     for key in selected:

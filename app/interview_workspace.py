@@ -109,9 +109,9 @@ def _normalize_question(
 
 def build_workspace_seed(final_report_content: dict[str, Any]) -> dict[str, Any]:
     page_4 = final_report_content.get("page_4_focus_areas") or {}
-    page_5 = final_report_content.get("page_5_question_groups") or final_report_content.get("page_5_interview_openings") or {}
+    page_5 = final_report_content.get("page_5_question_groups") or {}
     focus_areas = page_4.get("focus_areas") or []
-    question_groups = page_5.get("question_groups") or page_5.get("opening_groups") or []
+    question_groups = page_5.get("question_groups") or []
     question_group_by_focus_area = {
         str(group.get("focus_area_id")): group
         for group in question_groups
@@ -126,14 +126,12 @@ def build_workspace_seed(final_report_content: dict[str, Any]) -> dict[str, Any]
         group = question_group_by_focus_area.get(theme_id, {})
         group_title = str(
             group.get("group_label")
-            or group.get("group_title")
             or focus_area.get("title")
             or f"Focus Area {index + 1}"
         ).strip()
         line_of_inquiry = str(
             group.get("line_of_inquiry")
             or focus_area.get("interview_direction")
-            or focus_area.get("what_to_find_out")
             or ""
         ).strip()
         questions = [
@@ -143,7 +141,7 @@ def build_workspace_seed(final_report_content: dict[str, Any]) -> dict[str, Any]
                 question_index=question_index,
                 default_source="generated",
             )
-            for question_index, raw_question in enumerate(group.get("questions") or group.get("openings") or [])
+            for question_index, raw_question in enumerate(group.get("questions") or [])
         ]
         theme_cards.append(
             {
@@ -177,7 +175,7 @@ def normalize_workspace_content(content: dict[str, Any]) -> dict[str, Any]:
             source = str(theme.get("source") or "custom")
             theme_id = str(raw_id or f"custom-{index + 1}-{uuid.uuid4().hex[:8]}")
             normalized_questions = []
-            for question_index, raw_question in enumerate(theme.get("questions") or theme.get("openings") or []):
+            for question_index, raw_question in enumerate(theme.get("questions") or []):
                 question = _normalize_question(
                     raw_question,
                     theme_id=theme_id,
@@ -201,7 +199,6 @@ def normalize_workspace_content(content: dict[str, Any]) -> dict[str, Any]:
                     "what_makes_it_worth_time": str(theme.get("what_makes_it_worth_time") or "").strip(),
                     "question_group_title": str(
                         theme.get("question_group_title")
-                        or theme.get("opening_group_title")
                         or theme.get("group_label")
                         or "Question group"
                     ).strip(),

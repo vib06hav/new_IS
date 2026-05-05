@@ -83,11 +83,16 @@ export default function AdminApplicationDetailPage() {
   const createdAt = new Date(item.created_at).toLocaleString();
   const assignee = item.assigned_interviewer?.name || "Not assigned";
   const hasFinalReportPages = Boolean(item.final_report?.content);
-  const hasPostgameReport = item.interview_workspace?.status === "completed";
+  const rawStatus = item.interview_workspace?.status;
+  const workflowStage = rawStatus === "completed" ? "completed"
+    : rawStatus === "postgame" ? "postgame"
+    : rawStatus === "launched" ? "live_interview"
+    : "prep";
+
   const copilotActions = [
-    "review Pages 1-3",
-    ...(hasFinalReportPages ? ["inspect focus areas", "review interview questions"] : []),
-    ...(hasPostgameReport ? ["review post-interview outcomes"] : []),
+    ...(workflowStage === "prep" ? ["review Pages 1-3", ...(hasFinalReportPages ? ["inspect focus areas", "review interview questions"] : [])] : []),
+    ...(workflowStage === "live_interview" ? ["review interview questions", "suggest follow-ups"] : []),
+    ...(workflowStage === "postgame" || workflowStage === "completed" ? ["review post-interview outcomes", "summarize outcomes"] : []),
     "open source PDF",
   ];
   const pageOptions: Array<{ value: ReviewPageTab; label: string; meta: string }> = [
@@ -100,7 +105,7 @@ export default function AdminApplicationDetailPage() {
           { value: "page5" as const, label: "Questions", meta: "Interview prompts" },
         ]
       : []),
-    ...(hasPostgameReport
+    ...(workflowStage === "postgame" || workflowStage === "completed"
       ? [
           { value: "page6" as const, label: "Final Report", meta: "Post-interview outcomes" },
         ]
@@ -178,7 +183,7 @@ export default function AdminApplicationDetailPage() {
               applicationId={item.id}
               surfaceType="report_viewer"
               currentPage={activePageTab}
-              workflowStage={item.interview_workspace?.status === "completed" ? "completed" : "prep"}
+              workflowStage={workflowStage as any}
               availableActions={copilotActions}
               onNavigateResult={(result) => navigateToReportResult(result, setActivePageTab)}
             />

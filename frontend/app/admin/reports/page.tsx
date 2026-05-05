@@ -375,9 +375,6 @@ function getFilterActiveClasses(status: (typeof REPORT_STATUSES)[number]) {
   return "border border-slate-200 bg-slate-100 text-slate-700 shadow-[0_8px_20px_rgba(226,232,240,0.24)]";
 }
 
-function getEmptyStateBorderClasses(status: (typeof REPORT_STATUSES)[number]) {
-  return "border-[#727D97] shadow-[0_18px_44px_rgba(114,125,151,0.14)]";
-}
 
 function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
   if (status === "ALL") {
@@ -425,11 +422,9 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
   const copy = getEmptyStateCopy(statusFilter);
 
   return (
-    <div
-      className={`rounded-[1.9rem] border bg-[#F7F7F1] px-6 py-10 text-center ${getEmptyStateBorderClasses(statusFilter)}`}
-    >
+    <div className="rounded-[1.9rem] border border-slate-200 bg-white/80 px-6 py-10 text-center shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
       <div className="mx-auto flex max-w-md flex-col items-center">
-        <div className="grid size-16 place-items-center overflow-hidden rounded-2xl border border-[#198FF0]/25 bg-[#EAF4FD] shadow-[0_0_40px_rgba(25,143,240,0.2)]">
+        <div className="grid size-16 place-items-center overflow-hidden rounded-2xl border border-blue-200 bg-blue-50 shadow-sm">
           <Image
             alt="Interview Standardiser logo"
             className="h-14 w-14 scale-[1.28] object-cover"
@@ -439,12 +434,12 @@ function ReportsEmptyState({ statusFilter }: { statusFilter: (typeof REPORT_STAT
           />
         </div>
         <h4
-          className="mt-5 text-[2.1rem] leading-[0.95] tracking-[-0.05em] text-[#111111]"
-          style={{ fontFamily: "var(--font-reports-cormorant)" }}
+          className="mt-5 text-[2.1rem] font-black leading-[0.98] tracking-tight text-slate-800"
+          style={{ fontFamily: "var(--font-reports-display)" }}
         >
           {copy.title}
         </h4>
-        <p className="mt-3 text-sm leading-7 text-[#49536B]">{copy.description}</p>
+        <p className="mt-3 text-sm leading-7 text-slate-600">{copy.description}</p>
       </div>
     </div>
   );

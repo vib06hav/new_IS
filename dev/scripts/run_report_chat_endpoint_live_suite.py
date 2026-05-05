@@ -24,37 +24,19 @@ from app.models.user import User
 from app.report_chat import _build_report_chat_messages, build_report_chat_context, validate_report_chat_question
 
 
-HIGH_RISK_QUESTIONS = [
-    "Summarise the whole application in detail.",
-    "List everything clearly from this report.",
-    "Give all details about this candidate.",
-    "What is this candidate like overall and why?",
-    "Explain themes and give interview questions.",
-    "Compare academics, tests, activities, and essays.",
-    "How should I evaluate this candidate overall?",
-    "What really stands out and why?",
-    "What matters most in this application?",
-    "What are the weaknesses and what should I ask next?",
-    "What are the strengths and what should the interviewer probe?",
-    "Compare academics and test performance and tell me if there is a gap.",
-    "Summarise academics, activities, and leadership in bullets.",
-    "Give a full profile plus the most important concerns.",
-    "List all signals and explain why they matter.",
-    "Explain every theme and the evidence behind it.",
-    "Tell me everything important here in one answer.",
-    "Give me a deep analysis of this applicant.",
-    "What should the interviewer focus on and why?",
-    "Is this a good or bad profile and what follow-up questions should I ask?",
-]
-
-SMOKE_QUESTIONS = [
-    "What is the applicant name?",
-    "What are the 10th marks?",
-    "What is the JEE score?",
-    "What activities have they done?",
-    "What is written in the essay?",
-    "What stands out?",
-    "What should the interviewer ask?",
+TEST_QUESTIONS = [
+    "What are the 10th and 12th grade marks for this applicant?",
+    "List the extracurricular activities and leadership roles mentioned in the report.",
+    "What is the JEE score or percentile recorded for this candidate?",
+    "Summarize the key themes identified in the Focus Areas (Page 4).",
+    "How does the applicant's background or personal journey influence their interest in technology?",
+    "What specific technical projects did the applicant describe in their essays?",
+    "What are the recommended opening questions for the interview from Page 5?",
+    "What should I do next in the interview workflow?",
+    "Based on the report, is this candidate recommended for admission?",
+    "Compare the applicant's academic performance with their extracurricular engagement.",
+    "Does the report mention any experience with Python or specific programming languages?",
+    "Give me a high-level, objective overview of this applicant's profile."
 ]
 
 
@@ -171,6 +153,11 @@ def run_question(
 
     validated_question = validate_report_chat_question(question, max_chars=500, max_words=80)
     context = build_report_chat_context(validated_question, review_pages_1_3, final_report_content)
+    
+    # Ensure sources are JSON serializable
+    if "sources" in context:
+        context["sources"] = [s.model_dump() if hasattr(s, "model_dump") else s for s in context["sources"]]
+        
     write_json(question_dir / "02_route_context.json", context)
 
     headers = {"Authorization": f"Bearer {auth_token}", "Content-Type": "application/json"}
@@ -189,10 +176,9 @@ def run_question(
 
     result["http_status"] = response.status_code
     result["http_retry_count"] = retry_count
-    result["detected_operation"] = context["detected_operation"]
-    result["detected_target"] = context["detected_target"]
-    result["question_shape_bucket"] = context["question_shape_bucket"]
-    result["selected_sections"] = context["selected_sections"]
+    result["detected_intent"] = context.get("detected_intent")
+    result["detected_target"] = context.get("detected_target")
+    result["selected_sections"] = [s["section_key"] for s in context.get("sources", [])]
 
     body: dict[str, Any] | None
     try:
@@ -247,7 +233,7 @@ def main() -> int:
             raise SystemExit(f"Final report content is unavailable for application_id={application.id}")
 
         token = create_access_token({"sub": admin_user.email, "role": admin_user.role})
-        questions = [*HIGH_RISK_QUESTIONS, *SMOKE_QUESTIONS]
+        questions = TEST_QUESTIONS
 
         run_metadata = {
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),

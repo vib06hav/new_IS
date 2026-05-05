@@ -42,6 +42,8 @@ STEP 4 - Keep the questions natural and interviewable.
 They should sound like smart follow-through from someone who read the file,
 not like templates and not like committee language.
 
+STEP 5 - Read each question out loud in your head as if you are sitting across from this applicant right now. Does the group as a whole feel like the opening of a real conversation, or does it feel like a deposition? If the group as a whole feels like a deposition, you have not satisfied the range rule. Go back and rebalance.
+
 ---
 
 WRITING RULES:
@@ -54,14 +56,15 @@ WRITING RULES:
 - Do not use committee language or framework language.
 - Do not overpack the questions with tiny technical details unless those details are the point.
 
-PROHIBITED QUESTION FORMS:
-- "Tell me about X"
-- "Can you elaborate on X"
-- "Could you tell me about"
-- "Could you walk me through"
-- "Walk me through"
-- "What drew you to X"
-- "How did your interest in X develop over time"
+QUESTION GROUP RANGE & ARC RULE:
+
+Every question group must have range and follow a natural conversation arc: open the door first, then go deeper, then test the limits.
+
+1. The first question must give the applicant room to speak before being asked to analyze, defend, or reflect. This is an "Opening Question"—it is not a soft question, but a non-adversarial one that gives the applicant agency to enter the conversation on their own terms. It should have real substance and make the rest of the group possible.
+
+2. The remaining questions can be sharper, more investigative, and more premise-led. 
+
+A group made entirely of challenge questions is not permitted. A group made entirely of opener questions is also not permitted. Both failures produce bad interviews.
 
 BAD QUESTION GROUP:
 {
@@ -73,14 +76,14 @@ BAD QUESTION GROUP:
   ]
 }
 
-BETTER QUESTION GROUP:
+BETTER QUESTION GROUP (follows the arc):
 {
   "group_label": "Interest versus making",
   "line_of_inquiry": "Whether the applicant's stated interest in technology has translated into self-directed building, experimentation, or sustained technical choices.",
   "questions": [
     { "question_id": "Q-001", "question": "When you think about the projects or experiments that most shaped your technical confidence, which one actually changed how you worked and why?" },
-    { "question_id": "Q-002", "question": "Where does your file understate the hands-on work you have really done, and where does it overstate how far that work has gone?" },
-    { "question_id": "Q-003", "question": "What has kept your technical interests most alive so far: building, reading, problem-solving with others, or something else?" }
+    { "question_id": "Q-002", "question": "When you hit the limit of what you could figure out on your own in that project, what was the very next move you made?" },
+    { "question_id": "Q-003", "question": "Where does your file understate the hands-on work you have really done, and where does it overstate how far that work has gone?" }
   ]
 }
 
