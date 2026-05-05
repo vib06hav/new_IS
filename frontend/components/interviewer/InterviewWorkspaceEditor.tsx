@@ -178,10 +178,10 @@ export function InterviewWorkspaceEditor({
       const nextQuestion = createQuestion(CUSTOM_THEME_ID, customTheme.questions.length, "custom");
       const nextThemes = existingCustomTheme
         ? current.content.themes.map((theme) =>
-            theme.id === CUSTOM_THEME_ID
-              ? hydrateTheme({ ...theme, questions: [...theme.questions, nextQuestion] })
-              : theme,
-          )
+          theme.id === CUSTOM_THEME_ID
+            ? hydrateTheme({ ...theme, questions: [...theme.questions, nextQuestion] })
+            : theme,
+        )
         : [...current.content.themes, hydrateTheme({ ...customTheme, questions: [nextQuestion] })];
 
       return {
@@ -659,7 +659,7 @@ export function InterviewWorkspaceEditor({
       </section>
 
       {mode === "postgame" ? (
-        <Card title="Final summary" description={null} eyebrow={null}>
+        <Card title="Final summary">
           <div className="space-y-4">
             <TextAreaField
               label=""
@@ -872,9 +872,8 @@ function QuestionStatusSelector({
         return (
           <button
             key={candidate}
-            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] transition ${
-              selected ? getQuestionStatusClasses(candidate) : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-            }`}
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] transition ${selected ? getQuestionStatusClasses(candidate) : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+              }`}
             onClick={() => onChange(candidate)}
             type="button"
           >
