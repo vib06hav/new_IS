@@ -331,12 +331,12 @@ function AdminInterviewersContent() {
           </div>
         </section>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="mb-3 px-1 text-[9px] font-bold uppercase tracking-widest text-slate-400">Status totals</p>
-          <div className="space-y-2">
-            <MetricStrip label="Interviewers" value={metrics.interviewers} />
-            <MetricStrip label="Active assignments" value={metrics.activeAssignments} />
-            <MetricStrip label="Ready pool" value={metrics.readyPool} />
+        <div className="flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="mb-3 px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Status totals</p>
+          <div className="flex min-h-0 flex-1 flex-col gap-3">
+            <StatusTotal className="flex-1" label="Interviewers" value={metrics.interviewers} />
+            <StatusTotal className="flex-1" label="Active assignments" value={metrics.activeAssignments} />
+            <StatusTotal className="flex-1" label="Ready pool" value={metrics.readyPool} />
           </div>
         </div>
       </div>
@@ -691,11 +691,11 @@ function AccessBadge({ status }: { status: string }) {
   return <span className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${tone}`}>{copy[status] ?? status}</span>;
 }
 
-function MetricStrip({ label, value }: { label: string; value: number }) {
+function StatusTotal({ label, value, className }: { label: string; value: number; className?: string }) {
   return (
-    <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-sm">
-      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
-      <span className="text-xs font-semibold text-slate-800">{value}</span>
+    <div className={`${className ?? ""} flex items-center justify-between gap-3 rounded-[1rem] border border-slate-100 bg-slate-50 px-3 py-3 transition-all hover:bg-white hover:shadow-sm`}>
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{label}</span>
+      <span className="text-sm font-semibold text-slate-800">{value}</span>
     </div>
   );
 }
