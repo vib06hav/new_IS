@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, MinusCircle, Plus, Rocket, Save, Sparkles, Trash2, XCircle } from "lucide-react";
+import { FormattedText } from "@/components/ui/FormattedText";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { usePortalSession } from "@/components/auth/PortalSessionProvider";
@@ -842,6 +843,43 @@ function TextAreaField({
       <textarea
         className={`${label ? "mt-2 " : ""}w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200`}
         onChange={(event) => onChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            const textarea = event.currentTarget;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const value = textarea.value;
+            
+            // Get current line content
+            const beforeCursor = value.substring(0, start);
+            const lastLineStart = beforeCursor.lastIndexOf("\n") + 1;
+            const lastLine = beforeCursor.substring(lastLineStart);
+            
+            // Check if last line starts with a bullet marker
+            const bulletMatch = lastLine.match(/^([-*•])\s/);
+            
+            if (bulletMatch) {
+              event.preventDefault();
+              const marker = bulletMatch[0]; // e.g. "- "
+              
+              // If the bullet line is empty (just the marker), remove it on Enter (to exit list)
+              if (lastLine.trim() === bulletMatch[1]) {
+                const newValue = value.substring(0, lastLineStart) + value.substring(start);
+                onChange(newValue);
+                setTimeout(() => {
+                  textarea.selectionStart = textarea.selectionEnd = lastLineStart;
+                }, 0);
+              } else {
+                // Continue the list
+                const newValue = value.substring(0, start) + "\n" + marker + value.substring(end);
+                onChange(newValue);
+                setTimeout(() => {
+                  textarea.selectionStart = textarea.selectionEnd = start + marker.length + 1;
+                }, 0);
+              }
+            }
+          }
+        }}
         rows={rows}
         value={value}
       />
@@ -1018,8 +1056,8 @@ function RefinementControls({
               </Button>
             </div>
           </div>
-          <div className="whitespace-pre-wrap rounded-xl border border-blue-100 bg-white/80 px-4 py-3 text-sm leading-7 text-slate-900">
-            {preview}
+          <div className="rounded-xl border border-blue-100 bg-white/80 px-4 py-3 text-sm text-slate-900">
+            <FormattedText text={preview} />
           </div>
         </div>
       ) : null}

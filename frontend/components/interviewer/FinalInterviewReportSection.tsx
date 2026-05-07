@@ -2,6 +2,7 @@
 
 import { NotebookPen } from "lucide-react";
 import type { InterviewWorkspaceQuestion, InterviewWorkspaceSummary, InterviewWorkspaceTheme } from "@/lib/types";
+import { FormattedText } from "@/components/ui/FormattedText";
 
 export function FinalInterviewReportSection({
   workspace,
@@ -53,12 +54,13 @@ export function FinalInterviewReportSection({
         <div className="space-y-2">
           <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Interview Summary</h2>
         </div>
-        <p className="mt-2.5 text-sm leading-7 text-slate-800">
-          {workspace.content.final_summary || "No final summary was recorded."}
-        </p>
+        <FormattedText
+          text={workspace.content.final_summary || "No final summary was recorded."}
+          className="mt-2.5 text-sm text-slate-800"
+        />
       </section>
 
-      <section className="rounded-[1.3rem] border border-slate-200 bg-white/88 p-4 shadow-[0_14px_28px_rgba(15,23,42,0.08)]">
+      <section className="mt-8">
         <div className="space-y-2">
           <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Question Group Outcomes</h2>
           <p className="text-sm leading-6 text-slate-600">Final interviewer ratings and notes grouped by focus area.</p>
@@ -69,8 +71,9 @@ export function FinalInterviewReportSection({
             workspace.content.themes.map((theme, index) => (
               <article
                 key={theme.id}
-                className="rounded-[1.3rem] border border-slate-200 bg-white/82 p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]"
+                className={`relative pl-7 py-10 ${index !== 0 ? "border-t border-slate-100" : ""}`}
               >
+                <div className="absolute left-0 top-10 bottom-6 w-[3px] rounded-full bg-blue-500/10" />
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700">
                     Focus Area {index + 1}
@@ -90,7 +93,7 @@ export function FinalInterviewReportSection({
                       .slice()
                       .sort((left, right) => left.order - right.order)
                       .map((question, questionIndex) => (
-                        <div key={question.id} className="rounded-[1rem] border border-slate-200 bg-slate-50/80 p-3">
+                        <div key={question.id} className="rounded-[1rem] border border-slate-200 bg-white p-3">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
                               Question {questionIndex + 1}
@@ -100,17 +103,17 @@ export function FinalInterviewReportSection({
                             </span>
                           </div>
                           <p className="mt-3 text-base font-semibold text-slate-900">{question.text || "Untitled question"}</p>
-                          <p className="mt-3 text-sm leading-7 text-slate-700">
-                            {question.note || "No question note recorded."}
-                          </p>
+                          <FormattedText
+                            text={question.note || "No question note recorded."}
+                            className="mt-3 text-sm text-slate-700"
+                          />
                           {question.follow_ups.length ? (
-                            <div className="mt-4 space-y-2 rounded-[0.95rem] border border-slate-200 bg-white/80 p-3">
-                              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Follow-ups</p>
+                            <div className="mt-4 space-y-4">
                               {question.follow_ups
                                 .slice()
                                 .sort((left, right) => left.order - right.order)
                                 .map((followUp, followUpIndex) => (
-                                  <div key={followUp.id} className="rounded-[0.9rem] border border-slate-200 bg-slate-50/80 p-3">
+                                  <div key={followUp.id} className="pt-2">
                                     <div className="flex flex-wrap items-center gap-2">
                                       <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
                                         Follow-up {followUpIndex + 1}
@@ -119,10 +122,11 @@ export function FinalInterviewReportSection({
                                         {formatStatus(followUp.status)}
                                       </span>
                                     </div>
-                                    <p className="mt-3 text-sm leading-7 text-slate-900">{followUp.text}</p>
-                                    <p className="mt-2 text-sm leading-7 text-slate-700">
-                                      {followUp.note || "No follow-up note recorded."}
-                                    </p>
+                                    <p className="mt-2.5 text-sm font-semibold leading-7 text-slate-900">{followUp.text}</p>
+                                    <FormattedText
+                                      text={followUp.note || "No follow-up note recorded."}
+                                      className="mt-1.5 text-sm text-slate-700"
+                                    />
                                   </div>
                                 ))}
                             </div>
