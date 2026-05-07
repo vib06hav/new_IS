@@ -291,7 +291,7 @@ def ask_report_chat(
         f"report-chat:{current_user.id}",
         limit=settings.AICREDITS_REPORT_CHAT_PER_USER_LIMIT,
         window_seconds=settings.AICREDITS_REPORT_CHAT_WINDOW_SECONDS,
-        detail="Report assistant limit reached for your account. Please wait a moment and try again.",
+        detail="Interview copilot limit reached for your account. Please wait a moment and try again.",
     )
 
     application = get_application_or_404(db, application_id)
@@ -303,7 +303,7 @@ def ask_report_chat(
     canonical_record = get_canonical_record(db, application_id)
     review_package = build_review_package_summary(application, canonical_record)
     if not review_package:
-        raise HTTPException(status_code=409, detail="Report content is not available for this application")
+        raise HTTPException(status_code=409, detail="Application review content is not available for this application")
 
     final_report = get_final_report(db, application_id)
     final_report_content = final_report.content if final_report and isinstance(final_report.content, dict) else None

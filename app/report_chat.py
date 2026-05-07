@@ -74,7 +74,7 @@ REPORT_CHAT_SECTION_TARGETS: dict[str, dict[str, str]] = {
         "target_tab": "page5",
         "anchor_id": "report-page5-question-groups",
         "page_label": "Page 5",
-        "section_label": "Question Groups",
+        "section_label": "Question Sets",
     },
 }
 
@@ -97,17 +97,17 @@ PAGE_MAP = {
     "page4": {
         "label": "Page 4",
         "name": "Focus Areas",
-        "purpose": "Interpretive Context Dossier containing focus areas.",
+        "purpose": "Interview Brief focus areas synthesized from the application review.",
     },
     "page5": {
         "label": "Page 5",
-        "name": "Question Groups",
-        "purpose": "Lean live-interview question sheet with lines of inquiry.",
+        "name": "Question Sets",
+        "purpose": "Interview Brief question sets with lines of inquiry for the live interview.",
     },
     "page6": {
         "label": "Page 6",
-        "name": "Final Interview Report",
-        "purpose": "Post-interview outcomes and final summary after completion.",
+        "name": "Evaluation Summary",
+        "purpose": "Read-only summary of the submitted interview evaluation after completion.",
     },
 }
 
@@ -118,8 +118,8 @@ QUESTION_KEYWORDS: dict[str, tuple[str, ...]] = {
     "page2_activities": ("activity", "activities", "extracurricular", "co curricular", "co-curricular", "sports", "music", "piano", "reading", "olympiad", "club", "competition", "internship", "yoga"),
     "page2_leadership": ("leadership", "captain", "president", "head boy", "head girl", "leader", "role"),
     "page3_essays": ("essay", "essays", "writing", "statement", "prompt", "writing sample"),
-    "page4_focus_areas": ("focus area", "focus areas", "theme", "themes", "signal", "signals", "stand out", "stands out"),
-    "page5_question_groups": ("question", "questions", "probe", "follow up", "follow-up", "line of inquiry", "direction", "question group", "question groups"),
+    "page4_focus_areas": ("focus area", "focus areas", "theme", "themes", "signal", "signals", "stand out", "stands out", "interview brief"),
+    "page5_question_groups": ("question", "questions", "probe", "follow up", "follow-up", "line of inquiry", "direction", "question group", "question groups", "question set", "question sets"),
 }
 
 WORKFLOW_KEYWORDS = (
@@ -191,7 +191,7 @@ DANGLING_SCHEMA_ENDINGS = (
 )
 
 class ReportChatError(Exception):
-    """Raised when the report chatbot cannot safely answer."""
+    """Raised when the interview copilot cannot safely answer."""
 
 
 def validate_report_chat_question(question: str, *, max_chars: int, max_words: int) -> str:
@@ -200,11 +200,11 @@ def validate_report_chat_question(question: str, *, max_chars: int, max_words: i
         raise ReportChatError("Question cannot be empty")
     if len(normalized) > max_chars:
         raise ReportChatError(
-            f"Question is too long. Keep it under {max_chars} characters so the report copilot stays focused."
+            f"Question is too long. Keep it under {max_chars} characters so the interview copilot stays focused."
         )
     if len(normalized.split()) > max_words:
         raise ReportChatError(
-            f"Question is too long. Keep it under {max_words} words so the report copilot can answer efficiently."
+            f"Question is too long. Keep it under {max_words} words so the interview copilot can answer efficiently."
         )
     return normalized
 
@@ -297,14 +297,16 @@ def _build_report_chat_messages(
 ) -> list[dict[str, str]]:
     answer_shape = _determine_answer_shape(question, context)
     system_lines = [
-        "You are a grounded report copilot for a 6-page interview workflow.",
-        "Answer only from the provided report, workflow, and UI context.",
+        "You are a grounded interview copilot for an application review and interview workflow.",
+        "Answer only from the provided application review, interview workflow, and UI context.",
         "Maintain an objective, neutral, and factual tone. Avoid personality, conversational filler, or subjective praise.",
         "You may summarize, compare, explain pages, and suggest next steps based on the available actions.",
         "Do not invent numbers, subjects, activities, page contents, interview outcomes, or people.",
         "Do not infer missing facts or judge the student overall.",
         "Do not recommend admit, reject, rank, or score the student.",
         "If something is unavailable in the resources, say that directly.",
+        "Use the current product vocabulary in answers: Application Review, Interview Brief, Question Sets, Live Interview, Interview Evaluation, and Evaluation Summary.",
+        "If the user uses legacy terms such as report, final report, or question groups, understand them but answer using the current product vocabulary.",
         "Return a JSON object with keys: answer_summary, response_kind, suggested_followups.",
         "response_kind must be one of: content, workflow, action, mixed.",
         "suggested_followups must be an array of 1 to 3 concise user-facing prompts.",
@@ -468,7 +470,7 @@ def _scope_guard_response(question: str, context: dict[str, Any]) -> ReportChatR
     normalized = question.lower()
     if any(re.search(pattern, normalized) for pattern in OUT_OF_SCOPE_PATTERNS):
         return ReportChatResponse(
-            answer_summary="I can only help with this report and the interview workflow around it. I cannot take on coding or unrelated tasks here.",
+            answer_summary="I can only help with this application review and the interview workflow around it. I cannot take on coding or unrelated tasks here.",
             response_kind="degraded",
             sources=context.get("sources", []),
             not_found=False,
@@ -477,7 +479,7 @@ def _scope_guard_response(question: str, context: dict[str, Any]) -> ReportChatR
         )
     if any(re.search(pattern, normalized) for pattern in DISALLOWED_JUDGMENT_PATTERNS):
         return ReportChatResponse(
-            answer_summary="I can describe what the report shows, but I cannot judge, rank, admit, or reject the candidate.",
+            answer_summary="I can describe what the application review and interview evaluation show, but I cannot judge, rank, admit, or reject the candidate.",
             response_kind="degraded",
             sources=context.get("sources", []),
             not_found=False,
@@ -517,16 +519,16 @@ def _fallback_answer(context: dict[str, Any]) -> str:
         if isinstance(groups, list) and groups:
             titles = [str(group.get("group_label")).strip() for group in groups[:3] if isinstance(group, dict) and str(group.get("group_label")).strip()]
             if titles:
-                return "Page 5 contains question groups for: " + ", ".join(titles) + "."
-        return "Page 5 is the question sheet, but this report does not currently show generated question groups."
+                return "Page 5 contains question sets for: " + ", ".join(titles) + "."
+        return "Page 5 is the Interview Brief question-set view, but this application review does not currently show generated question sets."
 
     if "page 4" in question or "focus" in question or "theme" in question or "signal" in question:
         focus_areas = page4.get("focus_areas", []) if isinstance(page4, dict) else []
         if isinstance(focus_areas, list) and focus_areas:
             titles = [str(item.get("title")).strip() for item in focus_areas[:3] if isinstance(item, dict) and str(item.get("title")).strip()]
             if titles:
-                return "Page 4 synthesizes the report into focus areas such as " + ", ".join(titles) + "."
-        return "Page 4 is the synthesis layer for interviewer focus areas, but this report does not currently show generated focus areas."
+                return "Page 4 synthesizes the application review into focus areas such as " + ", ".join(titles) + "."
+        return "Page 4 is the Interview Brief focus-area layer, but this application review does not currently show generated focus areas."
 
     if "activity" in question:
         summary = _summarize_activities(page2 if isinstance(page2, dict) else {})
@@ -556,9 +558,9 @@ def _fallback_answer(context: dict[str, Any]) -> str:
         if summary:
             return summary
         totals = page6.get("totals", {})
-        if isinstance(totals, dict) and totals.get("openings"):
+        if isinstance(totals, dict) and totals.get("questions"):
             return (
-                f"The final interview report records {totals.get('openings')} interview-opening outcomes, "
+                f"The interview evaluation records {totals.get('questions')} question outcomes, "
                 f"including {totals.get('satisfactory', 0)} satisfactory and {totals.get('mixed', 0)} mixed results."
             )
 
@@ -570,7 +572,7 @@ def _workflow_fallback(current_page: Any, workflow_stage: Any, actions: list[str
     stage_label = _stage_label(str(workflow_stage or "prep"))
     if actions:
         return f"You are in {page_name} during the {stage_label} stage. From here you can " + ", ".join(actions[:4]) + "."
-    return f"You are in {page_name} during the {stage_label} stage, and the copilot can help explain the report, the workflow, and your next step."
+    return f"You are in {page_name} during the {stage_label} stage, and the copilot can help explain the application review, the workflow, and your next step."
 
 
 def _normalize_answer_text(value: Any) -> str:
@@ -627,7 +629,7 @@ def _detect_intent(question: str) -> tuple[ReportChatIntent, ReportChatTarget]:
     if has_workflow:
         return "workflow", "workflow"
 
-    if "final interview report" in normalized or "interview outcome" in normalized:
+    if any(token in normalized for token in ("final interview report", "final report", "interview outcome", "evaluation summary", "interview evaluation")):
         return "content", "final_report"
     if any(token in normalized for token in ("activity", "activities", "extracurricular", "co curricular")):
         return "content", "activities"
@@ -641,7 +643,7 @@ def _detect_intent(question: str) -> tuple[ReportChatIntent, ReportChatTarget]:
         return "content", "academics"
     if any(token in normalized for token in ("theme", "themes", "signal", "signals", "focus area")):
         return "content", "focus_areas"
-    if any(token in normalized for token in ("question", "questions", "probe", "follow up", "follow-up", "opening", "openings", "hook")):
+    if any(token in normalized for token in ("question", "questions", "probe", "follow up", "follow-up", "opening", "openings", "hook", "question set", "question sets", "question group", "question groups")):
         return "content", "questions"
     return "content", "mixed"
 
@@ -725,7 +727,7 @@ def _build_page6_context(workspace: Optional[dict[str, Any]]) -> dict[str, Any]:
     if not isinstance(content, dict):
         return {}
 
-    totals = {"openings": 0, "satisfactory": 0, "mixed": 0, "unsatisfactory": 0, "unasked": 0}
+    totals = {"questions": 0, "satisfactory": 0, "mixed": 0, "unsatisfactory": 0, "unasked": 0}
     for theme in content.get("themes", []):
         if not isinstance(theme, dict):
             continue
@@ -745,7 +747,7 @@ def _build_page6_context(workspace: Optional[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _tally_status(totals: dict[str, int], status: Optional[str]) -> None:
-    totals["openings"] += 1
+    totals["questions"] += 1
     if status in {"satisfactory", "mixed", "unsatisfactory", "unasked"}:
         totals[status] += 1
     else:
@@ -805,8 +807,8 @@ def _default_followups(context: dict[str, Any]) -> list[str]:
 
     if current_page == "page6" or workflow_stage == "completed":
         return [
-            "Summarize the final interview outcome",
-            "Compare the final outcome with the earlier report",
+            "Summarize the interview evaluation",
+            "Compare the evaluation summary with the earlier application review",
             "Which themes held up after the interview?",
         ]
     if workflow_stage == "live_interview":
@@ -818,14 +820,14 @@ def _default_followups(context: dict[str, Any]) -> list[str]:
     if workflow_stage == "postgame":
         return [
             "What gaps remain in the interview notes?",
-            "Help me tighten the final summary",
+            "Help me polish the overall evaluation",
             "Which question outcomes look mixed or unresolved?",
         ]
     if current_page == "page5":
         return [
-            "How should I use these openings in the interview?",
-            "Which opening group should I prioritize first?",
-            "What follow-ups would deepen one of these openings?",
+            "How should I use these question sets in the interview?",
+            "Which question set should I prioritize first?",
+            "What follow-ups would deepen one of these question sets?",
         ]
     if current_page == "page4":
         return [
@@ -834,7 +836,7 @@ def _default_followups(context: dict[str, Any]) -> list[str]:
             "How should these themes shape the interview?",
         ]
     return [
-        "What stands out across this report?",
+        "What stands out across this application review?",
         "How should I use this in the interview?",
         "Which page should I review next?",
     ]
@@ -856,7 +858,7 @@ def _summarize_academics(page2: dict[str, Any], *, question: str | None = None) 
                     matched_record.get("grading_mode"),
                 )
                 if score:
-                    return f"The {specific_level} result in the report is {score}."
+                    return f"The {specific_level} result in the application review is {score}."
 
     parts: list[str] = []
     for entry in records[:4]:
@@ -899,7 +901,7 @@ def _summarize_tests(page2: dict[str, Any]) -> str:
         name = _safe_string(entry.get("test_name")) or "test"
         score = _safe_string(entry.get("total_score")) or _safe_string(entry.get("percentile")) or _safe_string(entry.get("rank"))
         parts.append(f"{name}{f' ({score})' if score else ''}")
-    return "The report lists test results including " + ", ".join(parts) + "."
+    return "The application review lists test results including " + ", ".join(parts) + "."
 
 
 def _summarize_activities(page2: dict[str, Any]) -> str:
@@ -943,19 +945,19 @@ def _page_name_from_key(page_key: str) -> str:
     if page_key in PAGE_MAP:
         return f"{PAGE_MAP[page_key]['label']} {PAGE_MAP[page_key]['name']}"
     if page_key == "configure":
-        return "the configure workspace"
+        return "the Interview Plan"
     if page_key == "overlay":
-        return "the interview overlay"
+        return "the Live Interview"
     if page_key == "postgame":
-        return "the postgame workspace"
-    return "the report"
+        return "the Interview Evaluation"
+    return "the Application Review"
 
 
 def _stage_label(stage: str) -> str:
     if stage == "live_interview":
-        return "live interview"
+        return "Live Interview"
     if stage == "postgame":
-        return "postgame"
+        return "Interview Evaluation"
     if stage == "completed":
-        return "completed"
-    return "prep"
+        return "completed evaluation"
+    return "Interview Plan"

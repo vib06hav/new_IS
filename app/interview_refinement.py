@@ -105,10 +105,12 @@ def _build_question_note_context(
                 return "\n".join(
                     [
                         f"Focus area: {theme.title or theme.question_group_title}",
-                        f"Group label: {theme.question_group_title}",
-                        f"Line of inquiry: {theme.interview_direction}",
-                        f"Question: {question.text}",
-                        f"Question status: {question.status}",
+                        f"Question set label: {theme.question_group_title}",
+                        f"Interview focus: {theme.interview_direction}",
+                        f"Interview question asked to the applicant: {question.text}",
+                        f"Question outcome: {question.status}",
+                        "Target text type: interviewer-authored response note about the applicant's answer.",
+                        "Important: polish the note itself, not the interview question.",
                     ]
                 )
 
@@ -136,11 +138,13 @@ def _build_follow_up_context(
                     return "\n".join(
                         [
                             f"Focus area: {theme.title or theme.question_group_title}",
-                            f"Group label: {theme.question_group_title}",
-                            f"Line of inquiry: {theme.interview_direction}",
-                            f"Question: {question.text}",
-                            f"Follow-up status: {follow_up.status}",
-                            f"Follow-up text: {follow_up.text}",
+                            f"Question set label: {theme.question_group_title}",
+                            f"Interview focus: {theme.interview_direction}",
+                            f"Interview question asked to the applicant: {question.text}",
+                            f"Follow-up asked to the applicant: {follow_up.text}",
+                            f"Follow-up outcome: {follow_up.status}",
+                            "Target text type: interviewer-authored follow-up response note about the applicant's answer.",
+                            "Important: polish the note itself, not the follow-up prompt.",
                         ]
                     )
 
@@ -152,17 +156,17 @@ def _build_final_summary_context(content: InterviewWorkspaceContent) -> str:
     for theme_index, theme in enumerate(content.themes, start=1):
         lines.append(f"Focus Area {theme_index}: {theme.title or theme.question_group_title}")
         if theme.question_group_title:
-            lines.append(f"Group label: {theme.question_group_title}")
+            lines.append(f"Question set label: {theme.question_group_title}")
         if theme.interview_direction:
-            lines.append(f"Line of inquiry: {theme.interview_direction}")
+            lines.append(f"Interview focus: {theme.interview_direction}")
         for question_index, question in enumerate(sorted(theme.questions, key=lambda item: item.order), start=1):
-            lines.append(f"- Question {question_index} [{question.status}]: {question.text}")
+            lines.append(f"- Interview question {question_index} [{question.status}]: {question.text}")
             if question.note:
-                lines.append(f"  Note: {question.note}")
+                lines.append(f"  Response note: {question.note}")
             for follow_up_index, follow_up in enumerate(sorted(question.follow_ups, key=lambda item: item.order), start=1):
                 lines.append(f"  Follow-up {follow_up_index} [{follow_up.status}]: {follow_up.text}")
                 if follow_up.note:
-                    lines.append(f"    Note: {follow_up.note}")
+                    lines.append(f"    Follow-up response note: {follow_up.note}")
     return "\n".join(lines) if lines else "No interview details were recorded."
 
 
@@ -174,24 +178,36 @@ def _build_refinement_messages(
     context: str,
 ) -> list[dict[str, str]]:
     mode_label = {
-        "question_note": "question note",
-        "follow_up_note": "follow-up note",
-        "final_summary": "final interview summary",
+        "question_note": "response note",
+        "follow_up_note": "follow-up response note",
+        "final_summary": "overall evaluation",
     }[mode]
     system_prompt = (
-        "You are refining interviewer-authored admissions interview notes. "
+        "You are polishing interviewer-authored admissions interview writing. "
         "Your job is to improve clarity, structure, and phrasing while staying grounded in the text and context provided. "
+        "Preserve the original speech act and function of the text. "
+        "If the source is a note, keep it a note. If the source is an evaluation, keep it evaluative. "
+        "Do not rewrite interviewer notes into interview questions or prompts. "
         "Do not invent evidence, claims, judgments, or specifics not supported by the source text and context. "
-        "You may modestly expand emphasis only when the instruction explicitly asks for it. "
-        "Return only the refined text, with no preamble."
+        "Do not upgrade certainty, exaggerate conclusions, or add new interpretation beyond the original text. "
+        "Preserve the interviewer's degree of certainty, hesitation, ambiguity, and unresolved thinking. "
+        "If the source text is tentative, conflicted, local, rough, or observational, keep those qualities while making it easier to read. "
+        "Do not round tentative judgments into firmer conclusions, and do not resolve ambiguity that the interviewer left unresolved. "
+        "Do not smooth first-person or provisional language into a more institutional, formal, or authoritative judgment unless the source already clearly does that. "
+        "When the source text and surrounding context pull in slightly different directions, prefer the source text's stance, caution level, and scope. "
+        "You may modestly improve emphasis only when the instruction explicitly asks for it. "
+        "Return only the polished text, with no preamble."
     )
-    instruction_line = instruction if instruction else "No extra instruction was provided. Focus on clarity and structure only."
+    instruction_line = instruction if instruction else "No extra instruction was provided. Focus on clarity, structure, and intent preservation only."
     user_prompt = (
-        f"Refine this {mode_label}.\n\n"
+        f"Polish this {mode_label}.\n\n"
         f"Context:\n{context}\n\n"
         f"Original text:\n{text}\n\n"
         f"Instruction:\n{instruction_line}\n\n"
-        "Keep the meaning grounded in the original. Use paragraphs or bullets only if they improve readability."
+        "Keep the meaning grounded in the original. Preserve whether the source is a note or an evaluation. "
+        "Preserve the original level of certainty and unresolvedness. "
+        "Do not make the writer sound more decisive, polished, or conclusive than they actually were. "
+        "Use paragraphs or bullets only if they improve readability."
     )
     return [
         {"role": "system", "content": system_prompt},
