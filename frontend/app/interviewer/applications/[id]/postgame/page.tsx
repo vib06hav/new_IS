@@ -37,14 +37,14 @@ export default function InterviewPostgamePage() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Interview Notes</p>
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Finalize interview report</h1>
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Post-Interview Review</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Complete Interview Evaluation</h1>
           </div>
           <Link
             className="inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
             href={`/interviewer/applications/${params.id}`}
           >
-            Back to report
+            Back to application review
           </Link>
         </div>
 
@@ -62,10 +62,10 @@ export default function InterviewPostgamePage() {
               workflowStage="postgame"
               availableActions={[
                 "review question outcomes",
-                "edit question and follow-up notes",
+                "edit response notes",
                 "add custom questions",
-                "tighten the final summary",
-                "publish final interview report",
+                "polish the overall evaluation",
+                "submit interview evaluation",
                 "save review",
               ]}
             />

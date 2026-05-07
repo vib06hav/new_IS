@@ -88,15 +88,15 @@ export default function InterviewerDashboardPage() {
     try {
       if (nextHidden) {
         await hideMyApplication(applicationId);
-        setMessage("Report hidden from your dashboard.");
+        setMessage("Application hidden from your dashboard.");
       } else {
         await unhideMyApplication(applicationId);
-        setMessage("Report restored to your dashboard.");
+        setMessage("Application restored to your dashboard.");
       }
 
       await loadApplications();
     } catch (toggleError) {
-      setError(toggleError instanceof Error ? toggleError.message : "Failed to update report visibility.");
+      setError(toggleError instanceof Error ? toggleError.message : "Failed to update application visibility.");
     } finally {
       setHiddenBusyAppId(null);
     }
@@ -111,7 +111,7 @@ export default function InterviewerDashboardPage() {
               <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-slate-500">
                 <span className="inline-flex items-center gap-2 text-slate-800">
                   <Stars className="size-3.5" />
-                  Interviewer workspace
+                  Interview workflow
                 </span>
               </div>
               <div className="mt-5 space-y-4">
@@ -119,10 +119,10 @@ export default function InterviewerDashboardPage() {
                   className="max-w-4xl text-5xl font-black leading-[1.04] tracking-tight text-slate-800 md:text-[3.5rem]"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
-                  Your Reports
+                  Your Interviews
                 </h3>
                 <p className="max-w-3xl text-base leading-[1.6] text-slate-600">
-                  Open your assigned reports and hide reports from your personal workspace when you need a cleaner queue.
+                  Open your assigned applications and hide items from your queue when you need a cleaner view.
                 </p>
               </div>
             </div>
@@ -203,28 +203,28 @@ function getFilterActiveClasses(status: (typeof REPORT_STATUSES)[number]) {
 function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
   if (status === "ALL") {
     return {
-      title: "No visible reports right now.",
-      description: "Assigned reports will appear here once they are available.",
+      title: "No visible interviews right now.",
+      description: "Assigned applications will appear here once they are available.",
     };
   }
 
   if (status === "ASSIGNED") {
     return {
-      title: "No assigned reports yet.",
-      description: "Reports currently routed to you will appear here.",
+      title: "No assigned interviews yet.",
+      description: "Applications currently routed to you will appear here.",
     };
   }
 
   if (status === "COMPLETE") {
     return {
-      title: "No completed reports yet.",
-      description: "Finalized interview reports will appear here once your post-interview workflow is done.",
+      title: "No completed evaluations yet.",
+      description: "Completed interview evaluations will appear here once your post-interview workflow is done.",
     };
   }
 
   return {
-    title: "No hidden reports yet.",
-    description: "Reports you hide from the main view will appear here.",
+    title: "No hidden applications yet.",
+    description: "Applications you hide from the main view will appear here.",
   };
 }
 

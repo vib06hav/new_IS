@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Interview Standardiser",
-  description: "Structured interview preparation and review workspace.",
+  description: "Structured interview review, planning, and evaluation workflow.",
 };
 
 export default function RootLayout({

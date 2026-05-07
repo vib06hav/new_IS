@@ -84,7 +84,7 @@ function AdminReportsContent() {
       setLlmCapacity(capacity);
       setError(null);
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Failed to load reports.");
+      setError(loadError instanceof Error ? loadError.message : "Failed to load applications.");
     } finally {
       setLoading(false);
     }
@@ -134,11 +134,11 @@ function AdminReportsContent() {
     try {
       const report = items.find((item) => item.id === applicationId);
       await generateReport(applicationId);
-      setMessage("Final report generated.");
+      setMessage("Interview brief generated.");
 
       await loadData();
     } catch (generationError) {
-      setError(generationError instanceof Error ? generationError.message : "Final report generation failed.");
+      setError(generationError instanceof Error ? generationError.message : "Interview brief generation failed.");
     } finally {
       setGeneratingAppId(null);
     }
@@ -152,15 +152,15 @@ function AdminReportsContent() {
 
       if (nextHidden) {
         await hideApplication(applicationId);
-        setMessage("Report hidden.");
+        setMessage("Application hidden.");
       } else {
         await unhideApplication(applicationId);
-        setMessage("Report restored.");
+        setMessage("Application restored.");
       }
 
       await loadData();
     } catch (toggleError) {
-      setError(toggleError instanceof Error ? toggleError.message : "Failed to update report visibility.");
+      setError(toggleError instanceof Error ? toggleError.message : "Failed to update application visibility.");
     } finally {
       setHiddenBusyAppId(null);
     }
@@ -172,7 +172,7 @@ function AdminReportsContent() {
       return;
     }
 
-    if (!window.confirm(`Delete report ${report.display_id}? This cannot be undone.`)) {
+    if (!window.confirm(`Delete application ${report.display_id}? This cannot be undone.`)) {
       return;
     }
 
@@ -181,10 +181,10 @@ function AdminReportsContent() {
     setError(null);
     try {
       await deleteApplication(applicationId);
-      setMessage("Report deleted.");
+      setMessage("Application deleted.");
       await loadData();
     } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "Failed to delete report.");
+      setError(deleteError instanceof Error ? deleteError.message : "Failed to delete application.");
     } finally {
       setDeletingAppId(null);
     }
@@ -268,10 +268,10 @@ function AdminReportsContent() {
                     className="max-w-4xl text-3xl md:text-4xl font-black tracking-tight text-slate-800 leading-none"
                     style={{ fontFamily: "var(--font-reports-display)" }}
                   >
-                    Reports Dashboard
+                    Applications Dashboard
                   </h1>
                   <p className="max-w-3xl text-sm text-slate-600 leading-relaxed">
-                    Monitor the status of interview reports, manage assignments, and track generation capacity across the pipeline.
+                    Monitor application status, manage assignments, and track interview brief generation across the pipeline.
                   </p>
                 </div>
               </div>
@@ -323,7 +323,7 @@ function AdminReportsContent() {
         {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-700">{error}</p> : null}
 
         {loading ? (
-          <Loader label="Loading reports..." />
+          <Loader label="Loading applications..." />
         ) : filteredItems.length === 0 ? (
           <ReportsEmptyState statusFilter={statusFilter} />
         ) : (
@@ -379,42 +379,42 @@ function getFilterActiveClasses(status: (typeof REPORT_STATUSES)[number]) {
 function getEmptyStateCopy(status: (typeof REPORT_STATUSES)[number]) {
   if (status === "ALL") {
     return {
-      title: "No visible reports right now.",
-      description: "Generated reports will appear here once they move into review-ready states.",
+      title: "No visible applications right now.",
+      description: "Generated interview briefs will appear here once applications move into review-ready states.",
     };
   }
 
   if (status === "PROCESSED") {
     return {
-      title: "No processed reports yet.",
-      description: "Reports with Pages 1-3 ready and waiting for synthesis will appear here.",
+      title: "No processed applications yet.",
+      description: "Applications with Pages 1-3 ready and waiting for synthesis will appear here.",
     };
   }
 
   if (status === "READY") {
     return {
-      title: "No ready reports yet.",
-      description: "Reports ready for assignment will appear here.",
+      title: "No ready applications yet.",
+      description: "Applications ready for assignment will appear here.",
     };
   }
 
   if (status === "ASSIGNED") {
     return {
-      title: "No assigned reports yet.",
-      description: "Reports currently owned by an interviewer will appear here.",
+      title: "No assigned applications yet.",
+      description: "Applications currently owned by an interviewer will appear here.",
     };
   }
 
   if (status === "COMPLETE") {
     return {
-      title: "No complete reports yet.",
-      description: "Finalized post-interview reports will appear here.",
+      title: "No completed evaluations yet.",
+      description: "Submitted interview evaluations will appear here.",
     };
   }
 
   return {
-    title: "No hidden reports yet.",
-    description: "Reports you hide from the main view will appear here.",
+    title: "No hidden applications yet.",
+    description: "Applications you hide from the main view will appear here.",
   };
 }
 

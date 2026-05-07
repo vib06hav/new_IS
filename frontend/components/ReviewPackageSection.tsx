@@ -57,8 +57,8 @@ export function ReviewPackageSection({
     { value: "page3", label: "Writing", meta: "Essays and excerpts" },
     ...(hasSynthesisContent
       ? [
-          { value: "page4" as const, label: "Focus Areas", meta: "Interviewer synthesis" },
-          { value: "page5" as const, label: "Question Groups", meta: "Live interview sheet" },
+          { value: "page4" as const, label: "Focus Areas", meta: "Interview brief" },
+          { value: "page5" as const, label: "Question Sets", meta: "Interview prompts" },
         ]
       : []),
   ];
@@ -95,7 +95,7 @@ export function ReviewPackageSection({
           <SynthesisReportSection
             report={annotationSource}
             title="Focus Areas"
-            description="Interviewer-facing synthesis of what is worth spending time on."
+            description="Synthesized focus areas for interview preparation."
             initialTab="page4"
             hideInternalTabs
           />
@@ -103,8 +103,8 @@ export function ReviewPackageSection({
         {activeTab === "page5" && annotationSource ? (
           <SynthesisReportSection
             report={annotationSource}
-            title="Question Groups"
-            description="Lean live-interview question groups derived from the synthesized focus areas."
+            title="Question Sets"
+            description="Grouped interview questions derived from the focus areas."
             initialTab="page5"
             hideInternalTabs
           />

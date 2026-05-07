@@ -36,11 +36,11 @@ export function openInterviewPopup(applicationId: string) {
 export function openInterviewPopupPlaceholder(applicationId: string) {
   const popup = window.open("", `interview-overlay-${applicationId}`, buildPopupFeatures());
   if (popup) {
-    popup.document.title = "Opening interview overlay...";
+    popup.document.title = "Opening live interview...";
     popup.document.body.style.margin = "0";
     popup.document.body.style.fontFamily = "system-ui, sans-serif";
     popup.document.body.innerHTML =
-      "<div style='padding:24px;color:#0f172a;background:#f8fafc;min-height:100vh;'>Opening interview overlay...</div>";
+      "<div style='padding:24px;color:#0f172a;background:#f8fafc;min-height:100vh;'>Opening live interview...</div>";
     popup.focus();
   }
   return popup;

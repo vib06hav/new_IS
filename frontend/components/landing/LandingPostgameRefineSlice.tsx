@@ -76,18 +76,14 @@ export function LandingPostgameRefineSlice() {
                 <StatusOption icon={<XCircle className="size-3.5" />} label="Unsatisfied" tone="rose" />
               </div>
 
-              <TextAreaField
-                label="Question note"
-                rows={2}
-                value="Clear debugging sequence with good ownership of the problem."
-              />
+              <TextAreaField label="Response Note" rows={2} value="Clear debugging sequence with good ownership of the problem." />
 
               <button
                 className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 transition hover:text-blue-800"
                 type="button"
               >
                 <Sparkles className="size-3.5" />
-                Refine
+                Polish
               </button>
             </div>
           </div>

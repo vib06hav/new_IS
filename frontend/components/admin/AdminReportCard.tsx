@@ -155,11 +155,11 @@ export function AdminReportCard({
                 <PencilLine className="size-4" />
               </button>
               <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-[#49536B] transition-colors duration-200 hover:bg-[#E6E9F0] disabled:opacity-55" disabled={isHiddenBusy} onClick={() => { setOverflowOpen(false); onToggleHidden(); }} type="button">
-                <span>{isHiddenBusy ? "Saving..." : item.is_hidden ? "Unhide report" : "Hide report"}</span>
+                <span>{isHiddenBusy ? "Saving..." : item.is_hidden ? "Unhide application" : "Hide application"}</span>
                 {item.is_hidden ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
               </button>
               <button className="flex w-full items-center justify-between rounded-[0.8rem] px-3 py-2 text-left text-sm font-medium text-[#AF3030] transition-colors duration-200 hover:bg-[#F4DDDD] disabled:opacity-55" disabled={isDeleting} onClick={() => { setOverflowOpen(false); onDelete(); }} type="button">
-                <span>{isDeleting ? "Deleting..." : "Delete report"}</span>
+                <span>{isDeleting ? "Deleting..." : "Delete application"}</span>
                 <Trash2 className="size-4" />
               </button>
             </div>
@@ -181,13 +181,13 @@ export function AdminReportCard({
 
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-            {canGenerate ? "Report generation" : item.status === "COMPLETE" ? "Final interview report" : "Assignment"}
+            {canGenerate ? "Interview brief generation" : item.status === "COMPLETE" ? "Interview evaluation" : "Assignment"}
           </p>
           <div className="mt-3 flex flex-col gap-3">
             {canGenerate ? (
               <div className="space-y-3">
                 <div className="text-xs text-slate-500">
-                  Generate Pages 4-5 to move this report into the ready queue.
+                  Generate Pages 4-5 to move this application into the ready queue.
                 </div>
                 <button
                   className="w-full rounded-full bg-blue-700 px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-45"
@@ -195,7 +195,7 @@ export function AdminReportCard({
                   onClick={onGenerate}
                   type="button"
                 >
-                  {isGenerating ? "Generating..." : generationCapacityFull ? "Generation full" : "Generate report"}
+                  {isGenerating ? "Generating..." : generationCapacityFull ? "Generation full" : "Generate interview brief"}
                 </button>
               </div>
             ) : canMutateAssignment ? (
@@ -304,7 +304,7 @@ export function AdminReportCard({
                 )}
 
                 {item.status === "COMPLETE" && (
-                  <p className="text-[10px] text-slate-500 italic">Interview complete. Open the report to review the final summary.</p>
+                  <p className="text-[10px] text-slate-500 italic">Interview complete. Open the application to review the submitted evaluation.</p>
                 )}
               </div>
             )}

@@ -23,7 +23,7 @@ export default function ConfigureInterviewPage() {
         try {
           data = await fetchInterviewWorkspace(params.id);
         } catch (loadError) {
-          const message = loadError instanceof Error ? loadError.message : "Unable to open interview workspace.";
+          const message = loadError instanceof Error ? loadError.message : "Unable to open interview plan.";
           if (message === "Interview workspace not found" || message === "404 Not Found") {
             data = await createInterviewWorkspace(params.id);
           } else {
@@ -33,7 +33,7 @@ export default function ConfigureInterviewPage() {
         setWorkspace(data);
         setError(null);
       } catch (loadError) {
-        setError(loadError instanceof Error ? loadError.message : "Unable to open interview workspace.");
+        setError(loadError instanceof Error ? loadError.message : "Unable to open interview plan.");
       } finally {
         setLoading(false);
       }
@@ -48,17 +48,17 @@ export default function ConfigureInterviewPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Interviewer prep</p>
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Configure interview workspace</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Build Interview Plan</h1>
           </div>
           <Link
             className="inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
             href={`/interviewer/applications/${params.id}`}
           >
-            Back to report
+            Back to application review
           </Link>
         </div>
 
-        {loading ? <Loader label="Loading interview workspace..." /> : null}
+        {loading ? <Loader label="Loading interview plan..." /> : null}
         {!loading && error ? (
           <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p>
         ) : null}
@@ -72,10 +72,10 @@ export default function ConfigureInterviewPage() {
               workflowStage="prep"
               availableActions={[
                 "review Pages 1-5",
-                "refine themes",
+                "polish focus areas",
                 "edit questions",
                 "add custom prompts",
-                "launch overlay",
+                "start live interview",
                 "save draft",
               ]}
             />

@@ -89,10 +89,10 @@ export function LandingAdminControlLayer() {
             className="max-w-4xl text-3xl font-black leading-none tracking-tight text-slate-800 md:text-4xl"
             style={{ fontFamily: "var(--font-reports-display)" }}
           >
-            Reports Dashboard
+            Applications Dashboard
           </h3>
           <p className="max-w-3xl text-sm leading-relaxed text-slate-600">
-            Assign interviewers, generate Pages 4-5, and review completed reports from one control layer.
+            Assign interviewers, generate Pages 4-5, and review completed evaluations from one control layer.
           </p>
         </div>
       </section>

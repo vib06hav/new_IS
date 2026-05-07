@@ -56,11 +56,11 @@ export function InterviewWorkspaceEditor({
   const [message, setMessage] = useState<string | null>(null);
   const [draftRestored, setDraftRestored] = useState(() => Boolean(readInterviewDraft(applicationId, mode)));
 
-  const pageTitle = mode === "configure" ? "Configure Interview" : "Interview Feedback";
+  const pageTitle = mode === "configure" ? "Interview Plan" : "Interview Evaluation";
   const subtitle =
     mode === "configure"
-      ? "Refine question groups, adjust the line of inquiry, and add custom questions before launching the overlay."
-      : "Review each question group, capture interview outcomes, and publish the final interview report.";
+      ? "Polish question sets, adjust the interview focus, and add custom questions before starting the live interview."
+      : "Review each question set, capture interview outcomes, and submit the interview evaluation.";
   const canLaunch = workspace.content.themes.some((theme) => theme.questions.length > 0) && workspace.status !== "completed";
   const completionCounts = useMemo(() => {
     const allTrackedItems = flattenWorkspaceItems(workspace);
@@ -246,7 +246,7 @@ export function InterviewWorkspaceEditor({
       if (isApiErrorStatus(saveError, [401, 403])) {
         handleAuthFailure("workspace save", saveError);
       } else {
-        setError(saveError instanceof Error ? saveError.message : "Unable to save interview workspace.");
+        setError(saveError instanceof Error ? saveError.message : "Unable to save interview plan.");
       }
     } finally {
       setSaving(false);
@@ -276,7 +276,7 @@ export function InterviewWorkspaceEditor({
       }
     }
     if (mode === "postgame" && !(workspace.content.final_summary || "").trim()) {
-      return "The final summary is empty. Please fill it out.";
+      return "The overall evaluation is empty. Please fill it out.";
     }
     return null;
   }
@@ -313,14 +313,14 @@ export function InterviewWorkspaceEditor({
         window.location.href = `/interviewer/applications/${applicationId}/overlay`;
         return;
       }
-      setMessage("Interview overlay opened.");
+      setMessage("Live interview opened.");
       router.push(`/interviewer/applications/${applicationId}`);
     } catch (launchError) {
       popup?.close();
       if (isApiErrorStatus(launchError, [401, 403])) {
         handleAuthFailure("workspace launch", launchError);
       } else {
-        setError(launchError instanceof Error ? launchError.message : "Unable to launch interview overlay.");
+        setError(launchError instanceof Error ? launchError.message : "Unable to start the live interview.");
       }
     } finally {
       setLaunching(false);
@@ -353,13 +353,13 @@ export function InterviewWorkspaceEditor({
       });
       clearInterviewDraft(applicationId, mode);
       setDraftRestored(false);
-      setMessage("Final interview report published.");
+      setMessage("Interview evaluation submitted.");
       router.push(`/interviewer/applications/${applicationId}`);
     } catch (publishError) {
       if (isApiErrorStatus(publishError, [401, 403])) {
         handleAuthFailure("workspace publish", publishError);
       } else {
-        setError(publishError instanceof Error ? publishError.message : "Unable to publish final interview report.");
+        setError(publishError instanceof Error ? publishError.message : "Unable to submit the interview evaluation.");
       }
     } finally {
       setPublishing(false);
@@ -390,12 +390,12 @@ export function InterviewWorkspaceEditor({
               {mode === "configure" ? (
                 <Button disabled={!canLaunch || launching} onClick={() => void handleLaunch()} size="sm">
                   <Rocket className="size-4" />
-                  {launching ? "Launching..." : "Launch overlay"}
+                  {launching ? "Launching..." : "Start live interview"}
                 </Button>
               ) : (
                 <Button disabled={publishing} onClick={() => void handlePublish()} size="sm">
                   <CheckCircle2 className="size-4" />
-                  {publishing ? "Publishing..." : "Publish final interview report"}
+                  {publishing ? "Publishing..." : "Submit interview evaluation"}
                 </Button>
               )}
             </div>
@@ -432,7 +432,7 @@ export function InterviewWorkspaceEditor({
                   {mode === "configure" || (mode === "postgame" && isCustomTheme) ? (
                     <>
                       <TextInputField
-                        label={isCustomTheme ? "Focus area title" : "Question group label"}
+                        label={isCustomTheme ? "Focus area title" : "Question set label"}
                         onChange={(value) =>
                           updateTheme(theme.id, (current) => ({
                             ...current,
@@ -459,7 +459,7 @@ export function InterviewWorkspaceEditor({
                   ) : (
                     <>
                       <h2 className="text-xl font-semibold tracking-tight text-slate-900">{theme.title || "Untitled focus area"}</h2>
-                      <p className="text-sm font-semibold text-slate-700">{theme.question_group_title || "Question group"}</p>
+                      <p className="text-sm font-semibold text-slate-700">{theme.question_group_title || "Question set"}</p>
                     </>
                   )}
                 </div>
@@ -535,7 +535,7 @@ export function InterviewWorkspaceEditor({
                                 onChange={(status) => updateQuestion(theme.id, question.id, (current) => ({ ...current, status }))}
                               />
                               <TextAreaField
-                                label="Question note"
+                                label="Response Note"
                                 onChange={(value) => updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))}
                                 rows={4}
                                 value={question.note}
@@ -603,7 +603,7 @@ export function InterviewWorkspaceEditor({
                                           />
                                           <div>
                                             <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                                              Follow-up note
+                                              Follow-up Response Note
                                             </span>
                                             <TextAreaField
                                               label=""
@@ -660,7 +660,7 @@ export function InterviewWorkspaceEditor({
       </section>
 
       {mode === "postgame" ? (
-        <Card title="Final summary">
+        <Card title="Overall Evaluation">
           <div className="space-y-4">
             <TextAreaField
               label=""
@@ -727,7 +727,7 @@ function createCustomTheme(themeId: string): InterviewWorkspaceTheme {
     interview_direction: "",
     territory: "",
     what_makes_it_worth_time: "",
-    question_group_title: themeId === CUSTOM_THEME_ID ? CUSTOM_THEME_TITLE : "Custom question group",
+    question_group_title: themeId === CUSTOM_THEME_ID ? CUSTOM_THEME_TITLE : "Custom question set",
     questions: themeId === CUSTOM_THEME_ID ? [] : [createQuestion(themeId, 0, "custom")],
   });
 }
@@ -739,7 +739,7 @@ function hydrateTheme(theme: InterviewWorkspaceTheme): InterviewWorkspaceTheme {
     interview_direction: theme.interview_direction || "",
     territory: theme.territory || "",
     what_makes_it_worth_time: theme.what_makes_it_worth_time || "",
-    question_group_title: theme.question_group_title || "Question group",
+    question_group_title: theme.question_group_title || "Question set",
     questions: (theme.questions || []).map((question, index) => ({
       ...question,
       text: question.text || "",
@@ -972,7 +972,7 @@ function RefinementControls({
 
   async function handleRefine() {
     if (!currentValue.trim()) {
-      setError("Add some text before running refinement.");
+      setError("Add some text before polishing.");
       return;
     }
 
@@ -990,7 +990,7 @@ function RefinementControls({
       });
       setPreview(response.refined_text);
     } catch (refineError) {
-      setError(refineError instanceof Error ? refineError.message : "Unable to refine this text right now.");
+      setError(refineError instanceof Error ? refineError.message : "Unable to polish this text right now.");
     } finally {
       setLoading(false);
     }
@@ -1011,7 +1011,7 @@ function RefinementControls({
           type="button"
         >
           <Sparkles className="size-3.5" />
-          {loading ? "Refining..." : "Refine"}
+          {loading ? "Polishing..." : "Polish"}
         </button>
         <button
           className="text-xs font-medium text-slate-500 transition hover:text-slate-700"

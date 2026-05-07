@@ -1,6 +1,6 @@
 import { ArrowRight, MessageSquareText, Sparkles } from "lucide-react";
 
-const SOURCES = ["Page 4 - Focus Areas", "Page 5 - Questions", "Page 2 - Activities"];
+const SOURCES = ["Page 4 - Focus Areas", "Page 5 - Question Sets", "Page 2 - Activities"];
 const FOLLOWUPS = [
   "Summarize the focus area",
   "What should I ask next?",
@@ -13,7 +13,7 @@ export function LandingReportChatSlice() {
       <div className="border-b border-slate-200 px-4 py-2">
         <span className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-blue-700">
           <Sparkles className="size-3.5" />
-          Report Copilot
+          Interview Copilot
         </span>
       </div>
 
@@ -38,12 +38,12 @@ export function LandingReportChatSlice() {
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">Answer</span>
             <span className="inline-flex rounded-full border border-slate-200 bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-600">
-              Report insight
+              Interview insight
             </span>
           </div>
 
           <p className="mt-3 text-sm leading-7 text-slate-900">
-            Start by testing the gap between stated interest and demonstrated execution. The report shows
+            Start by testing the gap between stated interest and demonstrated execution. The application review shows
             strong motivation and conceptual clarity, but the interview should probe for hands-on building,
             concrete project ownership, and how the candidate works through technical problems in practice.
           </p>

@@ -21,7 +21,7 @@ export default function InterviewOverlayPage() {
         setWorkspace(data);
         setError(null);
       } catch (loadError) {
-        setError(loadError instanceof Error ? loadError.message : "Unable to open interview overlay.");
+        setError(loadError instanceof Error ? loadError.message : "Unable to open the live interview.");
       } finally {
         setLoading(false);
       }
@@ -32,7 +32,7 @@ export default function InterviewOverlayPage() {
 
   return (
     <div>
-      {loading ? <Loader label="Loading interview overlay..." /> : null}
+      {loading ? <Loader label="Loading live interview..." /> : null}
       {!loading && error ? (
         <div className="min-h-screen bg-slate-50 p-4">
           <p className="rounded-[1.2rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p>

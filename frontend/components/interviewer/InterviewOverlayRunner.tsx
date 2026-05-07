@@ -111,9 +111,9 @@ export function InterviewOverlayRunner({
             state: authState,
             error: saveError instanceof Error ? saveError.message : "Unknown auth error",
           });
-          setError("Session expired while the overlay was autosaving. Your draft was preserved locally. Sign in again, then reopen or resume autosave.");
+          setError("Session expired while the live interview was autosaving. Your draft was preserved locally. Sign in again, then reopen or resume autosave.");
         } else {
-          setError(saveError instanceof Error ? saveError.message : "Unable to autosave interview overlay.");
+          setError(saveError instanceof Error ? saveError.message : "Unable to autosave the live interview.");
         }
       }
     }, 500);
@@ -250,7 +250,7 @@ export function InterviewOverlayRunner({
   async function handleResumeAutosave() {
     const sessionReady = authState === "authenticated" ? true : await ensureWorkflowSession();
     if (!sessionReady) {
-      setError("Your session is still unavailable. The overlay draft is preserved locally and can be retried after sign-in is restored.");
+      setError("Your session is still unavailable. The live interview draft is preserved locally and can be retried after sign-in is restored.");
       return;
     }
 
@@ -273,7 +273,7 @@ export function InterviewOverlayRunner({
       setSavingState("error");
       if (isApiErrorStatus(saveError, [401, 403])) {
         setAutosaveFrozen(true);
-        setError("Session expired again before the overlay could save. The local draft is still preserved.");
+        setError("Session expired again before the live interview could save. The local draft is still preserved.");
       } else {
         setError(saveError instanceof Error ? saveError.message : "Unable to resume autosave.");
       }
@@ -282,7 +282,7 @@ export function InterviewOverlayRunner({
 
   async function handleFinish() {
     if (!(await ensureWorkflowSession())) {
-      setError("We could not re-establish your session yet. The overlay draft is preserved locally, so you can retry after signing in again.");
+      setError("We could not re-establish your session yet. The live interview draft is preserved locally, so you can retry after signing in again.");
       return;
     }
 
@@ -306,7 +306,7 @@ export function InterviewOverlayRunner({
     } catch (finishError) {
       if (isApiErrorStatus(finishError, [401, 403])) {
         setAutosaveFrozen(true);
-        setError("Your session expired before finishing the interview. The overlay draft has been preserved locally.");
+        setError("Your session expired before finishing the interview. The live interview draft has been preserved locally.");
       } else {
         setError(finishError instanceof Error ? finishError.message : "Unable to finish interview.");
       }
@@ -322,9 +322,9 @@ export function InterviewOverlayRunner({
           <div className="space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h1 className="text-xl font-semibold tracking-tight text-slate-900">Interview overlay</h1>
+                <h1 className="text-xl font-semibold tracking-tight text-slate-900">Live Interview</h1>
                 <p className="mt-1 text-sm text-slate-600">
-                  Track question groups, capture quick notes, and add follow-ups without leaving the conversation.
+                  Track question sets, capture quick notes, and add follow-ups without leaving the conversation.
                 </p>
               </div>
               <Button disabled={finishBusy} onClick={() => void handleFinish()} size="sm">
@@ -341,7 +341,7 @@ export function InterviewOverlayRunner({
 
         {draftRestored ? (
           <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            A locally preserved overlay draft was restored for this application.
+            A locally preserved live interview draft was restored for this application.
           </p>
         ) : null}
         {error ? (
@@ -444,7 +444,7 @@ export function InterviewOverlayRunner({
                             )}
 
                             <CompactNoteField
-                              label="Question note"
+                              label="Response Note"
                               value={question.note}
                               onChange={(value) => updateQuestion(theme.id, question.id, (current) => ({ ...current, note: value }))}
                             />
@@ -492,7 +492,7 @@ export function InterviewOverlayRunner({
                                         placeholder="Type follow-up"
                                       />
                                       <CompactNoteField
-                                        label="Follow-up note"
+                                        label="Follow-up Response Note"
                                         value={followUp.note}
                                         onChange={(value) =>
                                           updateFollowUp(theme.id, question.id, followUp.id, (current) => ({
@@ -674,7 +674,7 @@ function hydrateTheme(theme: InterviewWorkspaceTheme): InterviewWorkspaceTheme {
     interview_direction: theme.interview_direction || "",
     territory: theme.territory || "",
     what_makes_it_worth_time: theme.what_makes_it_worth_time || "",
-    question_group_title: theme.question_group_title || "Question group",
+    question_group_title: theme.question_group_title || "Question set",
     questions: (theme.questions || []).map((question, index) => ({
       ...question,
       text: question.text || "",

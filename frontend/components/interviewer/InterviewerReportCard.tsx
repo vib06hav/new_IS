@@ -84,7 +84,7 @@ export function InterviewerReportCard({
                 }}
                 type="button"
               >
-                <span>{isHiddenBusy ? "Saving..." : item.is_hidden_for_interviewer ? "Unhide report" : "Hide report"}</span>
+                <span>{isHiddenBusy ? "Saving..." : item.is_hidden_for_interviewer ? "Unhide application" : "Hide application"}</span>
                 {item.is_hidden_for_interviewer ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
               </button>
             </div>
@@ -98,7 +98,7 @@ export function InterviewerReportCard({
         <div className="flex justify-end">
           <PrimaryLink
             href={`/interviewer/applications/${item.id}`}
-            label={item.status === "COMPLETE" ? "View final interview report" : "Open"}
+            label={item.status === "COMPLETE" ? "View evaluation summary" : "Open"}
           />
         </div>
       </div>

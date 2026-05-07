@@ -90,9 +90,9 @@ export default function AdminApplicationDetailPage() {
     : "prep";
 
   const copilotActions = [
-    ...(workflowStage === "prep" ? ["review Pages 1-3", ...(hasFinalReportPages ? ["inspect focus areas", "review interview questions"] : [])] : []),
-    ...(workflowStage === "live_interview" ? ["review interview questions", "suggest follow-ups"] : []),
-    ...(workflowStage === "postgame" || workflowStage === "completed" ? ["review post-interview outcomes", "summarize outcomes"] : []),
+    ...(workflowStage === "prep" ? ["review Pages 1-3", ...(hasFinalReportPages ? ["inspect focus areas", "review question sets"] : [])] : []),
+    ...(workflowStage === "live_interview" ? ["review question sets", "suggest follow-ups"] : []),
+    ...(workflowStage === "postgame" || workflowStage === "completed" ? ["review interview evaluation", "summarize evaluation"] : []),
     "open source PDF",
   ];
   const pageOptions: Array<{ value: ReviewPageTab; label: string; meta: string }> = [
@@ -101,13 +101,13 @@ export default function AdminApplicationDetailPage() {
     { value: "page3", label: "Writing", meta: "Essays and excerpts" },
     ...(hasFinalReportPages
       ? [
-          { value: "page4" as const, label: "Focus Areas", meta: "Themes and signals" },
-          { value: "page5" as const, label: "Questions", meta: "Interview prompts" },
+          { value: "page4" as const, label: "Focus Areas", meta: "Interview brief" },
+          { value: "page5" as const, label: "Question Sets", meta: "Interview prompts" },
         ]
       : []),
     ...(workflowStage === "postgame" || workflowStage === "completed"
       ? [
-          { value: "page6" as const, label: "Final Report", meta: "Post-interview outcomes" },
+          { value: "page6" as const, label: "Evaluation Summary", meta: "Submitted evaluation" },
         ]
       : []),
   ];

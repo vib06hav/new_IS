@@ -133,7 +133,7 @@ export default function LandingPage() {
                   Interviewers start with a structured interview plan
                 </h2>
                 <p className="text-base leading-7 text-slate-600">
-                  Applicant material is turned into focus areas and question groups, so for every application, interviewers begin with direction instead of starting from a blank page.
+                  Applicant material is turned into focus areas and question sets, so for every application, interviewers begin with direction instead of starting from a blank page.
                 </p>
               </div>
 
@@ -157,7 +157,7 @@ export default function LandingPage() {
                   Use a copilot to explore and navigate the workflow
                 </h2>
                 <p className="text-base leading-7 text-slate-600">
-                  Use the copilot to surface key details, clarify focus areas, and get guidance as you move through the report, the live interview, and the final write-up without losing control of the process.
+                  Use the copilot to surface key details, clarify focus areas, and get guidance as you move through the application review, the live interview, and the interview evaluation without losing control of the process.
                 </p>
               </div>
             </div>
@@ -193,10 +193,10 @@ export default function LandingPage() {
                   className="text-3xl font-black tracking-[-0.04em] text-slate-950 md:text-4xl"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
-                  Refine interview notes with AI before finalising
+                  Polish interview notes with AI before finalising
                 </h2>
                 <p className="text-base leading-7 text-slate-600">
-                  Interviewers can edit their notes, refine summaries with AI, and shape the final write-up before it becomes part of the report.
+                  Interviewers can edit their notes, polish evaluations with AI, and shape the final write-up before it becomes part of the evaluation summary.
                 </p>
               </div>
 
@@ -216,7 +216,7 @@ export default function LandingPage() {
                   Every interview produces a consistent, reviewable record
                 </h2>
                 <p className="text-base leading-7 text-slate-600">
-                  The final report carries forward the summary and question outcomes in a format that is easier to review, compare, and revisit later.
+                  The evaluation summary carries forward the overall evaluation and question outcomes in a format that is easier to review, compare, and revisit later.
                 </p>
               </div>
             </div>

@@ -15,7 +15,7 @@ const SECTION_META: Record<ReportChatSectionKey, { pageLabel: string; sectionLab
   page2_leadership: { pageLabel: "Page 2", sectionLabel: "Leadership" },
   page3_essays: { pageLabel: "Page 3", sectionLabel: "Writing" },
   page4_focus_areas: { pageLabel: "Page 4", sectionLabel: "Focus Areas" },
-  page5_interview_openings: { pageLabel: "Page 5", sectionLabel: "Interview Openings" },
+  page5_interview_openings: { pageLabel: "Page 5", sectionLabel: "Question Sets" },
 };
 
 const PAGE_LABELS: Record<ReportChatCurrentPage, string> = {
@@ -23,10 +23,10 @@ const PAGE_LABELS: Record<ReportChatCurrentPage, string> = {
   page2: "Page 2 Academics & Activities",
   page3: "Page 3 Writing",
   page4: "Page 4 Focus Areas",
-  page5: "Page 5 Interview Openings",
-  page6: "Page 6 Final Report",
-  configure: "Configure Workspace",
-  overlay: "Interview Overlay",
+  page5: "Page 5 Question Sets",
+  page6: "Page 6 Evaluation Summary",
+  configure: "Interview Plan",
+  overlay: "Live Interview",
   postgame: "Postgame Review",
 };
 
@@ -47,7 +47,7 @@ export function getReportChatSourceLabel(source: ReportChatSource) {
 }
 
 export function getReportChatPageLabel(currentPage: ReportChatCurrentPage | null | undefined) {
-  if (!currentPage) return "Report";
+  if (!currentPage) return "Interview";
   return PAGE_LABELS[currentPage];
 }
 
@@ -67,8 +67,8 @@ export function getReportCopilotStarters({
 }) {
   if (surfaceType === "final_report" || currentPage === "page6" || workflowStage === "completed") {
     return [
-      "Summarize the final interview outcome",
-      "Compare the final interview report with the earlier report",
+      "Summarize the interview evaluation",
+      "Compare the interview evaluation with the earlier pages",
       "Which themes held up after the interview?",
     ];
   }
@@ -84,15 +84,15 @@ export function getReportCopilotStarters({
   if (surfaceType === "postgame" || workflowStage === "postgame") {
     return [
       "What gaps remain in the interview notes?",
-      "Help me tighten the final summary",
-      "Which interview-opening outcomes look mixed or unresolved?",
+      "Help me polish the overall evaluation",
+      "Which question-set outcomes look mixed or unresolved?",
     ];
   }
 
   if (surfaceType === "configure") {
     return [
-      "How should I prepare from this report?",
-      "Which opening groups should I refine first?",
+      "How should I prepare from this application review?",
+      "Which question sets should I polish first?",
       "What should I ask about this profile?",
     ];
   }
@@ -107,14 +107,14 @@ export function getReportCopilotStarters({
 
   if (currentPage === "page5") {
     return [
-      "How should I use these openings in the interview?",
-      "Which opening group should I prioritize first?",
-      "What follow-ups would deepen one of these openings?",
+      "How should I use these question sets in the interview?",
+      "Which question set should I prioritize first?",
+      "What follow-ups would deepen one of these question sets?",
     ];
   }
 
   return [
-    "What stands out across this report?",
+    "What stands out across this application review?",
     "Summarize this page for me",
     "What should I ask about this student?",
   ];

@@ -43,7 +43,7 @@ type ReportTab = "page4" | "page5";
 
 export function SynthesisReportSection({
   report,
-  title = "Final Report",
+  title = "Interview Brief",
   description,
   initialTab = "page4",
   hideInternalTabs = false,
@@ -71,21 +71,21 @@ export function SynthesisReportSection({
   return (
     <div id={rootAnchorId} className="space-y-5">
       {!hideInternalTabs ? (
-        <Card title={title} description={description || "Structured presentation of synthesized Pages 4-5."}>
+        <Card title={title} description={description || "Structured presentation of the interview brief."}>
           <div className="metric-strip">
             <MetricPill label="Focus Areas" value={focusAreas.length} />
-            <MetricPill label="Question Groups" value={groups.length} />
+            <MetricPill label="Question Sets" value={groups.length} />
             <MetricPill label="Annotations" value={annotationCount} />
           </div>
         </Card>
       ) : null}
 
       <Card
-        title={activeTab === "page4" ? "Focus Areas" : "Question Groups"}
+        title={activeTab === "page4" ? "Focus Areas" : "Question Sets"}
         description={
           activeTab === "page4"
-            ? "Rich interviewer-facing dossier notes generated from the grounded backend structure."
-            : "Lean live-interview question groups generated from the focus areas."
+            ? "Rich interviewer-facing notes generated from the grounded backend structure."
+            : "Grouped interview questions generated from the focus areas."
         }
         eyebrow={null}
       >
@@ -97,7 +97,7 @@ export function SynthesisReportSection({
               onChange={setActiveTab}
               options={[
                 { value: "page4", label: "Page 4", meta: "Focus areas" },
-                { value: "page5", label: "Page 5", meta: "Question groups" },
+                { value: "page5", label: "Page 5", meta: "Question sets" },
               ]}
             />
           ) : null}
@@ -186,7 +186,7 @@ export function SynthesisReportSection({
                             {matchedFocusArea?.title || `Focus Area ${index + 1}`}
                           </p>
                           <h3 className="text-xl font-semibold tracking-[-0.03em] text-[color:var(--ink)]">
-                            {group.group_label || "Question group"}
+                            {group.group_label || "Question set"}
                           </h3>
                           {group.line_of_inquiry ? (
                             <p className="rounded-[1rem] border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-7 text-[color:var(--ink)]">
@@ -212,7 +212,7 @@ export function SynthesisReportSection({
                   );
                 })
               ) : (
-                <EmptyDetail text="No question groups have been generated yet." />
+                <EmptyDetail text="No question sets have been generated yet." />
               )}
             </div>
           )}

@@ -85,7 +85,7 @@ export default function InterviewerApplicationPage() {
       await createInterviewWorkspace(item.id);
       router.push(`/interviewer/applications/${item.id}/configure`);
     } catch (workspaceError) {
-      setError(workspaceError instanceof Error ? workspaceError.message : "Unable to open interview workspace.");
+      setError(workspaceError instanceof Error ? workspaceError.message : "Unable to open interview plan.");
     } finally {
       setWorkspaceBusy(false);
     }
@@ -149,40 +149,40 @@ export default function InterviewerApplicationPage() {
           : "prep";
   const workspaceActionLabel =
     workspace?.status === "completed"
-      ? "View final interview report"
+      ? "View evaluation summary"
       : workspace?.status === "postgame"
-        ? "Continue feedback"
+        ? "Continue evaluation"
         : workspace?.status === "launched"
-        ? "Rejoin overlay"
+        ? "Resume interview"
         : workspace
-          ? "Continue setup"
-          : "Configure interview";
+          ? "Continue planning"
+          : "Build interview plan";
   const pageOptions: Array<{ value: ReviewPageTab; label: string; meta: string; featured?: boolean }> = [
     { value: "page1", label: "Overview", meta: "Applicant profile" },
     { value: "page2", label: "Academics & Activities", meta: "Study and engagement" },
     { value: "page3", label: "Writing", meta: "Essays and excerpts" },
     ...(hasFinalReportPages
         ? [
-          { value: "page4" as const, label: "Focus Areas", meta: "Interviewer synthesis" },
-          { value: "page5" as const, label: "Question Groups", meta: "Live interview sheet" },
+          { value: "page4" as const, label: "Focus Areas", meta: "Interview brief" },
+          { value: "page5" as const, label: "Question Sets", meta: "Interview prompts" },
         ]
       : []),
-    ...(isCompletedView ? [{ value: "page6" as const, label: "Final Report", meta: "Interview feedback", featured: true }] : []),
+    ...(isCompletedView ? [{ value: "page6" as const, label: "Evaluation Summary", meta: "Submitted evaluation", featured: true }] : []),
   ];
   const copilotSurfaceType = activePageTab === "page6" ? "final_report" : "report_viewer";
   const copilotActions =
     activePageTab === "page6"
-      ? ["review final interview report", "compare the interview outcome with earlier pages", "revisit Pages 1-5"]
+      ? ["review interview evaluation", "compare the interview outcome with earlier pages", "revisit Pages 1-5"]
       : [
-          "review report pages",
-          ...(hasFinalReportPages ? ["inspect focus areas", "review question groups"] : []),
+          "review application review",
+          ...(hasFinalReportPages ? ["inspect focus areas", "review question sets"] : []),
           ...(workspace?.status === "completed"
-            ? ["review final interview report"]
+            ? ["review interview evaluation"]
             : workspace?.status === "postgame"
-              ? ["continue feedback"]
+              ? ["continue evaluation"]
               : workspace?.status === "launched"
-                ? ["rejoin overlay"]
-                : ["configure interview"]),
+                ? ["resume interview"]
+                : ["build interview plan"]),
         ];
 
   return (
@@ -229,10 +229,10 @@ export default function InterviewerApplicationPage() {
           <section className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(21rem,0.92fr)]">
             <article className="flex min-h-[8.9rem] flex-col rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
               <div className="space-y-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Report pages</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Application Review</p>
                 <h2 className="text-[1.05rem] font-semibold tracking-[0] text-slate-800">Page controls</h2>
                 <p className="text-sm leading-5 text-slate-600">
-                  Pages 4 and 5 appear once the final report has been generated and stay available throughout assignment.
+                  Pages 4 and 5 appear once the interview brief has been generated and stay available throughout assignment.
                 </p>
               </div>
 
@@ -245,15 +245,15 @@ export default function InterviewerApplicationPage() {
 
             <article className="flex min-h-[8.9rem] flex-col justify-between rounded-[1.5rem] border border-slate-200 bg-white/80 p-3.5 shadow-[0_18px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
               <div className="space-y-1.5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-700">Report workflow</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-700">Interview Workflow</p>
                 <div className="space-y-1">
                   <h2 className="text-[1.05rem] font-semibold tracking-[-0.03em] text-slate-800">
-                    {item.status === "COMPLETE" ? "Final interview report" : "Assigned report"}
+                    {item.status === "COMPLETE" ? "Interview Evaluation" : "Assigned application"}
                   </h2>
                   <p className="max-w-2xl text-sm leading-5 text-slate-600">
                     {item.status === "COMPLETE"
-                      ? "The interview has been finalized. You can review the full Pages 1-5 package alongside the completed post-interview workspace."
-                      : "This report was generated by admin before assignment. You can review the full Pages 1-5 package and run the interview workflow from here."}
+                      ? "The interview has been completed. You can review the full Pages 1-5 package alongside the submitted interview evaluation."
+                      : "This application review was generated by admin before assignment. You can review the full Pages 1-5 package and run the interview workflow from here."}
                   </p>
                 </div>
               </div>

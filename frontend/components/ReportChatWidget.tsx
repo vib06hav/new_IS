@@ -79,10 +79,10 @@ export function ReportChatWidget({
             <div className="flex items-start justify-between gap-3">
               <span className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-blue-700">
                 <Sparkles className="size-3.5" />
-                Report Copilot
+                Interview Copilot
               </span>
               <button
-                aria-label="Close report copilot"
+                aria-label="Close interview copilot"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-700 transition hover:bg-slate-100"
                 onClick={() => setOpen(false)}
                 type="button"
@@ -94,12 +94,12 @@ export function ReportChatWidget({
 
           <form className="space-y-2 px-4 py-3" onSubmit={(event) => void handleSubmit(event)}>
             <label className="block">
-              <span className="sr-only">Ask the report copilot</span>
+              <span className="sr-only">Ask the interview copilot</span>
               <textarea
-                aria-label="Ask the report copilot"
+                aria-label="Ask the interview copilot"
                 className="min-h-20 w-full rounded-[1rem] border border-slate-200 bg-white/92 px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200/80"
                 onChange={(event) => setQuestion(event.target.value)}
-                placeholder="Ask about the report, this page, or the next step in the workflow"
+                placeholder="Ask about this page, the interview, or the next step"
                 value={question}
               />
             </label>
@@ -188,7 +188,7 @@ export function ReportChatWidget({
 
             {!error && !answer ? (
               <div className="rounded-[1rem] border border-dashed border-slate-200 bg-white/80 px-4 py-4 text-sm leading-6 text-slate-600">
-                The copilot can explain the report, describe this page, and answer your questions.
+                The copilot can explain this page, the interview workflow, and answer your questions.
               </div>
             ) : null}
           </div>
@@ -196,7 +196,7 @@ export function ReportChatWidget({
       ) : null}
 
       <button
-        aria-label="Open report copilot"
+        aria-label="Open interview copilot"
         className="inline-flex items-center gap-2 rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(37,99,235,0.28)] transition hover:bg-blue-800"
         onClick={() => setOpen(true)}
         type="button"

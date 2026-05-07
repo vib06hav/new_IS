@@ -30,10 +30,10 @@ export function FinalInterviewReportSection({
           </div>
           <div className="mt-2.5 space-y-2">
             <h1 className="max-w-4xl text-[1.9rem] font-black leading-[0.96] tracking-tight text-slate-800 md:text-[2.3rem]">
-              Final Interview Report
+              Interview Evaluation
             </h1>
             <p className="max-w-3xl text-[0.9rem] leading-6 text-slate-600">
-              Final interviewer feedback and question-group outcomes captured after interview completion.
+              Submitted interviewer evaluation and question-set outcomes captured after interview completion.
             </p>
           </div>
         </section>
@@ -52,18 +52,18 @@ export function FinalInterviewReportSection({
 
       <section className="rounded-[1.3rem] border border-slate-200 bg-white/88 p-4 shadow-[0_14px_28px_rgba(15,23,42,0.08)]">
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Interview Summary</h2>
+          <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Overall Evaluation</h2>
         </div>
         <FormattedText
-          text={workspace.content.final_summary || "No final summary was recorded."}
+          text={workspace.content.final_summary || "No overall evaluation was recorded."}
           className="mt-2.5 text-sm text-slate-800"
         />
       </section>
 
       <section className="mt-8">
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Question Group Outcomes</h2>
-          <p className="text-sm leading-6 text-slate-600">Final interviewer ratings and notes grouped by focus area.</p>
+          <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-900">Question Set Outcomes</h2>
+          <p className="text-sm leading-6 text-slate-600">Final interviewer ratings and response notes grouped by focus area.</p>
         </div>
 
         <div className="mt-3.5 space-y-3">
@@ -84,8 +84,8 @@ export function FinalInterviewReportSection({
                 </div>
                 <h3 className="mt-3 text-lg font-semibold tracking-tight text-slate-900">{theme.title || "Untitled focus area"}</h3>
                 <div className="mt-3 grid gap-3 md:grid-cols-2">
-                  <DetailBlock label="Question group" value={theme.question_group_title || "Question group"} />
-                  <DetailBlock label="Line of inquiry" value={theme.interview_direction || "No line of inquiry recorded."} />
+                  <DetailBlock label="Question set" value={theme.question_group_title || "Question set"} />
+                  <DetailBlock label="Interview focus" value={theme.interview_direction || "No interview focus recorded."} />
                 </div>
                 <div className="mt-4 space-y-3">
                   {theme.questions.length ? (
@@ -104,7 +104,7 @@ export function FinalInterviewReportSection({
                           </div>
                           <p className="mt-3 text-base font-semibold text-slate-900">{question.text || "Untitled question"}</p>
                           <FormattedText
-                            text={question.note || "No question note recorded."}
+                            text={question.note || "No response note recorded."}
                             className="mt-3 text-sm text-slate-700"
                           />
                           {question.follow_ups.length ? (
@@ -124,7 +124,7 @@ export function FinalInterviewReportSection({
                                     </div>
                                     <p className="mt-2.5 text-sm font-semibold leading-7 text-slate-900">{followUp.text}</p>
                                     <FormattedText
-                                      text={followUp.note || "No follow-up note recorded."}
+                                      text={followUp.note || "No follow-up response note recorded."}
                                       className="mt-1.5 text-sm text-slate-700"
                                     />
                                   </div>
