@@ -36,10 +36,19 @@ FOCUS_AREA_BANNED_PHRASES = [
 QUESTION_BANNED_PHRASES = []
 
 FOCUS_AREA_PRONOUN_RE = re.compile(r"\b(he|she|his|her)\b", flags=re.IGNORECASE)
-FIRST_QUESTION_CONTENTION_RE = re.compile(r"\b(yet|despite|while)\b", flags=re.IGNORECASE)
+FIRST_QUESTION_CONTENTION_START_RE = re.compile(
+    r"^\s*(?:and\s+|but\s+)?(?:yet|despite|while)\b",
+    flags=re.IGNORECASE,
+)
+FIRST_QUESTION_EARLY_CONTENTION_RE = re.compile(
+    r"^\s*(?:when|as|looking back|thinking back|in retrospect)\b[^?!.]{0,80}\b(?:yet|despite)\b",
+    flags=re.IGNORECASE,
+)
+FRAMING_NOTE_SENTENCE_SPLIT_RE = re.compile(r"[.!?](?:\s|$)")
 
 logger = logging.getLogger(__name__)
 MAX_FRAGMENT_IDS_PER_SIGNAL = 3
+MAX_FRAMING_NOTE_WORDS = 25
 
 
 def _scan_text(text: str, rules: List[str]) -> List[Dict[str, Any]]:
@@ -67,6 +76,26 @@ def _normalize_whitespace(text: str) -> str:
     text = re.sub(r"\s+", " ", text or "").strip()
     text = re.sub(r"\s+([,.;:])", r"\1", text)
     return text
+
+
+def _word_count(text: str) -> int:
+    return len([part for part in re.split(r"\s+", text.strip()) if part])
+
+
+def _is_single_sentence(text: str) -> bool:
+    stripped = text.strip()
+    if not stripped:
+        return False
+    return len(FRAMING_NOTE_SENTENCE_SPLIT_RE.findall(stripped)) <= 1
+
+
+def _has_premature_contention(text: str) -> bool:
+    stripped = (text or "").strip()
+    if not stripped:
+        return False
+    if FIRST_QUESTION_CONTENTION_START_RE.search(stripped):
+        return True
+    return bool(FIRST_QUESTION_EARLY_CONTENTION_RE.search(stripped))
 
 
 def _rewrite_prohibited_phrasing(text: Any, rules: List[str]) -> Any:
@@ -218,6 +247,7 @@ def _normalize_opening_group_output(data: Any, rules: List[str]) -> Any:
                         questions.append({
                             "question_id": f"Q-{item_index + 1:03d}",
                             "question": _normalize_whitespace(item),
+                            "framing_note": None,
                         })
                     elif isinstance(item, dict):
                         questions.append({
@@ -225,6 +255,10 @@ def _normalize_opening_group_output(data: Any, rules: List[str]) -> Any:
                             "question": _normalize_question_item(
                                 _first_present(item, ["question", "text", "sample_question"], "")
                             ),
+                            "framing_note": _rewrite_prohibited_phrasing(
+                                _first_present(item, ["framing_note", "framing_rationale", "why_this_wording"], ""),
+                                rules,
+                            ) or None,
                         })
             normalized_question_groups.append({
                 "focus_area_id": _first_present(qg, ["focus_area_id", "focus_area", "focus_area_ref", "theme_id", "theme", "theme_ref"]),
@@ -1242,12 +1276,42 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
                     ):
                         qg_passed = False
                         passed = False
-                    if q_idx == 0 and FIRST_QUESTION_CONTENTION_RE.search(question_text):
+                    if q_idx == 0 and _has_premature_contention(question_text):
                         violations_log.append({
                             "violation_id": str(uuid.uuid4()),
                             "field": f"question_groups[{idx}].questions[{q_idx}].question",
                             "type": "premature_contention",
-                            "context": "The opening question should not begin with a contrastive contention (yet/despite/while). Give the applicant room to establish their frame first.",
+                            "context": "The opening question should not lead with an early contrastive contention such as yet/despite/while. Give the applicant room to establish their frame first.",
+                        })
+                        qg_passed = False
+                        passed = False
+
+                framing_note = question.get("framing_note")
+                if not isinstance(framing_note, str) or not framing_note.strip():
+                    violations_log.append({
+                        "violation_id": str(uuid.uuid4()),
+                        "field": f"question_groups[{idx}].questions[{q_idx}].framing_note",
+                        "type": "missing_field",
+                        "context": "Each generated question must include a non-empty framing_note.",
+                    })
+                    qg_passed = False
+                    passed = False
+                else:
+                    if not _is_single_sentence(framing_note):
+                        violations_log.append({
+                            "violation_id": str(uuid.uuid4()),
+                            "field": f"question_groups[{idx}].questions[{q_idx}].framing_note",
+                            "type": "invalid_format",
+                            "context": "framing_note must be a single sentence.",
+                        })
+                        qg_passed = False
+                        passed = False
+                    if _word_count(framing_note) > MAX_FRAMING_NOTE_WORDS:
+                        violations_log.append({
+                            "violation_id": str(uuid.uuid4()),
+                            "field": f"question_groups[{idx}].questions[{q_idx}].framing_note",
+                            "type": "too_long",
+                            "context": f"framing_note must be {MAX_FRAMING_NOTE_WORDS} words or fewer.",
                         })
                         qg_passed = False
                         passed = False

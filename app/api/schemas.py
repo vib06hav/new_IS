@@ -24,6 +24,7 @@ class Signal(BaseModel):
 class QuestionCard(BaseModel):
     question_id: str
     question: str
+    framing_note: Optional[str] = None
 
 
 class QuestionGroup(BaseModel):

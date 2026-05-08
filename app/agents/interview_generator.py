@@ -44,6 +44,24 @@ not like templates and not like committee language.
 
 STEP 5 - Read each question out loud in your head as if you are sitting across from this applicant right now. Does the group as a whole feel like the opening of a real conversation, or does it feel like a deposition? If the group as a whole feels like a deposition, you have not satisfied the range rule. Go back and rebalance.
 
+STEP 6 - For each final question, write one short framing_note.
+This note explains the interview move behind the wording, not the broader territory.
+It should name the phrasing choice the question is already making, such as:
+- opening gently so the applicant can set the frame
+- grounding the answer in a concrete file detail
+- linking two parts of the application
+- drawing out decision-making or reflection
+- testing the strongest read without sounding adversarial
+Good framing_note examples:
+- "This opens with a concrete example so the applicant can set the frame before the group probes more directly."
+- "This names a specific file detail so the answer stays grounded instead of drifting into generalities."
+- "This is phrased as a comparison to draw out how the applicant connects two parts of their profile."
+
+Weak framing_note examples:
+- "This tests the applicant's perspective on leadership."
+- "This explores an important part of the application."
+- "This helps determine whether the applicant is a strong fit."
+
 ---
 
 WRITING RULES:
@@ -55,6 +73,11 @@ WRITING RULES:
 - Do not infer gender.
 - Do not use committee language or framework language.
 - Do not overpack the questions with tiny technical details unless those details are the point.
+- Every framing_note must be exactly one short sentence, ideally under 25 words.
+- Every framing_note must explain why the question is phrased this way.
+- Prefer wording like "This opens...", "This names...", "This is phrased..." over generic evaluative phrases like "This tests..." or "This explores...".
+- Do not use the framing_note to repeat Page 4 territory, repeat the line_of_inquiry,
+  explain why the topic matters in general, or expose chain-of-thought or analysis language.
 
 QUESTION GROUP RANGE & ARC RULE:
 
@@ -81,9 +104,9 @@ BETTER QUESTION GROUP (follows the arc):
   "group_label": "Interest versus making",
   "line_of_inquiry": "Whether the applicant's stated interest in technology has translated into self-directed building, experimentation, or sustained technical choices.",
   "questions": [
-    { "question_id": "Q-001", "question": "When you think about the projects or experiments that most shaped your technical confidence, which one actually changed how you worked and why?" },
-    { "question_id": "Q-002", "question": "When you hit the limit of what you could figure out on your own in that project, what was the very next move you made?" },
-    { "question_id": "Q-003", "question": "Where does your file understate the hands-on work you have really done, and where does it overstate how far that work has gone?" }
+    { "question_id": "Q-001", "question": "When you think about the projects or experiments that most shaped your technical confidence, which one actually changed how you worked and why?", "framing_note": "This opens with a concrete example so the applicant can set the frame before the group probes more directly." },
+    { "question_id": "Q-002", "question": "When you hit the limit of what you could figure out on your own in that project, what was the very next move you made?", "framing_note": "This is worded to draw out decision-making at the exact moment the applicant ran into difficulty." },
+    { "question_id": "Q-003", "question": "Where does your file understate the hands-on work you have really done, and where does it overstate how far that work has gone?", "framing_note": "This gently tests the strongest reading of the file without turning the question adversarial." }
   ]
 }
 
@@ -100,7 +123,8 @@ OUTPUT SCHEMA - return exactly this structure:
       "questions": [
         {
           "question_id": "Q-001",
-          "question": "One interview-ready question."
+          "question": "One interview-ready question.",
+          "framing_note": "One short sentence explaining the phrasing move behind this question."
         }
       ],
       "source_theme_ids": ["THEME-001"],

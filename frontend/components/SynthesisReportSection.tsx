@@ -16,6 +16,7 @@ type FocusAreaRecord = {
 type QuestionRecord = {
   question_id?: string;
   question?: string;
+  framing_note?: string;
 };
 
 type QuestionGroupRecord = {
@@ -59,6 +60,7 @@ export function SynthesisReportSection({
   const focusAreas = Array.isArray(parsed.page_4_focus_areas?.focus_areas) ? parsed.page_4_focus_areas?.focus_areas || [] : [];
   const groups = Array.isArray(parsed.page_5_question_groups?.question_groups) ? parsed.page_5_question_groups?.question_groups || [] : [];
   const [selectedFocusAreaKey, setSelectedFocusAreaKey] = useState<string>(() => getFocusAreaKey(focusAreas[0], 0));
+  const [openQuestionNotes, setOpenQuestionNotes] = useState<Record<string, string | null>>({});
   const annotationCount = countAnnotations(parsed.signal_data?.annotations);
 
   const activeFocusArea =
@@ -175,9 +177,10 @@ export function SynthesisReportSection({
               {groups.length ? (
                 groups.map((group, index) => {
                   const matchedFocusArea = focusAreas.find((item) => item.focus_area_id === group.focus_area_id);
+                  const groupKey = group.focus_area_id || group.group_label || `group-${index}`;
                   return (
                     <article
-                      key={group.focus_area_id || group.group_label || index}
+                      key={groupKey}
                       className="rounded-[1.3rem] border border-slate-200 bg-white/82 p-5 shadow-[0_16px_30px_rgba(15,23,42,0.06)]"
                     >
                       <div className="space-y-4">
@@ -195,17 +198,47 @@ export function SynthesisReportSection({
                           ) : null}
                         </div>
                         <div className="space-y-3">
-                          {(group.questions || []).map((question, questionIndex) => (
-                            <div
-                              key={question.question_id || `${group.focus_area_id || index}-${questionIndex}`}
-                              className="rounded-[1rem] border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-7 text-[color:var(--ink)]"
-                            >
-                              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)]">
-                                Question {questionIndex + 1}
-                              </p>
-                              <p className="mt-1 font-semibold text-[color:var(--ink)]">{question.question || "Untitled question"}</p>
-                            </div>
-                          ))}
+                          {(group.questions || []).map((question, questionIndex) => {
+                            const questionKey = question.question_id || `${groupKey}-${questionIndex}`;
+                            const framingNote = question.framing_note?.trim();
+                            const isOpen = openQuestionNotes[groupKey] === questionKey;
+
+                            return (
+                              <div
+                                key={questionKey}
+                                className="rounded-[1rem] border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-7 text-[color:var(--ink)]"
+                              >
+                                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[color:var(--muted)]">
+                                  Question {questionIndex + 1}
+                                </p>
+                                <div className="mt-1 flex items-start justify-between gap-3">
+                                  <p className="min-w-0 flex-1 font-semibold text-[color:var(--ink)]">
+                                    {question.question || "Untitled question"}
+                                  </p>
+                                  {framingNote ? (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setOpenQuestionNotes((current) => ({
+                                          ...current,
+                                          [groupKey]: current[groupKey] === questionKey ? null : questionKey,
+                                        }))
+                                      }
+                                      aria-expanded={isOpen}
+                                      className="shrink-0 rounded-full border border-slate-200 bg-white/90 px-2.5 py-1 text-[11px] font-semibold tracking-[0.06em] text-[color:var(--muted)] transition hover:bg-white"
+                                    >
+                                      Why this? {isOpen ? "▾" : "▸"}
+                                    </button>
+                                  ) : null}
+                                </div>
+                                {framingNote && isOpen ? (
+                                  <p className="mt-2 border-t border-slate-200/80 pt-2 text-[12px] leading-6 text-slate-500">
+                                    {framingNote}
+                                  </p>
+                                ) : null}
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     </article>

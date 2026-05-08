@@ -1,12 +1,12 @@
 # Graph Report - C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser  (2026-05-08)
 
 ## Corpus Check
-- 192 files · ~232,037 words
+- 192 files · ~232,617 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1087 nodes · 1846 edges · 146 communities detected
-- Extraction: 72% EXTRACTED · 28% INFERRED · 0% AMBIGUOUS · INFERRED: 508 edges (avg confidence: 0.74)
+- 1100 nodes · 1862 edges · 142 communities detected
+- Extraction: 72% EXTRACTED · 28% INFERRED · 0% AMBIGUOUS · INFERRED: 518 edges (avg confidence: 0.73)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -152,13 +152,9 @@
 - [[_COMMUNITY_Community 139|Community 139]]
 - [[_COMMUNITY_Community 140|Community 140]]
 - [[_COMMUNITY_Community 141|Community 141]]
-- [[_COMMUNITY_Community 142|Community 142]]
-- [[_COMMUNITY_Community 143|Community 143]]
-- [[_COMMUNITY_Community 144|Community 144]]
-- [[_COMMUNITY_Community 145|Community 145]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `PolicyConfig` - 36 edges
+1. `PolicyConfig` - 46 edges
 2. `apiRequest()` - 36 edges
 3. `LLMClientError` - 29 edges
 4. `run_pipeline()` - 25 edges
@@ -172,140 +168,140 @@
 ## Surprising Connections (you probably didn't know these)
 - `enforce_csrf()` --calls--> `ensure_csrf_protection()`  [INFERRED]
   C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\main.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\security\csrf.py
-- `login()` --calls--> `client_ip()`  [INFERRED]
-  C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\auth\router.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\security\rate_limit.py
 - `answer_report_question()` --calls--> `ReportChatResponse`  [INFERRED]
   C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\report_chat_claude.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\api\schemas.py
 - `_generate_copilot_payload()` --calls--> `generate()`  [INFERRED]
   C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\report_chat_claude.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\llm\client.py
 - `_generate_copilot_payload()` --calls--> `LLMRequestOptions`  [INFERRED]
   C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\report_chat_claude.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\llm\client.py
+- `_scope_guard_response()` --calls--> `ReportChatResponse`  [INFERRED]
+  C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\report_chat_claude.py → C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser\app\api\schemas.py
 
 ## Communities
 
 ### Community 0 - "Community 0"
 Cohesion: 0.03
-Nodes (82): _apply_spatial_metadata(), extract_academic_records(), Extract academic records using precise spatial layout blocks.     Clusters block, Aligns metadata blocks to anchors using distance-ranked pairing., extract_additional_info(), assemble_canonical(), Canonical Structure Assembler.     Merges all extracted collections into the fi, dedupe_near_overlapping_blocks() (+74 more)
+Nodes (77): extract_additional_info(), Application, Assignment, Base, dedupe_near_overlapping_blocks(), Collapse near-identical overlapping text blocks created by edited PDFs., CanonicalRecord, detect_cross_sections() (+69 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.05
-Nodes (65): _allowed_origins(), clear_csrf_cookie(), ensure_csrf_protection(), generate_csrf_token(), _is_allowed_loopback_origin(), _origin_from_url(), request_uses_session_cookie(), set_csrf_cookie() (+57 more)
+Nodes (59): ApiError, apiRequest(), askReportChat(), assignApplication(), completeInterviewWorkspace(), createInterviewer(), createInterviewWorkspace(), deactivateInterviewer() (+51 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.05
-Nodes (55): ApiError, apiRequest(), askReportChat(), assignApplication(), completeInterviewWorkspace(), createInterviewer(), createInterviewWorkspace(), deactivateInterviewer() (+47 more)
+Cohesion: 0.04
+Nodes (68): get_prohibited_terms(), get_version(), PolicyConfig, Configuration for the policy guard. Externalized rules to ensure no     hardcod, _append_phrase_violations(), _append_text_violations(), _backfill_signal_references(), _first_present() (+60 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.06
-Nodes (55): get_prohibited_terms(), get_version(), PolicyConfig, Configuration for the policy guard. Externalized rules to ensure no     hardcod, _append_phrase_violations(), _append_text_violations(), _backfill_signal_references(), _first_present() (+47 more)
+Nodes (62): assemble_canonical(), Canonical Structure Assembler.     Merges all extracted collections into the fi, BaseModel, build_assignment_list_item(), AcademicEntry, ActivityEntry, AgentScore, Anomaly (+54 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.07
-Nodes (52): BaseModel, build_assignment_list_item(), AcademicEntry, ActivityEntry, AgentScore, Anomaly, EssayEntry, ExtractionConfidence (+44 more)
+Cohesion: 0.06
+Nodes (39): derive_display_id(), _handle_application_insert_integrity_error(), staged_upload_file(), upload_application(), validate_uploaded_pdf(), write_upload_with_limit(), check_writable_dir(), _looks_like_placeholder_secret() (+31 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.09
-Nodes (48): get_llm_capacity(), _apply_response_format(), _clean_json_response(), _extract_openai_compatible_text(), generate(), _generate_aicredits(), _generate_openai_compatible(), _get_braintrust_logger() (+40 more)
+Cohesion: 0.1
+Nodes (51): assign_application(), delete_application(), _delete_application_with_related_data(), generate_final_report(), _get_interviewer_or_400(), hide_application(), list_applications(), list_assignments() (+43 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.11
-Nodes (47): assign_application(), generate_final_report(), _get_interviewer_or_400(), hide_application(), list_applications(), list_assignments(), reassign_application(), retry_application() (+39 more)
+Cohesion: 0.06
+Nodes (37): _allowed_origins(), clear_csrf_cookie(), ensure_csrf_protection(), generate_csrf_token(), _is_allowed_loopback_origin(), _origin_from_url(), request_uses_session_cookie(), set_csrf_cookie() (+29 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.06
-Nodes (27): acquire(), CapacityFullError, GenerationJobLimiter, acquire(), BaseLockBackend, CoordinationManager, get_coordination_manager(), InMemoryLockBackend (+19 more)
+Nodes (28): acquire(), CapacityFullError, GenerationJobLimiter, acquire(), BaseLockBackend, CoordinationManager, get_coordination_manager(), InMemoryLockBackend (+20 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.08
-Nodes (28): delete_application(), _delete_application_with_related_data(), remove_application_from_queue(), derive_display_id(), get_application_source_pdf(), _handle_application_insert_integrity_error(), staged_upload_file(), upload_application() (+20 more)
+Cohesion: 0.09
+Nodes (47): get_llm_capacity(), _apply_response_format(), _clean_json_response(), _extract_openai_compatible_text(), generate(), _generate_aicredits(), _generate_openai_compatible(), _get_braintrust_logger() (+39 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.07
 Nodes (36): assemble_ros_v1(), Deterministic ROS assembly.     Merges Pages 1-3 (from projection), Call 2 focus, _build_entity_cache(), _build_signal_evidence_pair(), _build_signal_snapshot(), _clean_entry(), _clean_text(), _compact_content() (+28 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.09
-Nodes (34): isApiErrorStatus(), saveInterviewWorkspace(), clearInterviewDraft(), getDraftKey(), readInterviewDraft(), writeInterviewDraft(), addFollowUp(), addQuestion() (+26 more)
+Cohesion: 0.08
+Nodes (37): isApiErrorStatus(), clearInterviewDraft(), getDraftKey(), readInterviewDraft(), writeInterviewDraft(), addFollowUp(), addQuestion(), cycleFollowUpStatus() (+29 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.11
-Nodes (37): answer_report_question(), _build_page6_context(), build_report_chat_context(), _build_report_chat_messages(), _build_sources(), _contains_disallowed_judgment(), _contains_structural_leak(), _default_current_page() (+29 more)
+Cohesion: 0.09
+Nodes (35): get_current_user(), build_interviewer_list_item(), create_access_token(), decode_access_token(), get_password_hash(), bootstrap_admin_user(), build_public_profile_image_url(), build_session_token() (+27 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.11
-Nodes (37): answer_report_question(), _build_page6_context(), build_report_chat_context(), _build_report_chat_messages(), _build_sources(), _contains_disallowed_judgment(), _contains_structural_leak(), _default_current_page() (+29 more)
+Cohesion: 0.07
+Nodes (31): _apply_spatial_metadata(), extract_academic_records(), Extract academic records using precise spatial layout blocks.     Clusters block, Aligns metadata blocks to anchors using distance-ranked pairing., extract_activities(), _looks_like_descriptive_text(), _normalize_activity_entry(), Extract activities using a Grid-Line based spatial approach with Dynamic Column (+23 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.11
-Nodes (12): build_essay_fragments(), _paragraph_spans(), _sentence_group_spans(), _trim_span(), Protocol, client_ip(), InMemoryRateLimiter, RateLimiter (+4 more)
+Nodes (37): answer_report_question(), _build_page6_context(), build_report_chat_context(), _build_report_chat_messages(), _build_sources(), _contains_disallowed_judgment(), _contains_structural_leak(), _default_current_page() (+29 more)
 
 ### Community 14 - "Community 14"
+Cohesion: 0.11
+Nodes (37): answer_report_question(), _build_page6_context(), build_report_chat_context(), _build_report_chat_messages(), _build_sources(), _contains_disallowed_judgment(), _contains_structural_leak(), _default_current_page() (+29 more)
+
+### Community 15 - "Community 15"
 Cohesion: 0.13
 Nodes (13): clearSessionCache(), clearWorkflowActive(), emitSessionStore(), getSession(), markWorkflowActive(), revalidateSession(), signOut(), updateSessionStore() (+5 more)
 
-### Community 15 - "Community 15"
-Cohesion: 0.18
-Nodes (17): build_judge_prompt_call_1(), build_judge_prompt_call_2(), check_prohibited_terms(), eval_sample(), load_json(), main(), eval_pipeline.py ---------------- Evaluation harness for the Interview Standardi, Performs deterministic checks on Call 2 output. (+9 more)
-
 ### Community 16 - "Community 16"
-Cohesion: 0.19
-Nodes (10): Application, Assignment, Base, CanonicalRecord, FinalReport, InterviewWorkspace, Internal helper to handle policy validation aborts., Executes the deterministic agent pipeline in fixed order.     Returns the assem (+2 more)
-
-### Community 17 - "Community 17"
-Cohesion: 0.19
-Nodes (10): extract_activities(), _looks_like_descriptive_text(), _normalize_activity_entry(), Extract activities using a Grid-Line based spatial approach with Dynamic Column, is_valid_activity(), Centralized validation for activity entries.     Filters out common hallucinatio, get_page_heights(), get_vertical_lines() (+2 more)
-
-### Community 18 - "Community 18"
 Cohesion: 0.42
 Nodes (10): _build_final_summary_context(), _build_follow_up_context(), _build_mode_context(), _build_question_note_context(), _build_refinement_messages(), InterviewRefinementError, Raised when interviewer refinement input is invalid or cannot be completed., refine_interview_text() (+2 more)
 
-### Community 19 - "Community 19"
-Cohesion: 0.33
-Nodes (9): _assign_entity_ids(), _compute_highlights(), _project_activity_entry(), _project_page_1(), _project_page_2(), _project_page_3(), project_ros(), Deterministically assigns entity_ids to canonical entries based on array positio (+1 more)
-
-### Community 20 - "Community 20"
-Cohesion: 0.27
-Nodes (7): buildPopupFeatures(), openInterviewPopup(), openInterviewPopupPlaceholder(), handleOpenConfigure(), handleOpenOverlayPopup(), handleOpenPdf(), loadDetail()
-
-### Community 21 - "Community 21"
+### Community 17 - "Community 17"
 Cohesion: 0.2
 Nodes (0): 
 
-### Community 22 - "Community 22"
+### Community 18 - "Community 18"
 Cohesion: 0.47
 Nodes (5): build_synthesis_projection(), compress_text(), Apply strictly deterministic projection, flattening, and compression     to can, Deterministically compress text by normalizing whitespace., _render_projection()
 
-### Community 23 - "Community 23"
+### Community 19 - "Community 19"
 Cohesion: 0.4
 Nodes (2): buildItemAnnotationTitle(), getItemAnnotation()
 
-### Community 24 - "Community 24"
+### Community 20 - "Community 20"
 Cohesion: 0.33
+Nodes (0): 
+
+### Community 21 - "Community 21"
+Cohesion: 0.5
+Nodes (2): ReportsDashboardSandboxPlayground(), usePolling()
+
+### Community 22 - "Community 22"
+Cohesion: 0.5
+Nodes (0): 
+
+### Community 23 - "Community 23"
+Cohesion: 0.5
+Nodes (0): 
+
+### Community 24 - "Community 24"
+Cohesion: 0.5
 Nodes (0): 
 
 ### Community 25 - "Community 25"
 Cohesion: 0.5
-Nodes (0): 
+Nodes (2): Badge(), cn()
 
 ### Community 26 - "Community 26"
-Cohesion: 0.5
-Nodes (0): 
+Cohesion: 1.0
+Nodes (2): Reveal(), useScrollReveal()
 
 ### Community 27 - "Community 27"
-Cohesion: 0.5
+Cohesion: 0.67
 Nodes (0): 
 
 ### Community 28 - "Community 28"
-Cohesion: 0.5
-Nodes (2): ReportsDashboardSandboxPlayground(), usePolling()
+Cohesion: 0.67
+Nodes (0): 
 
 ### Community 29 - "Community 29"
-Cohesion: 0.5
-Nodes (2): Badge(), cn()
+Cohesion: 0.67
+Nodes (0): 
 
 ### Community 30 - "Community 30"
-Cohesion: 1.0
-Nodes (2): Reveal(), useScrollReveal()
+Cohesion: 0.67
+Nodes (0): 
 
 ### Community 31 - "Community 31"
 Cohesion: 0.67
@@ -320,19 +316,19 @@ Cohesion: 0.67
 Nodes (0): 
 
 ### Community 34 - "Community 34"
-Cohesion: 0.67
+Cohesion: 1.0
 Nodes (0): 
 
 ### Community 35 - "Community 35"
-Cohesion: 0.67
+Cohesion: 1.0
 Nodes (0): 
 
 ### Community 36 - "Community 36"
-Cohesion: 0.67
+Cohesion: 1.0
 Nodes (0): 
 
 ### Community 37 - "Community 37"
-Cohesion: 0.67
+Cohesion: 1.0
 Nodes (0): 
 
 ### Community 38 - "Community 38"
@@ -625,379 +621,363 @@ Nodes (0):
 
 ### Community 110 - "Community 110"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Agent 14: Signal interpreter (LLM Call 1).     Makes exactly one LLM call to in
 
 ### Community 111 - "Community 111"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Agent 15: Theme-first signal-evidence bundle constructor.     Groups validated i
 
 ### Community 112 - "Community 112"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Builds the Stage 1.7 Call 2 prompt messages.     Instructs the LLM to generate
 
 ### Community 113 - "Community 113"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Agent 16: Interview generator (LLM Call 2).     Makes exactly one LLM call to p
 
 ### Community 114 - "Community 114"
 Cohesion: 1.0
-Nodes (1): Agent 14: Signal interpreter (LLM Call 1).     Makes exactly one LLM call to in
+Nodes (1): Deterministic ROS assembly.     Merges Pages 1-3 (from projection), Call 1 theme
 
 ### Community 115 - "Community 115"
 Cohesion: 1.0
-Nodes (1): Agent 15: Theme-first signal-evidence bundle constructor.     Groups validated i
+Nodes (1): Provider-agnostic public interface for exactly one logical LLM call.     The ac
 
 ### Community 116 - "Community 116"
 Cohesion: 1.0
-Nodes (1): Builds the Stage 1.7 Call 2 prompt messages.     Instructs the LLM to generate
+Nodes (1): Sends a chat-completions style request to an OpenAI-compatible endpoint,     wh
 
 ### Community 117 - "Community 117"
 Cohesion: 1.0
-Nodes (1): Agent 16: Interview generator (LLM Call 2).     Makes exactly one LLM call to p
+Nodes (1): Strips markdown code fences (e.g., ```json ... ```) and leading/trailing     wh
 
 ### Community 118 - "Community 118"
 Cohesion: 1.0
-Nodes (1): Deterministic ROS assembly.     Merges Pages 1-3 (from projection), Call 1 theme
+Nodes (1): Fallback redis error when the redis package is unavailable.
 
 ### Community 119 - "Community 119"
 Cohesion: 1.0
-Nodes (1): Provider-agnostic public interface for exactly one logical LLM call.     The ac
+Nodes (1): Deterministically assigns entity_ids to canonical entries based on array positio
 
 ### Community 120 - "Community 120"
 Cohesion: 1.0
-Nodes (1): Sends a chat-completions style request to an OpenAI-compatible endpoint,     wh
+Nodes (1): Deterministic projection layer.     Returns: (page_1, page_2, page_3, annotated
 
 ### Community 121 - "Community 121"
 Cohesion: 1.0
-Nodes (1): Strips markdown code fences (e.g., ```json ... ```) and leading/trailing     wh
+Nodes (1): Run migrations in 'offline' mode.      This configures the context with just a U
 
 ### Community 122 - "Community 122"
 Cohesion: 1.0
-Nodes (1): Fallback redis error when the redis package is unavailable.
+Nodes (1): Run migrations in 'online' mode.      In this scenario we need to create an Engi
 
 ### Community 123 - "Community 123"
 Cohesion: 1.0
-Nodes (1): Deterministically assigns entity_ids to canonical entries based on array positio
+Nodes (1): create_canonical_records_table  Revision ID: 6ea7523611f4 Revises: a3ba4d865b1f
 
 ### Community 124 - "Community 124"
 Cohesion: 1.0
-Nodes (1): Deterministic projection layer.     Returns: (page_1, page_2, page_3, annotated
+Nodes (1): add final report export fields  Revision ID: a1b2c3d4e5f7 Revises: f1a2b3c4d5
 
 ### Community 125 - "Community 125"
 Cohesion: 1.0
-Nodes (1): Run migrations in 'offline' mode.      This configures the context with just a U
+Nodes (1): create_applications_table  Revision ID: a3ba4d865b1f Revises: ad9fb8d26e40 Creat
 
 ### Community 126 - "Community 126"
 Cohesion: 1.0
-Nodes (1): Run migrations in 'online' mode.      In this scenario we need to create an Engi
+Nodes (1): add_display_id_to_applications  Revision ID: a8b7c6d5e4f3 Revises: f7a9c1d2e3b4
 
 ### Community 127 - "Community 127"
 Cohesion: 1.0
-Nodes (1): create_canonical_records_table  Revision ID: 6ea7523611f4 Revises: a3ba4d865b1f
+Nodes (1): create_users_table  Revision ID: ad9fb8d26e40 Revises: fe57dd6ef27e Create Date:
 
 ### Community 128 - "Community 128"
 Cohesion: 1.0
-Nodes (1): add final report export fields  Revision ID: a1b2c3d4e5f7 Revises: f1a2b3c4d5
+Nodes (1): create_synthesis_records_table  Revision ID: ae34404b0e2f Revises: 6ea7523611f4
 
 ### Community 129 - "Community 129"
 Cohesion: 1.0
-Nodes (1): create_applications_table  Revision ID: a3ba4d865b1f Revises: ad9fb8d26e40 Creat
+Nodes (1): create processing jobs table  Revision ID: b2c3d4e5f6a8 Revises: a1b2c3d4e5f7
 
 ### Community 130 - "Community 130"
 Cohesion: 1.0
-Nodes (1): add_display_id_to_applications  Revision ID: a8b7c6d5e4f3 Revises: f7a9c1d2e3b4
+Nodes (1): target_state_foundation  Revision ID: b3c1f2d4e5f6 Revises: ae34404b0e2f Create
 
 ### Community 131 - "Community 131"
 Cohesion: 1.0
-Nodes (1): create_users_table  Revision ID: ad9fb8d26e40 Revises: fe57dd6ef27e Create Date:
+Nodes (1): rename file_path to storage_key  Revision ID: c3d4e5f6a7b9 Revises: b2c3d4e5f
 
 ### Community 132 - "Community 132"
 Cohesion: 1.0
-Nodes (1): create_synthesis_records_table  Revision ID: ae34404b0e2f Revises: 6ea7523611f4
+Nodes (1): drop_synthesis_records  Revision ID: c4d5e6f7a8b9 Revises: b3c1f2d4e5f6 Create D
 
 ### Community 133 - "Community 133"
 Cohesion: 1.0
-Nodes (1): create processing jobs table  Revision ID: b2c3d4e5f6a8 Revises: a1b2c3d4e5f7
+Nodes (1): replace_drafts_with_final_reports  Revision ID: c7d8e9f0a1b2 Revises: f9b8c7d
 
 ### Community 134 - "Community 134"
 Cohesion: 1.0
-Nodes (1): target_state_foundation  Revision ID: b3c1f2d4e5f6 Revises: ae34404b0e2f Create
+Nodes (1): restore_last_activity_default  Revision ID: d1e2f3a4b5c6 Revises: c7d8e9f0a1b
 
 ### Community 135 - "Community 135"
 Cohesion: 1.0
-Nodes (1): rename file_path to storage_key  Revision ID: c3d4e5f6a7b9 Revises: b2c3d4e5f
+Nodes (1): add_review_package_to_canonical_records  Revision ID: d2f4e6a8b9c1 Revises: c4d5
 
 ### Community 136 - "Community 136"
 Cohesion: 1.0
-Nodes (1): drop_synthesis_records  Revision ID: c4d5e6f7a8b9 Revises: b3c1f2d4e5f6 Create D
+Nodes (1): add processing job retry fields  Revision ID: d4e5f6a7b8c0 Revises: c3d4e5f6a
 
 ### Community 137 - "Community 137"
 Cohesion: 1.0
-Nodes (1): replace_drafts_with_final_reports  Revision ID: c7d8e9f0a1b2 Revises: f9b8c7d
+Nodes (1): create_interview_workspaces_table  Revision ID: e3f4a5b6c7d8 Revises: d1e2f3a
 
 ### Community 138 - "Community 138"
 Cohesion: 1.0
-Nodes (1): restore_last_activity_default  Revision ID: d1e2f3a4b5c6 Revises: c7d8e9f0a1b
+Nodes (1): add profile image fields to users  Revision ID: f1a2b3c4d5e6 Revises: e3f4a5b
 
 ### Community 139 - "Community 139"
 Cohesion: 1.0
-Nodes (1): add_review_package_to_canonical_records  Revision ID: d2f4e6a8b9c1 Revises: c4d5
+Nodes (1): add_hidden_state_to_applications  Revision ID: f7a9c1d2e3b4 Revises: d2f4e6a8b9c
 
 ### Community 140 - "Community 140"
 Cohesion: 1.0
-Nodes (1): add processing job retry fields  Revision ID: d4e5f6a7b8c0 Revises: c3d4e5f6a
-
-### Community 141 - "Community 141"
-Cohesion: 1.0
-Nodes (1): create_interview_workspaces_table  Revision ID: e3f4a5b6c7d8 Revises: d1e2f3a
-
-### Community 142 - "Community 142"
-Cohesion: 1.0
-Nodes (1): add profile image fields to users  Revision ID: f1a2b3c4d5e6 Revises: e3f4a5b
-
-### Community 143 - "Community 143"
-Cohesion: 1.0
-Nodes (1): add_hidden_state_to_applications  Revision ID: f7a9c1d2e3b4 Revises: d2f4e6a8b9c
-
-### Community 144 - "Community 144"
-Cohesion: 1.0
 Nodes (1): add_last_activity_and_interviewer_hide_state  Revision ID: f9b8c7d6e5a4 Revises:
 
-### Community 145 - "Community 145"
+### Community 141 - "Community 141"
 Cohesion: 1.0
 Nodes (1): enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Date: 2026-03-
 
 ## Knowledge Gaps
-- **115 isolated node(s):** `Fallback redis error when the redis package is unavailable.`, `Raised when a non-blocking coordination lock cannot be acquired.`, `Extract academic records using precise spatial layout blocks.     Clusters block`, `Aligns metadata blocks to anchors using distance-ranked pairing.`, `Extract activities using a Grid-Line based spatial approach with Dynamic Column` (+110 more)
+- **125 isolated node(s):** `Fallback redis error when the redis package is unavailable.`, `Raised when a non-blocking coordination lock cannot be acquired.`, `Extract academic records using precise spatial layout blocks.     Clusters block`, `Aligns metadata blocks to anchors using distance-ranked pairing.`, `Extract activities using a Grid-Line based spatial approach with Dynamic Column` (+120 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 38`** (2 nodes): `database.py`, `get_db()`
+- **Thin community `Community 34`** (2 nodes): `database.py`, `get_db()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (2 nodes): `layout.tsx`, `RootLayout()`
+- **Thin community `Community 35`** (2 nodes): `layout.tsx`, `RootLayout()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (2 nodes): `page.tsx`, `LandingPage()`
+- **Thin community `Community 36`** (2 nodes): `page.tsx`, `LandingPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (2 nodes): `layout.tsx`, `AdminLayout()`
+- **Thin community `Community 37`** (2 nodes): `layout.tsx`, `AdminLayout()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (2 nodes): `page.tsx`, `AdminIndexPage()`
+- **Thin community `Community 38`** (2 nodes): `page.tsx`, `AdminIndexPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (2 nodes): `page.tsx`, `AdminLoginPage()`
+- **Thin community `Community 39`** (2 nodes): `page.tsx`, `AdminLoginPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (2 nodes): `page.tsx`, `DesignLabAdminControlLayerPage()`
+- **Thin community `Community 40`** (2 nodes): `page.tsx`, `DesignLabAdminControlLayerPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (2 nodes): `page.tsx`, `DesignLabAdminInterviewersPage()`
+- **Thin community `Community 41`** (2 nodes): `page.tsx`, `DesignLabAdminInterviewersPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (2 nodes): `page.tsx`, `DesignLabAdminProfilePage()`
+- **Thin community `Community 42`** (2 nodes): `page.tsx`, `DesignLabAdminProfilePage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (2 nodes): `page.tsx`, `DesignLabAdminUploadPage()`
+- **Thin community `Community 43`** (2 nodes): `page.tsx`, `DesignLabAdminUploadPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (2 nodes): `page.tsx`, `DesignLabFinalReportSummaryPage()`
+- **Thin community `Community 44`** (2 nodes): `page.tsx`, `DesignLabFinalReportSummaryPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (2 nodes): `page.tsx`, `DesignLabInterviewOverlayPage()`
+- **Thin community `Community 45`** (2 nodes): `page.tsx`, `DesignLabInterviewOverlayPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (2 nodes): `page.tsx`, `DesignLabPage4FocusAreaPage()`
+- **Thin community `Community 46`** (2 nodes): `page.tsx`, `DesignLabPage4FocusAreaPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (2 nodes): `page.tsx`, `DesignLabPage5InterviewQuestionsPage()`
+- **Thin community `Community 47`** (2 nodes): `page.tsx`, `DesignLabPage5InterviewQuestionsPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (2 nodes): `page.tsx`, `DesignLabPostgameFinalReportPage()`
+- **Thin community `Community 48`** (2 nodes): `page.tsx`, `DesignLabPostgameFinalReportPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 53`** (2 nodes): `page.tsx`, `DesignLabPublishedReportPage()`
+- **Thin community `Community 49`** (2 nodes): `page.tsx`, `DesignLabPublishedReportPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 54`** (2 nodes): `page.tsx`, `DesignLabReportsDashboardPage()`
+- **Thin community `Community 50`** (2 nodes): `page.tsx`, `DesignLabReportsDashboardPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (2 nodes): `page.tsx`, `DesignLabReportsDashboardPlaygroundPage()`
+- **Thin community `Community 51`** (2 nodes): `page.tsx`, `DesignLabReportsDashboardPlaygroundPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (2 nodes): `layout.tsx`, `InterviewerLayout()`
+- **Thin community `Community 52`** (2 nodes): `layout.tsx`, `InterviewerLayout()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (2 nodes): `page.tsx`, `InterviewerIndexPage()`
+- **Thin community `Community 53`** (2 nodes): `page.tsx`, `InterviewerIndexPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (2 nodes): `page.tsx`, `InterviewerLoginPage()`
+- **Thin community `Community 54`** (2 nodes): `page.tsx`, `InterviewerLoginPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (2 nodes): `JsonSection.tsx`, `JsonSection()`
+- **Thin community `Community 55`** (2 nodes): `JsonSection.tsx`, `JsonSection()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 60`** (2 nodes): `handlePointerDown()`, `AdminReportCard.tsx`
+- **Thin community `Community 56`** (2 nodes): `handlePointerDown()`, `AdminReportCard.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 61`** (2 nodes): `PortalSessionProvider.tsx`, `PortalSessionProvider()`
+- **Thin community `Community 57`** (2 nodes): `PortalSessionProvider.tsx`, `PortalSessionProvider()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 62`** (2 nodes): `AdminControlLayerSandbox()`, `AdminControlLayerSandbox.tsx`
+- **Thin community `Community 58`** (2 nodes): `AdminControlLayerSandbox()`, `AdminControlLayerSandbox.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 63`** (2 nodes): `AdminDesignLabNavbar()`, `AdminDesignLabNavbar.tsx`
+- **Thin community `Community 59`** (2 nodes): `AdminDesignLabNavbar()`, `AdminDesignLabNavbar.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 64`** (2 nodes): `AdminInterviewersSandbox()`, `AdminInterviewersSandbox.tsx`
+- **Thin community `Community 60`** (2 nodes): `AdminInterviewersSandbox()`, `AdminInterviewersSandbox.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 65`** (2 nodes): `AdminProfileSandbox()`, `AdminProfileSandbox.tsx`
+- **Thin community `Community 61`** (2 nodes): `AdminProfileSandbox()`, `AdminProfileSandbox.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 66`** (2 nodes): `InterviewOverlaySandbox.tsx`, `cycleQuestionStatus()`
+- **Thin community `Community 62`** (2 nodes): `InterviewOverlaySandbox.tsx`, `cycleQuestionStatus()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 67`** (2 nodes): `InterviewerReportCard.tsx`, `handlePointerDown()`
+- **Thin community `Community 63`** (2 nodes): `InterviewerReportCard.tsx`, `handlePointerDown()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 68`** (2 nodes): `LandingAdminControlLayer.tsx`, `LandingAdminControlLayer()`
+- **Thin community `Community 64`** (2 nodes): `LandingAdminControlLayer.tsx`, `LandingAdminControlLayer()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 69`** (2 nodes): `LandingInterviewOverlaySlice.tsx`, `cycleQuestionStatus()`
+- **Thin community `Community 65`** (2 nodes): `LandingInterviewOverlaySlice.tsx`, `cycleQuestionStatus()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 70`** (2 nodes): `AdminShell()`, `AdminShell.tsx`
+- **Thin community `Community 66`** (2 nodes): `AdminShell()`, `AdminShell.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 71`** (2 nodes): `InterviewerNavbar.tsx`, `InterviewerNavbar()`
+- **Thin community `Community 67`** (2 nodes): `InterviewerNavbar.tsx`, `InterviewerNavbar()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 72`** (2 nodes): `InterviewerShell.tsx`, `InterviewerShell()`
+- **Thin community `Community 68`** (2 nodes): `InterviewerShell.tsx`, `InterviewerShell()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 73`** (2 nodes): `cn()`, `button.tsx`
+- **Thin community `Community 69`** (2 nodes): `cn()`, `button.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 74`** (2 nodes): `separator.tsx`, `cn()`
+- **Thin community `Community 70`** (2 nodes): `separator.tsx`, `cn()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 75`** (2 nodes): `Button()`, `Button.tsx`
+- **Thin community `Community 71`** (2 nodes): `Button()`, `Button.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 76`** (2 nodes): `EmptyState.tsx`, `EmptyState()`
+- **Thin community `Community 72`** (2 nodes): `EmptyState.tsx`, `EmptyState()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 77`** (2 nodes): `FormattedText.tsx`, `FormattedText()`
+- **Thin community `Community 73`** (2 nodes): `FormattedText.tsx`, `FormattedText()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 78`** (2 nodes): `HeroPanel.tsx`, `HeroPanel()`
+- **Thin community `Community 74`** (2 nodes): `HeroPanel.tsx`, `HeroPanel()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 79`** (2 nodes): `Loader.tsx`, `Loader()`
+- **Thin community `Community 75`** (2 nodes): `Loader.tsx`, `Loader()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 80`** (2 nodes): `StatusBadge.tsx`, `StatusBadge()`
+- **Thin community `Community 76`** (2 nodes): `StatusBadge.tsx`, `StatusBadge()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 81`** (2 nodes): `upload-queue.spec.ts`, `login()`
+- **Thin community `Community 77`** (2 nodes): `upload-queue.spec.ts`, `login()`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 78`** (1 nodes): `__init__.py`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 79`** (1 nodes): `__init__.py`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 80`** (1 nodes): `version.py`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 81`** (1 nodes): `__init__.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 82`** (1 nodes): `__init__.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 83`** (1 nodes): `__init__.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 84`** (1 nodes): `version.py`
+- **Thin community `Community 84`** (1 nodes): `__init__.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 85`** (1 nodes): `__init__.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 86`** (1 nodes): `__init__.py`
+- **Thin community `Community 86`** (1 nodes): `next-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 87`** (1 nodes): `__init__.py`
+- **Thin community `Community 87`** (1 nodes): `next.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 88`** (1 nodes): `__init__.py`
+- **Thin community `Community 88`** (1 nodes): `playwright.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 89`** (1 nodes): `__init__.py`
+- **Thin community `Community 89`** (1 nodes): `postcss.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 90`** (1 nodes): `next-env.d.ts`
+- **Thin community `Community 90`** (1 nodes): `tailwind.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 91`** (1 nodes): `next.config.ts`
+- **Thin community `Community 91`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 92`** (1 nodes): `playwright.config.ts`
+- **Thin community `Community 92`** (1 nodes): `LoginForm.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 93`** (1 nodes): `postcss.config.js`
+- **Thin community `Community 93`** (1 nodes): `ReviewPackageSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 94`** (1 nodes): `tailwind.config.ts`
+- **Thin community `Community 94`** (1 nodes): `FinalReportSummarySandbox.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 95`** (1 nodes): `page.tsx`
+- **Thin community `Community 95`** (1 nodes): `Page4FocusAreaSandbox.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 96`** (1 nodes): `LoginForm.tsx`
+- **Thin community `Community 96`** (1 nodes): `Page5InterviewQuestionsSandbox.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 97`** (1 nodes): `ReviewPackageSection.tsx`
+- **Thin community `Community 97`** (1 nodes): `PostgameFinalReportSandbox.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 98`** (1 nodes): `FinalReportSummarySandbox.tsx`
+- **Thin community `Community 98`** (1 nodes): `PublishedReportPreviewSandbox.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 99`** (1 nodes): `Page4FocusAreaSandbox.tsx`
+- **Thin community `Community 99`** (1 nodes): `FinalInterviewReportSection.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 100`** (1 nodes): `Page5InterviewQuestionsSandbox.tsx`
+- **Thin community `Community 100`** (1 nodes): `HeroOverlayShowcase.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 101`** (1 nodes): `PostgameFinalReportSandbox.tsx`
+- **Thin community `Community 101`** (1 nodes): `LandingPostgameRefineSlice.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 102`** (1 nodes): `PublishedReportPreviewSandbox.tsx`
+- **Thin community `Community 102`** (1 nodes): `LandingPreparationModule.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 103`** (1 nodes): `FinalInterviewReportSection.tsx`
+- **Thin community `Community 103`** (1 nodes): `LandingReportChatSlice.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 104`** (1 nodes): `HeroOverlayShowcase.tsx`
+- **Thin community `Community 104`** (1 nodes): `Card.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 105`** (1 nodes): `LandingPostgameRefineSlice.tsx`
+- **Thin community `Community 105`** (1 nodes): `SegmentedControl.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 106`** (1 nodes): `LandingPreparationModule.tsx`
+- **Thin community `Community 106`** (1 nodes): `types.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 107`** (1 nodes): `LandingReportChatSlice.tsx`
+- **Thin community `Community 107`** (1 nodes): `adminInterviewersMock.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 108`** (1 nodes): `Card.tsx`
+- **Thin community `Community 108`** (1 nodes): `interviewerMock.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 109`** (1 nodes): `SegmentedControl.tsx`
+- **Thin community `Community 109`** (1 nodes): `reportsDashboardMock.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 110`** (1 nodes): `types.ts`
+- **Thin community `Community 110`** (1 nodes): `Agent 14: Signal interpreter (LLM Call 1).     Makes exactly one LLM call to in`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 111`** (1 nodes): `adminInterviewersMock.ts`
+- **Thin community `Community 111`** (1 nodes): `Agent 15: Theme-first signal-evidence bundle constructor.     Groups validated i`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 112`** (1 nodes): `interviewerMock.ts`
+- **Thin community `Community 112`** (1 nodes): `Builds the Stage 1.7 Call 2 prompt messages.     Instructs the LLM to generate`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 113`** (1 nodes): `reportsDashboardMock.ts`
+- **Thin community `Community 113`** (1 nodes): `Agent 16: Interview generator (LLM Call 2).     Makes exactly one LLM call to p`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 114`** (1 nodes): `Agent 14: Signal interpreter (LLM Call 1).     Makes exactly one LLM call to in`
+- **Thin community `Community 114`** (1 nodes): `Deterministic ROS assembly.     Merges Pages 1-3 (from projection), Call 1 theme`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 115`** (1 nodes): `Agent 15: Theme-first signal-evidence bundle constructor.     Groups validated i`
+- **Thin community `Community 115`** (1 nodes): `Provider-agnostic public interface for exactly one logical LLM call.     The ac`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 116`** (1 nodes): `Builds the Stage 1.7 Call 2 prompt messages.     Instructs the LLM to generate`
+- **Thin community `Community 116`** (1 nodes): `Sends a chat-completions style request to an OpenAI-compatible endpoint,     wh`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 117`** (1 nodes): `Agent 16: Interview generator (LLM Call 2).     Makes exactly one LLM call to p`
+- **Thin community `Community 117`** (1 nodes): `Strips markdown code fences (e.g., ```json ... ```) and leading/trailing     wh`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 118`** (1 nodes): `Deterministic ROS assembly.     Merges Pages 1-3 (from projection), Call 1 theme`
+- **Thin community `Community 118`** (1 nodes): `Fallback redis error when the redis package is unavailable.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 119`** (1 nodes): `Provider-agnostic public interface for exactly one logical LLM call.     The ac`
+- **Thin community `Community 119`** (1 nodes): `Deterministically assigns entity_ids to canonical entries based on array positio`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 120`** (1 nodes): `Sends a chat-completions style request to an OpenAI-compatible endpoint,     wh`
+- **Thin community `Community 120`** (1 nodes): `Deterministic projection layer.     Returns: (page_1, page_2, page_3, annotated`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 121`** (1 nodes): `Strips markdown code fences (e.g., ```json ... ```) and leading/trailing     wh`
+- **Thin community `Community 121`** (1 nodes): `Run migrations in 'offline' mode.      This configures the context with just a U`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 122`** (1 nodes): `Fallback redis error when the redis package is unavailable.`
+- **Thin community `Community 122`** (1 nodes): `Run migrations in 'online' mode.      In this scenario we need to create an Engi`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 123`** (1 nodes): `Deterministically assigns entity_ids to canonical entries based on array positio`
+- **Thin community `Community 123`** (1 nodes): `create_canonical_records_table  Revision ID: 6ea7523611f4 Revises: a3ba4d865b1f`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 124`** (1 nodes): `Deterministic projection layer.     Returns: (page_1, page_2, page_3, annotated`
+- **Thin community `Community 124`** (1 nodes): `add final report export fields  Revision ID: a1b2c3d4e5f7 Revises: f1a2b3c4d5`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 125`** (1 nodes): `Run migrations in 'offline' mode.      This configures the context with just a U`
+- **Thin community `Community 125`** (1 nodes): `create_applications_table  Revision ID: a3ba4d865b1f Revises: ad9fb8d26e40 Creat`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 126`** (1 nodes): `Run migrations in 'online' mode.      In this scenario we need to create an Engi`
+- **Thin community `Community 126`** (1 nodes): `add_display_id_to_applications  Revision ID: a8b7c6d5e4f3 Revises: f7a9c1d2e3b4`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 127`** (1 nodes): `create_canonical_records_table  Revision ID: 6ea7523611f4 Revises: a3ba4d865b1f`
+- **Thin community `Community 127`** (1 nodes): `create_users_table  Revision ID: ad9fb8d26e40 Revises: fe57dd6ef27e Create Date:`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 128`** (1 nodes): `add final report export fields  Revision ID: a1b2c3d4e5f7 Revises: f1a2b3c4d5`
+- **Thin community `Community 128`** (1 nodes): `create_synthesis_records_table  Revision ID: ae34404b0e2f Revises: 6ea7523611f4`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 129`** (1 nodes): `create_applications_table  Revision ID: a3ba4d865b1f Revises: ad9fb8d26e40 Creat`
+- **Thin community `Community 129`** (1 nodes): `create processing jobs table  Revision ID: b2c3d4e5f6a8 Revises: a1b2c3d4e5f7`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 130`** (1 nodes): `add_display_id_to_applications  Revision ID: a8b7c6d5e4f3 Revises: f7a9c1d2e3b4`
+- **Thin community `Community 130`** (1 nodes): `target_state_foundation  Revision ID: b3c1f2d4e5f6 Revises: ae34404b0e2f Create`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 131`** (1 nodes): `create_users_table  Revision ID: ad9fb8d26e40 Revises: fe57dd6ef27e Create Date:`
+- **Thin community `Community 131`** (1 nodes): `rename file_path to storage_key  Revision ID: c3d4e5f6a7b9 Revises: b2c3d4e5f`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 132`** (1 nodes): `create_synthesis_records_table  Revision ID: ae34404b0e2f Revises: 6ea7523611f4`
+- **Thin community `Community 132`** (1 nodes): `drop_synthesis_records  Revision ID: c4d5e6f7a8b9 Revises: b3c1f2d4e5f6 Create D`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 133`** (1 nodes): `create processing jobs table  Revision ID: b2c3d4e5f6a8 Revises: a1b2c3d4e5f7`
+- **Thin community `Community 133`** (1 nodes): `replace_drafts_with_final_reports  Revision ID: c7d8e9f0a1b2 Revises: f9b8c7d`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 134`** (1 nodes): `target_state_foundation  Revision ID: b3c1f2d4e5f6 Revises: ae34404b0e2f Create`
+- **Thin community `Community 134`** (1 nodes): `restore_last_activity_default  Revision ID: d1e2f3a4b5c6 Revises: c7d8e9f0a1b`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 135`** (1 nodes): `rename file_path to storage_key  Revision ID: c3d4e5f6a7b9 Revises: b2c3d4e5f`
+- **Thin community `Community 135`** (1 nodes): `add_review_package_to_canonical_records  Revision ID: d2f4e6a8b9c1 Revises: c4d5`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 136`** (1 nodes): `drop_synthesis_records  Revision ID: c4d5e6f7a8b9 Revises: b3c1f2d4e5f6 Create D`
+- **Thin community `Community 136`** (1 nodes): `add processing job retry fields  Revision ID: d4e5f6a7b8c0 Revises: c3d4e5f6a`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 137`** (1 nodes): `replace_drafts_with_final_reports  Revision ID: c7d8e9f0a1b2 Revises: f9b8c7d`
+- **Thin community `Community 137`** (1 nodes): `create_interview_workspaces_table  Revision ID: e3f4a5b6c7d8 Revises: d1e2f3a`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 138`** (1 nodes): `restore_last_activity_default  Revision ID: d1e2f3a4b5c6 Revises: c7d8e9f0a1b`
+- **Thin community `Community 138`** (1 nodes): `add profile image fields to users  Revision ID: f1a2b3c4d5e6 Revises: e3f4a5b`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 139`** (1 nodes): `add_review_package_to_canonical_records  Revision ID: d2f4e6a8b9c1 Revises: c4d5`
+- **Thin community `Community 139`** (1 nodes): `add_hidden_state_to_applications  Revision ID: f7a9c1d2e3b4 Revises: d2f4e6a8b9c`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 140`** (1 nodes): `add processing job retry fields  Revision ID: d4e5f6a7b8c0 Revises: c3d4e5f6a`
+- **Thin community `Community 140`** (1 nodes): `add_last_activity_and_interviewer_hide_state  Revision ID: f9b8c7d6e5a4 Revises:`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 141`** (1 nodes): `create_interview_workspaces_table  Revision ID: e3f4a5b6c7d8 Revises: d1e2f3a`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 142`** (1 nodes): `add profile image fields to users  Revision ID: f1a2b3c4d5e6 Revises: e3f4a5b`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 143`** (1 nodes): `add_hidden_state_to_applications  Revision ID: f7a9c1d2e3b4 Revises: d2f4e6a8b9c`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 144`** (1 nodes): `add_last_activity_and_interviewer_hide_state  Revision ID: f9b8c7d6e5a4 Revises:`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 145`** (1 nodes): `enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Date: 2026-03-`
+- **Thin community `Community 141`** (1 nodes): `enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Date: 2026-03-`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `run_pipeline()` connect `Community 0` to `Community 16`, `Community 9`, `Community 19`, `Community 17`?**
-  _High betweenness centrality (0.131) - this node is a cross-community bridge._
-- **Why does `run_synthesis_pipeline()` connect `Community 9` to `Community 0`, `Community 3`, `Community 19`, `Community 6`?**
-  _High betweenness centrality (0.117) - this node is a cross-community bridge._
-- **Why does `LLMClientError` connect `Community 5` to `Community 0`, `Community 16`, `Community 18`?**
-  _High betweenness centrality (0.086) - this node is a cross-community bridge._
-- **Are the 34 inferred relationships involving `PolicyConfig` (e.g. with `Scans a block of text against a list of prohibited phrases.     Uses basic subs` and `Pre-validation auto-repair layer.     Silently fixes all recoverable LLM output`) actually correct?**
-  _`PolicyConfig` has 34 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `run_synthesis_pipeline()` connect `Community 9` to `Community 0`, `Community 2`, `Community 5`?**
+  _High betweenness centrality (0.137) - this node is a cross-community bridge._
+- **Why does `run_pipeline()` connect `Community 0` to `Community 9`, `Community 3`, `Community 12`?**
+  _High betweenness centrality (0.125) - this node is a cross-community bridge._
+- **Why does `LLMClientError` connect `Community 8` to `Community 16`, `Community 0`, `Community 7`?**
+  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+- **Are the 44 inferred relationships involving `PolicyConfig` (e.g. with `Scans a block of text against a list of prohibited phrases.     Uses basic subs` and `Pre-validation auto-repair layer.     Silently fixes all recoverable LLM output`) actually correct?**
+  _`PolicyConfig` has 44 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `apiRequest()` (e.g. with `getCsrfToken()` and `revalidateSession()`) actually correct?**
   _`apiRequest()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 17 inferred relationships involving `LLMClientError` (e.g. with `ReportChatError` and `Raised when the report chatbot cannot safely answer.`) actually correct?**
