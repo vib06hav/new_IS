@@ -1,7 +1,7 @@
-# Graph Report - C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser  (2026-05-08)
+# Graph Report - C:\Users\vibha\OneDrive\Desktop\AG_InterviewStandardiser  (2026-05-09)
 
 ## Corpus Check
-- 192 files · ~232,617 words
+- 192 files · ~232,613 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -971,11 +971,11 @@ Nodes (1): enable_uuid_extension  Revision ID: fe57dd6ef27e Revises:  Create Dat
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `run_synthesis_pipeline()` connect `Community 9` to `Community 0`, `Community 2`, `Community 5`?**
-  _High betweenness centrality (0.137) - this node is a cross-community bridge._
+  _High betweenness centrality (0.128) - this node is a cross-community bridge._
 - **Why does `run_pipeline()` connect `Community 0` to `Community 9`, `Community 3`, `Community 12`?**
-  _High betweenness centrality (0.125) - this node is a cross-community bridge._
-- **Why does `LLMClientError` connect `Community 8` to `Community 16`, `Community 0`, `Community 7`?**
-  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+  _High betweenness centrality (0.087) - this node is a cross-community bridge._
+- **Why does `generate()` connect `Community 8` to `Community 16`, `Community 9`, `Community 13`, `Community 14`?**
+  _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **Are the 44 inferred relationships involving `PolicyConfig` (e.g. with `Scans a block of text against a list of prohibited phrases.     Uses basic subs` and `Pre-validation auto-repair layer.     Silently fixes all recoverable LLM output`) actually correct?**
   _`PolicyConfig` has 44 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `apiRequest()` (e.g. with `getCsrfToken()` and `revalidateSession()`) actually correct?**

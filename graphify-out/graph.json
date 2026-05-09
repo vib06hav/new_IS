@@ -4913,45 +4913,45 @@
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\policy\\guard.py",
       "source_location": "L55",
-      "id": "guard_rationale_55",
       "community": 2,
-      "norm_label": "scans a block of text against a list of prohibited phrases.     uses basic subs"
+      "norm_label": "scans a block of text against a list of prohibited phrases.     uses basic subs",
+      "id": "guard_rationale_55"
     },
     {
       "label": "Pre-validation auto-repair layer.     Silently fixes all recoverable LLM output",
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\policy\\guard.py",
       "source_location": "L349",
-      "id": "guard_rationale_349",
       "community": 2,
-      "norm_label": "pre-validation auto-repair layer.     silently fixes all recoverable llm output"
+      "norm_label": "pre-validation auto-repair layer.     silently fixes all recoverable llm output",
+      "id": "guard_rationale_349"
     },
     {
       "label": "Agent 15 - Signal Validation Layer.     Strictly validates LLM Call 1 output (i",
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\policy\\guard.py",
       "source_location": "L471",
-      "id": "guard_rationale_471",
       "community": 2,
-      "norm_label": "agent 15 - signal validation layer.     strictly validates llm call 1 output (i"
+      "norm_label": "agent 15 - signal validation layer.     strictly validates llm call 1 output (i",
+      "id": "guard_rationale_471"
     },
     {
       "label": "Agent 15 - Call 3 Validation Layer.     Strictly validates LLM Call 3 output (qu",
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\policy\\guard.py",
       "source_location": "L1072",
-      "id": "guard_rationale_1072",
       "community": 2,
-      "norm_label": "agent 15 - call 3 validation layer.     strictly validates llm call 3 output (qu"
+      "norm_label": "agent 15 - call 3 validation layer.     strictly validates llm call 3 output (qu",
+      "id": "guard_rationale_1072"
     },
     {
       "label": "Backward-compatible wrapper for older callers.     Call 2 now validates questio",
       "file_type": "rationale",
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\policy\\guard.py",
       "source_location": "L1393",
-      "id": "guard_rationale_1393",
       "community": 2,
-      "norm_label": "backward-compatible wrapper for older callers.     call 2 now validates questio"
+      "norm_label": "backward-compatible wrapper for older callers.     call 2 now validates questio",
+      "id": "guard_rationale_1393"
     },
     {
       "label": "__init__.py",
@@ -24515,11 +24515,11 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\policy\\guard.py",
       "source_location": "L7",
       "weight": 0.8,
-      "_src": "guard_rationale_55",
-      "_tgt": "config_policyconfig",
+      "_src": "config_policyconfig",
+      "_tgt": "guard_rationale_55",
+      "confidence_score": 0.5,
       "source": "config_policyconfig",
-      "target": "guard_rationale_55",
-      "confidence_score": 0.5
+      "target": "guard_rationale_55"
     },
     {
       "relation": "uses",
@@ -24527,11 +24527,11 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\policy\\guard.py",
       "source_location": "L7",
       "weight": 0.8,
-      "_src": "guard_rationale_349",
-      "_tgt": "config_policyconfig",
+      "_src": "config_policyconfig",
+      "_tgt": "guard_rationale_349",
+      "confidence_score": 0.5,
       "source": "config_policyconfig",
-      "target": "guard_rationale_349",
-      "confidence_score": 0.5
+      "target": "guard_rationale_349"
     },
     {
       "relation": "uses",
@@ -24539,11 +24539,11 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\policy\\guard.py",
       "source_location": "L7",
       "weight": 0.8,
-      "_src": "guard_rationale_471",
-      "_tgt": "config_policyconfig",
+      "_src": "config_policyconfig",
+      "_tgt": "guard_rationale_471",
+      "confidence_score": 0.5,
       "source": "config_policyconfig",
-      "target": "guard_rationale_471",
-      "confidence_score": 0.5
+      "target": "guard_rationale_471"
     },
     {
       "relation": "uses",
@@ -24551,11 +24551,11 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\policy\\guard.py",
       "source_location": "L7",
       "weight": 0.8,
-      "_src": "guard_rationale_1072",
-      "_tgt": "config_policyconfig",
+      "_src": "config_policyconfig",
+      "_tgt": "guard_rationale_1072",
+      "confidence_score": 0.5,
       "source": "config_policyconfig",
-      "target": "guard_rationale_1072",
-      "confidence_score": 0.5
+      "target": "guard_rationale_1072"
     },
     {
       "relation": "uses",
@@ -24563,11 +24563,11 @@
       "source_file": "C:\\Users\\vibha\\OneDrive\\Desktop\\AG_InterviewStandardiser\\app\\policy\\guard.py",
       "source_location": "L7",
       "weight": 0.8,
-      "_src": "guard_rationale_1393",
-      "_tgt": "config_policyconfig",
+      "_src": "config_policyconfig",
+      "_tgt": "guard_rationale_1393",
+      "confidence_score": 0.5,
       "source": "config_policyconfig",
-      "target": "guard_rationale_1393",
-      "confidence_score": 0.5
+      "target": "guard_rationale_1393"
     },
     {
       "relation": "uses",

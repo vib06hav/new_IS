@@ -104,7 +104,7 @@ export function PortalSessionProvider({
 
     const intervalMs = snapshot.workflowCount > 0 ? ACTIVE_WORKFLOW_KEEPALIVE_INTERVAL_MS : KEEPALIVE_INTERVAL_MS;
     const intervalId = window.setInterval(() => {
-      if (document.visibilityState !== "visible" || navigator.onLine === false) {
+      if (navigator.onLine === false) {
         return;
       }
 
