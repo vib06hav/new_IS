@@ -6,3 +6,8 @@ from app.models.canonical_record import CanonicalRecord
 from app.models.final_report import FinalReport
 from app.models.interview_workspace import InterviewWorkspace
 from app.models.processing_job import ProcessingJob
+from app.models.theme_rating import ThemeRating
+from app.models.question_generation_thread import QuestionGenerationThread
+from app.models.question_generated_version import QuestionGeneratedVersion
+from app.models.question_version_rating import QuestionVersionRating
+from app.models.vector_corpus_document import VectorCorpusDocument

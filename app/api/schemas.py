@@ -24,6 +24,7 @@ class Signal(BaseModel):
 class QuestionCard(BaseModel):
     question_id: str
     question: str
+    question_role: Optional[str] = None
     framing_note: Optional[str] = None
 
 
@@ -151,6 +152,42 @@ class ReviewPackageSummary(BaseModel):
     pages_1_3: ReviewPages123
 
 
+class PrebuildThemeFeedbackSummary(BaseModel):
+    focus_area_id: str
+    title: str
+    my_rating: Optional[int] = None
+
+
+class PrebuildQuestionVersionSummary(BaseModel):
+    id: UUID
+    version_index: int
+    question_text: str
+    why_this: Optional[str] = None
+    generation_source: str
+    created_at: datetime
+    is_active: bool
+    my_rating: Optional[int] = None
+
+
+class PrebuildQuestionThreadSummary(BaseModel):
+    thread_id: UUID
+    focus_area_id: str
+    base_question_id: str
+    question_role: str
+    active_version_id: UUID
+    active_question_text: str
+    recent_versions: list[PrebuildQuestionVersionSummary] = Field(default_factory=list)
+
+
+class PrebuildFeedbackState(BaseModel):
+    application_id: UUID
+    prebuild_generation_locked: bool
+    can_rate_themes: bool
+    can_manage_questions: bool
+    theme_feedback: list[PrebuildThemeFeedbackSummary] = Field(default_factory=list)
+    question_threads: list[PrebuildQuestionThreadSummary] = Field(default_factory=list)
+
+
 class ApplicationUploadResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -181,6 +218,7 @@ class ApplicationDetailAdmin(BaseModel):
     review_package: Optional[ReviewPackageSummary] = None
     final_report: Optional[FinalReportSummary] = None
     interview_workspace: Optional[InterviewWorkspaceSummary] = None
+    prebuild_feedback: Optional[PrebuildFeedbackState] = None
 
 
 class ApplicationDetailInterviewer(BaseModel):
@@ -194,6 +232,7 @@ class ApplicationDetailInterviewer(BaseModel):
     review_package: Optional[ReviewPackageSummary] = None
     final_report: Optional[FinalReportSummary] = None
     interview_workspace: Optional[InterviewWorkspaceSummary] = None
+    prebuild_feedback: Optional[PrebuildFeedbackState] = None
 
 
 class AssignmentUpsertRequest(BaseModel):
@@ -235,6 +274,7 @@ class CapacityStatus(BaseModel):
 class LLMCapacityStatusResponse(BaseModel):
     generation: CapacityStatus
     report_chat: CapacityStatus
+    question_regeneration: CapacityStatus
 
 
 ReportChatTargetTab = Literal["page1", "page2", "page3", "page4", "page5"]
@@ -298,6 +338,18 @@ class InterviewWorkspaceRefinementRequest(BaseModel):
 
 class InterviewWorkspaceRefinementResponse(BaseModel):
     refined_text: str
+
+
+class ThemeRatingRequest(BaseModel):
+    rating: int
+
+
+class QuestionVersionRatingRequest(BaseModel):
+    rating: int
+
+
+class ActivateQuestionVersionRequest(BaseModel):
+    version_id: UUID
 
 
 class InterviewerAssignmentSummaryItem(BaseModel):

@@ -1,4 +1,15 @@
 services:
+  migrate:
+    build: .
+    command: ["alembic", "upgrade", "head"]
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
   api:
     build: .
     ports:
@@ -11,6 +22,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       redis:
         condition: service_started
       minio:
@@ -29,6 +42,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       redis:
         condition: service_started
       minio:

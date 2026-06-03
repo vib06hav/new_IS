@@ -17,6 +17,9 @@ os.environ.setdefault("WORKOS_COOKIE_PASSWORD", "test-workos-cookie-password-123
 os.environ.setdefault("WORKOS_REDIRECT_URI", "http://testserver/auth/callback")
 os.environ.setdefault("WORKOS_LOGOUT_REDIRECT_URI", "http://testserver/")
 os.environ.setdefault("FOUNDER_ADMIN_EMAIL", "founder@example.com")
+os.environ.setdefault("AICREDITS_QUESTION_REGEN_API_KEY", "test-question-regen-key")
+os.environ.setdefault("AICREDITS_QUESTION_REGEN_MODEL_PRIMARY", "openai/gpt-4o-mini")
+os.environ.setdefault("AICREDITS_QUESTION_REGEN_MODEL_FALLBACK", "openai/gpt-4.1-mini")
 
 from app.security.rate_limit import limiter
 

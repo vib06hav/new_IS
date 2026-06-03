@@ -27,6 +27,7 @@ from app.models.user import User
 from app.projection.ros_projector import project_ros
 from app.interview_workspace import normalize_workspace_content
 from app.auth.service import build_public_profile_image_url
+from app.prebuild_feedback import build_prebuild_feedback_state
 
 
 def get_application_or_404(db: Session, application_id: UUID) -> Application:
@@ -162,7 +163,10 @@ def build_admin_detail(
     interviewer: Optional[User],
     review_package: Optional[ReviewPackageSummary],
     final_report: Optional[FinalReport],
+    current_user: Optional[User] = None,
+    assignment: Optional[Assignment] = None,
     interview_workspace: Optional[InterviewWorkspace] = None,
+    db: Optional[Session] = None,
 ) -> ApplicationDetailAdmin:
     return ApplicationDetailAdmin(
         id=application.id,
@@ -174,6 +178,14 @@ def build_admin_detail(
         review_package=review_package,
         final_report=build_final_report_summary(final_report),
         interview_workspace=build_interview_workspace_summary(interview_workspace),
+        prebuild_feedback=build_prebuild_feedback_state(
+            db=db,
+            application=application,
+            final_report=final_report,
+            assignment=assignment,
+            workspace=interview_workspace,
+            current_user=current_user,
+        ) if db is not None and current_user is not None else None,
     )
 
 
@@ -183,7 +195,9 @@ def build_interviewer_detail(
     interviewer: Optional[User],
     review_package: Optional[ReviewPackageSummary],
     final_report: Optional[FinalReport],
+    current_user: Optional[User] = None,
     interview_workspace: Optional[InterviewWorkspace] = None,
+    db: Optional[Session] = None,
 ) -> ApplicationDetailInterviewer:
     return ApplicationDetailInterviewer(
         id=application.id,
@@ -196,6 +210,14 @@ def build_interviewer_detail(
         review_package=review_package,
         final_report=build_final_report_summary(final_report),
         interview_workspace=build_interview_workspace_summary(interview_workspace),
+        prebuild_feedback=build_prebuild_feedback_state(
+            db=db,
+            application=application,
+            final_report=final_report,
+            assignment=assignment,
+            workspace=interview_workspace,
+            current_user=current_user,
+        ) if db is not None and current_user is not None else None,
     )
 
 
