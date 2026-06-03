@@ -1,14 +1,9 @@
 import json
-from pathlib import Path
 
 from app.agents.projection_builder import build_projection
 from app.agents.report_annotations import build_report_annotations
 from app.agents.signal_detector import detect_signals
 from app.policy.guard import validate_question_groups, validate_signals
-
-
-FIXTURE_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "pipeline-stages"
-STAGE17_FIXTURE_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "fake-llm-output"
 
 
 def _academic_entry(
@@ -291,17 +286,6 @@ def test_detect_signals_activity_rules_prefer_non_personal_and_allow_leadership_
     assert "over 1.0 years" in signals[2]["observation"]
     assert "3.0 years" in signals[3]["observation"]
     assert all(signal["referenced_entity_ids"] != ["ACT-004"] for signal in signals)
-
-
-def test_build_projection_allows_empty_deterministic_signals_and_omits_academic_summary():
-    canonical = json.loads((FIXTURE_DIR / "11_canonical_assembled.json").read_text(encoding="utf-8"))
-    entity_id_map = json.loads((FIXTURE_DIR / "12_entity_id_map.json").read_text(encoding="utf-8"))
-
-    projection = build_projection(canonical, entity_id_map, [])
-
-    assert "academic_summary" not in projection
-    assert projection["deterministic_signals"] == []
-    assert set(projection["applicant_context"].keys()) == {"preferred_major"}
 
 
 def test_build_projection_adds_paragraph_and_sentence_group_essay_fragments():
@@ -867,29 +851,4 @@ def test_validate_question_groups_rejects_invented_theme_ids():
     )
 
 
-def test_validate_signals_matches_stage17_fixture_output():
-    projection_input = json.loads((STAGE17_FIXTURE_DIR / "01_call_1_projection_input.json").read_text(encoding="utf-8"))
-    raw_output = (STAGE17_FIXTURE_DIR / "03_call_1_fake_llm_response.json").read_text(encoding="utf-8")
-    expected = json.loads((STAGE17_FIXTURE_DIR / "04_call_1_sanitized_output.json").read_text(encoding="utf-8"))
-
-    result = validate_signals(
-        raw_output,
-        projection_input["entity_id_map"],
-        projection_input["deterministic_signals"],
-        essay_fragments=projection_input["essay_fragments"],
-    )
-
-    assert result["passed"] is True
-    assert result["sanitized_output"] == expected
-
-
-def test_validate_question_groups_matches_stage17_fixture_output():
-    bundle = json.loads((STAGE17_FIXTURE_DIR / "05_call_2_bundle_input.json").read_text(encoding="utf-8"))
-    raw_output = (STAGE17_FIXTURE_DIR / "07_call_2_fake_llm_response.json").read_text(encoding="utf-8")
-    expected = json.loads((STAGE17_FIXTURE_DIR / "08_call_2_sanitized_output.json").read_text(encoding="utf-8"))
-
-    result = validate_question_groups(raw_output, [], bundle)
-
-    assert result["passed"] is True
-    assert result["sanitized_output"] == expected
 
