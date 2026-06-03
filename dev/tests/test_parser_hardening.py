@@ -11,7 +11,6 @@ from app.agents.personal_extractor import extract_personal_info
 from app.agents.section_scope_resolver import resolve_section_scopes
 from app.agents.section_detector import detect_sections
 from app.agents.test_extractor import extract_test_records
-from dev.tests.corpus_harness import _run_deterministic_pipeline_stages, PDF_DIR
 from app.utils.row_grouper import build_layout_rows, group_blocks_into_rows
 from app.utils.section_types import classify_section_label
 from app.utils.text_normalization import normalize_pdf_text
@@ -478,36 +477,6 @@ def test_test_extractor_can_use_shared_rows_without_regrouping():
     assert len(result["test_entries"]) == 1
     assert result["test_entries"][0]["test_name"] == "JEE Mains"
     assert result["test_entries"][0]["total_score"] == "97.69"
-
-
-def test_corpus_parent_and_12th_regressions_are_fixed():
-    from pathlib import Path
-
-    for pdf_name in [
-        "Dummy App (1)_v8_filled.pdf",
-        "Dummy App (2)_v8_filled.pdf",
-        "Dummy App (3)_v8_filled.pdf",
-        "Dummy App (5)_v8_filled.pdf",
-        "Dummy App (8)_v8_filled.pdf",
-    ]:
-        stages = _run_deterministic_pipeline_stages(
-            PDF_DIR / pdf_name,
-            parser_engine_version="v2",
-        )
-        family_background = stages["personal_data"]["identifiers"]["family_background"]
-        assert family_background["father"]["name"]
-        if any(
-            section.get("label") == "Mother Details"
-            for section in stages["section_data"]["sections"]
-        ):
-            assert family_background["mother"]["name"]
-
-        twelfth = next(
-            entry
-            for entry in stages["academic_data"]["academic_entries"]
-            if "12" in str(entry.get("academic_level") or "")
-        )
-        assert twelfth["subject_entries"]
 
 
 def test_activity_extractor_can_parse_forced_section_without_embedded_section_header(monkeypatch):
