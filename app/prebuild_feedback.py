@@ -676,6 +676,7 @@ def _build_question_regeneration_messages(
         "You regenerate one interview question for an admissions interview brief. "
         "Preserve the exact question role while varying the wording, entry point, framing style, or conversational angle. "
         "Do not broaden or change what the question family is trying to elicit. "
+        "Keep the language natural, human, and easy to ask in a real interview."
         "Return only valid JSON with keys question_text and why_this."
     )
     user_prompt = (
@@ -691,7 +692,7 @@ def _build_question_regeneration_messages(
         "Keep the same role within the set and the same evidence target. "
         "Do not replace a debugging probe with a motivation probe, and do not replace a bottleneck probe with an aspiration probe. "
         "Return JSON like {\"question_text\": \"...\", \"why_this\": \"...\"}. "
-        "why_this must explain why this formulation works, not the broader territory."
+        "why_this must be one short plain-English sentence explaining why this wording works, not the broader territory."
     )
     return [
         {"role": "system", "content": system_prompt},
