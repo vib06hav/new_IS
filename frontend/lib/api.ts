@@ -1,4 +1,5 @@
 import type {
+  ActivateQuestionVersionPayload,
   ApplicationDetailAdmin,
   ApplicationDetailInterviewer,
   ApplicationDisplayIdUpdatePayload,
@@ -14,9 +15,12 @@ import type {
   FinalReportMutationResponse,
   InterviewerListItem,
   LLMCapacityStatusResponse,
+  PrebuildFeedbackState,
+  QuestionVersionRatingPayload,
   ReportChatRequestPayload,
   ReportChatResponse,
   SessionResponse,
+  ThemeRatingPayload,
 } from "@/lib/types";
 import { getCsrfToken } from "@/lib/csrf";
 import { revalidateSession } from "@/lib/auth";
@@ -334,6 +338,54 @@ export async function refineInterviewWorkspaceText(
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
+  });
+}
+
+export async function ratePrebuildTheme(applicationId: string, focusAreaId: string, payload: ThemeRatingPayload) {
+  return apiRequest<PrebuildFeedbackState>(`/applications/${applicationId}/themes/${encodeURIComponent(focusAreaId)}/rating`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function ratePrebuildQuestionVersion(
+  applicationId: string,
+  threadId: string,
+  versionId: string,
+  payload: QuestionVersionRatingPayload,
+) {
+  return apiRequest<PrebuildFeedbackState>(
+    `/applications/${applicationId}/questions/${threadId}/versions/${versionId}/rating`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    },
+  );
+}
+
+export async function activatePrebuildQuestionVersion(
+  applicationId: string,
+  threadId: string,
+  payload: ActivateQuestionVersionPayload,
+) {
+  return apiRequest<PrebuildFeedbackState>(`/applications/${applicationId}/questions/${threadId}/activate-version`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function regeneratePrebuildQuestion(applicationId: string, threadId: string) {
+  return apiRequest<PrebuildFeedbackState>(`/applications/${applicationId}/questions/${threadId}/regenerate`, {
+    method: "POST",
   });
 }
 

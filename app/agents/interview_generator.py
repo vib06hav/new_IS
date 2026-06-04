@@ -44,8 +44,23 @@ not like templates and not like committee language.
 
 STEP 5 - Read each question out loud in your head as if you are sitting across from this applicant right now. Does the group as a whole feel like the opening of a real conversation, or does it feel like a deposition? If the group as a whole feels like a deposition, you have not satisfied the range rule. Go back and rebalance.
 
-STEP 6 - For each final question, write one short framing_note.
-This note explains the interview move behind the wording, not the broader territory.
+STEP 6 - For each final question, define a question_role and write one short framing_note.
+question_role is the stable per-question role inside the set. It captures the exact job this question does in the conversation.
+It must be narrower than the line_of_inquiry and specific enough that it fits one question family, not the whole group.
+If line_of_inquiry is the group-level direction, question_role is the role this one question plays inside that direction.
+framing_note explains the interview move behind the wording, not the broader territory.
+The question_role should stay stable if this question is later regenerated. The framing_note can change with the wording.
+
+Good question_role examples:
+- "Concrete debugging probe through a self-built project."
+- "Current technical bottleneck self-assessment."
+- "Decision-making probe around how the applicant handled uncertainty in project work."
+
+Weak question_role examples:
+- "Understand their technology interest."
+- "Explore the theme."
+- "Test their fit for the school."
+
 It should name the phrasing choice the question is already making, such as:
 - opening gently so the applicant can set the frame
 - grounding the answer in a concrete file detail
@@ -69,6 +84,7 @@ WRITING RULES:
 - The group_label should be short and scannable.
 - line_of_inquiry should be one sentence.
 - Every question must be usable as-is in a real interview.
+- Every question must include a concise question_role describing the stable role that question plays in the set.
 - Questions should be specific to this applicant, not generic admissions prompts.
 - Do not infer gender.
 - Do not use committee language or framework language.
@@ -104,9 +120,9 @@ BETTER QUESTION GROUP (follows the arc):
   "group_label": "Interest versus making",
   "line_of_inquiry": "Whether the applicant's stated interest in technology has translated into self-directed building, experimentation, or sustained technical choices.",
   "questions": [
-    { "question_id": "Q-001", "question": "When you think about the projects or experiments that most shaped your technical confidence, which one actually changed how you worked and why?", "framing_note": "This opens with a concrete example so the applicant can set the frame before the group probes more directly." },
-    { "question_id": "Q-002", "question": "When you hit the limit of what you could figure out on your own in that project, what was the very next move you made?", "framing_note": "This is worded to draw out decision-making at the exact moment the applicant ran into difficulty." },
-    { "question_id": "Q-003", "question": "Where does your file understate the hands-on work you have really done, and where does it overstate how far that work has gone?", "framing_note": "This gently tests the strongest reading of the file without turning the question adversarial." }
+    { "question_id": "Q-001", "question_role": "Concrete opener through a project that shaped technical confidence.", "question": "When you think about the projects or experiments that most shaped your technical confidence, which one actually changed how you worked and why?", "framing_note": "This opens with a concrete example so the applicant can set the frame before the group probes more directly." },
+    { "question_id": "Q-002", "question_role": "Decision-making probe at the moment the applicant hit technical difficulty.", "question": "When you hit the limit of what you could figure out on your own in that project, what was the very next move you made?", "framing_note": "This is worded to draw out decision-making at the exact moment the applicant ran into difficulty." },
+    { "question_id": "Q-003", "question_role": "Reality-check probe on how far the applicant's hands-on work truly goes.", "question": "Where does your file understate the hands-on work you have really done, and where does it overstate how far that work has gone?", "framing_note": "This gently tests the strongest reading of the file without turning the question adversarial." }
   ]
 }
 
@@ -123,6 +139,7 @@ OUTPUT SCHEMA - return exactly this structure:
       "questions": [
         {
           "question_id": "Q-001",
+          "question_role": "One short sentence naming the question's stable role in the set.",
           "question": "One interview-ready question.",
           "framing_note": "One short sentence explaining the phrasing move behind this question."
         }

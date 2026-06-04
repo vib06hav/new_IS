@@ -50,6 +50,7 @@ def get_llm_capacity(
     return LLMCapacityStatusResponse(
         generation=generation_snapshot,
         report_chat=llm_snapshot["report_chat"],
+        question_regeneration=llm_snapshot["question_regeneration"],
     )
 
 

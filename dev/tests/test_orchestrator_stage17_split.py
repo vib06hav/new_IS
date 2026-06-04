@@ -56,7 +56,7 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
             }
         ],
     }
-    theme_first_bundle = {
+    focus_area_bundle = {
         "application_id": application_id,
         "themes": call_1_validated["themes"],
         "theme_signal_evidence_groups": [
@@ -71,6 +71,18 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
             }
         ],
     }
+    question_bundle = {
+        "focus_areas": [
+            {
+                "focus_area_id": "FA-001",
+                "title": "Theme title",
+                "territory": "Theme territory",
+                "what_makes_it_worth_time": "Why it is worth time",
+                "source_theme_ids": ["THEME-001"],
+                "source_signal_ids": ["SIG-001"],
+            }
+        ]
+    }
     question_groups_validated = {
         "question_groups": [
             {
@@ -79,6 +91,9 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
                 "questions": ["Why did this applicant choose that path?"],
             }
         ]
+    }
+    validated_focus_areas = {
+        "focus_areas": question_bundle["focus_areas"],
     }
     ros_document = {
         "report_metadata": {"report_version": "ROS_v1"},
@@ -129,8 +144,18 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
                 return_value={"passed": True, "sanitized_output": call_1_validated, "violations_log": []},
             )
         )
-        construct_bundle_mock = stack.enter_context(
-            patch("app.agents.orchestrator.construct_bundle", return_value=theme_first_bundle)
+        construct_focus_area_bundle_mock = stack.enter_context(
+            patch("app.agents.orchestrator.construct_focus_area_bundle", return_value=focus_area_bundle)
+        )
+        construct_question_bundle_mock = stack.enter_context(
+            patch("app.agents.orchestrator.construct_question_bundle", return_value=question_bundle)
+        )
+        stack.enter_context(patch("app.agents.orchestrator.synthesize_interview_focus_areas", return_value="{}"))
+        stack.enter_context(
+            patch(
+                "app.agents.orchestrator.validate_focus_areas",
+                return_value={"passed": True, "sanitized_output": validated_focus_areas, "violations_log": []},
+            )
         )
         stack.enter_context(patch("app.agents.orchestrator.generate_interview", return_value="{}"))
         stack.enter_context(
@@ -144,8 +169,9 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
         )
         result = run_pipeline(application_id, "dummy.pdf", db)
 
-    assert construct_bundle_mock.call_args.args[0] == call_1_validated
-    assert assemble_ros_mock.call_args.kwargs["themes"] == call_1_validated["themes"]
+    assert construct_focus_area_bundle_mock.call_args.args[0] == call_1_validated
+    assert construct_question_bundle_mock.call_args.args[0] == call_1_validated
+    assert assemble_ros_mock.call_args.kwargs["focus_areas"] == validated_focus_areas["focus_areas"]
     assert assemble_ros_mock.call_args.kwargs["question_groups"] == question_groups_validated["question_groups"]
     assert result["ros_v1"]["page_4_focus_areas"]["themes"] == call_1_validated["themes"]
     assert result["ros_v1"]["page_4_focus_areas"]["signals"] == call_1_validated["signals"]

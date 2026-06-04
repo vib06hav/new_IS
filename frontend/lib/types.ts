@@ -37,6 +37,42 @@ export type ReviewPackageSummary = {
   pages_1_3: ReviewPages123;
 };
 
+export type PrebuildThemeFeedbackSummary = {
+  focus_area_id: string;
+  title: string;
+  my_rating?: number | null;
+};
+
+export type PrebuildQuestionVersionSummary = {
+  id: string;
+  version_index: number;
+  question_text: string;
+  why_this?: string | null;
+  generation_source: string;
+  created_at: string;
+  is_active: boolean;
+  my_rating?: number | null;
+};
+
+export type PrebuildQuestionThreadSummary = {
+  thread_id: string;
+  focus_area_id: string;
+  base_question_id: string;
+  question_role: string;
+  active_version_id: string;
+  active_question_text: string;
+  recent_versions: PrebuildQuestionVersionSummary[];
+};
+
+export type PrebuildFeedbackState = {
+  application_id: string;
+  prebuild_generation_locked: boolean;
+  can_rate_themes: boolean;
+  can_manage_questions: boolean;
+  theme_feedback: PrebuildThemeFeedbackSummary[];
+  question_threads: PrebuildQuestionThreadSummary[];
+};
+
 export type FinalReportSummary = {
   id: string;
   report_version: string;
@@ -190,6 +226,7 @@ export type ApplicationDetailAdmin = {
   review_package?: ReviewPackageSummary | null;
   final_report?: FinalReportSummary | null;
   interview_workspace?: InterviewWorkspaceSummary | null;
+  prebuild_feedback?: PrebuildFeedbackState | null;
 };
 
 export type ApplicationDetailInterviewer = {
@@ -203,6 +240,7 @@ export type ApplicationDetailInterviewer = {
   review_package?: ReviewPackageSummary | null;
   final_report?: FinalReportSummary | null;
   interview_workspace?: InterviewWorkspaceSummary | null;
+  prebuild_feedback?: PrebuildFeedbackState | null;
 };
 
 export type InterviewerListItem = {
@@ -255,6 +293,18 @@ export type FinalReportMutationResponse = {
   final_report: FinalReportSummary;
 };
 
+export type ThemeRatingPayload = {
+  rating: number;
+};
+
+export type QuestionVersionRatingPayload = {
+  rating: number;
+};
+
+export type ActivateQuestionVersionPayload = {
+  version_id: string;
+};
+
 export type CapacityStatus = {
   active: number;
   limit: number;
@@ -263,4 +313,5 @@ export type CapacityStatus = {
 export type LLMCapacityStatusResponse = {
   generation: CapacityStatus;
   report_chat: CapacityStatus;
+  question_regeneration: CapacityStatus;
 };

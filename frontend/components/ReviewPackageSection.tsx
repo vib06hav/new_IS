@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ReviewPageOneSection, ReviewPageThreeSection, ReviewPageTwoSection } from "@/components/ReviewPackagePages";
 import { SynthesisReportSection } from "@/components/SynthesisReportSection";
-import type { ReviewPackageSummary } from "@/lib/types";
+import type { PrebuildFeedbackState, ReviewPackageSummary } from "@/lib/types";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 
 export type ReviewPageTab = "page1" | "page2" | "page3" | "page4" | "page5" | "page6";
@@ -40,11 +40,21 @@ export function ReviewPackageSection({
   annotationSource,
   activeTab: controlledActiveTab,
   onActiveTabChange,
+  prebuildFeedback,
+  onRateTheme,
+  onRateQuestionVersion,
+  onRegenerateQuestion,
+  onActivateQuestionVersion,
 }: {
   reviewPackage: ReviewPackageSummary;
   annotationSource?: Record<string, unknown> | null;
   activeTab?: ReviewPageTab;
   onActiveTabChange?: (tab: ReviewPageTab) => void;
+  prebuildFeedback?: PrebuildFeedbackState | null;
+  onRateTheme?: ((focusAreaId: string, rating: number) => Promise<void>) | null;
+  onRateQuestionVersion?: ((threadId: string, versionId: string, rating: number) => Promise<void>) | null;
+  onRegenerateQuestion?: ((threadId: string) => Promise<void>) | null;
+  onActivateQuestionVersion?: ((threadId: string, versionId: string) => Promise<void>) | null;
 }) {
   const [internalActiveTab, setInternalActiveTab] = useState<ReviewPageTab>("page1");
   const annotationContext = extractAnnotationContext(annotationSource);
@@ -98,6 +108,11 @@ export function ReviewPackageSection({
             description="Synthesized focus areas for interview preparation."
             initialTab="page4"
             hideInternalTabs
+            prebuildFeedback={prebuildFeedback}
+            onRateTheme={onRateTheme}
+            onRateQuestionVersion={onRateQuestionVersion}
+            onRegenerateQuestion={onRegenerateQuestion}
+            onActivateQuestionVersion={onActivateQuestionVersion}
           />
         ) : null}
         {activeTab === "page5" && annotationSource ? (
@@ -107,6 +122,11 @@ export function ReviewPackageSection({
             description="Grouped interview questions derived from the focus areas."
             initialTab="page5"
             hideInternalTabs
+            prebuildFeedback={prebuildFeedback}
+            onRateTheme={onRateTheme}
+            onRateQuestionVersion={onRateQuestionVersion}
+            onRegenerateQuestion={onRegenerateQuestion}
+            onActivateQuestionVersion={onActivateQuestionVersion}
           />
         ) : null}
       </div>

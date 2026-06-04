@@ -252,6 +252,10 @@ def _normalize_opening_group_output(data: Any, rules: List[str]) -> Any:
                     elif isinstance(item, dict):
                         questions.append({
                             "question_id": _first_present(item, ["question_id", "opening_id", "id"], ""),
+                            "question_role": _rewrite_prohibited_phrasing(
+                                _first_present(item, ["question_role", "question_purpose", "question_objective"], ""),
+                                rules,
+                            ) or None,
                             "question": _normalize_question_item(
                                 _first_present(item, ["question", "text", "sample_question"], "")
                             ),
@@ -1247,6 +1251,16 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
                     })
                     qg_passed = False
                     passed = False
+                question_role = question.get("question_role")
+                if not isinstance(question_role, str) or not question_role.strip():
+                    violations_log.append({
+                        "violation_id": str(uuid.uuid4()),
+                        "field": f"question_groups[{idx}].questions[{q_idx}].question_role",
+                        "type": "missing_field",
+                        "context": "Each generated question must include a non-empty question_role.",
+                    })
+                    qg_passed = False
+                    passed = False
                 question_text = question.get("question")
                 if not isinstance(question_text, str) or not question_text.strip():
                     violations_log.append({
@@ -1315,6 +1329,14 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
                         })
                         qg_passed = False
                         passed = False
+                if isinstance(question_role, str) and _append_text_violations(
+                    violations_log,
+                    f"question_groups[{idx}].questions[{q_idx}].question_role",
+                    question_role,
+                    rules,
+                ):
+                    qg_passed = False
+                    passed = False
 
             if not 2 <= len(questions) <= 4:
                 violations_log.append({
@@ -1356,7 +1378,13 @@ def validate_question_groups(raw_text: str, entity_id_map: List[dict], bundle: d
             "focus_area_id": focus_area_id,
             "group_label": group_label,
             "line_of_inquiry": line_of_inquiry,
-            "questions": questions,
+            "questions": [
+                {
+                    **question,
+                    "question_role": _normalize_whitespace(str(question.get("question_role") or "")),
+                }
+                for question in questions
+            ],
             "source_theme_ids": source_theme_ids,
             "source_signal_ids": source_signal_ids,
         })

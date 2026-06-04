@@ -22,11 +22,15 @@ from app.api.helpers import (
     get_interview_workspace,
 )
 from app.api.schemas import (
+    ActivateQuestionVersionRequest,
     ApplicationDetailAdmin,
     ApplicationDetailInterviewer,
     ApplicationUploadResponse,
+    PrebuildFeedbackState,
     ReportChatRequest,
     ReportChatResponse,
+    QuestionVersionRatingRequest,
+    ThemeRatingRequest,
 )
 from app.auth.dependencies import get_current_user, require_admin
 from app.config import settings
@@ -35,6 +39,14 @@ from app.final_report_exports import final_report_export_stream, FINAL_REPORT_EX
 from app.models.application import Application
 from app.models.user import User
 from app.processing import enqueue_processing_job
+from app.prebuild_feedback import (
+    activate_question_version,
+    build_prebuild_feedback_state,
+    ensure_question_threads_for_application,
+    regenerate_question,
+    upsert_question_version_rating,
+    upsert_theme_rating,
+)
 from app.report_chat import (
     ReportChatError,
     answer_report_question,
@@ -115,6 +127,32 @@ def staged_upload_file(file: UploadFile, suffix: str, max_size_mb: int):
             os.remove(temp_path)
 
 
+def _build_prebuild_feedback_response(
+    *,
+    db: Session,
+    application: Application,
+    assignment,
+    current_user: User,
+) -> PrebuildFeedbackState:
+    final_report = get_final_report(db, application.id)
+    if final_report and isinstance(final_report.content, dict):
+        if ensure_question_threads_for_application(db=db, application=application, final_report=final_report):
+            db.commit()
+            db.refresh(application)
+    interview_workspace = get_interview_workspace(db, application.id)
+    feedback_state = build_prebuild_feedback_state(
+        db=db,
+        application=application,
+        final_report=final_report,
+        assignment=assignment,
+        workspace=interview_workspace,
+        current_user=current_user,
+    )
+    if feedback_state is None:
+        raise HTTPException(status_code=409, detail="Pre-build feedback content is not available for this application")
+    return feedback_state
+
+
 @router.post("/upload", response_model=ApplicationUploadResponse, status_code=status.HTTP_201_CREATED)
 def upload_application(
     file: UploadFile = File(...),
@@ -191,13 +229,39 @@ def get_application(
 
     if current_user.role == "admin":
         final_report = get_final_report(db, application_id)
-        return build_admin_detail(application, assigned_user, review_package, final_report, interview_workspace)
+        if final_report and isinstance(final_report.content, dict):
+            if ensure_question_threads_for_application(db=db, application=application, final_report=final_report):
+                db.commit()
+                db.refresh(application)
+        return build_admin_detail(
+            application,
+            assigned_user,
+            review_package,
+            final_report,
+            current_user=current_user,
+            assignment=assignment,
+            interview_workspace=interview_workspace,
+            db=db,
+        )
 
     if not assignment or assignment.interviewer_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to view this application")
 
     final_report = get_final_report(db, application_id)
-    return build_interviewer_detail(application, assignment, assigned_user, review_package, final_report, interview_workspace)
+    if final_report and isinstance(final_report.content, dict):
+        if ensure_question_threads_for_application(db=db, application=application, final_report=final_report):
+            db.commit()
+            db.refresh(application)
+    return build_interviewer_detail(
+        application,
+        assignment,
+        assigned_user,
+        review_package,
+        final_report,
+        current_user=current_user,
+        interview_workspace=interview_workspace,
+        db=db,
+    )
 
 
 @router.get("/{application_id}/source-pdf")
@@ -342,3 +406,116 @@ def ask_report_chat(
             str(exc),
         )
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@router.post("/{application_id}/themes/{focus_area_id}/rating", response_model=PrebuildFeedbackState)
+def rate_prebuild_theme(
+    application_id: uuid.UUID,
+    focus_area_id: str,
+    payload: ThemeRatingRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    application = get_application_or_404(db, application_id)
+    assignment = get_assignment_for_application(db, application_id)
+    final_report = get_final_report(db, application_id)
+    upsert_theme_rating(
+        db=db,
+        application=application,
+        final_report=final_report,
+        assignment=assignment,
+        workspace=get_interview_workspace(db, application_id),
+        current_user=current_user,
+        focus_area_id=focus_area_id,
+        rating=payload.rating,
+    )
+    db.commit()
+    return _build_prebuild_feedback_response(db=db, application=application, assignment=assignment, current_user=current_user)
+
+
+@router.post(
+    "/{application_id}/questions/{thread_id}/versions/{version_id}/rating",
+    response_model=PrebuildFeedbackState,
+)
+def rate_prebuild_question_version(
+    application_id: uuid.UUID,
+    thread_id: uuid.UUID,
+    version_id: uuid.UUID,
+    payload: QuestionVersionRatingRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    application = get_application_or_404(db, application_id)
+    assignment = get_assignment_for_application(db, application_id)
+    limiter.check(
+        f"question-rating:{current_user.id}",
+        limit=settings.AICREDITS_QUESTION_REGEN_PER_USER_LIMIT * 4,
+        window_seconds=settings.AICREDITS_QUESTION_REGEN_WINDOW_SECONDS,
+        detail="Question feedback rate limit reached. Please wait a moment and try again.",
+    )
+    upsert_question_version_rating(
+        db=db,
+        application=application,
+        assignment=assignment,
+        workspace=get_interview_workspace(db, application_id),
+        current_user=current_user,
+        thread_id=thread_id,
+        version_id=version_id,
+        rating=payload.rating,
+    )
+    db.commit()
+    return _build_prebuild_feedback_response(db=db, application=application, assignment=assignment, current_user=current_user)
+
+
+@router.post("/{application_id}/questions/{thread_id}/activate-version", response_model=PrebuildFeedbackState)
+def activate_prebuild_question_version(
+    application_id: uuid.UUID,
+    thread_id: uuid.UUID,
+    payload: ActivateQuestionVersionRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    application = get_application_or_404(db, application_id)
+    assignment = get_assignment_for_application(db, application_id)
+    activate_question_version(
+        db=db,
+        application=application,
+        assignment=assignment,
+        workspace=get_interview_workspace(db, application_id),
+        current_user=current_user,
+        thread_id=thread_id,
+        version_id=payload.version_id,
+    )
+    db.commit()
+    return _build_prebuild_feedback_response(db=db, application=application, assignment=assignment, current_user=current_user)
+
+
+@router.post("/{application_id}/questions/{thread_id}/regenerate", response_model=PrebuildFeedbackState)
+def regenerate_prebuild_question(
+    application_id: uuid.UUID,
+    thread_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    limiter.check(
+        f"question-regen:{current_user.id}",
+        limit=settings.AICREDITS_QUESTION_REGEN_PER_USER_LIMIT,
+        window_seconds=settings.AICREDITS_QUESTION_REGEN_WINDOW_SECONDS,
+        detail="Question regeneration limit reached for your account. Please wait a moment and try again.",
+    )
+    application = get_application_or_404(db, application_id)
+    assignment = get_assignment_for_application(db, application_id)
+    final_report = get_final_report(db, application_id)
+    if not final_report:
+        raise HTTPException(status_code=409, detail="Final report is required before question regeneration is available")
+    regenerate_question(
+        db=db,
+        application=application,
+        final_report=final_report,
+        assignment=assignment,
+        workspace=get_interview_workspace(db, application_id),
+        current_user=current_user,
+        thread_id=thread_id,
+    )
+    db.commit()
+    return _build_prebuild_feedback_response(db=db, application=application, assignment=assignment, current_user=current_user)

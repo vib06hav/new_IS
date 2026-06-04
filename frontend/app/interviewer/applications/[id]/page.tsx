@@ -6,7 +6,15 @@ import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight, NotebookPen, Rocket } from "lucide-react";
 import { IBM_Plex_Sans } from "next/font/google";
-import { createInterviewWorkspace, fetchApplicationDetail, fetchSourcePdf } from "@/lib/api";
+import {
+  activatePrebuildQuestionVersion,
+  createInterviewWorkspace,
+  fetchApplicationDetail,
+  fetchSourcePdf,
+  ratePrebuildQuestionVersion,
+  ratePrebuildTheme,
+  regeneratePrebuildQuestion,
+} from "@/lib/api";
 import type { ApplicationDetailInterviewer } from "@/lib/types";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -18,6 +26,14 @@ import { ReportChatWidget } from "@/components/ReportChatWidget";
 import { navigateToReportResult } from "@/lib/reportChat";
 import { FinalInterviewReportSection } from "@/components/interviewer/FinalInterviewReportSection";
 import { openInterviewPopup } from "@/lib/interviewPopup";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/shadcn/dialog";
 
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -35,6 +51,7 @@ export default function InterviewerApplicationPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [activePageTab, setActivePageTab] = useState<ReviewPageTab>("page1");
   const [workspaceBusy, setWorkspaceBusy] = useState(false);
+  const [buildConfirmOpen, setBuildConfirmOpen] = useState(false);
 
   async function loadDetail() {
     try {
@@ -88,6 +105,58 @@ export default function InterviewerApplicationPage() {
       setError(workspaceError instanceof Error ? workspaceError.message : "Unable to open interview plan.");
     } finally {
       setWorkspaceBusy(false);
+    }
+  }
+
+  function handleWorkflowPlanAction() {
+    if (workspace) {
+      void handleOpenConfigure();
+      return;
+    }
+    setBuildConfirmOpen(true);
+  }
+
+  async function handleRateTheme(focusAreaId: string, rating: number) {
+    if (!item) return;
+    try {
+      const feedback = await ratePrebuildTheme(item.id, focusAreaId, { rating });
+      setItem((current) => (current ? { ...current, prebuild_feedback: feedback } : current));
+      setError(null);
+    } catch (mutationError) {
+      setError(mutationError instanceof Error ? mutationError.message : "Unable to save focus area rating.");
+    }
+  }
+
+  async function handleRateQuestionVersion(threadId: string, versionId: string, rating: number) {
+    if (!item) return;
+    try {
+      const feedback = await ratePrebuildQuestionVersion(item.id, threadId, versionId, { rating });
+      setItem((current) => (current ? { ...current, prebuild_feedback: feedback } : current));
+      setError(null);
+    } catch (mutationError) {
+      setError(mutationError instanceof Error ? mutationError.message : "Unable to save question rating.");
+    }
+  }
+
+  async function handleRegenerateQuestion(threadId: string) {
+    if (!item) return;
+    try {
+      const feedback = await regeneratePrebuildQuestion(item.id, threadId);
+      setItem((current) => (current ? { ...current, prebuild_feedback: feedback } : current));
+      setError(null);
+    } catch (mutationError) {
+      setError(mutationError instanceof Error ? mutationError.message : "Unable to regenerate this question.");
+    }
+  }
+
+  async function handleActivateQuestionVersion(threadId: string, versionId: string) {
+    if (!item) return;
+    try {
+      const feedback = await activatePrebuildQuestionVersion(item.id, threadId, { version_id: versionId });
+      setItem((current) => (current ? { ...current, prebuild_feedback: feedback } : current));
+      setError(null);
+    } catch (mutationError) {
+      setError(mutationError instanceof Error ? mutationError.message : "Unable to switch question version.");
     }
   }
 
@@ -207,7 +276,7 @@ export default function InterviewerApplicationPage() {
                   workspace={workspace}
                   workspaceActionLabel={workspaceActionLabel}
                   workspaceBusy={workspaceBusy}
-                  onConfigure={() => void handleOpenConfigure()}
+                  onConfigure={handleWorkflowPlanAction}
                   onOpenOverlay={handleOpenOverlayPopup}
                 />
               ) : null}
@@ -265,7 +334,7 @@ export default function InterviewerApplicationPage() {
                     workspace={workspace}
                     workspaceActionLabel={workspaceActionLabel}
                     workspaceBusy={workspaceBusy}
-                    onConfigure={() => void handleOpenConfigure()}
+                    onConfigure={handleWorkflowPlanAction}
                     onOpenOverlay={handleOpenOverlayPopup}
                   />
                 </div>
@@ -296,6 +365,11 @@ export default function InterviewerApplicationPage() {
                   annotationSource={item.final_report?.content}
                   activeTab={activePageTab}
                   onActiveTabChange={setActivePageTab}
+                  prebuildFeedback={item.prebuild_feedback}
+                  onRateTheme={handleRateTheme}
+                  onRateQuestionVersion={handleRateQuestionVersion}
+                  onRegenerateQuestion={handleRegenerateQuestion}
+                  onActivateQuestionVersion={handleActivateQuestionVersion}
                 />
                 <ReportChatWidget
                   applicationId={item.id}
@@ -326,6 +400,37 @@ export default function InterviewerApplicationPage() {
             </div>
           </div>
         ) : null}
+        <Dialog open={buildConfirmOpen} onOpenChange={setBuildConfirmOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Lock Regeneration And Build Plan</DialogTitle>
+              <DialogDescription>
+                Building the interview plan will lock question regeneration and ratings for this application. From that
+                point onward, only editing and polishing will remain available.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <button
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                onClick={() => setBuildConfirmOpen(false)}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                className="inline-flex items-center justify-center rounded-full bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={workspaceBusy}
+                onClick={async () => {
+                  setBuildConfirmOpen(false);
+                  await handleOpenConfigure();
+                }}
+                type="button"
+              >
+                {workspaceBusy ? "Opening..." : "Build And Lock Regeneration"}
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </InterviewerShell>
   );

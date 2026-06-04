@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { IBM_Plex_Sans, Libre_Franklin } from "next/font/google";
-import { fetchApplicationDetail, fetchSourcePdf } from "@/lib/api";
+import {
+  activatePrebuildQuestionVersion,
+  fetchApplicationDetail,
+  fetchSourcePdf,
+  ratePrebuildQuestionVersion,
+  ratePrebuildTheme,
+  regeneratePrebuildQuestion,
+} from "@/lib/api";
 import type { ApplicationDetailAdmin } from "@/lib/types";
 import { Loader } from "@/components/ui/Loader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -46,6 +53,54 @@ export default function AdminApplicationDetailPage() {
       setError(loadError instanceof Error ? loadError.message : "Failed to load application.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleRateTheme(focusAreaId: string, rating: number) {
+    const applicationId = item?.id;
+    if (!applicationId) return;
+    try {
+      const feedback = await ratePrebuildTheme(applicationId, focusAreaId, { rating });
+      setItem((current) => (current ? { ...current, prebuild_feedback: feedback } : current));
+      setError(null);
+    } catch (mutationError) {
+      setError(mutationError instanceof Error ? mutationError.message : "Unable to save focus area rating.");
+    }
+  }
+
+  async function handleRateQuestionVersion(threadId: string, versionId: string, rating: number) {
+    const applicationId = item?.id;
+    if (!applicationId) return;
+    try {
+      const feedback = await ratePrebuildQuestionVersion(applicationId, threadId, versionId, { rating });
+      setItem((current) => (current ? { ...current, prebuild_feedback: feedback } : current));
+      setError(null);
+    } catch (mutationError) {
+      setError(mutationError instanceof Error ? mutationError.message : "Unable to save question rating.");
+    }
+  }
+
+  async function handleRegenerateQuestion(threadId: string) {
+    const applicationId = item?.id;
+    if (!applicationId) return;
+    try {
+      const feedback = await regeneratePrebuildQuestion(applicationId, threadId);
+      setItem((current) => (current ? { ...current, prebuild_feedback: feedback } : current));
+      setError(null);
+    } catch (mutationError) {
+      setError(mutationError instanceof Error ? mutationError.message : "Unable to regenerate this question.");
+    }
+  }
+
+  async function handleActivateQuestionVersion(threadId: string, versionId: string) {
+    const applicationId = item?.id;
+    if (!applicationId) return;
+    try {
+      const feedback = await activatePrebuildQuestionVersion(applicationId, threadId, { version_id: versionId });
+      setItem((current) => (current ? { ...current, prebuild_feedback: feedback } : current));
+      setError(null);
+    } catch (mutationError) {
+      setError(mutationError instanceof Error ? mutationError.message : "Unable to switch question version.");
     }
   }
 
@@ -178,6 +233,11 @@ export default function AdminApplicationDetailPage() {
               annotationSource={item.final_report?.content}
               activeTab={activePageTab}
               onActiveTabChange={setActivePageTab}
+              prebuildFeedback={item.prebuild_feedback}
+              onRateTheme={handleRateTheme}
+              onRateQuestionVersion={handleRateQuestionVersion}
+              onRegenerateQuestion={handleRegenerateQuestion}
+              onActivateQuestionVersion={handleActivateQuestionVersion}
             />
             <ReportChatWidget
               applicationId={item.id}
