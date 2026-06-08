@@ -16,13 +16,19 @@ from app.auth.schemas import InterviewerCreate, UserResponse
 from app.auth.service import build_profile_image_url, create_interviewer, deactivate_interviewer
 from app.auth.service import reactivate_interviewer, send_interviewer_invitation_email
 from app.database import get_db
+from app.domain.statuses import (
+    APPLICATION_STATUS_ASSIGNED,
+    APPLICATION_STATUS_READY,
+    APPLICATION_STATUSES_ACTIVE_ASSIGNMENT,
+    APPLICATION_STATUSES_ASSIGNABLE,
+)
 from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.user import User
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
-ACTIVE_ASSIGNMENT_STATUSES = {"ASSIGNED"}
+ACTIVE_ASSIGNMENT_STATUSES = APPLICATION_STATUSES_ACTIVE_ASSIGNMENT
 
 
 def _serialize_user(user: User) -> UserResponse:
@@ -48,7 +54,7 @@ def _get_interviewer_or_404(db: Session, user_id: UUID) -> User:
 def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssignmentSummary:
     applications = (
         db.query(Application)
-        .filter(Application.status.in_(["READY", "ASSIGNED"]))
+        .filter(Application.status.in_(list(APPLICATION_STATUSES_ASSIGNABLE)))
         .order_by(Application.created_at.desc())
         .all()
     )
@@ -65,7 +71,7 @@ def _build_assignment_summary(db: Session, interviewer: User) -> InterviewerAssi
 
     for application in applications:
         assignment = assignments_by_application.get(application.id)
-        if application.status == "READY" and not assignment:
+        if application.status == APPLICATION_STATUS_READY and not assignment:
             available_to_assign.append(
                 InterviewerAssignmentSummaryItem(
                     application_id=application.id,
@@ -183,12 +189,12 @@ def save_interviewer_assignments(
         application = applications_by_id.get(application_id)
         if not application:
             raise HTTPException(status_code=404, detail=f"Application {application_id} not found")
-        if application.status not in {"READY", "ASSIGNED"}:
+        if application.status not in APPLICATION_STATUSES_ASSIGNABLE:
             raise HTTPException(status_code=409, detail="Only READY or ASSIGNED applications can be staged")
 
         assignment = assignments_by_application.get(application_id)
         if not assignment:
-            if application.status != "READY":
+            if application.status != APPLICATION_STATUS_READY:
                 raise HTTPException(status_code=409, detail="Only READY applications can be newly assigned")
             new_assignment = Assignment(
                 application_id=application.id,
@@ -196,7 +202,7 @@ def save_interviewer_assignments(
                 assigned_by=current_user.id,
             )
             db.add(new_assignment)
-            application.status = "ASSIGNED"
+            application.status = APPLICATION_STATUS_ASSIGNED
             continue
 
         if assignment.interviewer_id == interviewer.id:
@@ -205,7 +211,7 @@ def save_interviewer_assignments(
         assignment.interviewer_id = interviewer.id
         assignment.assigned_by = current_user.id
         assignment.assigned_at = datetime.utcnow()
-        application.status = "ASSIGNED"
+        application.status = APPLICATION_STATUS_ASSIGNED
 
     for assignment in current_assignments:
         if assignment.application_id in final_ids:
@@ -213,7 +219,7 @@ def save_interviewer_assignments(
 
         application = applications_by_id.get(assignment.application_id)
         if application and application.status in ACTIVE_ASSIGNMENT_STATUSES:
-            application.status = "READY"
+            application.status = APPLICATION_STATUS_READY
         db.delete(assignment)
 
     db.commit()

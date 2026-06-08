@@ -16,10 +16,16 @@ from app.auth.schemas import InterviewerCreate
 from app.auth.security import create_access_token, decode_access_token, get_password_hash
 from app.auth.workos import get_workos_client
 from app.config import settings
+from app.domain.statuses import (
+    USER_ACCESS_STATUS_ACTIVE,
+    USER_ACCESS_STATUS_DEACTIVATED,
+    USER_ACCESS_STATUS_INVITED,
+    USER_ACCESS_STATUS_VALUES,
+)
 from app.models.user import User
 
 AUTHKIT_PLACEHOLDER_PASSWORD = "authkit-disabled-local-password"
-INTERVIEWER_ACCESS_STATES = {"invited", "active", "deactivated"}
+INTERVIEWER_ACCESS_STATES = USER_ACCESS_STATUS_VALUES
 logger = logging.getLogger(__name__)
 
 # ─── Session refresh concurrency guard ────────────────────────────────────────
@@ -95,7 +101,7 @@ def create_user(
     name: str,
     email: str,
     role: str,
-    access_status: str = "active",
+    access_status: str = USER_ACCESS_STATUS_ACTIVE,
 ) -> User:
     normalized_email = _normalize_email(email)
     existing_user = db.query(User).filter(User.email == normalized_email).first()
@@ -124,19 +130,19 @@ def create_interviewer(db: Session, user_data: InterviewerCreate) -> User:
         name=user_data.name,
         email=user_data.email,
         role="interviewer",
-        access_status="invited",
+        access_status=USER_ACCESS_STATUS_INVITED,
     )
 
 
 def reactivate_interviewer(db: Session, interviewer: User) -> User:
-    interviewer.access_status = "active" if interviewer.last_sign_in_at else "invited"
+    interviewer.access_status = USER_ACCESS_STATUS_ACTIVE if interviewer.last_sign_in_at else USER_ACCESS_STATUS_INVITED
     db.commit()
     db.refresh(interviewer)
     return interviewer
 
 
 def deactivate_interviewer(db: Session, interviewer: User) -> User:
-    interviewer.access_status = "deactivated"
+    interviewer.access_status = USER_ACCESS_STATUS_DEACTIVATED
     db.commit()
     db.refresh(interviewer)
     return interviewer
@@ -157,7 +163,7 @@ def send_interviewer_invitation_email(*, email: str, inviter: User | None = None
 
 
 def create_admin_access(db: Session, *, name: str, email: str) -> User:
-    return create_user(db, name=name, email=email, role="admin", access_status="active")
+    return create_user(db, name=name, email=email, role="admin", access_status=USER_ACCESS_STATUS_ACTIVE)
 
 
 def bootstrap_admin_user(
@@ -181,8 +187,8 @@ def bootstrap_admin_user(
         if existing_user.name != name:
             existing_user.name = name
             changed = True
-        if existing_user.access_status != "active":
-            existing_user.access_status = "active"
+        if existing_user.access_status != USER_ACCESS_STATUS_ACTIVE:
+            existing_user.access_status = USER_ACCESS_STATUS_ACTIVE
             changed = True
         if changed:
             db.commit()
@@ -198,7 +204,7 @@ def bootstrap_admin_user(
 
     existing_user.role = "admin"
     existing_user.name = name
-    existing_user.access_status = "active"
+    existing_user.access_status = USER_ACCESS_STATUS_ACTIVE
     db.commit()
     db.refresh(existing_user)
     return existing_user, "promoted"
@@ -222,7 +228,7 @@ def _upsert_founder_admin(db: Session, *, workos_user: Any) -> User:
             email=email,
             password_hash=_placeholder_password_hash(),
             role="admin",
-            access_status="active",
+            access_status=USER_ACCESS_STATUS_ACTIVE,
             workos_user_id=getattr(workos_user, "id", None),
             provider_profile_image_url=getattr(workos_user, "profile_picture_url", None),
             last_sign_in_at=datetime.utcnow(),
@@ -233,7 +239,7 @@ def _upsert_founder_admin(db: Session, *, workos_user: Any) -> User:
         return user
 
     existing_user.role = "admin"
-    existing_user.access_status = "active"
+    existing_user.access_status = USER_ACCESS_STATUS_ACTIVE
     existing_user.workos_user_id = getattr(workos_user, "id", None)
     existing_user.provider_profile_image_url = getattr(workos_user, "profile_picture_url", None)
     existing_user.last_sign_in_at = datetime.utcnow()
@@ -255,7 +261,7 @@ def sync_user_from_workos_identity(db: Session, workos_user: Any, expected_role:
     elif user is None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Your account is not authorized for this app.")
 
-    if user.access_status == "deactivated":
+    if user.access_status == USER_ACCESS_STATUS_DEACTIVATED:
         logger.warning("auth.deactivated_account email=%s", email)
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This account has been deactivated.")
 
@@ -269,8 +275,8 @@ def sync_user_from_workos_identity(db: Session, workos_user: Any, expected_role:
     user.workos_user_id = getattr(workos_user, "id", None)
     user.provider_profile_image_url = getattr(workos_user, "profile_picture_url", None)
     user.last_sign_in_at = datetime.utcnow()
-    if user.role == "interviewer" and user.access_status == "invited":
-        user.access_status = "active"
+    if user.role == "interviewer" and user.access_status == USER_ACCESS_STATUS_INVITED:
+        user.access_status = USER_ACCESS_STATUS_ACTIVE
     if not user.name:
         user.name = _derive_display_name(workos_user)
 
@@ -294,7 +300,7 @@ def get_current_user_from_token(token: str, db: Session) -> User:
     user = db.query(User).filter(User.email == _normalize_email(email)).first()
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
-    if user.role == "interviewer" and user.access_status == "deactivated":
+    if user.role == "interviewer" and user.access_status == USER_ACCESS_STATUS_DEACTIVATED:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This account has been deactivated.")
     return user
 
@@ -446,7 +452,7 @@ def ensure_dev_admin_user(db: Session) -> User | None:
     if existing_user:
         if existing_user.role != "admin":
             existing_user.role = "admin"
-            existing_user.access_status = "active"
+            existing_user.access_status = USER_ACCESS_STATUS_ACTIVE
             db.commit()
             db.refresh(existing_user)
         return existing_user
@@ -456,7 +462,7 @@ def ensure_dev_admin_user(db: Session) -> User | None:
         email=_normalize_email(settings.DEV_ADMIN_EMAIL),
         password_hash=_placeholder_password_hash(),
         role="admin",
-        access_status="active",
+        access_status=USER_ACCESS_STATUS_ACTIVE,
     )
     db.add(admin_user)
     db.commit()

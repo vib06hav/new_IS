@@ -4,10 +4,9 @@ from copy import deepcopy
 from typing import Any
 import uuid
 
+from app.domain.statuses import QUESTION_STATUS_VALUES, WORKSPACE_STATUS_VALUES
 
-QUESTION_STATUS_VALUES = {"unasked", "satisfactory", "mixed", "unsatisfactory"}
 QUESTION_SOURCE_VALUES = {"generated", "custom"}
-WORKSPACE_STATUS_VALUES = {"draft", "launched", "postgame", "completed"}
 
 
 def _normalize_follow_up(

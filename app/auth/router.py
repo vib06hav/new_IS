@@ -18,6 +18,7 @@ from app.auth.workos import (
 )
 from app.config import settings
 from app.database import get_db
+from app.domain.statuses import USER_ACCESS_STATUS_DEACTIVATED
 from app.models.user import User
 from app.auth.dependencies import get_current_user
 from app.security.csrf import clear_csrf_cookie, generate_csrf_token, set_csrf_cookie
@@ -140,7 +141,7 @@ def get_session(
     portal: str | None = Query(default=None, pattern="^(admin|interviewer)$"),
     current_user: User = Depends(get_current_user),
 ):
-    if current_user.access_status == "deactivated":
+    if current_user.access_status == USER_ACCESS_STATUS_DEACTIVATED:
         logger.warning("auth.session.deactivated user_id=%s", current_user.id)
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This account has been deactivated.")
 

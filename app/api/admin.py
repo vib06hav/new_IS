@@ -25,6 +25,14 @@ from app.api.schemas import (
 )
 from app.auth.dependencies import require_admin
 from app.database import get_db
+from app.domain.statuses import (
+    APPLICATION_STATUS_ASSIGNED,
+    APPLICATION_STATUS_FAILED,
+    APPLICATION_STATUS_PROCESSED,
+    APPLICATION_STATUS_PROCESSING,
+    APPLICATION_STATUS_READY,
+    APPLICATION_STATUSES_QUEUE_REMOVABLE,
+)
 from app.final_report_exports import sync_final_report_export
 from app.llm.client import get_llm_capacity_snapshot
 from app.llm.control import CapacityFullError, generation_job_limiter
@@ -105,7 +113,7 @@ def retry_application(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status != "FAILED":
+    if application.status != APPLICATION_STATUS_FAILED:
         raise HTTPException(status_code=409, detail="Only FAILED applications can be retried")
 
     canonical_record = get_canonical_record(db, application_id)
@@ -137,11 +145,11 @@ def retry_application(
             if persisted_final_report is not None:
                 sync_final_report_export(storage=get_storage_service(), final_report=persisted_final_report)
                 persisted_final_report.export_updated_at = datetime.utcnow()
-            application.status = "READY"
+            application.status = APPLICATION_STATUS_READY
             application.last_activity_at = datetime.utcnow()
             db.commit()
         else:
-            application.status = "PROCESSING"
+            application.status = APPLICATION_STATUS_PROCESSING
             application.last_activity_at = datetime.utcnow()
             enqueue_processing_job(db, application_id)
             db.commit()
@@ -150,13 +158,13 @@ def retry_application(
         return build_application_list_item(application)
     except HTTPException:
         db.rollback()
-        application.status = "FAILED"
+        application.status = APPLICATION_STATUS_FAILED
         application.last_activity_at = datetime.utcnow()
         db.commit()
         raise
     except Exception:
         db.rollback()
-        application.status = "FAILED"
+        application.status = APPLICATION_STATUS_FAILED
         application.last_activity_at = datetime.utcnow()
         db.commit()
         raise
@@ -169,7 +177,7 @@ def generate_final_report(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status != "PROCESSED":
+    if application.status != APPLICATION_STATUS_PROCESSED:
         raise HTTPException(status_code=409, detail="Only PROCESSED applications can generate a final report")
 
     canonical_record = get_canonical_record(db, application_id)
@@ -202,7 +210,7 @@ def generate_final_report(
             db.flush()
             sync_final_report_export(storage=get_storage_service(), final_report=final_report)
             final_report.export_updated_at = datetime.utcnow()
-            application.status = "READY"
+            application.status = APPLICATION_STATUS_READY
             application.last_activity_at = datetime.utcnow()
             db.commit()
             db.refresh(final_report)
@@ -216,13 +224,13 @@ def generate_final_report(
         raise HTTPException(status_code=429, detail=str(exc)) from exc
     except HTTPException:
         db.rollback()
-        application.status = "FAILED"
+        application.status = APPLICATION_STATUS_FAILED
         application.last_activity_at = datetime.utcnow()
         db.commit()
         raise
     except Exception:
         db.rollback()
-        application.status = "FAILED"
+        application.status = APPLICATION_STATUS_FAILED
         application.last_activity_at = datetime.utcnow()
         db.commit()
         raise
@@ -236,7 +244,7 @@ def assign_application(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status != "READY":
+    if application.status != APPLICATION_STATUS_READY:
         raise HTTPException(status_code=409, detail="Only READY applications can be assigned")
 
     interviewer = _get_interviewer_or_400(db, payload.interviewer_id)
@@ -250,7 +258,7 @@ def assign_application(
         assigned_by=current_user.id,
     )
     db.add(assignment)
-    application.status = "ASSIGNED"
+    application.status = APPLICATION_STATUS_ASSIGNED
     application.last_activity_at = datetime.utcnow()
     db.commit()
     db.refresh(application)
@@ -304,7 +312,7 @@ def remove_application_from_queue(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status not in {"PROCESSING", "FAILED"}:
+    if application.status not in APPLICATION_STATUSES_QUEUE_REMOVABLE:
         raise HTTPException(status_code=409, detail="Only PROCESSING or FAILED queue items can be removed")
 
     storage_key = application.storage_key
@@ -341,7 +349,7 @@ def reassign_application(
     current_user: User = Depends(require_admin),
 ):
     application = get_application_or_404(db, application_id)
-    if application.status != "ASSIGNED":
+    if application.status != APPLICATION_STATUS_ASSIGNED:
         raise HTTPException(status_code=409, detail="Only ASSIGNED applications can be reassigned")
 
     interviewer = _get_interviewer_or_400(db, payload.interviewer_id)
@@ -353,7 +361,7 @@ def reassign_application(
     assignment.assigned_by = current_user.id
     assignment.assigned_at = datetime.utcnow()
     assignment.is_hidden_for_interviewer = False
-    application.status = "ASSIGNED"
+    application.status = APPLICATION_STATUS_ASSIGNED
     application.last_activity_at = datetime.utcnow()
     db.commit()
     db.refresh(application)

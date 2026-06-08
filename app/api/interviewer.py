@@ -21,6 +21,13 @@ from app.api.schemas import (
 )
 from app.auth.dependencies import require_interviewer
 from app.database import get_db
+from app.domain.statuses import (
+    APPLICATION_STATUS_COMPLETE,
+    WORKSPACE_STATUS_COMPLETED,
+    WORKSPACE_STATUS_DRAFT,
+    WORKSPACE_STATUS_LAUNCHED,
+    WORKSPACE_STATUS_POSTGAME,
+)
 from app.interview_refinement import InterviewRefinementError, refine_interview_text
 from app.interview_workspace import build_workspace_seed, normalize_workspace_content
 from app.models.application import Application
@@ -137,7 +144,7 @@ def create_interview_workspace(
     workspace = InterviewWorkspace(
         application_id=application_id,
         interviewer_id=current_user.id,
-        status="draft",
+        status=WORKSPACE_STATUS_DRAFT,
         content=build_workspace_seed(final_report.content),
     )
     db.add(workspace)
@@ -187,7 +194,7 @@ def launch_my_interview_workspace(
     workspace = _require_workspace(db, application_id, current_user)
     if payload is not None:
         workspace.content = normalize_workspace_content(payload.content.model_dump())
-    workspace.status = "launched"
+    workspace.status = WORKSPACE_STATUS_LAUNCHED
     if not workspace.launched_at:
         workspace.launched_at = datetime.utcnow()
     workspace.updated_at = datetime.utcnow()
@@ -211,7 +218,7 @@ def finish_my_interview_workspace(
         workspace.content = normalize_workspace_content(payload.content.model_dump())
     if not workspace.launched_at:
         workspace.launched_at = datetime.utcnow()
-    workspace.status = "postgame"
+    workspace.status = WORKSPACE_STATUS_POSTGAME
     workspace.updated_at = datetime.utcnow()
 
     application = get_application_or_404(db, application_id)
@@ -232,12 +239,12 @@ def complete_my_interview_workspace(
     workspace.content = normalize_workspace_content(payload.content.model_dump())
     if not workspace.launched_at:
         workspace.launched_at = datetime.utcnow()
-    workspace.status = "completed"
+    workspace.status = WORKSPACE_STATUS_COMPLETED
     workspace.completed_at = datetime.utcnow()
     workspace.updated_at = datetime.utcnow()
 
     application = get_application_or_404(db, application_id)
-    application.status = "COMPLETE"
+    application.status = APPLICATION_STATUS_COMPLETE
     application.last_activity_at = datetime.utcnow()
     db.commit()
     db.refresh(workspace)

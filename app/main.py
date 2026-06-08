@@ -4,6 +4,8 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy.orm import Session
 import logging
+import time
+import uuid
 
 from app.config import settings
 logging.getLogger().setLevel(settings.LOG_LEVEL)
@@ -22,6 +24,7 @@ from app.api.applications import router as applications_router
 from app.api.interviewer import router as interviewer_router
 from app.api.users import router as users_router
 from app.security.csrf import ensure_csrf_protection
+from app.telemetry.request_context import REQUEST_ID_HEADER, get_request_id, reset_request_id, set_request_id
 
 app = FastAPI(title="Interview Standardiser API", version="0.1.0")
 
@@ -34,8 +37,32 @@ if settings.CORS_ALLOWED_ORIGINS:
         allow_origins=settings.CORS_ALLOWED_ORIGINS,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type", settings.CSRF_HEADER_NAME],
+        allow_headers=["Authorization", "Content-Type", settings.CSRF_HEADER_NAME, REQUEST_ID_HEADER],
     )
+
+
+@app.middleware("http")
+async def request_id_and_access_log(request: Request, call_next):
+    request_id = request.headers.get(REQUEST_ID_HEADER) or uuid.uuid4().hex
+    token = set_request_id(request_id)
+    started_at = time.perf_counter()
+    status_code = 500
+    try:
+        response: Response = await call_next(request)
+        status_code = response.status_code
+        response.headers[REQUEST_ID_HEADER] = request_id
+        return response
+    finally:
+        duration_ms = round((time.perf_counter() - started_at) * 1000, 2)
+        logger.info(
+            "http_request method=%s path=%s status_code=%s duration_ms=%s request_id=%s",
+            request.method,
+            request.url.path,
+            status_code,
+            duration_ms,
+            request_id,
+        )
+        reset_request_id(token)
 
 
 @app.middleware("http")
@@ -50,6 +77,9 @@ async def enforce_csrf(request: Request, call_next):
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     response: Response = await call_next(request)
+    request_id = get_request_id()
+    if request_id:
+        response.headers[REQUEST_ID_HEADER] = request_id
     script_sources = ["'self'", "https://cdn.jsdelivr.net"]
     style_sources = ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"]
     font_sources = ["'self'", "data:", "https://fonts.gstatic.com"]
@@ -106,3 +136,64 @@ def health_check(db: Session = Depends(get_db)):
             "coordination": "redis" if coordination.uses_redis else "in-memory",
         }
     return {"status": "ok"}
+
+
+@app.get("/readiness")
+def readiness_check():
+    checks: dict[str, dict[str, object]] = {}
+
+    db = SessionLocal()
+    try:
+        db.execute(text("SELECT 1"))
+        checks["database"] = {"status": "ok"}
+    except Exception as exc:
+        checks["database"] = {"status": "error", "detail": exc.__class__.__name__}
+    finally:
+        db.close()
+
+    try:
+        coordination = get_coordination_manager()
+        checks["coordination"] = {
+            "status": "ok",
+            "backend": "redis" if coordination.uses_redis else "in-memory",
+        }
+    except Exception as exc:
+        checks["coordination"] = {"status": "error", "detail": exc.__class__.__name__}
+
+    checks["storage"] = {
+        "status": "ok",
+        "backend": settings.STORAGE_BACKEND,
+        "configured": _storage_configured(),
+    }
+
+    checks["llm_config"] = {
+        "status": "ok" if _llm_configured() else "degraded",
+        "provider": settings.LLM_PROVIDER,
+        "live_calls_disabled": settings.LLM_DISABLE_LIVE_CALLS,
+    }
+
+    overall_status = "ok" if all(check["status"] == "ok" for check in checks.values()) else "degraded"
+    return {"status": overall_status, "checks": checks}
+
+
+def _llm_configured() -> bool:
+    if settings.LLM_DISABLE_LIVE_CALLS:
+        return True
+    if settings.LLM_PROVIDER == "openrouter":
+        return bool(settings.LLM_ENDPOINT and settings.LLM_MODEL_NAME and settings.LLM_API_KEY)
+    if settings.LLM_PROVIDER == "aicredits":
+        return bool(
+            settings.AICREDITS_GENERATION_API_KEY
+            and settings.AICREDITS_REPORT_CHAT_API_KEY
+            and settings.AICREDITS_INTERVIEW_REFINEMENT_API_KEY
+            and settings.AICREDITS_QUESTION_REGEN_API_KEY
+        )
+    return False
+
+
+def _storage_configured() -> bool:
+    if settings.STORAGE_BACKEND == "local":
+        return bool(settings.UPLOAD_DIRECTORY)
+    if settings.STORAGE_BACKEND == "minio":
+        return bool(settings.MINIO_ENDPOINT and settings.MINIO_ACCESS_KEY and settings.MINIO_SECRET_KEY and settings.MINIO_BUCKET)
+    return False

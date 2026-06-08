@@ -1,0 +1,19 @@
+name: Docker
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build development image
+        run: docker build -t ag-interview-standardiser-api:ci .
+
+      - name: Build production image
+        run: docker build -f Dockerfile.prod -t ag-interview-standardiser-api:prod-ci .

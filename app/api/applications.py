@@ -35,6 +35,7 @@ from app.api.schemas import (
 from app.auth.dependencies import get_current_user, require_admin
 from app.config import settings
 from app.database import get_db
+from app.domain.statuses import APPLICATION_STATUS_PROCESSING
 from app.final_report_exports import final_report_export_stream, FINAL_REPORT_EXPORT_CONTENT_TYPE
 from app.models.application import Application
 from app.models.user import User
@@ -188,7 +189,7 @@ def upload_application(
         display_id=display_id,
         uploaded_by=current_user.id,
         storage_key=storage_key,
-        status="PROCESSING",
+        status=APPLICATION_STATUS_PROCESSING,
     )
     db.add(db_app)
     try:

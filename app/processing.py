@@ -11,6 +11,14 @@ from app.agents.orchestrator import run_deterministic_pipeline
 from app.coordination import LockNotAcquiredError, get_coordination_manager
 from app.config import settings
 from app.database import SessionLocal
+from app.domain.statuses import (
+    APPLICATION_STATUS_FAILED,
+    APPLICATION_STATUS_PROCESSING,
+    PROCESSING_JOB_STATUS_COMPLETED,
+    PROCESSING_JOB_STATUS_FAILED,
+    PROCESSING_JOB_STATUS_QUEUED,
+    PROCESSING_JOB_STATUS_RUNNING,
+)
 from app.models.application import Application
 from app.models.processing_job import ProcessingJob
 from app.storage import get_storage_service
@@ -20,10 +28,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 JOB_TYPE_DETERMINISTIC_PIPELINE = "deterministic_pipeline"
-JOB_STATUS_QUEUED = "queued"
-JOB_STATUS_RUNNING = "running"
-JOB_STATUS_COMPLETED = "completed"
-JOB_STATUS_FAILED = "failed"
+JOB_STATUS_QUEUED = PROCESSING_JOB_STATUS_QUEUED
+JOB_STATUS_RUNNING = PROCESSING_JOB_STATUS_RUNNING
+JOB_STATUS_COMPLETED = PROCESSING_JOB_STATUS_COMPLETED
+JOB_STATUS_FAILED = PROCESSING_JOB_STATUS_FAILED
 
 CLAIM_LOCK_TIMEOUT_SECONDS = 15.0
 
@@ -79,7 +87,7 @@ def recover_stale_processing_jobs(db: Session) -> int:
             job.started_at = None
             job.finished_at = None
             if application is not None:
-                application.status = "PROCESSING"
+                application.status = APPLICATION_STATUS_PROCESSING
                 application.last_activity_at = datetime.utcnow()
         else:
             job.status = JOB_STATUS_FAILED
@@ -87,7 +95,7 @@ def recover_stale_processing_jobs(db: Session) -> int:
             job.finished_at = datetime.utcnow()
             job.last_error = "Stale running job exceeded max attempts"
             if application is not None:
-                application.status = "FAILED"
+                application.status = APPLICATION_STATUS_FAILED
                 application.last_activity_at = datetime.utcnow()
         recovered += 1
     if recovered:
@@ -176,7 +184,7 @@ def process_next_processing_job() -> bool:
                 job.started_at = None
                 job.finished_at = None
                 if application is not None:
-                    application.status = "PROCESSING"
+                    application.status = APPLICATION_STATUS_PROCESSING
                     application.last_activity_at = datetime.utcnow()
                 db.commit()
         except Exception as exc:
@@ -192,7 +200,7 @@ def process_next_processing_job() -> bool:
                     job.started_at = None
                     job.finished_at = None
                     if application is not None:
-                        application.status = "PROCESSING"
+                        application.status = APPLICATION_STATUS_PROCESSING
                         application.last_activity_at = datetime.utcnow()
                 else:
                     _mark_job_failed_permanently(db, job, application, error_message)
@@ -262,7 +270,7 @@ def _mark_job_failed_permanently(
     error_message: str,
 ) -> None:
     if application is not None:
-        application.status = "FAILED"
+        application.status = APPLICATION_STATUS_FAILED
         application.last_activity_at = datetime.utcnow()
     job.status = JOB_STATUS_FAILED
     job.last_error = error_message[:1000]

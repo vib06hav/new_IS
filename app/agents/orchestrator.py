@@ -42,6 +42,7 @@ from app.models.application import Application
 from app.models.canonical_record import CanonicalRecord
 from app.canonical.version import CANONICAL_VERSION
 from app.config import settings
+from app.domain.statuses import APPLICATION_STATUS_FAILED, APPLICATION_STATUS_PROCESSED, APPLICATION_STATUS_READY
 from app.agents.section_scope_resolver import resolve_section_scopes
 from app.utils.sanitizer import sanitize_for_json
 from sqlalchemy.orm import Session
@@ -274,7 +275,7 @@ def run_pipeline(
 
             db_app = db.query(Application).filter(Application.id == app_uuid).first()
             if db_app:
-                db_app.status = "PROCESSED"
+                db_app.status = APPLICATION_STATUS_PROCESSED
 
             db.commit()
             logger.info(f"Canonical persisted for {application_id} before LLM boundary")
@@ -542,7 +543,7 @@ def run_synthesis_pipeline(
         if db is not None:
             db_app = db.query(Application).filter(Application.id == uuid.UUID(application_id)).first()
             if db_app:
-                db_app.status = "READY"
+                db_app.status = APPLICATION_STATUS_READY
 
             db.commit()
             logger.info(f"Synthesis stage completed for {application_id}")
@@ -589,7 +590,7 @@ def _handle_abort(
         app_uuid = uuid.UUID(application_id)
         db_app = db.query(Application).filter(Application.id == app_uuid).first()
         if db_app:
-            db_app.status = "FAILED"
+            db_app.status = APPLICATION_STATUS_FAILED
         db.commit()
     except Exception as e:
         db.rollback()
