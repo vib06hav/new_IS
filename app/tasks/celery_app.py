@@ -25,6 +25,7 @@ celery_app = Celery(
     include=[
         "app.tasks.processing",
         "app.tasks.maintenance",
+        "app.tasks.rag",
     ],
 )
 
@@ -49,6 +50,14 @@ celery_app.conf.update(
         "app.tasks.maintenance.recover_stale_processing_jobs_task": {
             "queue": settings.CELERY_QUEUE_MAINTENANCE,
             "routing_key": settings.CELERY_QUEUE_MAINTENANCE,
+        },
+        "app.tasks.rag.index_question_version_task": {
+            "queue": settings.CELERY_QUEUE_GENERATION,
+            "routing_key": settings.CELERY_QUEUE_GENERATION,
+        },
+        "app.tasks.rag.backfill_question_vectors_task": {
+            "queue": settings.CELERY_QUEUE_GENERATION,
+            "routing_key": settings.CELERY_QUEUE_GENERATION,
         },
     },
     task_track_started=True,

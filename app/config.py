@@ -124,6 +124,15 @@ class Settings:
         self.REDIS_URL = os.environ.get("REDIS_URL", "").strip()
         self.REDIS_KEY_PREFIX = os.environ.get("REDIS_KEY_PREFIX", "agis").strip() or "agis"
         self.REDIS_CONNECT_TIMEOUT_SECONDS = os.environ.get("REDIS_CONNECT_TIMEOUT_SECONDS", "2")
+        self.QDRANT_DISABLE = os.environ.get("QDRANT_DISABLE", "true")
+        self.QDRANT_URL = os.environ.get("QDRANT_URL", "").strip()
+        self.QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY", "").strip()
+        self.QDRANT_COLLECTION = os.environ.get("QDRANT_COLLECTION", "agis_question_versions").strip() or "agis_question_versions"
+        self.QDRANT_TIMEOUT_SECONDS = os.environ.get("QDRANT_TIMEOUT_SECONDS", "5")
+        self.RAG_EMBEDDING_MODEL = os.environ.get("RAG_EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5").strip() or "BAAI/bge-small-en-v1.5"
+        self.RAG_EMBEDDING_DIMENSION = os.environ.get("RAG_EMBEDDING_DIMENSION", "384")
+        self.RAG_RETRIEVAL_LIMIT = os.environ.get("RAG_RETRIEVAL_LIMIT", "3")
+        self.RAG_CANDIDATE_LIMIT = os.environ.get("RAG_CANDIDATE_LIMIT", "15")
         self.CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", self.REDIS_URL).strip()
         self.CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", self.CELERY_BROKER_URL).strip()
         self.CELERY_QUEUE_DEFAULT = os.environ.get("CELERY_QUEUE_DEFAULT", "default").strip() or "default"
@@ -275,6 +284,33 @@ class Settings:
                 errors.append("REDIS_CONNECT_TIMEOUT_SECONDS must be > 0")
         except ValueError:
             errors.append("REDIS_CONNECT_TIMEOUT_SECONDS must be a number")
+        self.QDRANT_DISABLE = _parse_bool(self.QDRANT_DISABLE, default=True)
+        if self.QDRANT_URL and not (self.QDRANT_URL.startswith("http://") or self.QDRANT_URL.startswith("https://")):
+            errors.append("QDRANT_URL must be an absolute HTTP(S) URL")
+        try:
+            self.QDRANT_TIMEOUT_SECONDS = float(self.QDRANT_TIMEOUT_SECONDS)
+            if self.QDRANT_TIMEOUT_SECONDS <= 0:
+                errors.append("QDRANT_TIMEOUT_SECONDS must be > 0")
+        except ValueError:
+            errors.append("QDRANT_TIMEOUT_SECONDS must be a number")
+        try:
+            self.RAG_EMBEDDING_DIMENSION = int(self.RAG_EMBEDDING_DIMENSION)
+            if self.RAG_EMBEDDING_DIMENSION <= 0:
+                errors.append("RAG_EMBEDDING_DIMENSION must be > 0")
+        except ValueError:
+            errors.append("RAG_EMBEDDING_DIMENSION must be an integer")
+        try:
+            self.RAG_RETRIEVAL_LIMIT = int(self.RAG_RETRIEVAL_LIMIT)
+            if self.RAG_RETRIEVAL_LIMIT <= 0:
+                errors.append("RAG_RETRIEVAL_LIMIT must be > 0")
+        except ValueError:
+            errors.append("RAG_RETRIEVAL_LIMIT must be an integer")
+        try:
+            self.RAG_CANDIDATE_LIMIT = int(self.RAG_CANDIDATE_LIMIT)
+            if self.RAG_CANDIDATE_LIMIT <= 0:
+                errors.append("RAG_CANDIDATE_LIMIT must be > 0")
+        except ValueError:
+            errors.append("RAG_CANDIDATE_LIMIT must be an integer")
         self.CELERY_TASK_ALWAYS_EAGER = _parse_bool(self.CELERY_TASK_ALWAYS_EAGER)
         self.CELERY_TASK_EAGER_PROPAGATES = _parse_bool(self.CELERY_TASK_EAGER_PROPAGATES, default=True)
         try:
@@ -674,6 +710,10 @@ class Settings:
         logger.info(f"STORAGE_BACKEND: {self.STORAGE_BACKEND}")
         logger.info(f"REDIS_URL configured: {'yes' if self.REDIS_URL else 'no'}")
         logger.info(f"REDIS_KEY_PREFIX: {self.REDIS_KEY_PREFIX}")
+        logger.info(f"QDRANT_URL configured: {'yes' if self.QDRANT_URL else 'no'}")
+        logger.info(f"QDRANT_COLLECTION: {self.QDRANT_COLLECTION}")
+        logger.info(f"QDRANT_DISABLE: {self.QDRANT_DISABLE}")
+        logger.info(f"RAG_EMBEDDING_MODEL: {self.RAG_EMBEDDING_MODEL}")
         logger.info(f"CELERY_BROKER_URL configured: {'yes' if self.CELERY_BROKER_URL else 'no'}")
         logger.info(f"CELERY_QUEUE_PROCESSING: {self.CELERY_QUEUE_PROCESSING}")
         logger.info(f"CORS_ALLOWED_ORIGINS: {self.CORS_ALLOWED_ORIGINS}")

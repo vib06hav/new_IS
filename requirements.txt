@@ -18,3 +18,5 @@ pymupdf==1.27.2
 minio==7.2.20
 redis==6.4.0
 workos==6.0.4
+qdrant-client==1.18.0
+fastembed==0.8.0

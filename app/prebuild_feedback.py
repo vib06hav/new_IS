@@ -29,6 +29,8 @@ from app.models.question_version_rating import QuestionVersionRating
 from app.models.theme_rating import ThemeRating
 from app.models.user import User
 from app.models.vector_corpus_document import VectorCorpusDocument
+from app.rag.indexing import schedule_question_version_index
+from app.rag.question_retrieval import retrieve_question_regeneration_examples
 
 
 VISIBLE_VERSION_LIMIT = 5
@@ -404,14 +406,24 @@ def regenerate_question(
     )
     thread = _get_thread_or_404(db=db, application_id=application.id, thread_id=thread_id)
     active_version = _get_active_version_for_thread(db=db, thread=thread)
-    retrieved_examples = _retrieve_similar_question_examples(
+    retrieval_result = retrieve_question_regeneration_examples(
         db=db,
         application_id=application.id,
         focus_area_id=thread.focus_area_id,
         theme_title=thread.theme_title_snapshot or "",
         theme_direction=thread.theme_direction_snapshot or "",
+        question_role=thread.question_role or "",
         question_text=active_version.question_text,
+        lexical_fallback=lambda: _retrieve_similar_question_examples(
+            db=db,
+            application_id=application.id,
+            focus_area_id=thread.focus_area_id,
+            theme_title=thread.theme_title_snapshot or "",
+            theme_direction=thread.theme_direction_snapshot or "",
+            question_text=active_version.question_text,
+        ),
     )
+    retrieved_examples = retrieval_result.examples
     application_context_snapshot = _build_application_snapshot(final_report.content)
     prompt_messages = _build_question_regeneration_messages(
         application_snapshot=application_context_snapshot,
@@ -450,7 +462,7 @@ def regenerate_question(
         theme_direction_snapshot=thread.theme_direction_snapshot,
         question_group_label_snapshot=thread.question_group_label_snapshot,
         application_context_snapshot=application_context_snapshot,
-        retrieval_context_snapshot={"retrieved_examples": retrieved_examples},
+        retrieval_context_snapshot=retrieval_result.snapshot,
     )
     db.add(new_version)
     db.flush()
@@ -689,6 +701,7 @@ def _build_question_regeneration_messages(
         f"Applicant context:\n{json.dumps(application_snapshot, default=str)}\n\n"
         f"Retrieved prior generated examples:\n{json.dumps(retrieved_examples, default=str)}\n\n"
         "Create another version of the same question role. "
+        "Use retrieved examples only as quality and style guidance; do not copy them. "
         "Keep the same role within the set and the same evidence target. "
         "Do not replace a debugging probe with a motivation probe, and do not replace a bottleneck probe with an aspiration probe. "
         "Return JSON like {\"question_text\": \"...\", \"why_this\": \"...\"}. "
@@ -890,6 +903,7 @@ def _upsert_question_vector_document(*, db: Session, version: QuestionGeneratedV
         document_text=" ".join(part for part in [version.question_text, version.why_this or ""] if part).strip(),
         metadata=metadata,
     )
+    schedule_question_version_index(db, version.id)
 
 
 def _derive_question_role(

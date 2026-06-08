@@ -150,6 +150,12 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
         construct_question_bundle_mock = stack.enter_context(
             patch("app.agents.orchestrator.construct_question_bundle", return_value=question_bundle)
         )
+        retrieve_question_generation_context_mock = stack.enter_context(
+            patch(
+                "app.agents.orchestrator.retrieve_question_generation_context",
+                return_value={"provider": "disabled", "focus_area_examples": []},
+            )
+        )
         stack.enter_context(patch("app.agents.orchestrator.synthesize_interview_focus_areas", return_value="{}"))
         stack.enter_context(
             patch(
@@ -157,7 +163,7 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
                 return_value={"passed": True, "sanitized_output": validated_focus_areas, "violations_log": []},
             )
         )
-        stack.enter_context(patch("app.agents.orchestrator.generate_interview", return_value="{}"))
+        generate_interview_mock = stack.enter_context(patch("app.agents.orchestrator.generate_interview", return_value="{}"))
         stack.enter_context(
             patch(
                 "app.agents.orchestrator.validate_question_groups",
@@ -171,6 +177,8 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
 
     assert construct_focus_area_bundle_mock.call_args.args[0] == call_1_validated
     assert construct_question_bundle_mock.call_args.args[0] == call_1_validated
+    assert retrieve_question_generation_context_mock.call_args.kwargs["question_bundle"] == question_bundle
+    assert generate_interview_mock.call_args.kwargs["rag_context"]["provider"] == "disabled"
     assert assemble_ros_mock.call_args.kwargs["focus_areas"] == validated_focus_areas["focus_areas"]
     assert assemble_ros_mock.call_args.kwargs["question_groups"] == question_groups_validated["question_groups"]
     assert result["ros_v1"]["page_4_focus_areas"]["themes"] == call_1_validated["themes"]

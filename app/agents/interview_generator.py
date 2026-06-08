@@ -1,9 +1,11 @@
 import json
 
+from typing import Any
+
 from app.llm.client import generate
 
 
-def build_interview_messages(bundle: dict, entity_id_map: list) -> list[dict]:
+def build_interview_messages(bundle: dict, entity_id_map: list, rag_context: dict[str, Any] | None = None) -> list[dict]:
     system_prompt = """
 You are writing a lean interview question sheet for a specific applicant.
 
@@ -14,6 +16,9 @@ move directly into the conversation.
 You have two inputs:
 1. Plain-language focus areas that define the territory and why it is worth time.
 2. Grounded signal data that contains the real application details the questions must be based on.
+
+You may also receive retrieved prior question examples. These are quality and style guidance only.
+Do not copy them, do not import their applicant facts, and do not let them override the current applicant's focus areas or evidence.
 
 The focus areas control the direction.
 The signal data controls the specificity and truth.
@@ -164,6 +169,9 @@ FOCUS AREAS (primary input - direction and emphasis):
 ENTITY REFERENCE MAP:
 {json.dumps(entity_id_map, indent=2)}
 
+RETRIEVED PRIOR QUESTION EXAMPLES (quality guidance only - never copy applicant facts):
+{json.dumps(_compact_rag_context(rag_context), indent=2, default=str)}
+
 Return only valid JSON matching the output schema.
 Every question must be grounded in something specific from this application.
 Every group must feel ready for live use in the interview, not like prep notes.
@@ -175,6 +183,41 @@ Every group must feel ready for live use in the interview, not like prep notes.
     ]
 
 
-def generate_interview(bundle: dict, entity_id_map: list) -> str:
-    messages = build_interview_messages(bundle, entity_id_map)
+def generate_interview(bundle: dict, entity_id_map: list, rag_context: dict[str, Any] | None = None) -> str:
+    messages = build_interview_messages(bundle, entity_id_map, rag_context=rag_context)
     return generate(messages, call_label="call_3")
+
+
+def _compact_rag_context(rag_context: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(rag_context, dict):
+        return {"provider": "none", "focus_area_examples": []}
+    compact_focus_areas: list[dict[str, Any]] = []
+    for focus_area in rag_context.get("focus_area_examples") or []:
+        if not isinstance(focus_area, dict):
+            continue
+        examples = []
+        for example in focus_area.get("examples") or []:
+            if not isinstance(example, dict):
+                continue
+            examples.append(
+                {
+                    "question_text": example.get("question_text"),
+                    "question_role": example.get("question_role"),
+                    "why_this": example.get("why_this"),
+                    "rating_avg": example.get("rating_avg"),
+                    "rating_count": example.get("rating_count"),
+                }
+            )
+        compact_focus_areas.append(
+            {
+                "focus_area_id": focus_area.get("focus_area_id"),
+                "focus_area_title": focus_area.get("focus_area_title"),
+                "examples": examples,
+            }
+        )
+    return {
+        "provider": rag_context.get("provider"),
+        "strategy_version": rag_context.get("strategy_version"),
+        "fallback_reason": rag_context.get("fallback_reason"),
+        "focus_area_examples": compact_focus_areas,
+    }
