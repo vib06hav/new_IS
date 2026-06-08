@@ -124,6 +124,17 @@ class Settings:
         self.REDIS_URL = os.environ.get("REDIS_URL", "").strip()
         self.REDIS_KEY_PREFIX = os.environ.get("REDIS_KEY_PREFIX", "agis").strip() or "agis"
         self.REDIS_CONNECT_TIMEOUT_SECONDS = os.environ.get("REDIS_CONNECT_TIMEOUT_SECONDS", "2")
+        self.CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", self.REDIS_URL).strip()
+        self.CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", self.CELERY_BROKER_URL).strip()
+        self.CELERY_QUEUE_DEFAULT = os.environ.get("CELERY_QUEUE_DEFAULT", "default").strip() or "default"
+        self.CELERY_QUEUE_PROCESSING = os.environ.get("CELERY_QUEUE_PROCESSING", "processing").strip() or "processing"
+        self.CELERY_QUEUE_GENERATION = os.environ.get("CELERY_QUEUE_GENERATION", "generation").strip() or "generation"
+        self.CELERY_QUEUE_MAINTENANCE = os.environ.get("CELERY_QUEUE_MAINTENANCE", "maintenance").strip() or "maintenance"
+        self.CELERY_TASK_ALWAYS_EAGER = os.environ.get("CELERY_TASK_ALWAYS_EAGER", "false")
+        self.CELERY_TASK_EAGER_PROPAGATES = os.environ.get("CELERY_TASK_EAGER_PROPAGATES", "true")
+        self.CELERY_WORKER_PREFETCH_MULTIPLIER = os.environ.get("CELERY_WORKER_PREFETCH_MULTIPLIER", "1")
+        self.CELERY_TASK_SOFT_TIME_LIMIT_SECONDS = os.environ.get("CELERY_TASK_SOFT_TIME_LIMIT_SECONDS", "540")
+        self.CELERY_TASK_TIME_LIMIT_SECONDS = os.environ.get("CELERY_TASK_TIME_LIMIT_SECONDS", "600")
         self.MAX_UPLOAD_SIZE_MB = os.environ.get("MAX_UPLOAD_SIZE_MB")
         self.MAX_PROFILE_IMAGE_SIZE_MB = os.environ.get("MAX_PROFILE_IMAGE_SIZE_MB", "5")
         self.ENABLE_BACKGROUND_WORKERS = os.environ.get("ENABLE_BACKGROUND_WORKERS", "true")
@@ -248,12 +259,48 @@ class Settings:
             or self.REDIS_URL.startswith("unix://")
         ):
             errors.append("REDIS_URL must use redis://, rediss://, or unix://")
+        for celery_url_name in ("CELERY_BROKER_URL", "CELERY_RESULT_BACKEND"):
+            celery_url = getattr(self, celery_url_name)
+            if celery_url and not (
+                celery_url.startswith("redis://")
+                or celery_url.startswith("rediss://")
+                or celery_url.startswith("unix://")
+                or celery_url.startswith("memory://")
+                or celery_url.startswith("cache+memory://")
+            ):
+                errors.append(f"{celery_url_name} must use redis://, rediss://, unix://, memory://, or cache+memory://")
         try:
             self.REDIS_CONNECT_TIMEOUT_SECONDS = float(self.REDIS_CONNECT_TIMEOUT_SECONDS)
             if self.REDIS_CONNECT_TIMEOUT_SECONDS <= 0:
                 errors.append("REDIS_CONNECT_TIMEOUT_SECONDS must be > 0")
         except ValueError:
             errors.append("REDIS_CONNECT_TIMEOUT_SECONDS must be a number")
+        self.CELERY_TASK_ALWAYS_EAGER = _parse_bool(self.CELERY_TASK_ALWAYS_EAGER)
+        self.CELERY_TASK_EAGER_PROPAGATES = _parse_bool(self.CELERY_TASK_EAGER_PROPAGATES, default=True)
+        try:
+            self.CELERY_WORKER_PREFETCH_MULTIPLIER = int(self.CELERY_WORKER_PREFETCH_MULTIPLIER)
+            if self.CELERY_WORKER_PREFETCH_MULTIPLIER <= 0:
+                errors.append("CELERY_WORKER_PREFETCH_MULTIPLIER must be > 0")
+        except ValueError:
+            errors.append("CELERY_WORKER_PREFETCH_MULTIPLIER must be an integer")
+        try:
+            self.CELERY_TASK_SOFT_TIME_LIMIT_SECONDS = int(self.CELERY_TASK_SOFT_TIME_LIMIT_SECONDS)
+            if self.CELERY_TASK_SOFT_TIME_LIMIT_SECONDS <= 0:
+                errors.append("CELERY_TASK_SOFT_TIME_LIMIT_SECONDS must be > 0")
+        except ValueError:
+            errors.append("CELERY_TASK_SOFT_TIME_LIMIT_SECONDS must be an integer")
+        try:
+            self.CELERY_TASK_TIME_LIMIT_SECONDS = int(self.CELERY_TASK_TIME_LIMIT_SECONDS)
+            if self.CELERY_TASK_TIME_LIMIT_SECONDS <= 0:
+                errors.append("CELERY_TASK_TIME_LIMIT_SECONDS must be > 0")
+        except ValueError:
+            errors.append("CELERY_TASK_TIME_LIMIT_SECONDS must be an integer")
+        if (
+            isinstance(self.CELERY_TASK_SOFT_TIME_LIMIT_SECONDS, int)
+            and isinstance(self.CELERY_TASK_TIME_LIMIT_SECONDS, int)
+            and self.CELERY_TASK_SOFT_TIME_LIMIT_SECONDS >= self.CELERY_TASK_TIME_LIMIT_SECONDS
+        ):
+            errors.append("CELERY_TASK_SOFT_TIME_LIMIT_SECONDS must be less than CELERY_TASK_TIME_LIMIT_SECONDS")
 
         if self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES:
             try:
@@ -627,6 +674,8 @@ class Settings:
         logger.info(f"STORAGE_BACKEND: {self.STORAGE_BACKEND}")
         logger.info(f"REDIS_URL configured: {'yes' if self.REDIS_URL else 'no'}")
         logger.info(f"REDIS_KEY_PREFIX: {self.REDIS_KEY_PREFIX}")
+        logger.info(f"CELERY_BROKER_URL configured: {'yes' if self.CELERY_BROKER_URL else 'no'}")
+        logger.info(f"CELERY_QUEUE_PROCESSING: {self.CELERY_QUEUE_PROCESSING}")
         logger.info(f"CORS_ALLOWED_ORIGINS: {self.CORS_ALLOWED_ORIGINS}")
         logger.info(f"TRUSTED_HOSTS: {self.TRUSTED_HOSTS}")
         logger.info(f"ENABLE_BEARER_TOKEN_AUTH: {self.ENABLE_BEARER_TOKEN_AUTH}")

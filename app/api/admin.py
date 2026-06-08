@@ -42,7 +42,7 @@ from app.models.canonical_record import CanonicalRecord
 from app.models.final_report import FinalReport
 from app.models.processing_job import ProcessingJob
 from app.models.user import User
-from app.processing import enqueue_processing_job
+from app.processing import JOB_STATUS_FAILED, dispatch_processing_job, enqueue_processing_job, revoke_processing_job
 from app.storage import get_storage_service
 
 
@@ -77,7 +77,10 @@ def _delete_application_with_related_data(db: Session, application: Application)
         db.delete(final_report)
     db.query(CanonicalRecord).filter(CanonicalRecord.application_id == application.id).delete()
     db.query(Assignment).filter(Assignment.application_id == application.id).delete()
-    db.query(ProcessingJob).filter(ProcessingJob.application_id == application.id).delete()
+    processing_jobs = db.query(ProcessingJob).filter(ProcessingJob.application_id == application.id).all()
+    for job in processing_jobs:
+        revoke_processing_job(job)
+        db.delete(job)
     db.delete(application)
 
 
@@ -151,8 +154,19 @@ def retry_application(
         else:
             application.status = APPLICATION_STATUS_PROCESSING
             application.last_activity_at = datetime.utcnow()
-            enqueue_processing_job(db, application_id)
+            job = enqueue_processing_job(db, application_id)
             db.commit()
+            try:
+                dispatch_processing_job(job.id)
+            except Exception as exc:
+                application.status = APPLICATION_STATUS_FAILED
+                application.last_activity_at = datetime.utcnow()
+                job.status = JOB_STATUS_FAILED
+                job.last_error = f"Failed to dispatch Celery task: {exc}"[:1000]
+                job.error_code = "celery_dispatch_failed"
+                job.finished_at = datetime.utcnow()
+                db.commit()
+                raise HTTPException(status_code=503, detail="Retry saved, but background processing could not be queued") from exc
 
         db.refresh(application)
         return build_application_list_item(application)

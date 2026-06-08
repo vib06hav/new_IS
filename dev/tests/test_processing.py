@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import uuid
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import fitz
@@ -18,6 +19,7 @@ from app.processing import (
     JOB_STATUS_COMPLETED,
     JOB_STATUS_FAILED,
     JOB_STATUS_QUEUED,
+    dispatch_processing_job,
     enqueue_processing_job,
     process_next_processing_job,
     recover_stale_processing_jobs,
@@ -58,6 +60,29 @@ def test_enqueue_processing_job_deduplicates_active_jobs():
         jobs = db.query(ProcessingJob).filter(ProcessingJob.application_id == application_id).all()
         assert len(jobs) == 1
         assert jobs[0].status == JOB_STATUS_QUEUED
+    finally:
+        db.close()
+
+
+def test_dispatch_processing_job_records_celery_task_id():
+    db = TestingSessionLocal()
+    try:
+        db.query(ProcessingJob).delete()
+        application_id = uuid.uuid4()
+        job = enqueue_processing_job(db, application_id)
+        db.commit()
+
+        with patch("app.processing.SessionLocal", TestingSessionLocal), patch(
+            "app.tasks.processing.run_processing_job_task.apply_async",
+            return_value=SimpleNamespace(id="celery-task-123"),
+        ) as mocked_apply:
+            task_id = dispatch_processing_job(job.id)
+
+        assert task_id == "celery-task-123"
+        mocked_apply.assert_called_once()
+        db.refresh(job)
+        assert job.celery_task_id == "celery-task-123"
+        assert job.queue_name == settings.CELERY_QUEUE_PROCESSING
     finally:
         db.close()
 

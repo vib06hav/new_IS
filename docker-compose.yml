@@ -25,7 +25,7 @@ services:
       migrate:
         condition: service_completed_successfully
       redis:
-        condition: service_started
+        condition: service_healthy
       minio:
         condition: service_started
       minio-init:
@@ -33,7 +33,14 @@ services:
 
   worker:
     build: .
-    command: ["python", "-m", "app.worker"]
+    command: [
+      "celery",
+      "-A",
+      "app.tasks.celery_app.celery_app",
+      "worker",
+      "--loglevel=INFO",
+      "--queues=processing,generation,maintenance,default"
+    ]
     volumes:
       - .:/app
       - uploads_volume:/app/uploads
@@ -45,7 +52,7 @@ services:
       migrate:
         condition: service_completed_successfully
       redis:
-        condition: service_started
+        condition: service_healthy
       minio:
         condition: service_started
       minio-init:
@@ -74,6 +81,11 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis_volume:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   minio:
     image: minio/minio:latest

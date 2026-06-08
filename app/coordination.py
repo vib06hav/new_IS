@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import sys
 import threading
 from contextlib import contextmanager
 from functools import lru_cache
@@ -127,18 +128,23 @@ class CoordinationManager:
     def acquire(self, key: str, timeout_seconds: float, blocking_timeout: float = 0.0) -> Iterator[None]:
         namespaced_key = f"{self._prefix}:{key}"
         if self._redis_backend is not None:
+            redis_lock = self._redis_backend.acquire(
+                namespaced_key,
+                timeout_seconds=timeout_seconds,
+                blocking_timeout=blocking_timeout,
+            )
             try:
-                with self._redis_backend.acquire(
-                    namespaced_key,
-                    timeout_seconds=timeout_seconds,
-                    blocking_timeout=blocking_timeout,
-                ):
-                    yield
-                    return
+                redis_lock.__enter__()
             except LockNotAcquiredError:
                 raise
             except Exception:  # pragma: no cover - defensive fallback path
                 logger.warning("Redis coordination failed for %s; falling back to in-memory lock", namespaced_key, exc_info=True)
+            else:
+                try:
+                    yield
+                finally:
+                    redis_lock.__exit__(*sys.exc_info())
+                return
         with self._fallback_backend.acquire(
             namespaced_key,
             timeout_seconds=timeout_seconds,

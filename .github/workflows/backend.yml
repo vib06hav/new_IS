@@ -23,6 +23,15 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
 
     env:
       DATABASE_URL: postgresql+psycopg2://postgres:postgres_password@localhost:5432/ag_test
@@ -67,6 +76,9 @@ jobs:
       MAX_UPLOAD_SIZE_MB: "10"
       MAX_PROFILE_IMAGE_SIZE_MB: "5"
       REDIS_URL: ""
+      CELERY_BROKER_URL: redis://localhost:6379/0
+      CELERY_RESULT_BACKEND: redis://localhost:6379/0
+      CELERY_TASK_ALWAYS_EAGER: "true"
       APP_ENV: development
       LOG_LEVEL: INFO
       DEV_BOOTSTRAP_ADMIN: "false"

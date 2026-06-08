@@ -172,6 +172,8 @@ def readiness_check():
         "live_calls_disabled": settings.LLM_DISABLE_LIVE_CALLS,
     }
 
+    checks["task_queue"] = _task_queue_readiness()
+
     overall_status = "ok" if all(check["status"] == "ok" for check in checks.values()) else "degraded"
     return {"status": overall_status, "checks": checks}
 
@@ -197,3 +199,38 @@ def _storage_configured() -> bool:
     if settings.STORAGE_BACKEND == "minio":
         return bool(settings.MINIO_ENDPOINT and settings.MINIO_ACCESS_KEY and settings.MINIO_SECRET_KEY and settings.MINIO_BUCKET)
     return False
+
+
+def _task_queue_readiness() -> dict[str, object]:
+    if not settings.CELERY_BROKER_URL:
+        return {"status": "degraded", "backend": "none", "configured": False}
+    if settings.CELERY_TASK_ALWAYS_EAGER:
+        return {"status": "ok", "backend": "eager", "configured": True}
+    if settings.CELERY_BROKER_URL.startswith("memory://"):
+        return {"status": "ok", "backend": "memory", "configured": True}
+    try:
+        from redis import Redis
+
+        client = Redis.from_url(
+            settings.CELERY_BROKER_URL,
+            socket_connect_timeout=settings.REDIS_CONNECT_TIMEOUT_SECONDS,
+            socket_timeout=settings.REDIS_CONNECT_TIMEOUT_SECONDS,
+        )
+        client.ping()
+        return {
+            "status": "ok",
+            "backend": "redis",
+            "configured": True,
+            "queues": {
+                "processing": settings.CELERY_QUEUE_PROCESSING,
+                "generation": settings.CELERY_QUEUE_GENERATION,
+                "maintenance": settings.CELERY_QUEUE_MAINTENANCE,
+            },
+        }
+    except Exception as exc:
+        return {
+            "status": "error",
+            "backend": "redis",
+            "configured": True,
+            "detail": exc.__class__.__name__,
+        }

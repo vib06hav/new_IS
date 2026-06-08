@@ -2,6 +2,7 @@ import os
 import tempfile
 import uuid
 from contextlib import contextmanager
+from datetime import datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
@@ -35,11 +36,11 @@ from app.api.schemas import (
 from app.auth.dependencies import get_current_user, require_admin
 from app.config import settings
 from app.database import get_db
-from app.domain.statuses import APPLICATION_STATUS_PROCESSING
+from app.domain.statuses import APPLICATION_STATUS_FAILED, APPLICATION_STATUS_PROCESSING
 from app.final_report_exports import final_report_export_stream, FINAL_REPORT_EXPORT_CONTENT_TYPE
 from app.models.application import Application
 from app.models.user import User
-from app.processing import enqueue_processing_job
+from app.processing import JOB_STATUS_FAILED, dispatch_processing_job, enqueue_processing_job
 from app.prebuild_feedback import (
     activate_question_version,
     build_prebuild_feedback_state,
@@ -193,12 +194,24 @@ def upload_application(
     )
     db.add(db_app)
     try:
-        enqueue_processing_job(db, application_id)
+        job = enqueue_processing_job(db, application_id)
         db.commit()
     except IntegrityError as exc:
         db.rollback()
         storage.delete(storage_key)
         raise _handle_application_insert_integrity_error(exc) from exc
+    try:
+        dispatch_processing_job(job.id)
+    except Exception as exc:
+        logger.exception("Failed to dispatch processing job for %s", application_id)
+        db_app.status = APPLICATION_STATUS_FAILED
+        db_app.last_activity_at = datetime.utcnow()
+        job.status = JOB_STATUS_FAILED
+        job.last_error = f"Failed to dispatch Celery task: {exc}"[:1000]
+        job.error_code = "celery_dispatch_failed"
+        job.finished_at = datetime.utcnow()
+        db.commit()
+        raise HTTPException(status_code=503, detail="Upload saved, but background processing could not be queued") from exc
     db.refresh(db_app)
     logger.info("Upload queued for background processing for %s", application_id)
     return ApplicationUploadResponse(

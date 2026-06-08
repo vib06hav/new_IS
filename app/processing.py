@@ -34,6 +34,9 @@ JOB_STATUS_COMPLETED = PROCESSING_JOB_STATUS_COMPLETED
 JOB_STATUS_FAILED = PROCESSING_JOB_STATUS_FAILED
 
 CLAIM_LOCK_TIMEOUT_SECONDS = 15.0
+JOB_PROGRESS_QUEUED = 0.0
+JOB_PROGRESS_RUNNING = 0.1
+JOB_PROGRESS_COMPLETED = 1.0
 
 
 def enqueue_processing_job(db: Session, application_id: UUID, *, job_type: str = JOB_TYPE_DETERMINISTIC_PIPELINE) -> ProcessingJob:
@@ -56,10 +59,50 @@ def enqueue_processing_job(db: Session, application_id: UUID, *, job_type: str =
         status=JOB_STATUS_QUEUED,
         attempts=0,
         available_at=datetime.utcnow(),
+        queue_name=settings.CELERY_QUEUE_PROCESSING,
+        progress=JOB_PROGRESS_QUEUED,
     )
     db.add(job)
     db.flush()
     return job
+
+
+def dispatch_processing_job(job_id: UUID) -> str:
+    from app.tasks.processing import run_processing_job_task
+
+    async_result = run_processing_job_task.apply_async(
+        args=[str(job_id)],
+        queue=settings.CELERY_QUEUE_PROCESSING,
+    )
+    db = SessionLocal()
+    try:
+        job = db.query(ProcessingJob).filter(ProcessingJob.id == job_id).first()
+        if job is not None:
+            job.celery_task_id = async_result.id
+            job.queue_name = settings.CELERY_QUEUE_PROCESSING
+            db.commit()
+        logger.info(
+            "processing_job_dispatched job_id=%s celery_task_id=%s queue=%s",
+            job_id,
+            async_result.id,
+            settings.CELERY_QUEUE_PROCESSING,
+        )
+    finally:
+        db.close()
+    return async_result.id
+
+
+def revoke_processing_job(job: ProcessingJob) -> None:
+    if not job.celery_task_id:
+        return
+    from app.tasks.celery_app import celery_app
+
+    celery_app.control.revoke(job.celery_task_id, terminate=False)
+    logger.info(
+        "processing_job_revoked job_id=%s celery_task_id=%s",
+        job.id,
+        job.celery_task_id,
+    )
 
 
 def _retry_backoff_seconds(attempt_number: int) -> float:
@@ -104,6 +147,37 @@ def recover_stale_processing_jobs(db: Session) -> int:
     return recovered
 
 
+def _mark_job_running(db: Session, job: ProcessingJob, *, now: datetime | None = None) -> ProcessingJob | None:
+    now = now or datetime.utcnow()
+    coordination = get_coordination_manager()
+    try:
+        with coordination.acquire(
+            f"processing:claim:{job.id}",
+            timeout_seconds=CLAIM_LOCK_TIMEOUT_SECONDS,
+            blocking_timeout=0.0,
+        ):
+            db.refresh(job)
+            if job.status == JOB_STATUS_COMPLETED:
+                return None
+            if job.status != JOB_STATUS_QUEUED:
+                return None
+            if job.available_at is not None and job.available_at > now:
+                return None
+
+            job.status = JOB_STATUS_RUNNING
+            job.attempts = (job.attempts or 0) + 1
+            job.started_at = datetime.utcnow()
+            job.last_error = None
+            job.error_code = None
+            job.available_at = None
+            job.progress = JOB_PROGRESS_RUNNING
+            db.commit()
+            db.refresh(job)
+            return job
+    except LockNotAcquiredError:
+        return None
+
+
 def _claim_next_processing_job(db: Session) -> ProcessingJob | None:
     recover_stale_processing_jobs(db)
     now = datetime.utcnow()
@@ -116,36 +190,20 @@ def _claim_next_processing_job(db: Session) -> ProcessingJob | None:
     )
     if job is None:
         return None
+    return _mark_job_running(db, job, now=now)
 
-    coordination = get_coordination_manager()
-    try:
-        with coordination.acquire(
-            f"processing:claim:{job.id}",
-            timeout_seconds=CLAIM_LOCK_TIMEOUT_SECONDS,
-            blocking_timeout=0.0,
-        ):
-            db.refresh(job)
-            if job.status != JOB_STATUS_QUEUED:
-                return None
-            if job.available_at is not None and job.available_at > now:
-                return None
 
-            job.status = JOB_STATUS_RUNNING
-            job.attempts = (job.attempts or 0) + 1
-            job.started_at = datetime.utcnow()
-            job.last_error = None
-            job.available_at = None
-            db.commit()
-            db.refresh(job)
-            return job
-    except LockNotAcquiredError:
+def _claim_processing_job(db: Session, job_id: UUID) -> ProcessingJob | None:
+    job = db.query(ProcessingJob).filter(ProcessingJob.id == job_id).first()
+    if job is None:
         return None
+    return _mark_job_running(db, job)
 
 
-def process_next_processing_job() -> bool:
+def process_processing_job(job_id: UUID) -> bool:
     db = SessionLocal()
     try:
-        job = _claim_next_processing_job(db)
+        job = _claim_processing_job(db, job_id)
         if job is None:
             return False
 
@@ -172,6 +230,8 @@ def process_next_processing_job() -> bool:
             job.status = JOB_STATUS_COMPLETED
             job.finished_at = datetime.utcnow()
             job.last_error = None
+            job.error_code = None
+            job.progress = JOB_PROGRESS_COMPLETED
             db.commit()
         except LockNotAcquiredError:
             db.rollback()
@@ -181,8 +241,10 @@ def process_next_processing_job() -> bool:
                 job.status = JOB_STATUS_QUEUED
                 job.available_at = datetime.utcnow() + timedelta(seconds=1)
                 job.last_error = "Skipped because another worker holds the processing lock"
+                job.error_code = "lock_not_acquired"
                 job.started_at = None
                 job.finished_at = None
+                job.progress = JOB_PROGRESS_QUEUED
                 if application is not None:
                     application.status = APPLICATION_STATUS_PROCESSING
                     application.last_activity_at = datetime.utcnow()
@@ -197,8 +259,10 @@ def process_next_processing_job() -> bool:
                     job.status = JOB_STATUS_QUEUED
                     job.available_at = datetime.utcnow() + timedelta(seconds=_retry_backoff_seconds(job.attempts or 1))
                     job.last_error = error_message
+                    job.error_code = exc.__class__.__name__
                     job.started_at = None
                     job.finished_at = None
+                    job.progress = JOB_PROGRESS_QUEUED
                     if application is not None:
                         application.status = APPLICATION_STATUS_PROCESSING
                         application.last_activity_at = datetime.utcnow()
@@ -209,6 +273,26 @@ def process_next_processing_job() -> bool:
         return True
     finally:
         db.close()
+
+
+def process_next_processing_job() -> bool:
+    db = SessionLocal()
+    try:
+        recover_stale_processing_jobs(db)
+        now = datetime.utcnow()
+        job = (
+            db.query(ProcessingJob)
+            .filter(ProcessingJob.job_type == JOB_TYPE_DETERMINISTIC_PIPELINE, ProcessingJob.status == JOB_STATUS_QUEUED)
+            .filter((ProcessingJob.available_at.is_(None)) | (ProcessingJob.available_at <= now))
+            .order_by(ProcessingJob.created_at.asc())
+            .first()
+        )
+        if job is None:
+            return False
+        job_id = job.id
+    finally:
+        db.close()
+    return process_processing_job(job_id)
 
 
 class ProcessingWorker:
@@ -274,5 +358,7 @@ def _mark_job_failed_permanently(
         application.last_activity_at = datetime.utcnow()
     job.status = JOB_STATUS_FAILED
     job.last_error = error_message[:1000]
+    job.error_code = "permanent_failure"
     job.available_at = None
+    job.progress = JOB_PROGRESS_COMPLETED
     job.finished_at = datetime.utcnow()

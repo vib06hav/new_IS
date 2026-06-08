@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 
@@ -15,6 +15,10 @@ class ProcessingJob(Base):
     job_type = Column(String(50), nullable=False)
     status = Column(String(50), nullable=False, server_default="queued")
     attempts = Column(Integer, nullable=False, default=0, server_default="0")
+    celery_task_id = Column(String(255), nullable=True, index=True)
+    queue_name = Column(String(100), nullable=True)
+    progress = Column(Float, nullable=False, default=0.0, server_default="0")
+    error_code = Column(String(100), nullable=True)
     last_error = Column(String(1000), nullable=True)
     available_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
