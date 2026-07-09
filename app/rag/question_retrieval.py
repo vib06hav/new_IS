@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.rag.qdrant_store import qdrant_enabled, search_question_points
+from app.telemetry.langfuse_client import langfuse_observation, update_langfuse_observation
+from app.telemetry.observability import increment_counter
 
 LexicalFallback = Callable[[], list[dict[str, Any]]]
 
@@ -68,62 +70,87 @@ def retrieve_question_regeneration_examples(
         "candidate_limit": settings.RAG_CANDIDATE_LIMIT,
         "limit": settings.RAG_RETRIEVAL_LIMIT,
     }
+    langfuse_metadata = {
+        "operation": "question_regeneration_retrieval",
+        "provider": base_snapshot["provider"],
+        "collection": settings.QDRANT_COLLECTION,
+        "strategy_version": "qdrant_regeneration_v1",
+        "focus_area_id": focus_area_id,
+    }
 
-    if not qdrant_enabled():
-        examples = lexical_fallback()
-        return QuestionRetrievalResult(
-            examples=examples,
-            snapshot={
+    with langfuse_observation(
+        name="rag_retrieval.question_regeneration",
+        as_type="span",
+        metadata=langfuse_metadata,
+        input_payload={"query_text": query_text, "filters": base_snapshot["filters"]},
+    ) as langfuse_span:
+        if not qdrant_enabled():
+            examples = lexical_fallback()
+            snapshot = {
                 **base_snapshot,
                 "provider": "lexical_fallback",
                 "fallback_reason": "qdrant_disabled",
                 "retrieved_examples": examples,
-            },
-        )
-
-    try:
-        candidates = search_question_points(query_text=query_text, limit=settings.RAG_CANDIDATE_LIMIT)
-        examples, selected = _select_examples(
-            candidates=candidates,
-            application_id=application_id,
-            focus_area_id=focus_area_id,
-            question_role=question_role,
-            limit=settings.RAG_RETRIEVAL_LIMIT,
-        )
-        if examples:
+            }
+            _record_retrieval_summary(snapshot)
+            update_langfuse_observation(langfuse_span, metadata=_langfuse_retrieval_metadata(snapshot))
             return QuestionRetrievalResult(
                 examples=examples,
-                snapshot={
+                snapshot=snapshot,
+            )
+
+        try:
+            candidates = search_question_points(query_text=query_text, limit=settings.RAG_CANDIDATE_LIMIT)
+            examples, selected = _select_examples(
+                candidates=candidates,
+                application_id=application_id,
+                focus_area_id=focus_area_id,
+                question_role=question_role,
+                limit=settings.RAG_RETRIEVAL_LIMIT,
+            )
+            if examples:
+                snapshot = {
                     **base_snapshot,
                     "provider": "qdrant",
                     "fallback_reason": None,
                     "selected_points": selected,
                     "retrieved_examples": examples,
-                },
-            )
+                }
+                _record_retrieval_summary(snapshot)
+                update_langfuse_observation(langfuse_span, metadata=_langfuse_retrieval_metadata(snapshot))
+                return QuestionRetrievalResult(
+                    examples=examples,
+                    snapshot=snapshot,
+                )
 
-        fallback_examples = lexical_fallback()
-        return QuestionRetrievalResult(
-            examples=fallback_examples,
-            snapshot={
+            fallback_examples = lexical_fallback()
+            snapshot = {
                 **base_snapshot,
                 "provider": "lexical_fallback",
                 "fallback_reason": "qdrant_empty_after_filtering",
                 "selected_points": [],
                 "retrieved_examples": fallback_examples,
-            },
-        )
-    except Exception as exc:
-        fallback_examples = lexical_fallback()
-        return QuestionRetrievalResult(
-            examples=fallback_examples,
-            snapshot={
+            }
+            _record_retrieval_summary(snapshot)
+            update_langfuse_observation(langfuse_span, metadata=_langfuse_retrieval_metadata(snapshot))
+            return QuestionRetrievalResult(
+                examples=fallback_examples,
+                snapshot=snapshot,
+            )
+        except Exception as exc:
+            fallback_examples = lexical_fallback()
+            snapshot = {
                 **base_snapshot,
                 "provider": "lexical_fallback",
                 "fallback_reason": f"qdrant_error:{type(exc).__name__}",
                 "retrieved_examples": fallback_examples,
-            },
-        )
+            }
+            _record_retrieval_summary(snapshot)
+            update_langfuse_observation(langfuse_span, metadata=_langfuse_retrieval_metadata(snapshot), status_message=str(exc))
+            return QuestionRetrievalResult(
+                examples=fallback_examples,
+                snapshot=snapshot,
+            )
 
 
 def retrieve_question_generation_context(
@@ -141,57 +168,76 @@ def retrieve_question_generation_context(
         "limit_per_focus_area": settings.RAG_RETRIEVAL_LIMIT,
     }
 
-    if not qdrant_enabled():
-        return {
-            **base_snapshot,
-            "fallback_reason": "qdrant_disabled",
-            "focus_area_examples": [],
-        }
+    with langfuse_observation(
+        name="rag_retrieval.question_generation",
+        as_type="span",
+        metadata={
+            "operation": "question_generation_retrieval",
+            "provider": base_snapshot["provider"],
+            "collection": settings.QDRANT_COLLECTION,
+            "strategy_version": "qdrant_generation_v1",
+        },
+        input_payload={"application_id": str(application_id)},
+    ) as langfuse_span:
+        if not qdrant_enabled():
+            snapshot = {
+                **base_snapshot,
+                "fallback_reason": "qdrant_disabled",
+                "focus_area_examples": [],
+            }
+            _record_generation_retrieval_summary(snapshot)
+            update_langfuse_observation(langfuse_span, metadata=_langfuse_generation_metadata(snapshot))
+            return snapshot
 
-    try:
-        for item in question_bundle.get("focus_areas", []) or []:
-            focus_area = item.get("focus_area") if isinstance(item, dict) else None
-            if not isinstance(focus_area, dict):
-                continue
-            focus_area_id = str(focus_area.get("focus_area_id") or "").strip()
-            if not focus_area_id:
-                continue
-            query_text = build_generation_query_text(focus_area_item=item)
-            if not query_text:
-                continue
+        try:
+            for item in question_bundle.get("focus_areas", []) or []:
+                focus_area = item.get("focus_area") if isinstance(item, dict) else None
+                if not isinstance(focus_area, dict):
+                    continue
+                focus_area_id = str(focus_area.get("focus_area_id") or "").strip()
+                if not focus_area_id:
+                    continue
+                query_text = build_generation_query_text(focus_area_item=item)
+                if not query_text:
+                    continue
 
-            candidates = search_question_points(query_text=query_text, limit=settings.RAG_CANDIDATE_LIMIT)
-            examples, selected = _select_examples(
-                candidates=candidates,
-                application_id=application_id,
-                focus_area_id=focus_area_id,
-                question_role="",
-                limit=settings.RAG_RETRIEVAL_LIMIT,
-            )
-            focus_area_contexts.append(
-                {
-                    "focus_area_id": focus_area_id,
-                    "focus_area_title": focus_area.get("title"),
-                    "query_text": query_text,
-                    "selected_points": selected,
-                    "examples": examples,
-                }
-            )
+                candidates = search_question_points(query_text=query_text, limit=settings.RAG_CANDIDATE_LIMIT)
+                examples, selected = _select_examples(
+                    candidates=candidates,
+                    application_id=application_id,
+                    focus_area_id=focus_area_id,
+                    question_role="",
+                    limit=settings.RAG_RETRIEVAL_LIMIT,
+                )
+                focus_area_contexts.append(
+                    {
+                        "focus_area_id": focus_area_id,
+                        "focus_area_title": focus_area.get("title"),
+                        "query_text": query_text,
+                        "selected_points": selected,
+                        "examples": examples,
+                    }
+                )
 
-        return {
-            **base_snapshot,
-            "provider": "qdrant",
-            "fallback_reason": None,
-            "focus_area_examples": focus_area_contexts,
-        }
-    except Exception as exc:
-        return {
-            **base_snapshot,
-            "provider": "disabled",
-            "fallback_reason": f"qdrant_error:{type(exc).__name__}",
-            "focus_area_examples": [],
-        }
-
+            snapshot = {
+                **base_snapshot,
+                "provider": "qdrant",
+                "fallback_reason": None,
+                "focus_area_examples": focus_area_contexts,
+            }
+            _record_generation_retrieval_summary(snapshot)
+            update_langfuse_observation(langfuse_span, metadata=_langfuse_generation_metadata(snapshot))
+            return snapshot
+        except Exception as exc:
+            snapshot = {
+                **base_snapshot,
+                "provider": "disabled",
+                "fallback_reason": f"qdrant_error:{type(exc).__name__}",
+                "focus_area_examples": [],
+            }
+            _record_generation_retrieval_summary(snapshot)
+            update_langfuse_observation(langfuse_span, metadata=_langfuse_generation_metadata(snapshot), status_message=str(exc))
+            return snapshot
 
 def build_generation_query_text(*, focus_area_item: dict[str, Any]) -> str:
     focus_area = focus_area_item.get("focus_area") if isinstance(focus_area_item, dict) else {}
@@ -294,3 +340,60 @@ def _coerce_float(value: Any) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _record_retrieval_summary(snapshot: dict[str, Any]) -> None:
+    increment_counter(
+        "agis_rag_retrieval_results_total",
+        attributes={
+            "operation": "question_regeneration",
+            "provider": str(snapshot.get("provider") or "unknown"),
+            "fallback_reason": str(snapshot.get("fallback_reason") or "none"),
+        },
+    )
+
+
+def _record_generation_retrieval_summary(snapshot: dict[str, Any]) -> None:
+    increment_counter(
+        "agis_rag_retrieval_results_total",
+        attributes={
+            "operation": "question_generation",
+            "provider": str(snapshot.get("provider") or "unknown"),
+            "fallback_reason": str(snapshot.get("fallback_reason") or "none"),
+        },
+    )
+
+
+def _langfuse_retrieval_metadata(snapshot: dict[str, Any]) -> dict[str, Any]:
+    selected_points = snapshot.get("selected_points") if isinstance(snapshot.get("selected_points"), list) else []
+    examples = snapshot.get("retrieved_examples") if isinstance(snapshot.get("retrieved_examples"), list) else []
+    return {
+        "provider": snapshot.get("provider"),
+        "collection": snapshot.get("collection"),
+        "strategy_version": snapshot.get("strategy_version"),
+        "fallback_reason": snapshot.get("fallback_reason"),
+        "selected_point_ids": [item.get("point_id") for item in selected_points if isinstance(item, dict)],
+        "example_count": len(examples),
+    }
+
+
+def _langfuse_generation_metadata(snapshot: dict[str, Any]) -> dict[str, Any]:
+    focus_area_examples = snapshot.get("focus_area_examples") if isinstance(snapshot.get("focus_area_examples"), list) else []
+    selected_point_ids: list[Any] = []
+    example_count = 0
+    for item in focus_area_examples:
+        if not isinstance(item, dict):
+            continue
+        selected_points = item.get("selected_points") if isinstance(item.get("selected_points"), list) else []
+        examples = item.get("examples") if isinstance(item.get("examples"), list) else []
+        selected_point_ids.extend(point.get("point_id") for point in selected_points if isinstance(point, dict))
+        example_count += len(examples)
+    return {
+        "provider": snapshot.get("provider"),
+        "collection": snapshot.get("collection"),
+        "strategy_version": snapshot.get("strategy_version"),
+        "fallback_reason": snapshot.get("fallback_reason"),
+        "focus_area_count": len(focus_area_examples),
+        "example_count": example_count,
+        "selected_point_ids": selected_point_ids,
+    }

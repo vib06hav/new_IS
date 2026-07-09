@@ -133,6 +133,18 @@ class Settings:
         self.RAG_EMBEDDING_DIMENSION = os.environ.get("RAG_EMBEDDING_DIMENSION", "384")
         self.RAG_RETRIEVAL_LIMIT = os.environ.get("RAG_RETRIEVAL_LIMIT", "3")
         self.RAG_CANDIDATE_LIMIT = os.environ.get("RAG_CANDIDATE_LIMIT", "15")
+        self.OBSERVABILITY_ENABLED = os.environ.get("OBSERVABILITY_ENABLED", "false")
+        self.OBSERVABILITY_EXPORTER = os.environ.get("OBSERVABILITY_EXPORTER", "otlp").strip().lower() or "otlp"
+        self.OTEL_SERVICE_NAME = os.environ.get("OTEL_SERVICE_NAME", "ag-interview-standardiser").strip() or "ag-interview-standardiser"
+        self.OTEL_DEPLOYMENT_ENVIRONMENT = os.environ.get("OTEL_DEPLOYMENT_ENVIRONMENT", os.environ.get("APP_ENV", "development")).strip()
+        self.OTEL_EXPORTER_OTLP_ENDPOINT = os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "").strip()
+        self.OTEL_EXPORTER_OTLP_HEADERS = os.environ.get("OTEL_EXPORTER_OTLP_HEADERS", "").strip()
+        self.OTEL_EXPORTER_OTLP_PROTOCOL = os.environ.get("OTEL_EXPORTER_OTLP_PROTOCOL", "http/protobuf").strip().lower()
+        self.LANGFUSE_ENABLED = os.environ.get("LANGFUSE_ENABLED", "false")
+        self.LANGFUSE_HOST = os.environ.get("LANGFUSE_HOST", "").strip()
+        self.LANGFUSE_PUBLIC_KEY = os.environ.get("LANGFUSE_PUBLIC_KEY", "").strip()
+        self.LANGFUSE_SECRET_KEY = os.environ.get("LANGFUSE_SECRET_KEY", "").strip()
+        self.LANGFUSE_CAPTURE_IO = os.environ.get("LANGFUSE_CAPTURE_IO", "false")
         self.CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", self.REDIS_URL).strip()
         self.CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", self.CELERY_BROKER_URL).strip()
         self.CELERY_QUEUE_DEFAULT = os.environ.get("CELERY_QUEUE_DEFAULT", "default").strip() or "default"
@@ -311,6 +323,20 @@ class Settings:
                 errors.append("RAG_CANDIDATE_LIMIT must be > 0")
         except ValueError:
             errors.append("RAG_CANDIDATE_LIMIT must be an integer")
+        self.OBSERVABILITY_ENABLED = _parse_bool(self.OBSERVABILITY_ENABLED, default=False)
+        self.LANGFUSE_ENABLED = _parse_bool(self.LANGFUSE_ENABLED, default=False)
+        self.LANGFUSE_CAPTURE_IO = _parse_bool(self.LANGFUSE_CAPTURE_IO, default=False)
+        if self.OBSERVABILITY_EXPORTER not in {"otlp", "console"}:
+            errors.append("OBSERVABILITY_EXPORTER must be one of {otlp, console}")
+        if self.OTEL_EXPORTER_OTLP_PROTOCOL not in {"http/protobuf", "grpc"}:
+            errors.append("OTEL_EXPORTER_OTLP_PROTOCOL must be one of {http/protobuf, grpc}")
+        if self.OTEL_EXPORTER_OTLP_ENDPOINT and not (
+            self.OTEL_EXPORTER_OTLP_ENDPOINT.startswith("http://")
+            or self.OTEL_EXPORTER_OTLP_ENDPOINT.startswith("https://")
+        ):
+            errors.append("OTEL_EXPORTER_OTLP_ENDPOINT must be an absolute HTTP(S) URL")
+        if self.LANGFUSE_HOST and not (self.LANGFUSE_HOST.startswith("http://") or self.LANGFUSE_HOST.startswith("https://")):
+            errors.append("LANGFUSE_HOST must be an absolute HTTP(S) URL")
         self.CELERY_TASK_ALWAYS_EAGER = _parse_bool(self.CELERY_TASK_ALWAYS_EAGER)
         self.CELERY_TASK_EAGER_PROPAGATES = _parse_bool(self.CELERY_TASK_EAGER_PROPAGATES, default=True)
         try:
@@ -714,6 +740,12 @@ class Settings:
         logger.info(f"QDRANT_COLLECTION: {self.QDRANT_COLLECTION}")
         logger.info(f"QDRANT_DISABLE: {self.QDRANT_DISABLE}")
         logger.info(f"RAG_EMBEDDING_MODEL: {self.RAG_EMBEDDING_MODEL}")
+        logger.info(f"OBSERVABILITY_ENABLED: {self.OBSERVABILITY_ENABLED}")
+        logger.info(f"OBSERVABILITY_EXPORTER: {self.OBSERVABILITY_EXPORTER}")
+        logger.info(f"OTEL_SERVICE_NAME: {self.OTEL_SERVICE_NAME}")
+        logger.info(f"OTEL_EXPORTER_OTLP_ENDPOINT configured: {'yes' if self.OTEL_EXPORTER_OTLP_ENDPOINT else 'no'}")
+        logger.info(f"LANGFUSE_ENABLED: {self.LANGFUSE_ENABLED}")
+        logger.info(f"LANGFUSE_HOST configured: {'yes' if self.LANGFUSE_HOST else 'no'}")
         logger.info(f"CELERY_BROKER_URL configured: {'yes' if self.CELERY_BROKER_URL else 'no'}")
         logger.info(f"CELERY_QUEUE_PROCESSING: {self.CELERY_QUEUE_PROCESSING}")
         logger.info(f"CORS_ALLOWED_ORIGINS: {self.CORS_ALLOWED_ORIGINS}")
@@ -736,5 +768,7 @@ class Settings:
         logger.info("AICREDITS_REPORT_CHAT_API_KEY: ***[REDACTED]***")
         logger.info("AICREDITS_INTERVIEW_REFINEMENT_API_KEY: ***[REDACTED]***")
         logger.info("AICREDITS_QUESTION_REGEN_API_KEY: ***[REDACTED]***")
+        logger.info("LANGFUSE_PUBLIC_KEY: ***[REDACTED]***")
+        logger.info("LANGFUSE_SECRET_KEY: ***[REDACTED]***")
 
 settings = Settings()

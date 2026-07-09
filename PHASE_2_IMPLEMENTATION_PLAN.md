@@ -134,7 +134,7 @@ Add enough task instrumentation now so Phase 4 has a clean attachment point.
 - Log `job_id`, `celery_task_id`, `application_id`, `job_type`, `queue`, `attempt`, and `request_id`.
 - Add task lifecycle events in one helper: queued, started, retried, completed, failed.
 - Expose queue readiness in `/readiness`.
-- Avoid adding Grafana/Braintrust task dashboards in this phase.
+- Avoid adding observability dashboards in this phase.
 
 Acceptance criteria:
 

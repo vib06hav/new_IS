@@ -10,99 +10,10 @@ from typing import Any, Literal, Optional
 
 from app.config import settings
 from app.llm.token_counter import estimate_messages_tokens, estimate_text_tokens
+from app.telemetry.langfuse_client import langfuse_observation, update_langfuse_observation
+from app.telemetry.observability import increment_counter, record_histogram, start_span
 
 logger = logging.getLogger(__name__)
-
-try:
-    from braintrust import init_logger
-except ImportError:  # pragma: no cover - optional dependency guard
-    init_logger = None
-
-_braintrust_logger = None
-
-
-def _get_braintrust_logger():
-    global _braintrust_logger
-    if _braintrust_logger is not None:
-        return _braintrust_logger
-
-    if init_logger is None:
-        return None
-
-    braintrust_api_key = os.getenv("BRAINTRUST_API_KEY", "").strip()
-    if not braintrust_api_key:
-        return None
-
-    try:
-        _braintrust_logger = init_logger(
-            project="AG_InterviewStandardiser",
-            api_key=braintrust_api_key,
-        )
-    except Exception as exc:  # pragma: no cover - tracing must not break LLM calls
-        logger.warning("Braintrust initialization failed: %s", exc)
-        return None
-
-    return _braintrust_logger
-
-
-def _messages_for_trace(messages: list[dict]) -> dict[str, Any]:
-    system_prompt = ""
-    user_payload: list[dict[str, Any]] = []
-
-    for message in messages:
-        role = str(message.get("role", ""))
-        content = message.get("content", "")
-        if role == "system" and not system_prompt:
-            system_prompt = str(content)
-        else:
-            user_payload.append({"role": role, "content": content})
-
-    return {
-        "system_prompt": system_prompt,
-        "user_input": user_payload,
-    }
-
-
-def _run_with_braintrust_trace(
-    messages: list[dict],
-    call_label: str | None,
-    llm_callable,
-):
-    bt_logger = _get_braintrust_logger()
-    if bt_logger is None:
-        return llm_callable()
-
-    trace_input = _messages_for_trace(messages)
-    metadata = {
-        "model_name": settings.LLM_MODEL_NAME,
-        "provider": settings.LLM_PROVIDER,
-    }
-    if call_label:
-        metadata["request_identifier"] = call_label
-
-    try:
-        span = bt_logger.start_span(
-            name=call_label or "llm_call",
-            type="llm",
-        )
-        return _run_llm_span(span, trace_input, metadata, llm_callable)
-    except Exception as exc:  # pragma: no cover - tracing must not break LLM calls
-        logger.warning("Braintrust tracing failed: %s", exc)
-        return llm_callable()
-
-
-def _run_llm_span(span, trace_input: dict[str, Any], metadata: dict[str, Any], llm_callable):
-    try:
-        span.log(
-            input=trace_input,
-            metadata=metadata,
-            tags=["pipeline:interview_signals"],
-        )
-        response_text = llm_callable()
-        span.log(output=response_text)
-        return response_text
-    finally:
-        span.end()
 
 
 class LLMClientError(Exception):
@@ -239,18 +150,10 @@ def generate(
         raise LLMClientError("Live LLM calls are disabled in this environment.")
 
     if settings.LLM_PROVIDER == "openrouter":
-        return _run_with_braintrust_trace(
-            messages,
-            call_label,
-            lambda: _generate_openai_compatible(messages, call_label, request_options=request_options),
-        )
+        return _generate_openai_compatible(messages, call_label, request_options=request_options)
 
     if settings.LLM_PROVIDER == "aicredits":
-        return _run_with_braintrust_trace(
-            messages,
-            call_label,
-            lambda: _generate_aicredits(messages, call_label, request_options=request_options),
-        )
+        return _generate_aicredits(messages, call_label, request_options=request_options)
 
     raise LLMClientError(f"Unsupported LLM_PROVIDER: {settings.LLM_PROVIDER}")
 
@@ -267,8 +170,18 @@ def _generate_openai_compatible(
     if not messages:
         raise LLMClientError("generate() called with an empty messages list.")
 
+    model_name = settings.LLM_MODEL_NAME
+    prompt_tokens = estimate_messages_tokens(messages)
+    started_at = time.perf_counter()
+    status = "error"
+    response_tokens = 0
+    attributes = {
+        "llm.provider": settings.LLM_PROVIDER,
+        "llm.operation": call_label or "llm_call",
+        "llm.model": model_name,
+    }
     payload: dict[str, Any] = {
-        "model": settings.LLM_MODEL_NAME,
+        "model": model_name,
         "messages": messages,
         "temperature": (
             request_options.temperature_override
@@ -279,7 +192,7 @@ def _generate_openai_compatible(
     logger.info(
         "LLM request prepared%s. Estimated prompt tokens=%s",
         f" [{call_label}]" if call_label else "",
-        estimate_messages_tokens(messages),
+        prompt_tokens,
     )
     _apply_response_format(payload, request_options=request_options)
 
@@ -287,30 +200,60 @@ def _generate_openai_compatible(
     if settings.LLM_API_KEY:
         headers["Authorization"] = f"Bearer {settings.LLM_API_KEY}"
 
-    try:
-        response = httpx.post(
-            settings.LLM_ENDPOINT,
-            json=payload,
-            headers=headers,
-            timeout=float(settings.LLM_TIMEOUT_SECONDS)
-        )
-        response.raise_for_status()
-        data = response.json()
+    with start_span("llm.request", attributes), langfuse_observation(
+        name=call_label or "llm_call",
+        as_type="generation",
+        model=model_name,
+        metadata={
+            "provider": settings.LLM_PROVIDER,
+            "operation": call_label or "llm_call",
+            "prompt_tokens_estimated": prompt_tokens,
+        },
+        input_payload=messages,
+    ) as langfuse_span:
+        try:
+            response = httpx.post(
+                settings.LLM_ENDPOINT,
+                json=payload,
+                headers=headers,
+                timeout=float(settings.LLM_TIMEOUT_SECONDS),
+            )
+            response.raise_for_status()
+            data = response.json()
 
-        response_text = _extract_openai_compatible_text(data)
-        if not response_text.strip():
-            raise LLMClientError("OpenAI-compatible response did not include usable content.")
+            response_text = _extract_openai_compatible_text(data)
+            if not response_text.strip():
+                raise LLMClientError("OpenAI-compatible response did not include usable content.")
 
-        logger.info(
-            "LLM response received%s. Estimated response tokens=%s",
-            f" [{call_label}]" if call_label else "",
-            estimate_text_tokens(response_text),
-        )
-        _log_preview(response_text)
-        return response_text
-    except httpx.HTTPError as e:
-        logger.error(f"LLM Transport Failure: {str(e)}")
-        raise LLMClientError(f"LLM Transport Failure: {str(e)}")
+            response_tokens = estimate_text_tokens(response_text)
+            status = "success"
+            logger.info(
+                "LLM response received%s. Estimated response tokens=%s",
+                f" [{call_label}]" if call_label else "",
+                response_tokens,
+            )
+            update_langfuse_observation(
+                langfuse_span,
+                output=response_text,
+                usage_details={"input_tokens": prompt_tokens, "output_tokens": response_tokens},
+                metadata={"status": status},
+            )
+            _log_preview(response_text)
+            return response_text
+        except httpx.HTTPError as e:
+            update_langfuse_observation(langfuse_span, metadata={"status": status}, status_message=str(e))
+            logger.error(f"LLM Transport Failure: {str(e)}")
+            raise LLMClientError(f"LLM Transport Failure: {str(e)}")
+        finally:
+            _record_llm_observability(
+                call_label=call_label,
+                provider=settings.LLM_PROVIDER,
+                model_name=model_name,
+                status=status,
+                started_at=started_at,
+                prompt_tokens=prompt_tokens,
+                response_tokens=response_tokens,
+            )
 
 
 def _generate_aicredits(
@@ -390,6 +333,11 @@ def _send_aicredits_request(
     max_tokens: int,
     request_options: LLMRequestOptions | None = None,
 ) -> str:
+    prompt_tokens = estimate_messages_tokens(messages)
+    started_at = time.perf_counter()
+    status = "error"
+    response_tokens = 0
+    operation = call_label or "llm_call"
     payload: dict[str, Any] = {
         "model": model_name,
         "messages": messages,
@@ -406,7 +354,7 @@ def _send_aicredits_request(
         "AICredits request prepared%s using model=%s. Estimated prompt tokens=%s",
         f" [{call_label}]" if call_label else "",
         model_name,
-        estimate_messages_tokens(messages),
+        prompt_tokens,
     )
 
     headers = {
@@ -414,56 +362,97 @@ def _send_aicredits_request(
         "Content-Type": "application/json",
     }
 
-    try:
-        response = httpx.post(
-            f"{settings.AICREDITS_BASE_URL.rstrip('/')}/chat/completions",
-            json=payload,
-            headers=headers,
-            timeout=float(settings.LLM_TIMEOUT_SECONDS),
-        )
-    except httpx.TimeoutException as exc:
-        raise LLMClientError(f"LLM timeout calling {model_name}.") from exc
-    except httpx.TransportError as exc:
-        raise LLMClientError(f"LLM transport failure calling {model_name}: {exc}") from exc
+    with start_span(
+        "llm.request",
+        {
+            "llm.provider": "aicredits",
+            "llm.operation": operation,
+            "llm.model": model_name,
+        },
+    ), langfuse_observation(
+        name=operation,
+        as_type="generation",
+        model=model_name,
+        metadata={
+            "provider": "aicredits",
+            "operation": operation,
+            "prompt_tokens_estimated": prompt_tokens,
+            "max_tokens": max_tokens,
+        },
+        input_payload=messages,
+    ) as langfuse_span:
+        try:
+            try:
+                response = httpx.post(
+                    f"{settings.AICREDITS_BASE_URL.rstrip('/')}/chat/completions",
+                    json=payload,
+                    headers=headers,
+                    timeout=float(settings.LLM_TIMEOUT_SECONDS),
+                )
+            except httpx.TimeoutException as exc:
+                raise LLMClientError(f"LLM timeout calling {model_name}.") from exc
+            except httpx.TransportError as exc:
+                raise LLMClientError(f"LLM transport failure calling {model_name}: {exc}") from exc
 
-    _log_rate_limit_headers(response, call_label, model_name)
+            _log_rate_limit_headers(response, call_label, model_name)
 
-    if response.status_code == 402:
-        raise LLMBudgetExceededError("AICredits budget has been exhausted for this key.")
-    if response.status_code == 400:
-        if (
-            request_options
-            and request_options.response_format_type == "json_schema"
-            and _looks_like_unsupported_json_schema_response(response)
-        ):
-            raise LLMStructuredOutputUnsupportedError("AICredits does not support json_schema for this request.")
-        raise LLMClientError(f"AICredits rejected the request with status {response.status_code}.")
-    if response.status_code in {401, 403}:
-        raise LLMClientError(f"AICredits rejected the request with status {response.status_code}.")
-    if response.status_code == 429:
-        raise LLMClientError("AICredits rate limit reached.")
-    if response.status_code >= 500:
-        raise LLMClientError(f"AICredits upstream error ({response.status_code}).")
-    try:
-        response.raise_for_status()
-        data = response.json()
-    except httpx.HTTPStatusError as exc:
-        raise LLMClientError(f"AICredits request failed with status {response.status_code}.") from exc
-    except ValueError as exc:
-        raise LLMClientError("AICredits returned invalid JSON.") from exc
+            if response.status_code == 402:
+                raise LLMBudgetExceededError("AICredits budget has been exhausted for this key.")
+            if response.status_code == 400:
+                if (
+                    request_options
+                    and request_options.response_format_type == "json_schema"
+                    and _looks_like_unsupported_json_schema_response(response)
+                ):
+                    raise LLMStructuredOutputUnsupportedError("AICredits does not support json_schema for this request.")
+                raise LLMClientError(f"AICredits rejected the request with status {response.status_code}.")
+            if response.status_code in {401, 403}:
+                raise LLMClientError(f"AICredits rejected the request with status {response.status_code}.")
+            if response.status_code == 429:
+                raise LLMClientError("AICredits rate limit reached.")
+            if response.status_code >= 500:
+                raise LLMClientError(f"AICredits upstream error ({response.status_code}).")
+            try:
+                response.raise_for_status()
+                data = response.json()
+            except httpx.HTTPStatusError as exc:
+                raise LLMClientError(f"AICredits request failed with status {response.status_code}.") from exc
+            except ValueError as exc:
+                raise LLMClientError("AICredits returned invalid JSON.") from exc
 
-    response_text = _extract_openai_compatible_text(data)
-    if not response_text.strip():
-        raise LLMClientError("AICredits response did not include usable content.")
+            response_text = _extract_openai_compatible_text(data)
+            if not response_text.strip():
+                raise LLMClientError("AICredits response did not include usable content.")
 
-    logger.info(
-        "AICredits response received%s using model=%s. Estimated response tokens=%s",
-        f" [{call_label}]" if call_label else "",
-        model_name,
-        estimate_text_tokens(response_text),
-    )
-    _log_preview(response_text)
-    return response_text
+            response_tokens = estimate_text_tokens(response_text)
+            status = "success"
+            logger.info(
+                "AICredits response received%s using model=%s. Estimated response tokens=%s",
+                f" [{call_label}]" if call_label else "",
+                model_name,
+                response_tokens,
+            )
+            update_langfuse_observation(
+                langfuse_span,
+                output=response_text,
+                usage_details={"input_tokens": prompt_tokens, "output_tokens": response_tokens},
+                metadata={"status": status},
+            )
+            _log_preview(response_text)
+            return response_text
+        except Exception as exc:
+            update_langfuse_observation(langfuse_span, metadata={"status": status}, status_message=str(exc))
+            raise
+        finally:
+            _record_llm_observability(
+                call_label=call_label,
+                provider="aicredits",
+                model_name=model_name,
+                status=status,
+                started_at=started_at,
+                prompt_tokens=prompt_tokens,
+                response_tokens=response_tokens,
+            )
 
 
 def _log_rate_limit_headers(response: httpx.Response, call_label: str | None, model_name: str) -> None:
@@ -481,8 +470,34 @@ def _log_rate_limit_headers(response: httpx.Response, call_label: str | None, mo
         )
 
 
+def _record_llm_observability(
+    *,
+    call_label: str | None,
+    provider: str,
+    model_name: str,
+    status: str,
+    started_at: float,
+    prompt_tokens: int,
+    response_tokens: int,
+) -> None:
+    attributes = {
+        "operation": call_label or "llm_call",
+        "provider": provider,
+        "model": model_name,
+        "status": status,
+    }
+    record_histogram("agis_llm_request_duration_seconds", time.perf_counter() - started_at, attributes=attributes)
+    record_histogram("agis_llm_prompt_tokens_estimated", float(prompt_tokens), attributes=attributes)
+    record_histogram("agis_llm_response_tokens_estimated", float(response_tokens), attributes=attributes)
+    increment_counter("agis_llm_requests_total", attributes=attributes)
+
+
 def _sleep_with_backoff(base_seconds: float, attempt: int) -> None:
     delay = (base_seconds * (2 ** attempt)) + random.uniform(0, 1)
+    increment_counter(
+        "agis_llm_retries_total",
+        attributes={"attempt": attempt + 1},
+    )
     time.sleep(delay)
 
 

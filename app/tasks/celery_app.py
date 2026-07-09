@@ -4,6 +4,9 @@ from celery import Celery
 from kombu import Exchange, Queue
 
 from app.config import settings
+from app.telemetry.observability import configure_observability
+
+configure_observability()
 
 
 def _broker_url() -> str:

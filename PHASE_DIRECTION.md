@@ -37,7 +37,7 @@ Make platform behavior measurable.
 - Add metrics for requests, jobs, LLM calls, and retrieval.
 - Add OpenTelemetry-compatible tracing where useful.
 - Use Grafana/Prometheus for operational metrics.
-- Use Braintrust for LLM traces and lightweight regression evals.
+- Use self-hosted Langfuse for LLM/RAG traces and lightweight evaluation hooks.
 
 ## Phase 5 - D2C Expansion
 

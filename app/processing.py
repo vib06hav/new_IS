@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import threading
+import time
 from datetime import datetime, timedelta
 from uuid import UUID
 
@@ -22,6 +23,7 @@ from app.domain.statuses import (
 from app.models.application import Application
 from app.models.processing_job import ProcessingJob
 from app.storage import get_storage_service
+from app.telemetry.observability import increment_counter, record_histogram, start_span
 
 import logging
 
@@ -201,6 +203,8 @@ def _claim_processing_job(db: Session, job_id: UUID) -> ProcessingJob | None:
 
 
 def process_processing_job(job_id: UUID) -> bool:
+    started_at = time.perf_counter()
+    metric_status = "skipped"
     db = SessionLocal()
     try:
         job = _claim_processing_job(db, job_id)
@@ -209,6 +213,7 @@ def process_processing_job(job_id: UUID) -> bool:
 
         application = db.query(Application).filter(Application.id == job.application_id).first()
         if application is None or not application.storage_key:
+            metric_status = "failed"
             _mark_job_failed_permanently(
                 db,
                 job,
@@ -218,60 +223,77 @@ def process_processing_job(job_id: UUID) -> bool:
             db.commit()
             return True
 
-        coordination = get_coordination_manager()
-        try:
-            with coordination.acquire(
-                f"processing:run:{application.id}",
-                timeout_seconds=max(settings.PROCESSING_JOB_STALE_AFTER_SECONDS + 60, 60),
-                blocking_timeout=0.0,
-            ):
-                with get_storage_service().materialize_to_tempfile(application.storage_key, suffix=".pdf") as local_pdf_path:
-                    run_deterministic_pipeline(str(application.id), local_pdf_path, db)
-            job.status = JOB_STATUS_COMPLETED
-            job.finished_at = datetime.utcnow()
-            job.last_error = None
-            job.error_code = None
-            job.progress = JOB_PROGRESS_COMPLETED
-            db.commit()
-        except LockNotAcquiredError:
-            db.rollback()
-            application = db.query(Application).filter(Application.id == job.application_id).first()
-            job = db.query(ProcessingJob).filter(ProcessingJob.id == job.id).first()
-            if job is not None:
-                job.status = JOB_STATUS_QUEUED
-                job.available_at = datetime.utcnow() + timedelta(seconds=1)
-                job.last_error = "Skipped because another worker holds the processing lock"
-                job.error_code = "lock_not_acquired"
-                job.started_at = None
-                job.finished_at = None
-                job.progress = JOB_PROGRESS_QUEUED
-                if application is not None:
-                    application.status = APPLICATION_STATUS_PROCESSING
-                    application.last_activity_at = datetime.utcnow()
+        with start_span(
+            "processing.job",
+            {
+                "processing.job_id": str(job.id),
+                "processing.job_type": job.job_type,
+                "processing.application_status": application.status,
+            },
+        ):
+            coordination = get_coordination_manager()
+            try:
+                with coordination.acquire(
+                    f"processing:run:{application.id}",
+                    timeout_seconds=max(settings.PROCESSING_JOB_STALE_AFTER_SECONDS + 60, 60),
+                    blocking_timeout=0.0,
+                ):
+                    with get_storage_service().materialize_to_tempfile(application.storage_key, suffix=".pdf") as local_pdf_path:
+                        run_deterministic_pipeline(str(application.id), local_pdf_path, db)
+                job.status = JOB_STATUS_COMPLETED
+                job.finished_at = datetime.utcnow()
+                job.last_error = None
+                job.error_code = None
+                job.progress = JOB_PROGRESS_COMPLETED
+                metric_status = "completed"
                 db.commit()
-        except Exception as exc:
-            db.rollback()
-            application = db.query(Application).filter(Application.id == job.application_id).first()
-            job = db.query(ProcessingJob).filter(ProcessingJob.id == job.id).first()
-            if job is not None:
-                error_message = str(exc)[:1000]
-                if (job.attempts or 0) < settings.PROCESSING_JOB_MAX_ATTEMPTS:
+            except LockNotAcquiredError:
+                db.rollback()
+                metric_status = "lock_not_acquired"
+                application = db.query(Application).filter(Application.id == job.application_id).first()
+                job = db.query(ProcessingJob).filter(ProcessingJob.id == job.id).first()
+                if job is not None:
                     job.status = JOB_STATUS_QUEUED
-                    job.available_at = datetime.utcnow() + timedelta(seconds=_retry_backoff_seconds(job.attempts or 1))
-                    job.last_error = error_message
-                    job.error_code = exc.__class__.__name__
+                    job.available_at = datetime.utcnow() + timedelta(seconds=1)
+                    job.last_error = "Skipped because another worker holds the processing lock"
+                    job.error_code = "lock_not_acquired"
                     job.started_at = None
                     job.finished_at = None
                     job.progress = JOB_PROGRESS_QUEUED
                     if application is not None:
                         application.status = APPLICATION_STATUS_PROCESSING
                         application.last_activity_at = datetime.utcnow()
-                else:
-                    _mark_job_failed_permanently(db, job, application, error_message)
-            db.commit()
-            logger.exception("Background processing job failed for application %s", job.application_id if job else "unknown")
+                    db.commit()
+            except Exception as exc:
+                db.rollback()
+                metric_status = "failed"
+                application = db.query(Application).filter(Application.id == job.application_id).first()
+                job = db.query(ProcessingJob).filter(ProcessingJob.id == job.id).first()
+                if job is not None:
+                    error_message = str(exc)[:1000]
+                    if (job.attempts or 0) < settings.PROCESSING_JOB_MAX_ATTEMPTS:
+                        job.status = JOB_STATUS_QUEUED
+                        job.available_at = datetime.utcnow() + timedelta(seconds=_retry_backoff_seconds(job.attempts or 1))
+                        job.last_error = error_message
+                        job.error_code = exc.__class__.__name__
+                        job.started_at = None
+                        job.finished_at = None
+                        job.progress = JOB_PROGRESS_QUEUED
+                        if application is not None:
+                            application.status = APPLICATION_STATUS_PROCESSING
+                            application.last_activity_at = datetime.utcnow()
+                    else:
+                        _mark_job_failed_permanently(db, job, application, error_message)
+                db.commit()
+                logger.exception("Background processing job failed for application %s", job.application_id if job else "unknown")
         return True
     finally:
+        attributes = {
+            "job_type": JOB_TYPE_DETERMINISTIC_PIPELINE,
+            "status": metric_status,
+        }
+        increment_counter("agis_processing_jobs_total", attributes=attributes)
+        record_histogram("agis_processing_job_duration_seconds", time.perf_counter() - started_at, attributes=attributes)
         db.close()
 
 

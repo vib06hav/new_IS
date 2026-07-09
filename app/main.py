@@ -24,9 +24,11 @@ from app.api.applications import router as applications_router
 from app.api.interviewer import router as interviewer_router
 from app.api.users import router as users_router
 from app.security.csrf import ensure_csrf_protection
+from app.telemetry.observability import configure_observability, increment_counter, record_histogram, start_span
 from app.telemetry.request_context import REQUEST_ID_HEADER, get_request_id, reset_request_id, set_request_id
 
 app = FastAPI(title="Interview Standardiser API", version="0.1.0")
+configure_observability()
 
 if settings.TRUSTED_HOSTS:
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.TRUSTED_HOSTS)
@@ -48,12 +50,30 @@ async def request_id_and_access_log(request: Request, call_next):
     started_at = time.perf_counter()
     status_code = 500
     try:
-        response: Response = await call_next(request)
-        status_code = response.status_code
-        response.headers[REQUEST_ID_HEADER] = request_id
-        return response
+        with start_span(
+            "http.request",
+            {
+                "http.method": request.method,
+                "http.route": request.url.path,
+                "request.id": request_id,
+            },
+        ) as span:
+            response: Response = await call_next(request)
+            status_code = response.status_code
+            if span is not None:
+                span.set_attribute("http.status_code", status_code)
+            response.headers[REQUEST_ID_HEADER] = request_id
+            return response
     finally:
-        duration_ms = round((time.perf_counter() - started_at) * 1000, 2)
+        duration_seconds = time.perf_counter() - started_at
+        duration_ms = round(duration_seconds * 1000, 2)
+        metric_attributes = {
+            "method": request.method,
+            "route": request.url.path,
+            "status": str(status_code),
+        }
+        increment_counter("agis_http_requests_total", attributes=metric_attributes)
+        record_histogram("agis_http_request_duration_seconds", duration_seconds, attributes=metric_attributes)
         logger.info(
             "http_request method=%s path=%s status_code=%s duration_ms=%s request_id=%s",
             request.method,
@@ -173,6 +193,13 @@ def readiness_check():
     }
 
     checks["task_queue"] = _task_queue_readiness()
+    checks["observability"] = {
+        "status": "ok",
+        "otel_enabled": settings.OBSERVABILITY_ENABLED,
+        "otel_endpoint_configured": bool(settings.OTEL_EXPORTER_OTLP_ENDPOINT),
+        "langfuse_enabled": settings.LANGFUSE_ENABLED,
+        "langfuse_configured": bool(settings.LANGFUSE_HOST and settings.LANGFUSE_PUBLIC_KEY and settings.LANGFUSE_SECRET_KEY),
+    }
 
     overall_status = "ok" if all(check["status"] == "ok" for check in checks.values()) else "degraded"
     return {"status": overall_status, "checks": checks}
