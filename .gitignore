@@ -25,6 +25,8 @@ uploads/
 alembic/versions/*.pyc
 .aider*
 .codex/
+.agents/
+skills-lock.json
 node_modules/
 .next/
 dist/

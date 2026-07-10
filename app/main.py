@@ -198,7 +198,11 @@ def readiness_check():
         "otel_enabled": settings.OBSERVABILITY_ENABLED,
         "otel_endpoint_configured": bool(settings.OTEL_EXPORTER_OTLP_ENDPOINT),
         "langfuse_enabled": settings.LANGFUSE_ENABLED,
-        "langfuse_configured": bool(settings.LANGFUSE_HOST and settings.LANGFUSE_PUBLIC_KEY and settings.LANGFUSE_SECRET_KEY),
+        "langfuse_configured": bool(
+            (settings.LANGFUSE_HOST or settings.LANGFUSE_BASE_URL)
+            and settings.LANGFUSE_PUBLIC_KEY
+            and settings.LANGFUSE_SECRET_KEY
+        ),
     }
 
     overall_status = "ok" if all(check["status"] == "ok" for check in checks.values()) else "degraded"

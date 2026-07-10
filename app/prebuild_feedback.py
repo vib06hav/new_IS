@@ -31,6 +31,7 @@ from app.models.user import User
 from app.models.vector_corpus_document import VectorCorpusDocument
 from app.rag.indexing import schedule_question_version_index
 from app.rag.question_retrieval import retrieve_question_regeneration_examples
+from app.telemetry.langfuse_client import langfuse_workflow, update_langfuse_observation
 
 
 VISIBLE_VERSION_LIMIT = 5
@@ -406,69 +407,98 @@ def regenerate_question(
     )
     thread = _get_thread_or_404(db=db, application_id=application.id, thread_id=thread_id)
     active_version = _get_active_version_for_thread(db=db, thread=thread)
-    retrieval_result = retrieve_question_regeneration_examples(
-        db=db,
-        application_id=application.id,
-        focus_area_id=thread.focus_area_id,
-        theme_title=thread.theme_title_snapshot or "",
-        theme_direction=thread.theme_direction_snapshot or "",
-        question_role=thread.question_role or "",
-        question_text=active_version.question_text,
-        lexical_fallback=lambda: _retrieve_similar_question_examples(
+    with langfuse_workflow(
+        name="question_regeneration",
+        user_id=str(current_user.id),
+        session_id=f"application:{application.id}",
+        tags=["question_regeneration", current_user.role],
+        metadata={
+            "application_id": str(application.id),
+            "display_id": application.display_id,
+            "thread_id": str(thread.id),
+            "focus_area_id": thread.focus_area_id,
+            "question_role": thread.question_role or "",
+            "user_role": current_user.role,
+        },
+        input_payload={
+            "thread_id": str(thread.id),
+            "focus_area_id": thread.focus_area_id,
+            "question_role": thread.question_role or "",
+        },
+    ) as langfuse_span:
+        retrieval_result = retrieve_question_regeneration_examples(
             db=db,
             application_id=application.id,
             focus_area_id=thread.focus_area_id,
             theme_title=thread.theme_title_snapshot or "",
             theme_direction=thread.theme_direction_snapshot or "",
+            question_role=thread.question_role or "",
             question_text=active_version.question_text,
-        ),
-    )
-    retrieved_examples = retrieval_result.examples
-    application_context_snapshot = _build_application_snapshot(final_report.content)
-    prompt_messages = _build_question_regeneration_messages(
-        application_snapshot=application_context_snapshot,
-        thread=thread,
-        current_question=active_version.question_text,
-        current_why_this=active_version.why_this or "",
-        retrieved_examples=retrieved_examples,
-    )
-    try:
-        regenerated_payload = _normalize_generated_question_payload(
-            generate(prompt_messages, call_label="question_regeneration")
+            lexical_fallback=lambda: _retrieve_similar_question_examples(
+                db=db,
+                application_id=application.id,
+                focus_area_id=thread.focus_area_id,
+                theme_title=thread.theme_title_snapshot or "",
+                theme_direction=thread.theme_direction_snapshot or "",
+                question_text=active_version.question_text,
+            ),
         )
-    except LLMClientError as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+        retrieved_examples = retrieval_result.examples
+        application_context_snapshot = _build_application_snapshot(final_report.content)
+        prompt_messages = _build_question_regeneration_messages(
+            application_snapshot=application_context_snapshot,
+            thread=thread,
+            current_question=active_version.question_text,
+            current_why_this=active_version.why_this or "",
+            retrieved_examples=retrieved_examples,
+        )
+        try:
+            regenerated_payload = _normalize_generated_question_payload(
+                generate(prompt_messages, call_label="question_regeneration")
+            )
+        except LLMClientError as exc:
+            update_langfuse_observation(langfuse_span, metadata={"status": "error"}, status_message=str(exc))
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
 
-    active_version.is_active = False
-    next_version_index = (
-        db.query(QuestionGeneratedVersion)
-        .filter(QuestionGeneratedVersion.thread_id == thread.id)
-        .count()
-        + 1
-    )
-    new_version = QuestionGeneratedVersion(
-        thread_id=thread.id,
-        application_id=application.id,
-        focus_area_id=thread.focus_area_id,
-        base_question_id=thread.base_question_id,
-        version_index=next_version_index,
-        question_text=regenerated_payload["question_text"],
-        why_this=regenerated_payload["why_this"],
-        generation_source=f"{current_user.role}_regenerate",
-        generated_by_user_id=current_user.id,
-        parent_version_id=active_version.id,
-        is_active=True,
-        theme_title_snapshot=thread.theme_title_snapshot,
-        theme_direction_snapshot=thread.theme_direction_snapshot,
-        question_group_label_snapshot=thread.question_group_label_snapshot,
-        application_context_snapshot=application_context_snapshot,
-        retrieval_context_snapshot=retrieval_result.snapshot,
-    )
-    db.add(new_version)
-    db.flush()
-    thread.current_active_version_id = new_version.id
-    _upsert_question_vector_document(db=db, version=new_version)
-    return thread
+        active_version.is_active = False
+        next_version_index = (
+            db.query(QuestionGeneratedVersion)
+            .filter(QuestionGeneratedVersion.thread_id == thread.id)
+            .count()
+            + 1
+        )
+        new_version = QuestionGeneratedVersion(
+            thread_id=thread.id,
+            application_id=application.id,
+            focus_area_id=thread.focus_area_id,
+            base_question_id=thread.base_question_id,
+            version_index=next_version_index,
+            question_text=regenerated_payload["question_text"],
+            why_this=regenerated_payload["why_this"],
+            generation_source=f"{current_user.role}_regenerate",
+            generated_by_user_id=current_user.id,
+            parent_version_id=active_version.id,
+            is_active=True,
+            theme_title_snapshot=thread.theme_title_snapshot,
+            theme_direction_snapshot=thread.theme_direction_snapshot,
+            question_group_label_snapshot=thread.question_group_label_snapshot,
+            application_context_snapshot=application_context_snapshot,
+            retrieval_context_snapshot=retrieval_result.snapshot,
+        )
+        db.add(new_version)
+        db.flush()
+        thread.current_active_version_id = new_version.id
+        _upsert_question_vector_document(db=db, version=new_version)
+        update_langfuse_observation(
+            langfuse_span,
+            metadata={
+                "status": "success",
+                "version_id": str(new_version.id),
+                "retrieval_provider": retrieval_result.snapshot.get("provider"),
+                "fallback_reason": retrieval_result.snapshot.get("fallback_reason") or "none",
+            },
+        )
+        return thread
 
 
 def _build_theme_feedback(

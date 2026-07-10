@@ -61,12 +61,22 @@ Open:
 http://localhost:3001
 ```
 
-After creating a project, set:
+The local stack uses Langfuse headless initialization. On first startup it creates:
+
+- Organization: `AG Interview Standardiser Local`
+- Project: `AGIS Local`
+- User: `admin@agis.local`
+- Password: `agis-local-password`
+- Public key: `lf_pk_agis_local_dev`
+- Secret key: `lf_sk_agis_local_dev`
+
+Set these app values when using the local stack:
 
 - `LANGFUSE_ENABLED=true`
 - `LANGFUSE_HOST=http://localhost:3001`
-- `LANGFUSE_PUBLIC_KEY=<project-public-key>`
-- `LANGFUSE_SECRET_KEY=<project-secret-key>`
+- `LANGFUSE_BASE_URL=http://localhost:3001`
+- `LANGFUSE_PUBLIC_KEY=lf_pk_agis_local_dev`
+- `LANGFUSE_SECRET_KEY=lf_sk_agis_local_dev`
 - `LANGFUSE_CAPTURE_IO=false`
 
 Keep `LANGFUSE_CAPTURE_IO=false` unless you explicitly want prompts and responses sent to Langfuse. With it disabled, traces still capture operation, model, latency, token estimates, retrieval metadata, selected Qdrant point IDs, and fallback reasons.
@@ -77,6 +87,7 @@ Useful Langfuse traces to inspect:
 - `call_2`
 - `call_3`
 - `question_regeneration`
+- `question_generation`
 - `report_chat`
 - `interview_refinement`
 - `rag_retrieval.question_generation`

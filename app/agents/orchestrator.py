@@ -45,6 +45,7 @@ from app.config import settings
 from app.domain.statuses import APPLICATION_STATUS_FAILED, APPLICATION_STATUS_PROCESSED, APPLICATION_STATUS_READY
 from app.agents.section_scope_resolver import resolve_section_scopes
 from app.rag.question_retrieval import retrieve_question_generation_context
+from app.telemetry.langfuse_client import langfuse_workflow, update_langfuse_observation
 from app.utils.sanitizer import sanitize_for_json
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -461,51 +462,71 @@ def run_synthesis_pipeline(
     )
 
     logger.debug("Agent 17: Interview Generator (LLM Call 3)")
-    question_generation_rag_context = retrieve_question_generation_context(
-        application_id=uuid.UUID(application_id),
-        question_bundle=question_bundle,
-    )
-    if question_generation_rag_context.get("fallback_reason"):
-        logger.info(
-            "question_generation_rag_context_fallback application_id=%s reason=%s",
-            application_id,
-            question_generation_rag_context.get("fallback_reason"),
+    with langfuse_workflow(
+        name="question_generation",
+        session_id=f"application:{application_id}",
+        tags=["question_generation", "pipeline"],
+        metadata={
+            "application_id": application_id,
+            "stage": "call_3",
+            "feature": "question_generation",
+        },
+        input_payload={"application_id": application_id, "focus_area_count": len(question_bundle.get("focus_areas") or [])},
+    ) as langfuse_span:
+        question_generation_rag_context = retrieve_question_generation_context(
+            application_id=uuid.UUID(application_id),
+            question_bundle=question_bundle,
         )
-    else:
-        logger.info(
-            "question_generation_rag_context_ready application_id=%s focus_area_count=%s",
-            application_id,
-            len(question_generation_rag_context.get("focus_area_examples") or []),
-        )
-    try:
-        raw_call_3_output = generate_interview(
-            question_bundle,
-            entity_id_map,
-            rag_context=question_generation_rag_context,
-        )
-    except LLMClientError as e:
-        logger.error(f"LLM Call 3 Transport/Load Failure: {str(e)}")
-        abort_res = {
-            "passed": False,
-            "violations_log": [{
-                "violation_id": str(uuid.uuid4()),
-                "field": "llm_call_3",
-                "type": "transport_error",
-                "context": str(e)
-            }]
-        }
-        _handle_abort(
-            application_id,
-            abort_res,
-            db,
-            artifacts={
-                "stage": "call_3_transport",
-                "validation_result": abort_res,
-                "question_bundle": question_bundle,
-                "question_generation_rag_context": question_generation_rag_context,
-            },
-        )
-        return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": abort_res, "confidence": agg_conf}
+        if question_generation_rag_context.get("fallback_reason"):
+            logger.info(
+                "question_generation_rag_context_fallback application_id=%s reason=%s",
+                application_id,
+                question_generation_rag_context.get("fallback_reason"),
+            )
+        else:
+            logger.info(
+                "question_generation_rag_context_ready application_id=%s focus_area_count=%s",
+                application_id,
+                len(question_generation_rag_context.get("focus_area_examples") or []),
+            )
+        try:
+            raw_call_3_output = generate_interview(
+                question_bundle,
+                entity_id_map,
+                rag_context=question_generation_rag_context,
+            )
+            update_langfuse_observation(
+                langfuse_span,
+                metadata={
+                    "status": "success",
+                    "retrieval_provider": question_generation_rag_context.get("provider"),
+                    "fallback_reason": question_generation_rag_context.get("fallback_reason") or "none",
+                },
+            )
+        except LLMClientError as e:
+            update_langfuse_observation(langfuse_span, metadata={"status": "error"}, status_message=str(e))
+            logger.error(f"LLM Call 3 Transport/Load Failure: {str(e)}")
+            abort_res = {
+                "passed": False,
+                "violations_log": [{
+                    "violation_id": str(uuid.uuid4()),
+                    "field": "llm_call_3",
+                    "type": "transport_error",
+                    "context": str(e)
+                }]
+            }
+            _handle_abort(
+                application_id,
+                abort_res,
+                db,
+                artifacts={
+                    "stage": "call_3_transport",
+                    "validation_result": abort_res,
+                    "question_bundle": question_bundle,
+                    "question_generation_rag_context": question_generation_rag_context,
+                },
+            )
+            return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": abort_res, "confidence": agg_conf}
 
     logger.debug("Policy Guard: Question Group Validation")
     val_res_3 = validate_question_groups(raw_call_3_output, entity_id_map, question_bundle)

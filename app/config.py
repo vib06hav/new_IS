@@ -141,7 +141,8 @@ class Settings:
         self.OTEL_EXPORTER_OTLP_HEADERS = os.environ.get("OTEL_EXPORTER_OTLP_HEADERS", "").strip()
         self.OTEL_EXPORTER_OTLP_PROTOCOL = os.environ.get("OTEL_EXPORTER_OTLP_PROTOCOL", "http/protobuf").strip().lower()
         self.LANGFUSE_ENABLED = os.environ.get("LANGFUSE_ENABLED", "false")
-        self.LANGFUSE_HOST = os.environ.get("LANGFUSE_HOST", "").strip()
+        self.LANGFUSE_HOST = os.environ.get("LANGFUSE_HOST", os.environ.get("LANGFUSE_BASE_URL", "")).strip()
+        self.LANGFUSE_BASE_URL = os.environ.get("LANGFUSE_BASE_URL", self.LANGFUSE_HOST).strip()
         self.LANGFUSE_PUBLIC_KEY = os.environ.get("LANGFUSE_PUBLIC_KEY", "").strip()
         self.LANGFUSE_SECRET_KEY = os.environ.get("LANGFUSE_SECRET_KEY", "").strip()
         self.LANGFUSE_CAPTURE_IO = os.environ.get("LANGFUSE_CAPTURE_IO", "false")
@@ -337,6 +338,10 @@ class Settings:
             errors.append("OTEL_EXPORTER_OTLP_ENDPOINT must be an absolute HTTP(S) URL")
         if self.LANGFUSE_HOST and not (self.LANGFUSE_HOST.startswith("http://") or self.LANGFUSE_HOST.startswith("https://")):
             errors.append("LANGFUSE_HOST must be an absolute HTTP(S) URL")
+        if self.LANGFUSE_BASE_URL and not (
+            self.LANGFUSE_BASE_URL.startswith("http://") or self.LANGFUSE_BASE_URL.startswith("https://")
+        ):
+            errors.append("LANGFUSE_BASE_URL must be an absolute HTTP(S) URL")
         self.CELERY_TASK_ALWAYS_EAGER = _parse_bool(self.CELERY_TASK_ALWAYS_EAGER)
         self.CELERY_TASK_EAGER_PROPAGATES = _parse_bool(self.CELERY_TASK_EAGER_PROPAGATES, default=True)
         try:

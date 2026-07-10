@@ -19,7 +19,7 @@ This gives the project a clean resume narrative: operational telemetry for the d
 - Add Langfuse traces for LLM generation, report chat, refinement, question generation, and question regeneration.
 - Keep the app fully functional when observability providers are not configured.
 - Make the implementation environment-variable driven, with empty defaults until keys are added later.
-- Add local self-hosted Langfuse support in Docker Compose.
+- Add local self-hosted Langfuse support in Docker Compose with headless local project initialization.
 - Add a minimal dashboard/metric naming guide so the system is easy to explain and demo.
 
 ## Non-Goals
