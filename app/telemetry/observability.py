@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from contextlib import contextmanager
 from typing import Any, Iterator
+from urllib.parse import unquote
 
 from app.config import settings
 
@@ -112,7 +113,7 @@ def _parse_otlp_headers() -> dict[str, str]:
             continue
         key, value = item.split("=", 1)
         key = key.strip()
-        value = value.strip()
+        value = unquote(value.strip())
         if key:
             headers[key] = value
     return headers
