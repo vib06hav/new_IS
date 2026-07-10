@@ -229,6 +229,8 @@ def _storage_configured() -> bool:
         return bool(settings.UPLOAD_DIRECTORY)
     if settings.STORAGE_BACKEND == "minio":
         return bool(settings.MINIO_ENDPOINT and settings.MINIO_ACCESS_KEY and settings.MINIO_SECRET_KEY and settings.MINIO_BUCKET)
+    if settings.STORAGE_BACKEND == "s3":
+        return bool(settings.S3_BUCKET and settings.AWS_REGION)
     return False
 
 

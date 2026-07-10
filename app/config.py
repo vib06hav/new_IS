@@ -121,6 +121,10 @@ class Settings:
         self.MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY", "")
         self.MINIO_BUCKET = os.environ.get("MINIO_BUCKET", "")
         self.MINIO_SECURE = os.environ.get("MINIO_SECURE", "false")
+        self.AWS_REGION = os.environ.get("AWS_REGION", os.environ.get("AWS_DEFAULT_REGION", "")).strip()
+        self.S3_BUCKET = os.environ.get("S3_BUCKET", "").strip()
+        self.S3_PREFIX = os.environ.get("S3_PREFIX", "").strip().strip("/")
+        self.S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", "").strip()
         self.REDIS_URL = os.environ.get("REDIS_URL", "").strip()
         self.REDIS_KEY_PREFIX = os.environ.get("REDIS_KEY_PREFIX", "agis").strip() or "agis"
         self.REDIS_CONNECT_TIMEOUT_SECONDS = os.environ.get("REDIS_CONNECT_TIMEOUT_SECONDS", "2")
@@ -262,8 +266,8 @@ class Settings:
         if self.PARSER_ENGINE_VERSION not in {"v1", "v2"}:
             errors.append("PARSER_ENGINE_VERSION must be one of {v1, v2}")
 
-        if self.STORAGE_BACKEND not in {"local", "minio"}:
-            errors.append("STORAGE_BACKEND must be one of {local, minio}")
+        if self.STORAGE_BACKEND not in {"local", "minio", "s3"}:
+            errors.append("STORAGE_BACKEND must be one of {local, minio, s3}")
 
         self.MINIO_SECURE = str(self.MINIO_SECURE).strip().lower() in {"1", "true", "yes", "on"}
         if self.STORAGE_BACKEND == "minio":
@@ -275,6 +279,11 @@ class Settings:
                 errors.append("MINIO_SECRET_KEY is required when STORAGE_BACKEND=minio")
             if not self.MINIO_BUCKET:
                 errors.append("MINIO_BUCKET is required when STORAGE_BACKEND=minio")
+        if self.STORAGE_BACKEND == "s3":
+            if not self.S3_BUCKET:
+                errors.append("S3_BUCKET is required when STORAGE_BACKEND=s3")
+            if not self.AWS_REGION:
+                errors.append("AWS_REGION is required when STORAGE_BACKEND=s3")
         if self.REDIS_URL and not (
             self.REDIS_URL.startswith("redis://")
             or self.REDIS_URL.startswith("rediss://")

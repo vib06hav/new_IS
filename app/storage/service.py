@@ -19,6 +19,15 @@ except ImportError:  # pragma: no cover - dependency may be absent in some local
     class S3Error(Exception):
         code = ""
 
+try:
+    import boto3
+    from botocore.exceptions import ClientError
+except ImportError:  # pragma: no cover - dependency may be absent in some local test envs
+    boto3 = None
+
+    class ClientError(Exception):
+        response: dict = {}
+
 from app.config import settings
 
 
@@ -180,6 +189,78 @@ class MinioStorageService(StorageService):
                 os.remove(temp_path)
 
 
+class S3StorageService(StorageService):
+    def __init__(
+        self,
+        *,
+        bucket_name: str,
+        region_name: str,
+        prefix: str = "",
+        endpoint_url: str = "",
+    ):
+        if boto3 is None:
+            raise RuntimeError("The 'boto3' package is required when STORAGE_BACKEND=s3")
+        self.bucket_name = bucket_name
+        self.prefix = prefix.strip().strip("/")
+        self.client = boto3.client(
+            "s3",
+            region_name=region_name,
+            endpoint_url=endpoint_url or None,
+        )
+
+    def _object_key(self, key: str) -> str:
+        normalized = key.replace("\\", "/").lstrip("/")
+        if self.prefix:
+            return f"{self.prefix}/{normalized}"
+        return normalized
+
+    def put_file(self, local_path: str, key: str, content_type: str) -> str:
+        extra_args = {"ContentType": content_type} if content_type else None
+        self.client.upload_file(
+            local_path,
+            self.bucket_name,
+            self._object_key(key),
+            ExtraArgs=extra_args,
+        )
+        return key
+
+    def delete(self, key: str) -> None:
+        self.client.delete_object(Bucket=self.bucket_name, Key=self._object_key(key))
+
+    def exists(self, key: str) -> bool:
+        try:
+            self.client.head_object(Bucket=self.bucket_name, Key=self._object_key(key))
+            return True
+        except ClientError as exc:
+            status_code = exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            error_code = exc.response.get("Error", {}).get("Code")
+            if status_code == 404 or error_code in {"404", "NoSuchKey", "NotFound"}:
+                return False
+            raise
+
+    @contextmanager
+    def open_stream(self, key: str) -> Iterator[BinaryIO]:
+        response = self.client.get_object(Bucket=self.bucket_name, Key=self._object_key(key))
+        body = response["Body"]
+        try:
+            yield body
+        finally:
+            body.close()
+
+    @contextmanager
+    def materialize_to_tempfile(self, key: str, suffix: str = "") -> Iterator[str]:
+        temp_dir = Path(settings.UPLOAD_DIRECTORY)
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix, dir=temp_dir) as temp_file:
+            temp_path = temp_file.name
+        try:
+            self.client.download_file(self.bucket_name, self._object_key(key), temp_path)
+            yield temp_path
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+
 @lru_cache(maxsize=1)
 def get_storage_service() -> StorageService:
     if settings.STORAGE_BACKEND == "minio":
@@ -189,6 +270,13 @@ def get_storage_service() -> StorageService:
             secret_key=settings.MINIO_SECRET_KEY,
             bucket_name=settings.MINIO_BUCKET,
             secure=settings.MINIO_SECURE,
+        )
+    if settings.STORAGE_BACKEND == "s3":
+        return S3StorageService(
+            bucket_name=settings.S3_BUCKET,
+            region_name=settings.AWS_REGION,
+            prefix=settings.S3_PREFIX,
+            endpoint_url=settings.S3_ENDPOINT_URL,
         )
     return LocalStorageService(settings.UPLOAD_DIRECTORY)
 

@@ -1,7 +1,8 @@
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-from app.storage.service import LocalStorageService, MinioStorageService
+from app.storage.service import LocalStorageService, MinioStorageService, S3StorageService
 
 
 def test_local_storage_put_open_materialize_and_delete(tmp_path):
@@ -54,3 +55,43 @@ def test_minio_storage_delegates_to_client_methods(monkeypatch, tmp_path):
 
     storage.delete("applications/demo/source.pdf")
     fake_client.remove_object.assert_called_once()
+
+
+def test_s3_storage_delegates_to_boto3_client(monkeypatch, tmp_path):
+    fake_client = MagicMock()
+    monkeypatch.setattr(
+        "app.storage.service.boto3",
+        SimpleNamespace(client=lambda *args, **kwargs: fake_client),
+    )
+
+    storage = S3StorageService(
+        bucket_name="agis-assets-prod",
+        region_name="ap-south-1",
+        prefix="prod",
+    )
+
+    source_path = tmp_path / "source.pdf"
+    source_path.write_bytes(b"%PDF-1.4\n")
+
+    storage.put_file(str(source_path), "applications/demo/source.pdf", "application/pdf")
+    fake_client.upload_file.assert_called_once_with(
+        str(source_path),
+        "agis-assets-prod",
+        "prod/applications/demo/source.pdf",
+        ExtraArgs={"ContentType": "application/pdf"},
+    )
+
+    fake_body = MagicMock()
+    fake_client.get_object.return_value = {"Body": fake_body}
+    with storage.open_stream("applications/demo/source.pdf") as handle:
+        assert handle is fake_body
+    fake_body.close.assert_called_once()
+
+    fake_client.head_object.return_value = object()
+    assert storage.exists("applications/demo/source.pdf") is True
+
+    storage.delete("applications/demo/source.pdf")
+    fake_client.delete_object.assert_called_once_with(
+        Bucket="agis-assets-prod",
+        Key="prod/applications/demo/source.pdf",
+    )

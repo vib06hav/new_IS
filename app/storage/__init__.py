@@ -1,4 +1,5 @@
 from app.storage.service import (
+    S3StorageService,
     StorageService,
     get_storage_service,
     storage_key_for_final_report_export,
@@ -8,6 +9,7 @@ from app.storage.service import (
 
 __all__ = [
     "StorageService",
+    "S3StorageService",
     "get_storage_service",
     "storage_key_for_final_report_export",
     "storage_key_for_profile_image",
