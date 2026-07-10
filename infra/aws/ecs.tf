@@ -41,24 +41,7 @@ resource "aws_ecs_task_definition" "api" {
         }
       ]
 
-      environment = [
-        {
-          name  = "AWS_REGION"
-          value = var.aws_region
-        },
-        {
-          name  = "STORAGE_BACKEND"
-          value = "s3"
-        },
-        {
-          name  = "S3_BUCKET"
-          value = aws_s3_bucket.assets.bucket
-        },
-        {
-          name  = "S3_PREFIX"
-          value = local.normalized_s3_prefix
-        }
-      ]
+      secrets = local.ecs_app_secrets
 
       logConfiguration = {
         logDriver = "awslogs"
@@ -95,24 +78,7 @@ resource "aws_ecs_task_definition" "worker" {
         "--queues=processing,generation,maintenance,default"
       ]
 
-      environment = [
-        {
-          name  = "AWS_REGION"
-          value = var.aws_region
-        },
-        {
-          name  = "STORAGE_BACKEND"
-          value = "s3"
-        },
-        {
-          name  = "S3_BUCKET"
-          value = aws_s3_bucket.assets.bucket
-        },
-        {
-          name  = "S3_PREFIX"
-          value = local.normalized_s3_prefix
-        }
-      ]
+      secrets = local.ecs_app_secrets
 
       logConfiguration = {
         logDriver = "awslogs"
@@ -142,24 +108,7 @@ resource "aws_ecs_task_definition" "migration" {
       essential = true
       command   = ["alembic", "upgrade", "head"]
 
-      environment = [
-        {
-          name  = "AWS_REGION"
-          value = var.aws_region
-        },
-        {
-          name  = "STORAGE_BACKEND"
-          value = "s3"
-        },
-        {
-          name  = "S3_BUCKET"
-          value = aws_s3_bucket.assets.bucket
-        },
-        {
-          name  = "S3_PREFIX"
-          value = local.normalized_s3_prefix
-        }
-      ]
+      secrets = local.ecs_app_secrets
 
       logConfiguration = {
         logDriver = "awslogs"
@@ -171,4 +120,53 @@ resource "aws_ecs_task_definition" "migration" {
       }
     }
   ])
+}
+
+resource "aws_ecs_service" "api" {
+  name            = "${local.name_prefix}-api"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.api.arn
+  desired_count   = var.api_desired_count
+  launch_type     = "FARGATE"
+
+  health_check_grace_period_seconds = 90
+
+  network_configuration {
+    assign_public_ip = true
+    security_groups  = [aws_security_group.api.id]
+    subnets          = aws_subnet.public[*].id
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.api.arn
+    container_name   = "api"
+    container_port   = var.api_container_port
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.ecs_task_execution,
+    aws_iam_role_policy_attachment.ecs_task_execution_secrets,
+    aws_lb_listener.http,
+    aws_secretsmanager_secret_version.app_env,
+  ]
+}
+
+resource "aws_ecs_service" "worker" {
+  name            = "${local.name_prefix}-worker"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.worker.arn
+  desired_count   = var.worker_desired_count
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    assign_public_ip = true
+    security_groups  = [aws_security_group.worker.id]
+    subnets          = aws_subnet.public[*].id
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.ecs_task_execution,
+    aws_iam_role_policy_attachment.ecs_task_execution_secrets,
+    aws_secretsmanager_secret_version.app_env,
+  ]
 }

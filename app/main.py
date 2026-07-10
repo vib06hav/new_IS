@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy.orm import Session
 import logging
@@ -24,6 +23,7 @@ from app.api.applications import router as applications_router
 from app.api.interviewer import router as interviewer_router
 from app.api.users import router as users_router
 from app.security.csrf import ensure_csrf_protection
+from app.security.trusted_hosts import HealthcheckAwareTrustedHostMiddleware
 from app.telemetry.observability import configure_observability, increment_counter, record_histogram, start_span
 from app.telemetry.request_context import REQUEST_ID_HEADER, get_request_id, reset_request_id, set_request_id
 
@@ -31,7 +31,7 @@ app = FastAPI(title="Interview Standardiser API", version="0.1.0")
 configure_observability()
 
 if settings.TRUSTED_HOSTS:
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.TRUSTED_HOSTS)
+    app.add_middleware(HealthcheckAwareTrustedHostMiddleware, allowed_hosts=settings.TRUSTED_HOSTS)
 
 if settings.CORS_ALLOWED_ORIGINS:
     app.add_middleware(

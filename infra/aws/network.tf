@@ -56,6 +56,14 @@ resource "aws_security_group" "api" {
   description = "Future API task security group. Public ingress is intentionally not open yet."
   vpc_id      = aws_vpc.main.id
 
+  ingress {
+    description     = "HTTP from the application load balancer"
+    from_port       = var.api_container_port
+    to_port         = var.api_container_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
+  }
+
   egress {
     description = "Allow outbound calls to managed services and external APIs"
     from_port   = 0
@@ -66,6 +74,32 @@ resource "aws_security_group" "api" {
 
   tags = {
     Name = "${local.name_prefix}-api"
+  }
+}
+
+resource "aws_security_group" "alb" {
+  name        = "${local.name_prefix}-alb"
+  description = "Public HTTP entry point for the API load balancer."
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "Public HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Forward traffic to API tasks"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${local.name_prefix}-alb"
   }
 }
 

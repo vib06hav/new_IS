@@ -61,4 +61,6 @@ tests/outputs/
 crash.log
 crash.*.log
 *.tfvars
+*.tfvars.json
+*.auto.tfvars.json
 !*.tfvars.example

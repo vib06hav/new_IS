@@ -58,6 +58,16 @@ output "redis_security_group_id" {
   value       = aws_security_group.redis.id
 }
 
+output "alb_dns_name" {
+  description = "Public DNS name for the API application load balancer."
+  value       = aws_lb.api.dns_name
+}
+
+output "api_url" {
+  description = "HTTP base URL for the deployed API."
+  value       = "http://${aws_lb.api.dns_name}"
+}
+
 output "ecs_cluster_name" {
   description = "ECS cluster name."
   value       = aws_ecs_cluster.main.name
@@ -76,4 +86,29 @@ output "worker_task_definition_arn" {
 output "migration_task_definition_arn" {
   description = "Migration ECS task definition ARN."
   value       = aws_ecs_task_definition.migration.arn
+}
+
+output "api_service_name" {
+  description = "ECS service name running the API."
+  value       = aws_ecs_service.api.name
+}
+
+output "worker_service_name" {
+  description = "ECS service name running the Celery worker."
+  value       = aws_ecs_service.worker.name
+}
+
+output "postgres_endpoint" {
+  description = "Private RDS PostgreSQL endpoint."
+  value       = aws_db_instance.postgres.address
+}
+
+output "redis_endpoint" {
+  description = "Private ElastiCache Redis endpoint."
+  value       = aws_elasticache_replication_group.redis.primary_endpoint_address
+}
+
+output "app_env_secret_arn" {
+  description = "Secrets Manager ARN used by ECS tasks for runtime environment variables."
+  value       = aws_secretsmanager_secret.app_env.arn
 }

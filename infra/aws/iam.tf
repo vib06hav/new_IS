@@ -19,6 +19,31 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+data "aws_iam_policy_document" "ecs_task_execution_secrets" {
+  statement {
+    sid = "ReadAppEnvSecret"
+
+    actions = [
+      "secretsmanager:GetSecretValue",
+    ]
+
+    resources = [
+      aws_secretsmanager_secret.app_env.arn,
+    ]
+  }
+}
+
+resource "aws_iam_policy" "ecs_task_execution_secrets" {
+  name        = "${local.name_prefix}-ecs-task-execution-secrets"
+  description = "Allow ECS task startup to inject the application environment from Secrets Manager."
+  policy      = data.aws_iam_policy_document.ecs_task_execution_secrets.json
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_secrets" {
+  role       = aws_iam_role.ecs_task_execution.name
+  policy_arn = aws_iam_policy.ecs_task_execution_secrets.arn
+}
+
 resource "aws_iam_role" "ecs_app_task" {
   name               = "${local.name_prefix}-ecs-app-task"
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json

@@ -87,3 +87,46 @@ variable "worker_task_memory" {
   type        = number
   default     = 2048
 }
+
+variable "api_desired_count" {
+  description = "Number of API tasks to run behind the load balancer."
+  type        = number
+  default     = 1
+}
+
+variable "worker_desired_count" {
+  description = "Number of Celery worker tasks to run."
+  type        = number
+  default     = 1
+}
+
+variable "db_name" {
+  description = "PostgreSQL database name for the application."
+  type        = string
+  default     = "agis"
+}
+
+variable "db_username" {
+  description = "PostgreSQL admin username for the application database."
+  type        = string
+  default     = "agis_admin"
+}
+
+variable "rds_instance_class" {
+  description = "RDS instance class. Keep tiny for the short-lived CV deployment."
+  type        = string
+  default     = "db.t4g.micro"
+}
+
+variable "redis_node_type" {
+  description = "ElastiCache Redis OSS node type. Keep tiny for the short-lived CV deployment."
+  type        = string
+  default     = "cache.t4g.micro"
+}
+
+variable "app_secret_overrides" {
+  description = "Sensitive app env overrides loaded into AWS Secrets Manager, usually generated locally from .env."
+  type        = map(string)
+  sensitive   = true
+  default     = {}
+}
