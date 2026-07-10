@@ -35,8 +35,12 @@ The first foundation stack creates low-risk supporting resources:
 - CloudWatch log groups for API, worker, and migration tasks.
 - ECS task execution role.
 - ECS application task role with scoped S3 permissions.
+- VPC, public subnets, route table, and security groups.
+- ECS cluster and task definitions for API, worker, and migration.
 
-This does not yet create ECS, RDS, Redis, VPC, or load balancers.
+This does not yet create running ECS services, RDS, Redis, load balancers, NAT gateways, or public app ingress.
+
+Task definitions are recipes. They do not run containers or bill Fargate until an ECS task/service is started.
 
 ## Files
 
@@ -47,6 +51,8 @@ This does not yet create ECS, RDS, Redis, VPC, or load balancers.
 - `s3.tf` creates object storage.
 - `logs.tf` creates log groups.
 - `iam.tf` creates ECS IAM roles and policies.
+- `network.tf` creates the VPC/subnets/security groups.
+- `ecs.tf` creates the ECS cluster and task definitions.
 - `outputs.tf` prints useful resource names/ARNs after apply.
 - `terraform.tfvars.example` shows safe example values.
 
@@ -57,6 +63,9 @@ This does not yet create ECS, RDS, Redis, VPC, or load balancers.
 - ECR image scanning is enabled.
 - CloudWatch log retention is finite.
 - ECS app role gets access only to the configured S3 bucket/prefix.
+- ECS Container Insights is disabled by default to avoid extra observability cost.
+- No NAT Gateway is created in the foundation layer.
+- No ECS service is created in the foundation layer, so no Fargate compute runs yet.
 - Common tags are applied for ownership and cost tracking.
 
 ## Before First Apply

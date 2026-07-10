@@ -9,3 +9,15 @@ s3_bucket_name = ""
 s3_prefix      = "prod"
 
 cloudwatch_log_retention_days = 14
+
+vpc_cidr            = "10.40.0.0/20"
+public_subnet_cidrs = ["10.40.0.0/24", "10.40.1.0/24"]
+
+# This should match the ECR image tag we want future ECS tasks to run.
+backend_image_tag = "latest"
+
+api_container_port = 8000
+api_task_cpu       = 512
+api_task_memory    = 1024
+worker_task_cpu    = 1024
+worker_task_memory = 2048
