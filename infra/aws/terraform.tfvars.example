@@ -1,0 +1,11 @@
+project_name = "agis"
+environment  = "prod"
+aws_region   = "ap-south-1"
+owner        = "vibha"
+
+# S3 bucket names are globally unique. Leave blank to derive:
+# agis-prod-assets-<aws-account-id>-<aws-region>
+s3_bucket_name = ""
+s3_prefix      = "prod"
+
+cloudwatch_log_retention_days = 14
