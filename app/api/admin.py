@@ -40,8 +40,14 @@ from app.models.application import Application
 from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
 from app.models.final_report import FinalReport
+from app.models.interview_workspace import InterviewWorkspace
 from app.models.processing_job import ProcessingJob
+from app.models.question_generated_version import QuestionGeneratedVersion
+from app.models.question_generation_thread import QuestionGenerationThread
+from app.models.question_version_rating import QuestionVersionRating
+from app.models.theme_rating import ThemeRating
 from app.models.user import User
+from app.models.vector_corpus_document import VectorCorpusDocument
 from app.processing import JOB_STATUS_FAILED, dispatch_processing_job, enqueue_processing_job, revoke_processing_job
 from app.storage import get_storage_service
 
@@ -70,17 +76,44 @@ def _get_interviewer_or_400(db: Session, interviewer_id: UUID) -> User:
 
 
 def _delete_application_with_related_data(db: Session, application: Application) -> None:
+    question_version_ids = [
+        str(version_id)
+        for (version_id,) in db.query(QuestionGeneratedVersion.id)
+        .filter(QuestionGeneratedVersion.application_id == application.id)
+        .all()
+    ]
+    if question_version_ids:
+        db.query(VectorCorpusDocument).filter(
+            VectorCorpusDocument.entity_type == "question_version",
+            VectorCorpusDocument.entity_id.in_(question_version_ids),
+        ).delete(synchronize_session=False)
+
     final_report = db.query(FinalReport).filter(FinalReport.application_id == application.id).first()
     if final_report is not None:
         if final_report.export_key:
             get_storage_service().delete(final_report.export_key)
         db.delete(final_report)
-    db.query(CanonicalRecord).filter(CanonicalRecord.application_id == application.id).delete()
-    db.query(Assignment).filter(Assignment.application_id == application.id).delete()
+
     processing_jobs = db.query(ProcessingJob).filter(ProcessingJob.application_id == application.id).all()
     for job in processing_jobs:
         revoke_processing_job(job)
-        db.delete(job)
+    db.query(ProcessingJob).filter(ProcessingJob.application_id == application.id).delete(synchronize_session=False)
+
+    db.query(QuestionVersionRating).filter(QuestionVersionRating.application_id == application.id).delete(
+        synchronize_session=False
+    )
+    db.query(ThemeRating).filter(ThemeRating.application_id == application.id).delete(synchronize_session=False)
+    db.query(QuestionGeneratedVersion).filter(QuestionGeneratedVersion.application_id == application.id).delete(
+        synchronize_session=False
+    )
+    db.query(QuestionGenerationThread).filter(QuestionGenerationThread.application_id == application.id).delete(
+        synchronize_session=False
+    )
+    db.query(InterviewWorkspace).filter(InterviewWorkspace.application_id == application.id).delete(
+        synchronize_session=False
+    )
+    db.query(CanonicalRecord).filter(CanonicalRecord.application_id == application.id).delete(synchronize_session=False)
+    db.query(Assignment).filter(Assignment.application_id == application.id).delete(synchronize_session=False)
     db.delete(application)
 
 

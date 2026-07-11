@@ -17,6 +17,7 @@ from app.models.assignment import Assignment
 from app.models.canonical_record import CanonicalRecord
 from app.models.final_report import FinalReport
 from app.models.interview_workspace import InterviewWorkspace
+from app.models.processing_job import ProcessingJob
 from app.models.user import User
 from app.config import settings
 from app.llm.client import LLMClientError
@@ -356,6 +357,63 @@ def test_delete_application_removes_stored_final_report_export(tmp_path):
         delete_response = client.delete(f"/applications/{application_id}", headers=admin_headers)
         assert delete_response.status_code == 204
         assert not storage.exists(export_key)
+    finally:
+        settings.STORAGE_BACKEND = original_storage_backend
+        settings.UPLOAD_DIRECTORY = original_upload_directory
+        get_storage_service.cache_clear()
+
+
+def test_delete_application_removes_processing_jobs(tmp_path):
+    db = TestingSessionLocal()
+    original_storage_backend = settings.STORAGE_BACKEND
+    original_upload_directory = settings.UPLOAD_DIRECTORY
+    try:
+        settings.STORAGE_BACKEND = "local"
+        settings.UPLOAD_DIRECTORY = str(tmp_path)
+        get_storage_service.cache_clear()
+
+        db.query(ProcessingJob).delete()
+        db.query(FinalReport).delete()
+        db.query(Assignment).delete()
+        db.query(CanonicalRecord).delete()
+        db.query(Application).delete()
+        db.query(User).delete()
+
+        admin = User(id=uuid.uuid4(), name="Admin", email="admin-delete-job@example.com", password_hash="x", role="admin")
+        application = Application(
+            id=uuid.uuid4(),
+            display_id="APP-JOB-DELETE",
+            uploaded_by=admin.id,
+            storage_key="applications/job-delete/source.pdf",
+            status="PROCESSING",
+        )
+        job = ProcessingJob(
+            id=uuid.uuid4(),
+            application_id=application.id,
+            job_type="deterministic_pipeline",
+            status="queued",
+        )
+        db.add_all([admin, application, job])
+        db.commit()
+        admin_email = admin.email
+        admin_role = admin.role
+        application_id = application.id
+        job_id = job.id
+        db.close()
+
+        app.dependency_overrides[get_db] = override_get_db
+        client = TestClient(app)
+        admin_headers = {"Authorization": f"Bearer {_token_for(admin_email, admin_role)}"}
+
+        delete_response = client.delete(f"/applications/{application_id}", headers=admin_headers)
+
+        assert delete_response.status_code == 204
+        db = TestingSessionLocal()
+        try:
+            assert db.query(ProcessingJob).filter(ProcessingJob.id == job_id).first() is None
+            assert db.query(Application).filter(Application.id == application_id).first() is None
+        finally:
+            db.close()
     finally:
         settings.STORAGE_BACKEND = original_storage_backend
         settings.UPLOAD_DIRECTORY = original_upload_directory
