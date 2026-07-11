@@ -19,7 +19,8 @@ resource "aws_secretsmanager_secret" "app_env" {
 }
 
 locals {
-  app_base_url = "http://${aws_lb.api.dns_name}"
+  api_base_url = "http://${aws_lb.api.dns_name}"
+  app_base_url = var.frontend_public_url != "" ? trimsuffix(var.frontend_public_url, "/") : local.api_base_url
   database_url = format(
     "postgresql+psycopg2://%s:%s@%s:%s/%s",
     var.db_username,
@@ -146,7 +147,7 @@ locals {
   app_secret_managed_values = {
     API_DOMAIN             = aws_lb.api.dns_name
     AWS_REGION             = var.aws_region
-    BACKEND_API_URL        = local.app_base_url
+    BACKEND_API_URL        = local.api_base_url
     CELERY_BROKER_URL      = local.redis_url
     CELERY_RESULT_BACKEND  = local.redis_url
     CORS_ALLOWED_ORIGINS   = local.app_base_url

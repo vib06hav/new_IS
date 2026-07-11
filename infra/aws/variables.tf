@@ -100,6 +100,12 @@ variable "worker_desired_count" {
   default     = 1
 }
 
+variable "frontend_public_url" {
+  description = "Public browser-facing frontend URL. Set to the Vercel/custom-domain URL when the frontend is deployed."
+  type        = string
+  default     = ""
+}
+
 variable "db_name" {
   description = "PostgreSQL database name for the application."
   type        = string
