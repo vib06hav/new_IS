@@ -8,9 +8,8 @@ resource "random_password" "jwt_secret" {
   special = false
 }
 
-resource "random_password" "workos_cookie_password" {
-  length  = 48
-  special = false
+resource "random_id" "workos_cookie_password" {
+  byte_length = 32
 }
 
 resource "aws_secretsmanager_secret" "app_env" {
@@ -159,7 +158,7 @@ locals {
     S3_BUCKET              = aws_s3_bucket.assets.bucket
     S3_PREFIX              = local.normalized_s3_prefix
     TRUSTED_HOSTS          = aws_lb.api.dns_name
-    WORKOS_COOKIE_PASSWORD = random_password.workos_cookie_password.result
+    WORKOS_COOKIE_PASSWORD = replace(replace(random_id.workos_cookie_password.b64_std, "+", "-"), "/", "_")
   }
 
   app_secret_values = merge(

@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import base64
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -41,6 +42,15 @@ def _parse_bool(value: str | None, default: bool = False) -> bool:
     if value is None:
         return default
     return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _is_fernet_key(value: str) -> bool:
+    try:
+        decoded = base64.urlsafe_b64decode(value.encode("utf-8"))
+    except Exception:
+        return False
+    return len(value.encode("utf-8")) == 44 and len(decoded) == 32
+
 
 def check_writable_dir(path: str) -> bool:
     try:
@@ -674,8 +684,8 @@ class Settings:
 
         if self.SESSION_COOKIE_SAMESITE not in {"lax", "strict", "none"}:
             errors.append("SESSION_COOKIE_SAMESITE must be one of {lax, strict, none}")
-        if self.WORKOS_COOKIE_PASSWORD and len(self.WORKOS_COOKIE_PASSWORD) < 32:
-            errors.append("WORKOS_COOKIE_PASSWORD must be at least 32 characters long")
+        if self.WORKOS_COOKIE_PASSWORD and not _is_fernet_key(self.WORKOS_COOKIE_PASSWORD):
+            errors.append("WORKOS_COOKIE_PASSWORD must be a 32-byte url-safe base64 Fernet key")
         if self.WORKOS_REDIRECT_URI and not self.WORKOS_REDIRECT_URI.startswith("http"):
             errors.append("WORKOS_REDIRECT_URI must be an absolute URL")
         if self.WORKOS_LOGOUT_REDIRECT_URI and not self.WORKOS_LOGOUT_REDIRECT_URI.startswith("http"):
