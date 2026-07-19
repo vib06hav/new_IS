@@ -24,14 +24,13 @@ from app.agents.projection_builder import build_projection
 from app.agents.signal_interpreter import interpret_signals
 from app.agents.bundle_constructor import construct_focus_area_bundle, construct_question_bundle
 from app.agents.interview_synthesizer import synthesize_interview_focus_areas
-from app.agents.interview_generator import generate_interview
+from app.agents.question_generation_graph import run_question_generation_graph
 from app.agents.report_annotations import build_report_annotations
 from app.llm.client import LLMClientError
 
 # Policy and ROS
 from app.policy.guard import (
     validate_focus_areas,
-    validate_question_groups,
     validate_signals,
     sanitise_llm_output,
 )
@@ -44,7 +43,6 @@ from app.canonical.version import CANONICAL_VERSION
 from app.config import settings
 from app.domain.statuses import APPLICATION_STATUS_FAILED, APPLICATION_STATUS_PROCESSED, APPLICATION_STATUS_READY
 from app.agents.section_scope_resolver import resolve_section_scopes
-from app.rag.question_retrieval import retrieve_question_generation_context
 from app.telemetry.langfuse_client import langfuse_workflow, update_langfuse_observation
 from app.utils.sanitizer import sanitize_for_json
 from sqlalchemy.orm import Session
@@ -473,46 +471,43 @@ def run_synthesis_pipeline(
         },
         input_payload={"application_id": application_id, "focus_area_count": len(question_bundle.get("focus_areas") or [])},
     ) as langfuse_span:
-        question_generation_rag_context = retrieve_question_generation_context(
-            application_id=uuid.UUID(application_id),
+        question_generation_result = run_question_generation_graph(
+            application_id=application_id,
             question_bundle=question_bundle,
+            entity_id_map=entity_id_map,
         )
-        if question_generation_rag_context.get("fallback_reason"):
-            logger.info(
-                "question_generation_rag_context_fallback application_id=%s reason=%s",
-                application_id,
-                question_generation_rag_context.get("fallback_reason"),
-            )
-        else:
-            logger.info(
-                "question_generation_rag_context_ready application_id=%s focus_area_count=%s",
-                application_id,
-                len(question_generation_rag_context.get("focus_area_examples") or []),
-            )
-        try:
-            raw_call_3_output = generate_interview(
-                question_bundle,
-                entity_id_map,
-                rag_context=question_generation_rag_context,
-            )
+        question_generation_rag_context = question_generation_result.rag_context
+        if question_generation_result.route != "transport_error":
+            raw_call_3_output = question_generation_result.raw_output or ""
+            val_res_3 = question_generation_result.validation_result or {}
             update_langfuse_observation(
                 langfuse_span,
                 metadata={
-                    "status": "success",
+                    "status": "success" if question_generation_result.passed else "validation_failed",
+                    **question_generation_result.graph_metadata,
                     "retrieval_provider": question_generation_rag_context.get("provider"),
                     "fallback_reason": question_generation_rag_context.get("fallback_reason") or "none",
                 },
             )
-        except LLMClientError as e:
-            update_langfuse_observation(langfuse_span, metadata={"status": "error"}, status_message=str(e))
-            logger.error(f"LLM Call 3 Transport/Load Failure: {str(e)}")
+        else:
+            error_message = question_generation_result.error_message or "LLM Call 3 failed"
+            update_langfuse_observation(
+                langfuse_span,
+                metadata={
+                    "status": "error",
+                    **question_generation_result.graph_metadata,
+                    "retrieval_provider": question_generation_rag_context.get("provider"),
+                    "fallback_reason": question_generation_rag_context.get("fallback_reason") or "none",
+                },
+                status_message=error_message,
+            )
             abort_res = {
                 "passed": False,
                 "violations_log": [{
                     "violation_id": str(uuid.uuid4()),
                     "field": "llm_call_3",
                     "type": "transport_error",
-                    "context": str(e)
+                    "context": error_message
                 }]
             }
             _handle_abort(
@@ -524,12 +519,12 @@ def run_synthesis_pipeline(
                     "validation_result": abort_res,
                     "question_bundle": question_bundle,
                     "question_generation_rag_context": question_generation_rag_context,
+                    "question_generation_graph": question_generation_result.graph_metadata,
                 },
             )
             return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": abort_res, "confidence": agg_conf}
 
     logger.debug("Policy Guard: Question Group Validation")
-    val_res_3 = validate_question_groups(raw_call_3_output, entity_id_map, question_bundle)
 
     if not val_res_3["passed"]:
         logger.error(f"Call 3 Validation Failed for {application_id}")
@@ -543,6 +538,7 @@ def run_synthesis_pipeline(
                 "validation_result": val_res_3,
                 "question_bundle": question_bundle,
                 "question_generation_rag_context": question_generation_rag_context,
+                "question_generation_graph": question_generation_result.graph_metadata,
             },
         )
         return {"canonical_data": canonical_data, "ros_v1": None, "validation_result": val_res_3, "confidence": agg_conf}
@@ -584,6 +580,7 @@ def run_synthesis_pipeline(
     }
     synthesis_output["generation_metadata"] = {
         "question_generation_rag_context": sanitize_for_json(question_generation_rag_context),
+        "question_generation_graph": sanitize_for_json(question_generation_result.graph_metadata),
     }
 
     try:

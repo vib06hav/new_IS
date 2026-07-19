@@ -152,7 +152,7 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
         )
         retrieve_question_generation_context_mock = stack.enter_context(
             patch(
-                "app.agents.orchestrator.retrieve_question_generation_context",
+                "app.agents.question_generation_graph.retrieve_question_generation_context",
                 return_value={"provider": "disabled", "focus_area_examples": []},
             )
         )
@@ -163,10 +163,10 @@ def test_run_pipeline_splits_theme_generation_into_call_1():
                 return_value={"passed": True, "sanitized_output": validated_focus_areas, "violations_log": []},
             )
         )
-        generate_interview_mock = stack.enter_context(patch("app.agents.orchestrator.generate_interview", return_value="{}"))
+        generate_interview_mock = stack.enter_context(patch("app.agents.question_generation_graph.generate_interview", return_value="{}"))
         stack.enter_context(
             patch(
-                "app.agents.orchestrator.validate_question_groups",
+                "app.agents.question_generation_graph.validate_question_groups",
                 return_value={"passed": True, "sanitized_output": question_groups_validated, "violations_log": []},
             )
         )
